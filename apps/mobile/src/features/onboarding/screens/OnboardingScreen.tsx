@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
@@ -14,6 +15,7 @@ export function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const router = useRouter();
   const currentSlide = ONBOARDING_SLIDES[activeIndex];
+  const { t } = useTranslation();
 
   const handleNext = () => {
     if (activeIndex < ONBOARDING_SLIDES.length - 1) {
@@ -34,9 +36,9 @@ export function OnboardingScreen() {
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.brand}>Winlab</Text>
+        <Text style={styles.brand}>{t("onboarding.brand")}</Text>
         <Button
-          title="Skip"
+          title={t("onboarding.skip")}
           variant="ghost"
           onPress={handleSkip}
           style={styles.skipButton}
@@ -68,8 +70,12 @@ export function OnboardingScreen() {
         </Card>
 
         <View style={styles.textBlock}>
-          <Text style={styles.title}>{currentSlide.title}</Text>
-          <Text style={styles.description}>{currentSlide.description}</Text>
+          <Text style={styles.title}>
+            {t(`onboarding.slides.${currentSlide.id}.title`)}
+          </Text>
+          <Text style={styles.description}>
+            {t(`onboarding.slides.${currentSlide.id}.description`)}
+          </Text>
         </View>
       </View>
 
@@ -82,14 +88,19 @@ export function OnboardingScreen() {
 
         <Button
           title={
-            activeIndex < ONBOARDING_SLIDES.length - 1 ? "Suivant" : "Go !"
+            activeIndex < ONBOARDING_SLIDES.length - 1
+              ? t("onboarding.next")
+              : t("onboarding.go")
           }
           onPress={handleNext}
           style={styles.primaryCta}
         />
 
         <Text style={styles.stepText}>
-          Step {activeIndex + 1} of {ONBOARDING_SLIDES.length}
+          {t("onboarding.step", {
+            current: activeIndex + 1,
+            total: ONBOARDING_SLIDES.length,
+          })}
         </Text>
       </View>
     </Screen>

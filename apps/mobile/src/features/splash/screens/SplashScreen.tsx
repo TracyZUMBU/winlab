@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
@@ -10,6 +11,7 @@ const SPLASH_DELAY_MS = 1800;
 
 export function SplashScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -33,16 +35,20 @@ export function SplashScreen() {
               {/* TODO:Placeholder icon using a simple shape; replace with real logo when ready */}
               <View style={styles.logoGlyph} />
             </View>
-            <Text style={styles.appName}>Winlab</Text>
-            <Text style={styles.baseline}>Complete missions. Win big.</Text>
+            <Text style={styles.appName}>{t("app.name")}</Text>
+            <Text style={styles.baseline}>{t("splash.baseline")}</Text>
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.statusLabel}>Initializing</Text>
+            <Text style={styles.statusLabel}>
+              {t("splash.status_initializing")}
+            </Text>
             <View style={styles.progressTrack}>
               <View style={styles.progressFill} />
             </View>
-            <Text style={styles.metaText}>Version 1.0.0</Text>
+            <Text style={styles.metaText}>
+              {t("splash.version", { version: "1.0.0" })}
+            </Text>
           </View>
         </View>
       </LinearGradient>
