@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Screen } from "@/src/components/ui/Screen";
@@ -12,8 +12,15 @@ const SPLASH_DELAY_MS = 1800;
 export function SplashScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: SPLASH_DELAY_MS,
+      useNativeDriver: false,
+    }).start();
+
     const timeoutId = setTimeout(() => {
       router.replace("/onboarding");
     }, SPLASH_DELAY_MS);
@@ -44,7 +51,17 @@ export function SplashScreen() {
               {t("splash.status_initializing")}
             </Text>
             <View style={styles.progressTrack}>
-              <View style={styles.progressFill} />
+              <Animated.View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: progress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ["0%", "100%"],
+                    }),
+                  },
+                ]}
+              />
             </View>
             <Text style={styles.metaText}>
               {t("splash.version", { version: "1.0.0" })}
