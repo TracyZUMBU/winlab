@@ -1,0 +1,35 @@
+{
+  "app": {
+    "name": "Winlab"
+  },
+  "splash": {
+    "baseline": "Complete missions. Win big.",
+    "status_initializing": "Initializing",
+    "version": "Version {{version}}"
+  },
+  "onboarding": {
+    "brand": "Winlab",
+    "skip": "Skip",
+    "next": "Next",
+    "go": "Go!",
+    "step": "Step {{current}} of {{total}}",
+    "slides": {
+      "complete-missions": {
+        "title": "Complete Missions",
+        "description": "Discover top brands and complete fun tasks to get started on your journey."
+      },
+      "earn-tokens": {
+        "title": "Earn Tokens",
+        "description": "Collect tokens for every mission and grow your balance effortlessly."
+      },
+      "win-rewards": {
+        "title": "Win Rewards",
+        "description": "Use your tokens to join lotteries and unlock exclusive rewards from top partners."
+      }
+    }
+  },
+  "home": {
+    "title": "Home"
+  }
+}
+
