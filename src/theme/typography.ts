@@ -12,4 +12,3 @@ export const typography = {
     fontWeight: "400" as const,
   },
 };
-

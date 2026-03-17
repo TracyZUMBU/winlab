@@ -30,6 +30,57 @@
   },
   "home": {
     "title": "Accueil"
+  },
+  "emailScreen": {
+    "title": "Entrez votre email",
+    "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+    "label": "ADRESSE EMAIL",
+    "continue": "Continuer",
+    "secureAndEncryptedAuthentication": "Authentification sécurisée et chiffrée",
+    "termsOfService": "Conditions d'utilisation",
+    "privacyPolicy": "Politique de confidentialité",
+
+    "error": {
+      "required": "L'email est requis",
+      "email": "L'email est invalide"
+    }
+  },
+  "auth": {
+    "genericError": "Une erreur est survenue. Merci de réessayer.",
+    "emailSent": "Un code de connexion a été envoyé à votre adresse email.",
+    "invalidCode": "Le code saisi est invalide ou expiré.",
+    "email": {
+      "title": "Entrez votre email",
+      "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+      "label": "ADRESSE EMAIL"
+    }
+  },
+  "appPlaceholder": {
+    "title": "Bienvenue sur Winlab",
+    "subtitle": "Cet écran est un placeholder pour l’app connectée.",
+    "caption": "Cet écran est un placeholder pour l’app connectée.",
+    "logout": "Se déconnecter"
+  },
+  "schema": {
+    "username": {
+      "title": "Choisissez votre pseudo",
+      "subtitle": "Ce pseudo sera visible dans l’app Winlab.",
+      "label": "PSEUDO",
+      "error": {
+        "required": "Le pseudo est requis",
+        "min": "Le pseudo doit contenir au moins 3 caractères",
+        "max": "Le pseudo doit contenir au maximum 24 caractères"
+      }
+    },
+    "otp": {
+      "title": "Entrez le code de vérification",
+      "subtitle": "Le code de vérification a été envoyé à votre adresse email.",
+      "label": "CODE DE VÉRIFICATION",
+      "error": {
+        "required": "Le code de vérification est requis",
+        "min": "Le code de vérification doit contenir au moins {{length}} caractères",
+        "max": "Le code de vérification doit contenir au maximum {{length}} caractères"
+      }
+    }
   }
 }
-
