@@ -30,6 +30,15 @@
   },
   "home": {
     "title": "Home"
+  },
+  "emailScreen": {
+    "title": "Enter your email",
+    "subtitle": "Join Winlab and start earning tokens for exclusive brand lotteries.",
+    "label": "EMAIL ADDRESS",
+    "continue": "Continue",
+    "error": {
+      "required": "Email is required",
+      "email": "Email is invalid"
+    }
   }
 }
-
