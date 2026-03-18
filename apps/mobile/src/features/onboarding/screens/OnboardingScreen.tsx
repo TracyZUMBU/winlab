@@ -8,7 +8,9 @@ import { PaginationDots } from "@/src/components/ui/PaginationDots";
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
 
+import { setHasSeenOnboardingTrue } from "@/src/lib/onboardingStorage";
 import { useRouter } from "expo-router";
+import { AUTH_ROUTES } from "../../auth/constants/authConstants";
 import { ONBOARDING_SLIDES } from "../onboardingSlides";
 
 export function OnboardingScreen() {
@@ -17,16 +19,21 @@ export function OnboardingScreen() {
   const currentSlide = ONBOARDING_SLIDES[activeIndex];
   const { t } = useTranslation();
 
-  const handleNext = () => {
+  // No reading here to keep the screen simple:
+  // the write is triggered only when the user marks the end.
+
+  const handleNext = async () => {
     if (activeIndex < ONBOARDING_SLIDES.length - 1) {
       setActiveIndex((index) => index + 1);
     } else {
-      router.replace("/home");
+      await setHasSeenOnboardingTrue();
+      router.replace(AUTH_ROUTES.email);
     }
   };
 
-  const handleSkip = () => {
-    router.replace("/home");
+  const handleSkip = async () => {
+    await setHasSeenOnboardingTrue();
+    router.replace(AUTH_ROUTES.email);
   };
 
   const handleNavigate = (index: number) => {
