@@ -82,5 +82,20 @@
         "max": "Le code de vérification doit contenir au maximum {{length}} caractères"
       }
     }
+  },
+  "missions": {
+    "submission": {
+      "errors": {
+        "UNAUTHENTICATED": "Vous devez être connecté pour soumettre une mission.",
+        "MISSION_NOT_FOUND": "Cette mission est introuvable.",
+        "MISSION_NOT_ACTIVE": "Cette mission n’est pas disponible pour le moment.",
+        "MISSION_NOT_STARTED": "Cette mission n’a pas encore commencé.",
+        "MISSION_EXPIRED": "Cette mission est terminée.",
+        "MISSION_USER_LIMIT_REACHED": "Vous avez déjà atteint la limite de participations pour cette mission.",
+        "MISSION_TOTAL_LIMIT_REACHED": "La limite globale de participations pour cette mission a été atteinte.",
+        "INVALID_SERVER_RESPONSE": "Réponse invalide du serveur. Merci de réessayer.",
+        "UNKNOWN_ERROR": "Une erreur est survenue. Merci de réessayer."
+      }
+    }
   }
 }
