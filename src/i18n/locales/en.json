@@ -40,5 +40,20 @@
       "required": "Email is required",
       "email": "Email is invalid"
     }
+  },
+  "missions": {
+    "submission": {
+      "errors": {
+        "UNAUTHENTICATED": "You need to be signed in to submit a mission.",
+        "MISSION_NOT_FOUND": "This mission could not be found.",
+        "MISSION_NOT_ACTIVE": "This mission is not available right now.",
+        "MISSION_NOT_STARTED": "This mission has not started yet.",
+        "MISSION_EXPIRED": "This mission has ended.",
+        "MISSION_USER_LIMIT_REACHED": "You have reached the submission limit for this mission.",
+        "MISSION_TOTAL_LIMIT_REACHED": "The total submission limit for this mission has been reached.",
+        "INVALID_SERVER_RESPONSE": "Invalid server response. Please try again.",
+        "UNKNOWN_ERROR": "Something went wrong. Please try again."
+      }
+    }
   }
 }

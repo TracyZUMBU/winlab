@@ -871,7 +871,11 @@ export type Database = {
       }
       submit_mission_completion: {
         Args: { p_mission_id: string; p_proof_data?: Json }
-        Returns: string
+        Returns: {
+          success: boolean
+          completion_id: string | null
+          error_code: string | null
+        }[]
       }
     }
     Enums: {
