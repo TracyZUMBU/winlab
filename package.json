@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "gen:types": "supabase gen types typescript --project-id lfmkzmgxopogmuyusdde --schema public > src/lib/supabase.types.ts",
-    "test": "supabase migration up --local --workdir ../.. && jest"
+    "test": "supabase migration up --local --workdir ../.. && jest",
+    "migrate:local": "supabase migration up --local --workdir ../.."
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
