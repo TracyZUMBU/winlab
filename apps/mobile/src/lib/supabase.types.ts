@@ -859,8 +859,12 @@ export type Database = {
     Functions: {
       approve_mission_completion: {
         Args: { p_completion_id: string }
-        Returns: undefined
+        Returns: {
+          error_code: string
+          success: boolean
+        }[]
       }
+      buy_ticket: { Args: { p_lottery_id: string }; Returns: string }
       handle_referral_after_first_mission: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -872,9 +876,9 @@ export type Database = {
       submit_mission_completion: {
         Args: { p_mission_id: string; p_proof_data?: Json }
         Returns: {
+          completion_id: string
+          error_code: string
           success: boolean
-          completion_id: string | null
-          error_code: string | null
         }[]
       }
     }
