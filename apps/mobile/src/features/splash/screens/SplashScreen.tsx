@@ -1,17 +1,14 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, StyleSheet, Text, View } from "react-native";
 
 import { Screen } from "@/src/components/ui/Screen";
-import { getCurrentSession } from "@/src/lib/supabase/session";
 import { theme } from "@/src/theme";
 
 const SPLASH_DELAY_MS = 1800;
 
 export function SplashScreen() {
-  const router = useRouter();
   const { t } = useTranslation();
   const progress = useRef(new Animated.Value(0)).current;
 
@@ -21,29 +18,7 @@ export function SplashScreen() {
       duration: SPLASH_DELAY_MS,
       useNativeDriver: false,
     }).start();
-
-    const timeoutId = setTimeout(() => {
-      const checkSessionAndNavigate = async () => {
-        try {
-          const { user } = await getCurrentSession();
-          console.log("user", user);
-          if (user) {
-            router.replace("/home");
-          } else {
-            router.replace("/(auth)/email");
-          }
-        } catch {
-          router.replace("/onboarding");
-        }
-      };
-
-      void checkSessionAndNavigate();
-    }, SPLASH_DELAY_MS);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [router, progress]);
+  }, [progress]);
 
   return (
     <Screen>
