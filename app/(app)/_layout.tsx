@@ -1,9 +1,35 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useEffect } from "react";
 
 import { theme } from "@/src/theme";
+import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 
 export default function AppTabsLayout() {
+  const router = useRouter();
+  const { status, sessionUserId, profile, hasSeenOnboarding } =
+    useAppBootstrap(true);
+
+  useEffect(() => {
+    if (status !== "ready") return;
+
+    // guard: "(app)" requires a session + a profile.
+    if (!sessionUserId) {
+      router.replace(hasSeenOnboarding ? AUTH_ROUTES.email : "/onboarding");
+      return;
+    }
+
+    if (!profile) {
+      router.replace(AUTH_ROUTES.createProfile);
+    }
+  }, [status, sessionUserId, profile, hasSeenOnboarding, router]);
+
+  if (status !== "ready") {
+    // avoid a flash UI during the bootstrap.
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -67,4 +93,3 @@ export default function AppTabsLayout() {
     </Tabs>
   );
 }
-
