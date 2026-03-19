@@ -16,7 +16,7 @@ const MIGRATION_FILE = path.join(
   ROOT,
   "supabase",
   "migrations",
-  "20260318085739_initial_remote_schema.sql"
+  "20260318085739_initial_remote_schema.sql",
 );
 const OUTPUT_FILE = path.join(ROOT, "supabase", "database.enums.ts");
 
@@ -40,8 +40,8 @@ function parseEnums(sql) {
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
       .map((line) => {
-        const m = line.match(/'([^']+)'/);
-        return m ? m[1] : null;
+        const m = line.match(/'((?:[^']|'')*)'/);
+        return m ? m[1].replace(/''/g, "'") : null;
       })
       .filter((v) => v !== null);
 
@@ -76,7 +76,7 @@ function generateTs(enums) {
     " * Ne pas modifier manuellement : lancer `npm run gen:types`",
     " * depuis `apps/mobile` pour régénérer ce fichier.",
     " */",
-    ""
+    "",
   );
 
   for (const e of enums) {
@@ -86,12 +86,14 @@ function generateTs(enums) {
     lines.push(`export const ${constName} = {`);
     e.values.forEach((v, idx) => {
       const comma = idx === e.values.length - 1 ? "" : ",";
-      lines.push(`  ${v}: '${v}'${comma}`);
+      // Use JSON.stringify to safely emit a quoted property name + escaped string value.
+      // This supports enum values with hyphens, spaces, digits, and embedded quotes.
+      lines.push(`  ${JSON.stringify(v)}: ${JSON.stringify(v)}${comma}`);
     });
     lines.push(
       "} as const;",
       `export type ${constName} = (typeof ${constName})[keyof typeof ${constName}];`,
-      ""
+      "",
     );
   }
 
@@ -125,9 +127,8 @@ function main() {
   fs.writeFileSync(OUTPUT_FILE, ts);
 
   console.log(
-    `✅ Generated ${OUTPUT_FILE} from ${enums.length} enum type(s) in migration.`
+    `✅ Generated ${OUTPUT_FILE} from ${enums.length} enum type(s) in migration.`,
   );
 }
 
 main();
-
