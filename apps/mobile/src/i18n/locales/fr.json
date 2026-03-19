@@ -100,6 +100,44 @@
         "INVALID_SERVER_RESPONSE": "Réponse invalide du serveur. Merci de réessayer.",
         "UNKNOWN_ERROR": "Une erreur est survenue. Merci de réessayer."
       }
+    },
+    "screen": {
+      "submitMission": "Mission soumise.",
+      "unfoundMission": "Cette mission est introuvable ou une erreur est survenue.",
+      "unspecifiedMission": "Mission non précisée."
     }
+  },
+  "wallet": {
+    "missionCompleted": "Mission complétée",
+    "ticketPurchase": "Achat de billet",
+    "referralBonus": "Bonus de référence",
+    "tokenPurchase": "Achat de jetons",
+    "activity": "Activité",
+    "completed": "Complété",
+    "entryFee": "Frais d'entrée",
+    "earned": "Gagné",
+    "balance": "Solde",
+    "pendingRewards": "Récompenses en attente",
+    "transactions": "Transactions",
+    "tickets": "Tickets",
+    "noTransactions": "Aucune transaction",
+    "noTickets": "Aucun ticket"
+  },
+  "lottery": {
+    "status": {
+      "active": "En cours",
+      "closed": "Clôturé",
+      "drawn": "Tiré",
+      "unknown": "Inconnu"
+    }
+  },
+  "date": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "daysAgo": "{{days}} jours auparavant",
+    "unknown": "Date inconnue"
+  },
+  "common": {
+    "retry": "Réessayer"
   }
 }

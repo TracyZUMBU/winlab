@@ -11,11 +11,11 @@ import {
 
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
+import { formatAbsoluteDateFr } from "@/src/lib/date/format";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
-import type { MissionSubmissionErrorCode } from "../services/missionService";
 
 export function MissionDetailScreen() {
   const { t } = useTranslation();
@@ -41,7 +41,7 @@ export function MissionDetailScreen() {
     const result = await mutateAsync({ missionId });
 
     if (result.success) {
-      setSubmitSuccess("Mission soumise.");
+      setSubmitSuccess(t("missions.screen.submitMission"));
       await refetch();
       return;
     }
@@ -69,15 +69,15 @@ export function MissionDetailScreen() {
         <View style={styles.centered}>
           <Text style={styles.error}>
             {missionId
-              ? "Cette mission est introuvable ou une erreur est survenue."
-              : "Mission non précisée."}
+              ? t("missions.screen.unfoundMission")
+              : t("missions.screen.unspecifiedMission")}
           </Text>
           {error instanceof Error ? (
             <Text style={styles.muted}>{error.message}</Text>
           ) : null}
           {missionId ? (
             <Pressable style={styles.retry} onPress={() => refetch()}>
-              <Text style={styles.retryText}>Réessayer</Text>
+              <Text style={styles.retryText}>{t("common.retry")}</Text>
             </Pressable>
           ) : null}
         </View>
@@ -96,11 +96,13 @@ export function MissionDetailScreen() {
         </View>
         {mission.starts_at ? (
           <Text style={styles.muted}>
-            Début : {formatDate(mission.starts_at)}
+            Début : {formatAbsoluteDateFr(mission.starts_at)}
           </Text>
         ) : null}
         {mission.ends_at ? (
-          <Text style={styles.muted}>Fin : {formatDate(mission.ends_at)}</Text>
+          <Text style={styles.muted}>
+            Fin : {formatAbsoluteDateFr(mission.ends_at)}
+          </Text>
         ) : null}
         {mission.description ? (
           <Text style={styles.description}>{mission.description}</Text>
@@ -122,46 +124,6 @@ export function MissionDetailScreen() {
       </ScrollView>
     </Screen>
   );
-}
-
-function mapSubmitError(code: MissionSubmissionErrorCode): string {
-  switch (code) {
-    case "UNAUTHENTICATED":
-      return "Vous devez être connecté pour soumettre une mission.";
-    case "MISSION_NOT_FOUND":
-      return "Mission introuvable.";
-    case "MISSION_NOT_ACTIVE":
-      return "Cette mission n'est pas active.";
-    case "MISSION_NOT_STARTED":
-      return "Cette mission n'a pas encore démarré.";
-    case "MISSION_EXPIRED":
-      return "Cette mission est expirée.";
-    case "MISSION_USER_LIMIT_REACHED":
-      return "Vous avez déjà soumis cette mission.";
-    case "MISSION_TOTAL_LIMIT_REACHED":
-      return "Le nombre total de complétions a été atteint.";
-    case "INVALID_SERVER_RESPONSE":
-      return "Réponse serveur invalide. Réessayez.";
-    case "UNKNOWN_ERROR":
-    default:
-      return "Une erreur est survenue. Réessayez.";
-  }
-}
-
-function formatDate(iso: string): string {
-  try {
-    const date = new Date(iso);
-    if (isNaN(date.getTime())) {
-      return iso;
-    }
-    return date.toLocaleDateString("fr-FR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
 }
 
 const styles = StyleSheet.create({

@@ -58,6 +58,44 @@
         "INVALID_SERVER_RESPONSE": "Invalid server response. Please try again.",
         "UNKNOWN_ERROR": "Something went wrong. Please try again."
       }
+    },
+    "screen": {
+      "submitMission": "Mission submitted.",
+      "unfoundMission": "This mission could not be found or an error occurred.",
+      "unspecifiedMission": "Mission not specified."
     }
+  },
+  "wallet": {
+    "missionCompleted": "Mission completed",
+    "ticketPurchase": "Lottery entry",
+    "referralBonus": "Referral bonus",
+    "tokenPurchase": "Token purchase",
+    "activity": "Activity",
+    "completed": "Completed",
+    "entryFee": "Entry fee",
+    "earned": "Earned",
+    "balance": "Balance",
+    "pendingRewards": "Pending rewards",
+    "transactions": "Transactions",
+    "tickets": "Tickets",
+    "noTransactions": "No transactions",
+    "noTickets": "No tickets"
+  },
+  "lottery": {
+    "status": {
+      "active": "Ongoing",
+      "closed": "Drawing soon",
+      "drawn": "Finished",
+      "unknown": "Unknown"
+    }
+  },
+  "date": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{days}} days ago",
+    "unknown": "Unknown date"
+  },
+  "common": {
+    "retry": "Retry"
   }
 }
