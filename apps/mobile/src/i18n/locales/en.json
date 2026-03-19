@@ -42,6 +42,10 @@
     }
   },
   "missions": {
+    "layout": {
+      "title": "Missions",
+      "detail": "Mission detail"
+    },
     "submission": {
       "errors": {
         "UNAUTHENTICATED": "You need to be signed in to submit a mission.",

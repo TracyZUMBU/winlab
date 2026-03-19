@@ -26,7 +26,12 @@ export function OnboardingScreen() {
     if (activeIndex < ONBOARDING_SLIDES.length - 1) {
       setActiveIndex((index) => index + 1);
     } else {
-      await setHasSeenOnboardingTrue();
+      try {
+        await setHasSeenOnboardingTrue();
+      } catch (error: unknown) {
+        // don't block the user if the write fails (app still works).
+        console.warn("Failed to persist onboarding state:", error);
+      }
       router.replace(AUTH_ROUTES.email);
     }
   };

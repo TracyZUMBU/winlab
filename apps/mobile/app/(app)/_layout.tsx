@@ -1,10 +1,10 @@
-import { Tabs, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Tabs, useRouter } from "expo-router";
 import { useEffect } from "react";
 
-import { theme } from "@/src/theme";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
+import { theme } from "@/src/theme";
 
 export default function AppTabsLayout() {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function AppTabsLayout() {
       <Tabs.Screen
         name="loteries"
         options={{
-          title: "Loteries",
+          title: "Lotteries",
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="casino" color={color} size={size} />
           ),

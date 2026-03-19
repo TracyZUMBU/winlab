@@ -1,6 +1,5 @@
 import { MissionsScreen } from "@/src/features/missions/screens/MissionsScreen";
 
-export default function MissionsRoute() {
+export default function MissionsIndexRoute() {
   return <MissionsScreen />;
 }
-
