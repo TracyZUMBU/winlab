@@ -37,13 +37,15 @@ export const createTestUser = async (): Promise<CreatedTestUser> => {
   }
 
   const userId = createdUser.user.id;
+  const usernameUniqueId = createTestId("username");
+  const referralCodeUniqueId = createTestId("referral-code");
 
   // Create profile in database
   const { error: profileError } = await admin.from("profiles").insert({
     id: userId,
     email,
-    username: `user_${Date.now()}`,
-    referral_code: `REF${Date.now()}`,
+    username: usernameUniqueId,
+    referral_code: referralCodeUniqueId,
   });
 
   if (profileError) throw profileError;
