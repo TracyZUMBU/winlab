@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,11 +9,16 @@ import {
   View,
 } from "react-native";
 
+import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
+import { useTranslation } from "react-i18next";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
+import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
+import type { MissionSubmissionErrorCode } from "../services/missionService";
 
 export function MissionDetailScreen() {
+  const { t } = useTranslation();
   const { missionId } = useLocalSearchParams<{ missionId: string }>();
   const {
     data: mission,
@@ -21,6 +27,30 @@ export function MissionDetailScreen() {
     error,
     refetch,
   } = useGetMissionByIdQuery(missionId);
+
+  const { mutateAsync, isPending } = useSubmitMissionCompletionMutation();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+
+  const onSubmitMission = async () => {
+    if (!missionId) return;
+
+    setSubmitError(null);
+    setSubmitSuccess(null);
+
+    const result = await mutateAsync({ missionId });
+
+    if (result.success) {
+      setSubmitSuccess("Mission soumise.");
+      await refetch();
+      return;
+    }
+
+    setSubmitError(
+      t(`missions.submission.errors.${result.errorCode}`) ||
+        t("missions.submission.errors.UNKNOWN_ERROR"),
+    );
+  };
 
   if (isLoading) {
     return (
@@ -75,9 +105,47 @@ export function MissionDetailScreen() {
         {mission.description ? (
           <Text style={styles.description}>{mission.description}</Text>
         ) : null}
+
+        <Button
+          title={isPending ? "Soumission..." : "Soumettre"}
+          onPress={onSubmitMission}
+          disabled={isPending}
+          style={styles.submitButton}
+        />
+
+        {submitError ? (
+          <Text style={styles.submitError}>{submitError}</Text>
+        ) : null}
+        {submitSuccess ? (
+          <Text style={styles.submitSuccess}>{submitSuccess}</Text>
+        ) : null}
       </ScrollView>
     </Screen>
   );
+}
+
+function mapSubmitError(code: MissionSubmissionErrorCode): string {
+  switch (code) {
+    case "UNAUTHENTICATED":
+      return "Vous devez être connecté pour soumettre une mission.";
+    case "MISSION_NOT_FOUND":
+      return "Mission introuvable.";
+    case "MISSION_NOT_ACTIVE":
+      return "Cette mission n'est pas active.";
+    case "MISSION_NOT_STARTED":
+      return "Cette mission n'a pas encore démarré.";
+    case "MISSION_EXPIRED":
+      return "Cette mission est expirée.";
+    case "MISSION_USER_LIMIT_REACHED":
+      return "Vous avez déjà soumis cette mission.";
+    case "MISSION_TOTAL_LIMIT_REACHED":
+      return "Le nombre total de complétions a été atteint.";
+    case "INVALID_SERVER_RESPONSE":
+      return "Réponse serveur invalide. Réessayez.";
+    case "UNKNOWN_ERROR":
+    default:
+      return "Une erreur est survenue. Réessayez.";
+  }
 }
 
 function formatDate(iso: string): string {
@@ -157,5 +225,18 @@ const styles = StyleSheet.create({
   retryText: {
     color: "#fff",
     fontWeight: "600",
+  },
+  submitButton: {
+    marginTop: theme.spacing.lg,
+  },
+  submitError: {
+    marginTop: theme.spacing.sm,
+    color: theme.colors.text,
+    textAlign: "center",
+  },
+  submitSuccess: {
+    marginTop: theme.spacing.sm,
+    color: theme.colors.success,
+    textAlign: "center",
   },
 });
