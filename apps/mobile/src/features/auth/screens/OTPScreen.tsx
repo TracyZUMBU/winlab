@@ -10,11 +10,11 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getProfileByUserId } from '@/src/features/profile/services/getProfileByUserId';
 import { AuthScreenLayout } from '../components/AuthScreenLayout';
 import { otpSchema, type OtpFormValues } from '../validators';
 import { sendEmailOtp, verifyEmailOtp } from '../services';
 import { AUTH_MESSAGES, AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
-import { getProfileByUserId } from '../services/profileService';
 
 const ACCENT = '#FF8C00';
 

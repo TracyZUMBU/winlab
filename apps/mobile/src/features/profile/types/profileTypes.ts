@@ -3,6 +3,7 @@ export type Profile = {
   email: string | null;
   username: string | null;
   created_at: string | null;
+  referral_code: string | null;
 };
 
 export type CreateProfilePayload = {
@@ -10,4 +11,3 @@ export type CreateProfilePayload = {
   email: string;
   username: string;
 };
-
