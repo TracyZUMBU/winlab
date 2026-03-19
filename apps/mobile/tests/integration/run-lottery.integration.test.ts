@@ -26,9 +26,7 @@ const expectAnyRpcErrorContains = (
 ) => {
   expect(result.error).toBeTruthy();
   const msg = result.error?.message ?? "";
-  expect(
-    expectedSubstrings.some((s) => msg.includes(s)),
-  ).toBeTruthy();
+  expect(expectedSubstrings.some((s) => msg.includes(s))).toBeTruthy();
 };
 
 const getLottery = async (
@@ -108,7 +106,6 @@ describe("run_lottery RPC (integration)", () => {
 
       const before = await getLottery(admin, lottery.id);
 
-      // @ts-ignore supabase-js typing for rpc return
       const { data, error } = await admin.rpc(RUN_LOTTERY_RPC, {
         p_lottery_id: lottery.id,
       });
@@ -328,7 +325,7 @@ describe("run_lottery RPC (integration)", () => {
         .eq("lottery_id", lottery.id)
         .order("position", { ascending: true });
 
-        // ensure ordering matches returned array (by position)
+      // ensure ordering matches returned array (by position)
       if (winnersErr) throw winnersErr;
       if (!winnersOrdered) throw new Error("Expected lottery_winners rows");
       expect(winnersOrdered).toHaveLength(2);
@@ -770,9 +767,7 @@ describe("run_lottery RPC (integration)", () => {
       const winnersOrderedByPosition = [...winnersRows].sort(
         (a, b) => (a.position ?? 0) - (b.position ?? 0),
       );
-      expect(winnersOrderedByPosition.map((w) => w.ticket_id)).toEqual(
-        data,
-      );
+      expect(winnersOrderedByPosition.map((w) => w.ticket_id)).toEqual(data);
 
       const uniqueDb = new Set(
         winnersRows!.map((w) => String((w as any).ticket_id)),
@@ -781,4 +776,3 @@ describe("run_lottery RPC (integration)", () => {
     });
   });
 });
-
