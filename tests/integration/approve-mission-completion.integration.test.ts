@@ -58,12 +58,11 @@ describe("approve_mission_completion RPC (integration)", () => {
       expect(error).toBeNull();
       expectRpcSuccess(data);
 
-      const { data: updatedCompletion, error: completionError } =
-        await admin
-          .from("mission_completions")
-          .select("*")
-          .eq("id", completion.id)
-          .single();
+      const { data: updatedCompletion, error: completionError } = await admin
+        .from("mission_completions")
+        .select("*")
+        .eq("id", completion.id)
+        .single();
 
       expect(completionError).toBeNull();
       expect(updatedCompletion?.status).toBe("approved");
@@ -115,13 +114,14 @@ describe("approve_mission_completion RPC (integration)", () => {
         proof_data: {},
       });
 
-      const { data } = await testUser.client.rpc(
+      const { data, error } = await testUser.client.rpc(
         APPROVE_MISSION_COMPLETION_RPC,
         {
           p_completion_id: completion.id,
         },
       );
 
+      expect(error).toBeNull();
       expectRpcBusinessError(data, "MISSION_COMPLETION_REJECTED");
     });
 
@@ -184,12 +184,11 @@ describe("approve_mission_completion RPC (integration)", () => {
       expect(walletAfter).toHaveLength(1);
       expect(walletAfter?.[0]?.id).toBe(preTx.id);
 
-      const { data: completionAfter, error: completionAfterError } =
-        await admin
-          .from("mission_completions")
-          .select("*")
-          .eq("id", completion.id)
-          .single();
+      const { data: completionAfter, error: completionAfterError } = await admin
+        .from("mission_completions")
+        .select("*")
+        .eq("id", completion.id)
+        .single();
 
       expect(completionAfterError).toBeNull();
       expect(completionAfter?.reward_transaction_id).toBe(preTx.id);
@@ -231,11 +230,10 @@ describe("approve_mission_completion RPC (integration)", () => {
         proof_data: {},
       });
 
-      const { data: firstData, error: firstError } =
-        await testUser.client.rpc(
-          APPROVE_MISSION_COMPLETION_RPC,
-          { p_completion_id: completion.id },
-        );
+      const { data: firstData, error: firstError } = await testUser.client.rpc(
+        APPROVE_MISSION_COMPLETION_RPC,
+        { p_completion_id: completion.id },
+      );
 
       expect(firstError).toBeNull();
       expectRpcSuccess(firstData);
@@ -251,16 +249,12 @@ describe("approve_mission_completion RPC (integration)", () => {
       expect(walletAfterFirst).toHaveLength(1);
 
       const { data: secondData, error: secondError } =
-        await testUser.client.rpc(
-          APPROVE_MISSION_COMPLETION_RPC,
-          { p_completion_id: completion.id },
-        );
+        await testUser.client.rpc(APPROVE_MISSION_COMPLETION_RPC, {
+          p_completion_id: completion.id,
+        });
 
       expect(secondError).toBeNull();
-      expectRpcBusinessError(
-        secondData,
-        "MISSION_COMPLETION_ALREADY_REWARDED",
-      );
+      expectRpcBusinessError(secondData, "MISSION_COMPLETION_ALREADY_REWARDED");
 
       const { data: walletAfterSecond, error: walletAfterSecondError } =
         await admin
@@ -271,9 +265,7 @@ describe("approve_mission_completion RPC (integration)", () => {
 
       expect(walletAfterSecondError).toBeNull();
       expect(walletAfterSecond).toHaveLength(1);
-      expect(walletAfterSecond?.[0]?.id).toBe(
-        walletAfterFirst?.[0]?.id,
-      );
+      expect(walletAfterSecond?.[0]?.id).toBe(walletAfterFirst?.[0]?.id);
     });
   });
 });

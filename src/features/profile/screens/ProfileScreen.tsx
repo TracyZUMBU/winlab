@@ -1,12 +1,12 @@
-import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Text, View } from "react-native";
 
-import { Screen } from "@/src/components/ui/Screen";
-import { signOut } from "@/src/features/auth/services/authService";
-import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
-import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { Button } from "@/src/components/ui/Button";
+import { Screen } from "@/src/components/ui/Screen";
+import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { signOut } from "@/src/features/auth/services/authService";
 
 export function ProfileScreen() {
   const router = useRouter();
@@ -18,6 +18,9 @@ export function ProfileScreen() {
     try {
       await signOut();
       router.replace(AUTH_ROUTES.email);
+    } catch (error) {
+      // Consider using a toast or alert to inform the user
+      console.error("Logout failed:", error);
     } finally {
       setLoggingOut(false);
     }
@@ -44,4 +47,3 @@ export function ProfileScreen() {
     </Screen>
   );
 }
-

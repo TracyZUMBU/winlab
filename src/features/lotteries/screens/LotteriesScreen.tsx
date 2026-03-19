@@ -6,9 +6,8 @@ export function LotteriesScreen() {
   return (
     <Screen>
       <View style={{ padding: 16 }}>
-        <Text>Loteries (placeholder)</Text>
+        <Text>Lotteries (placeholder)</Text>
       </View>
     </Screen>
   );
 }
-

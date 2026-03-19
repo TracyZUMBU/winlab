@@ -13,7 +13,7 @@ import {
 import { AuthScreenLayout } from "../components/AuthScreenLayout";
 import { AUTH_MESSAGES, AUTH_ROUTES } from "../constants/authConstants";
 import { useAuthSession } from "../hooks/useAuthSession";
-import { createProfile } from "../services";
+import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
 import { usernameSchema, type UsernameFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
@@ -21,6 +21,7 @@ const ACCENT = "#FF8C00";
 export const CreateProfileScreen: React.FC = () => {
   const router = useRouter();
   const { user, status } = useAuthSession();
+  const createProfileMutation = useCreateProfileMutation();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -57,19 +58,22 @@ export const CreateProfileScreen: React.FC = () => {
     }
 
     try {
-      await createProfile({
+      await createProfileMutation.mutateAsync({
         userId: user.id,
         email: user.email,
         username: values.username,
       });
-
       router.replace("/home");
-    } catch (error: any) {
-      setServerError(error?.message ?? AUTH_MESSAGES.genericError);
+    } catch (error: unknown) {
+      setServerError(
+        error instanceof Error ? error.message : AUTH_MESSAGES.genericError,
+      );
     }
   };
 
   const isLoadingSession = status === "loading";
+  const isSubmittingProfile = createProfileMutation.isPending;
+  const isPending = isLoadingSession || isSubmittingProfile || isSubmitting;
 
   return (
     <AuthScreenLayout
@@ -107,12 +111,12 @@ export const CreateProfileScreen: React.FC = () => {
           style={({ pressed }) => [
             styles.primaryButton,
             pressed && styles.primaryButtonPressed,
-            (isSubmitting || isLoadingSession) && styles.primaryButtonDisabled,
+            isPending && styles.primaryButtonDisabled,
           ]}
           onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting || isLoadingSession}
+          disabled={isPending}
         >
-          {isSubmitting || isLoadingSession ? (
+          {isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={styles.primaryButtonText}>Continuer</Text>
