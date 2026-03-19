@@ -11,7 +11,9 @@
     "lint": "expo lint",
     "gen:types": "supabase gen types typescript --project-id lfmkzmgxopogmuyusdde --schema public > src/lib/supabase.types.ts && node ./scripts/gen-enums.js",
     "test": "supabase migration up --local --workdir ../.. && jest",
-    "migrate:local": "supabase migration up --local --workdir ../.."
+    "migrate:local": "supabase migration up --local --workdir ../..",
+    "migrate:remote": "supabase migration up --linked --workdir ../..",
+    "migrate:all": "npm run migrate:local && npm run migrate:remote"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

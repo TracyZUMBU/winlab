@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { Profile } from "@/src/features/auth/types/profileTypes";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
-import { getProfileByUserId } from "@/src/features/auth/services/profileService";
+import { getProfileByUserId } from "@/src/features/profile/services/getProfileByUserId";
+import type { Profile } from "@/src/features/profile/types/profileTypes";
 import { getCurrentSession } from "@/src/lib/supabase/session";
 import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
 

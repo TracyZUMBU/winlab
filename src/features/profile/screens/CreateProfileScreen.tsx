@@ -10,11 +10,11 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { AuthScreenLayout } from "../components/AuthScreenLayout";
-import { AUTH_MESSAGES, AUTH_ROUTES } from "../constants/authConstants";
-import { useAuthSession } from "../hooks/useAuthSession";
+import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
+import { AUTH_MESSAGES, AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { usernameSchema, type UsernameFormValues } from "@/src/features/auth/validators";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
-import { usernameSchema, type UsernameFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
 
@@ -44,14 +44,14 @@ export const CreateProfileScreen: React.FC = () => {
     setServerError(null);
 
     if (!user) {
-      setServerError("Votre session a expiré. Merci de vous reconnecter.");
+      setServerError("Votre session a expire. Merci de vous reconnecter.");
       router.replace(AUTH_ROUTES.email);
       return;
     }
 
     if (!user.email) {
       setServerError(
-        "Impossible de récupérer votre email. Merci de vous reconnecter.",
+        "Impossible de recuperer votre email. Merci de vous reconnecter.",
       );
       router.replace(AUTH_ROUTES.email);
       return;
@@ -78,7 +78,7 @@ export const CreateProfileScreen: React.FC = () => {
   return (
     <AuthScreenLayout
       title="Choisissez votre pseudo"
-      subtitle="Ce pseudo sera visible dans l’app Winlab."
+      subtitle="Ce pseudo sera visible dans l'app Winlab."
     >
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>PSEUDO</Text>
