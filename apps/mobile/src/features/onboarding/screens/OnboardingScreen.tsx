@@ -11,7 +11,7 @@ import { theme } from "@/src/theme";
 import { setHasSeenOnboardingTrue } from "@/src/lib/onboardingStorage";
 import { useRouter } from "expo-router";
 import { AUTH_ROUTES } from "../../auth/constants/authConstants";
-import { ONBOARDING_SLIDES } from "../onboardingSlides";
+import { ONBOARDING_SLIDES } from "../constants";
 
 export function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);

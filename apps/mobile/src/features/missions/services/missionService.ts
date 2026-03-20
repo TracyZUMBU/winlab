@@ -1,5 +1,5 @@
-import type { Json } from "@/src/lib/supabase.types";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
+import { Json } from "@/src/types/json";
 
 export type SubmitMissionCompletionParams = {
   missionId: string;
