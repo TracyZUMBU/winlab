@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Image,
@@ -8,7 +9,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useTranslation } from "react-i18next";
 
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
@@ -20,13 +20,19 @@ import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
 export function LotteryDetailScreen() {
   const { t } = useTranslation();
   const { lotteryId } = useLocalSearchParams<{ lotteryId: string }>();
-  const { data, isLoading, isError, error, refetch } = useLotteryDetailQuery(lotteryId);
+  const { data, isLoading, isError, error, refetch } =
+    useLotteryDetailQuery(lotteryId);
   const { mutateAsync, isPending } = useBuyTicketMutation();
 
   const onBuyTicket = async () => {
     if (!lotteryId) return;
-    await mutateAsync({ lotteryId });
-    await refetch();
+    try {
+      await mutateAsync({ lotteryId });
+      await refetch();
+    } catch (err) {
+      // Show error feedback to user (e.g., toast, alert)
+      console.error("Failed to buy ticket:", err);
+    }
   };
 
   if (isLoading) {
@@ -63,7 +69,9 @@ export function LotteryDetailScreen() {
           <Image source={{ uri: data.image_url }} style={styles.image} />
         ) : null}
         <Text style={styles.title}>{data.title}</Text>
-        {data.brand?.name ? <Text style={styles.brand}>{data.brand.name}</Text> : null}
+        {data.brand?.name ? (
+          <Text style={styles.brand}>{data.brand.name}</Text>
+        ) : null}
         <Text style={styles.status}>{data.statusLabel}</Text>
 
         <View style={styles.block}>
@@ -73,11 +81,15 @@ export function LotteryDetailScreen() {
           <Text style={styles.meta}>{data.timeRemainingLabel}</Text>
         </View>
 
-        {data.description ? <Text style={styles.description}>{data.description}</Text> : null}
+        {data.description ? (
+          <Text style={styles.description}>{data.description}</Text>
+        ) : null}
 
         <Button
           title={
-            isPending ? t("lottery.detail.buyingTicket") : t("lottery.detail.buyTicket")
+            isPending
+              ? t("lottery.detail.buyingTicket")
+              : t("lottery.detail.buyTicket")
           }
           onPress={() => void onBuyTicket()}
           disabled={isPending}

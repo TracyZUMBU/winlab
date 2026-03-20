@@ -36,28 +36,16 @@ export class SlackMonitoringProvider implements MonitoringProvider {
       const { data, error } = await this.supabaseClient.functions.invoke(
         this.edgeFunctionName,
         {
-        body: { event },
+          body: { event },
         },
       );
 
       if (error) {
-        logger.warn("[monitoring] Slack provider failed", {
-          edgeFunctionName: this.edgeFunctionName,
-          // Provide the actual error object/string (not just network exceptions).
-          error,
-        });
-
         throw error instanceof Error ? error : new Error(String(error));
       }
 
       // The edge function returns plain string bodies (e.g. "ok" or "Slack webhook not configured").
       if (typeof data === "string" && data.trim().toLowerCase() !== "ok") {
-        logger.warn("[monitoring] Slack provider failed", {
-          edgeFunctionName: this.edgeFunctionName,
-          error: data,
-          data,
-        });
-
         throw new Error(
           `Slack edge function returned non-ok response: ${data}`,
         );

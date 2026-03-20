@@ -20,7 +20,7 @@ Pourquoi un logger centralisé ?
 - `logger.error(message, error?, metadata?)`
 
 `metadata` est optionnel.
-`error` accepte `unknown` et est normalisé au minimum côté logger (si c’est une instance de `Error`).
+`error` accepte `unknown`. Si c'est une instance de `Error`, le logger extrait automatiquement `message`, `name`, et `stack`. Les autres valeurs sont converties en chaîne de caractères.
 
 ## Important : données sensibles
 

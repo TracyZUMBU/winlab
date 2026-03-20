@@ -13,22 +13,22 @@ export type MonitoringError = {
 
 export type MonitoringEventBase = {
   /**
-   * Identifier metier / technique du type d'evenement.
-   * Exemple: "mission_completion_failed"
+   * Business/technical identifier for the event type.
+   * Example: "mission_completion_failed"
    */
   name: string;
-  /** Message humain pour lecture rapide */
+  /** Human-readable message */
   message: string;
   severity: MonitoringSeverity;
 
-  /** Timestamp en millisecondes (Date.now()) */
+  /** Timestamp in milliseconds (Date.now()) */
   timestamp: number;
-  /** Enrichi par MonitoringService */
+  /** Populated by MonitoringService */
   environment: string;
-  /** Enrichi par MonitoringService */
+  /** Populated by MonitoringService */
   service: string;
 
-  /** Contexte optionnel */
+  /** Optional context */
   feature?: string;
   /**
    * Pseudonymized user identifier.
@@ -52,7 +52,7 @@ export type MonitoringEventBase = {
 };
 
 /**
- * SanitizedMonitoringData marker for extra monitoring fields.
+ * SanitizedData marker for extra monitoring fields.
  *
  * Note: Even when the type is respected, the logging pipeline still performs
  * best-effort redaction to prevent sensitive data from being emitted.
@@ -69,4 +69,3 @@ export type MonitoringExceptionEvent = MonitoringEventBase & {
 };
 
 export type MonitoringEvent = MonitoringMessageEvent | MonitoringExceptionEvent;
-

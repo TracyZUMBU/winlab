@@ -41,7 +41,7 @@ function formatTimeRemaining(endsAt: string | null): string {
   const diffMs = target - now;
 
   if (!Number.isFinite(diffMs) || diffMs <= 0) {
-    return "0h 0m";
+    return i18n.t("lottery.time.zero");
   }
 
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
@@ -51,10 +51,10 @@ function formatTimeRemaining(endsAt: string | null): string {
   const minutes = remainingMinutesAfterDays - hours * 60;
 
   if (days > 0) {
-    return `${days}d ${hours}h`;
+    return i18n.t("lottery.time.daysHours", { days, hours });
   }
 
-  return `${hours}h ${minutes}m`;
+  return i18n.t("lottery.time.hoursMinutes", { hours, minutes });
 }
 
 function mapRowToUi(row: LotteryDetailRow): LotteryDetailUi {

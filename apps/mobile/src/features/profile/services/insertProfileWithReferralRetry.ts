@@ -8,9 +8,7 @@ const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
  * Race: two inserts can still collide after the trigger's NOT EXISTS check.
  * Retry only for that constraint.
  */
-function isProfileReferralCodeUniqueViolation(
-  error: PostgrestError,
-): boolean {
+function isProfileReferralCodeUniqueViolation(error: PostgrestError): boolean {
   if (error.code !== "23505") {
     return false;
   }
@@ -36,6 +34,10 @@ export async function insertProfileWithReferralRetry<T>(
 
     if (!error && data !== null) {
       return data;
+    }
+
+    if (!error && data === null) {
+      throw new Error("Profile insert returned no data without an error");
     }
 
     if (error && isProfileReferralCodeUniqueViolation(error)) {

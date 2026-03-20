@@ -1,4 +1,3 @@
-import { isDevelopmentEnvironment } from "./environment";
 import type {
   Logger,
   LoggerTransport,
@@ -65,8 +64,6 @@ function createConsoleTransport(): LoggerTransport {
 }
 
 export function createLogger(transports: LoggerTransport[]): Logger {
-  const isDev = isDevelopmentEnvironment();
-
   return {
     log(message, metadata) {
       for (const transport of transports) {
