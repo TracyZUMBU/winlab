@@ -1,6 +1,6 @@
-import { Json } from "@/src/lib/supabase.types";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-import { MissionType, MissionStatus, MissionValidationMode } from "../types";
+import { Json } from "@/src/types/json";
+import { MissionStatus, MissionType, MissionValidationMode } from "../types";
 
 type MissionRow = {
   brand_id: string;

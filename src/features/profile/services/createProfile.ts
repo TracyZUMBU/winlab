@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-import { insertProfileWithReferralRetry } from "@/src/lib/supabase/insertProfileWithReferralRetry";
+import { insertProfileWithReferralRetry } from "./insertProfileWithReferralRetry";
 import type { CreateProfilePayload, Profile } from "../types/profileTypes";
 
 const PROFILES_TABLE = "profiles";

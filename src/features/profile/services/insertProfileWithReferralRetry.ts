@@ -1,14 +1,14 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
 /** Postgres unique constraint on profiles.referral_code */
-export const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
+const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
   "profiles_referral_code_unique";
 
 /**
  * Race: two inserts can still collide after the trigger's NOT EXISTS check.
  * Retry only for that constraint.
  */
-export function isProfileReferralCodeUniqueViolation(
+function isProfileReferralCodeUniqueViolation(
   error: PostgrestError,
 ): boolean {
   if (error.code !== "23505") {
