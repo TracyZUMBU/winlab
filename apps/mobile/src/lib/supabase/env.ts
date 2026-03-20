@@ -1,16 +1,18 @@
 import { Platform } from "react-native";
 
+import { logger } from "../logger";
+
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 if (__DEV__) {
   if (!SUPABASE_URL) {
-    console.warn(
+    logger.warn(
       "[supabase/env] EXPO_PUBLIC_SUPABASE_URL is not defined. Check your .env or app config.",
     );
   }
   if (!SUPABASE_ANON_KEY) {
-    console.warn(
+    logger.warn(
       "[supabase/env] EXPO_PUBLIC_SUPABASE_ANON_KEY is not defined. Check your .env or app config.",
     );
   }

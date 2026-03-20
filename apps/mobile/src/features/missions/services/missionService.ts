@@ -1,3 +1,4 @@
+import { monitoring } from "@/src/lib/monitoring";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
 
@@ -57,6 +58,13 @@ export const submitMissionCompletion = async ({
   });
 
   if (error) {
+    monitoring.captureMessage({
+      name: "mission_completion_rpc_failed",
+      severity: "critical",
+      feature: "missions",
+      message: error.message ?? "submit_mission_completion RPC failed",
+      extra: { missionId },
+    });
     return {
       success: false,
       errorCode: "UNKNOWN_ERROR",

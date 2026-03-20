@@ -4,6 +4,7 @@ import { getProfileByUserId } from "@/src/features/profile/services/getProfileBy
 import type { Profile } from "@/src/features/profile/types/profileTypes";
 import { getCurrentSession } from "@/src/lib/supabase/session";
 import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
+import { monitoring } from "@/src/lib/monitoring";
 
 export type AppBootstrapStatus = "idle" | "loading" | "ready";
 
@@ -72,8 +73,15 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
             redirectTo,
           });
         }
-      } catch {
+      } catch (error) {
         // conservative behavior: if session/hasSeenOnboarding fails, we send to onboarding.
+        monitoring.captureException({
+          name: "app_bootstrap_failed",
+          severity: "error",
+          feature: "bootstrap",
+          message: "App bootstrap failed",
+          error,
+        });
         if (isMounted) {
           setState({
             status: "ready",
