@@ -17,6 +17,7 @@ import { emailSchema, type EmailFormValues } from "../validators";
 import { sendEmailOtp } from "../services";
 import { AUTH_MESSAGES, AUTH_ROUTES } from "../constants/authConstants";
 import { useTranslation } from "react-i18next";
+import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
 
 const ACCENT = "#FF8C00";
 
@@ -159,6 +160,10 @@ export const EmailScreen: React.FC = () => {
                   )}
                 </Pressable>
               </View>
+
+              {__DEV__ ? (
+                <DevPasswordLoginPanel email={emailValue} />
+              ) : null}
             </View>
 
             {/* Footer */}

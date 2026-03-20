@@ -33,9 +33,18 @@
   },
   "emailScreen": {
     "title": "Enter your email",
-    "subtitle": "Join Winlab and start earning tokens for exclusive brand lotteries.",
+    "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
     "label": "EMAIL ADDRESS",
     "continue": "Continue",
+    "dev": {
+      "title": "Development mode",
+      "subtitle": "Password sign-in using the email above (e.g. seed accounts). Omitted from release builds.",
+      "passwordLabel": "PASSWORD",
+      "submit": "Dev sign-in",
+      "error": {
+        "passwordRequired": "Password is required"
+      }
+    },
     "error": {
       "required": "Email is required",
       "email": "Email is invalid"
@@ -65,6 +74,12 @@
       "unspecifiedMission": "Mission not specified."
     }
   },
+  "lotteries": {
+    "layout": {
+      "title": "Lotteries",
+      "detail": "Lottery detail"
+    }
+  },
   "wallet": {
     "missionCompleted": "Mission completed",
     "ticketPurchase": "Lottery entry",
@@ -87,6 +102,26 @@
       "closed": "Drawing soon",
       "drawn": "Finished",
       "unknown": "Unknown"
+    },
+    "entries": "{{count}} entries",
+    "tokens": "{{count}} tokens",
+    "youHaveTickets": "You have {{count}} tickets",
+    "time": {
+      "ongoing": "Ongoing",
+      "zero": "0h 0m",
+      "daysHours": "{{days}}d {{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "screen": {
+      "loading": "Loading lotteries...",
+      "error": "An error occurred. Please try again.",
+      "empty": "No lotteries available."
+    },
+    "detail": {
+      "loading": "Loading lottery...",
+      "error": "Lottery not found or unavailable.",
+      "buyTicket": "Buy ticket",
+      "buyingTicket": "Buying ticket..."
     }
   },
   "date": {

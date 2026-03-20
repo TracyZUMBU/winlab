@@ -33,9 +33,18 @@
   },
   "emailScreen": {
     "title": "Entrez votre email",
-    "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+    "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
     "label": "ADRESSE EMAIL",
     "continue": "Continuer",
+    "dev": {
+      "title": "Mode développement",
+      "subtitle": "Connexion par mot de passe avec l’email saisi ci-dessus (ex. comptes seed). Absent des builds release.",
+      "passwordLabel": "MOT DE PASSE",
+      "submit": "Connexion dev",
+      "error": {
+        "passwordRequired": "Le mot de passe est requis"
+      }
+    },
     "secureAndEncryptedAuthentication": "Authentification sécurisée et chiffrée",
     "termsOfService": "Conditions d'utilisation",
     "privacyPolicy": "Politique de confidentialité",
@@ -51,7 +60,7 @@
     "invalidCode": "Le code saisi est invalide ou expiré.",
     "email": {
       "title": "Entrez votre email",
-      "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+      "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
       "label": "ADRESSE EMAIL"
     }
   },
@@ -107,6 +116,12 @@
       "unspecifiedMission": "Mission non précisée."
     }
   },
+  "lotteries": {
+    "layout": {
+      "title": "Loteries",
+      "detail": "Détail loterie"
+    }
+  },
   "wallet": {
     "missionCompleted": "Mission complétée",
     "ticketPurchase": "Achat de billet",
@@ -126,9 +141,29 @@
   "lottery": {
     "status": {
       "active": "En cours",
-      "closed": "Clôturé",
-      "drawn": "Tiré",
+      "closed": "Tirage bientôt",
+      "drawn": "Terminé",
       "unknown": "Inconnu"
+    },
+    "entries": "{{count}} participations",
+    "tokens": "{{count}} jetons",
+    "youHaveTickets": "Vous avez {{count}} tickets",
+    "time": {
+      "ongoing": "En cours",
+      "zero": "0 h 0 min",
+      "daysHours": "{{days}} j {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "screen": {
+      "loading": "Chargement des loteries...",
+      "error": "Une erreur est survenue. Réessayez.",
+      "empty": "Aucune loterie disponible."
+    },
+    "detail": {
+      "loading": "Chargement de la loterie...",
+      "error": "Loterie introuvable ou indisponible.",
+      "buyTicket": "Acheter un ticket",
+      "buyingTicket": "Achat du ticket..."
     }
   },
   "date": {
