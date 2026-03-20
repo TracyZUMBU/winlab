@@ -10,8 +10,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { getProfileByUserId } from '@/src/features/profile/services/getProfileByUserId';
 import { AuthScreenLayout } from '../components/AuthScreenLayout';
+import { redirectAfterAuthSession } from '../utils/redirectAfterAuthSession';
 import { otpSchema, type OtpFormValues } from '../validators';
 import { sendEmailOtp, verifyEmailOtp } from '../services';
 import { AUTH_MESSAGES, AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
@@ -63,15 +63,7 @@ export const OTPScreen: React.FC = () => {
     const user = result.user;
 
     try {
-      const profile = await getProfileByUserId(user.id);
-
-      if (profile) {
-        router.replace(AUTH_ROUTES.appIndex);
-      } else {
-        router.replace({
-          pathname: AUTH_ROUTES.createProfile,
-        });
-      }
+      await redirectAfterAuthSession(router, user.id);
     } catch (error: any) {
       setServerError(error?.message ?? AUTH_MESSAGES.genericError);
     }
