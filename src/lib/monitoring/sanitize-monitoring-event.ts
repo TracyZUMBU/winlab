@@ -5,12 +5,11 @@ import type {
   SanitizedData,
 } from "./types";
 
-const EMAIL_REGEX =
-  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+const EMAIL_REGEX = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
 
 // Very small/heuristic redaction for tokens; goal is to avoid emitting raw secrets.
 const JWT_LIKE_REGEX = /\b[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\b/g;
-const BEARER_REGEX = /\bBearer\s+[A-Za-z0-9-._~+/]+=*\b/gi;
+const BEARER_REGEX = /\bBearer\s+[A-Za-z0-9-._~+/]+=*/gi;
 
 const SENSITIVE_KEYWORDS = [
   "email",
@@ -85,7 +84,8 @@ function sanitizeRecordOfStrings(
 
 function stringifyForRedaction(value: unknown): string {
   if (typeof value === "string") return redactSensitiveString(value);
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "number" || typeof value === "boolean")
+    return String(value);
   if (value == null) return "";
   return "[REDACTED_OBJECT]";
 }
@@ -95,11 +95,16 @@ export function sanitizeMonitoringFields(
     MonitoringEventBase,
     "feature" | "message" | "requestId" | "tags" | "extra"
   >,
-): Pick<MonitoringEventBase, "feature" | "message" | "requestId" | "tags" | "extra"> {
+): Pick<
+  MonitoringEventBase,
+  "feature" | "message" | "requestId" | "tags" | "extra"
+> {
   return {
     feature: fields.feature ? redactSensitiveString(fields.feature) : undefined,
     message: redactSensitiveString(fields.message),
-    requestId: fields.requestId ? redactSensitiveString(String(fields.requestId)) : undefined,
+    requestId: fields.requestId
+      ? redactSensitiveString(String(fields.requestId))
+      : undefined,
     tags: sanitizeRecordOfStrings(fields.tags, { redactValues: true }),
     extra: sanitizeExtra(fields.extra),
   };
@@ -136,17 +141,47 @@ function bytesToHex(bytes: Uint8Array): string {
     .join("");
 }
 
-function utf8Bytes(input: string): Uint8Array<ArrayBuffer> {
+function utf8EncodeWithoutTextEncoder(input: string): Uint8Array {
+  // UTF-8 byte emission for environments without TextEncoder. Unpaired surrogates
+  // become U+FFFD (0xEF 0xBF 0xBD), matching the WHATWG TextEncoder encoding.
+  const out: number[] = [];
+  for (let i = 0; i < input.length; i++) {
+    const c = input.charCodeAt(i);
+    if (c < 0x80) {
+      out.push(c);
+    } else if (c < 0x800) {
+      out.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));
+    } else if (c >= 0xd800 && c <= 0xdbff) {
+      const hi = c;
+      if (i + 1 < input.length) {
+        const lo = input.charCodeAt(i + 1);
+        if (lo >= 0xdc00 && lo <= 0xdfff) {
+          i++;
+          const cp = 0x10000 + ((hi - 0xd800) << 10) + (lo - 0xdc00);
+          out.push(
+            0xf0 | (cp >> 18),
+            0x80 | ((cp >> 12) & 0x3f),
+            0x80 | ((cp >> 6) & 0x3f),
+            0x80 | (cp & 0x3f),
+          );
+          continue;
+        }
+      }
+      out.push(0xef, 0xbf, 0xbd);
+    } else if (c >= 0xdc00 && c <= 0xdfff) {
+      out.push(0xef, 0xbf, 0xbd);
+    } else {
+      out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
+    }
+  }
+  return new Uint8Array(out);
+}
+
+function utf8Bytes(input: string): Uint8Array {
   if (typeof TextEncoder !== "undefined") {
     return new TextEncoder().encode(input);
   }
-
-  // Minimal fallback for environments without TextEncoder.
-  const bytes = new Uint8Array(input.length);
-  for (let i = 0; i < input.length; i++) {
-    bytes[i] = input.charCodeAt(i) & 0xff;
-  }
-  return bytes;
+  return utf8EncodeWithoutTextEncoder(input);
 }
 
 export async function hashUserId(
@@ -201,7 +236,9 @@ export async function sanitizeMonitoringEvent(
       error: {
         ...exception.error,
         message: redactSensitiveString(exception.error.message),
-        stack: exception.error.stack ? redactSensitiveString(exception.error.stack) : undefined,
+        stack: exception.error.stack
+          ? redactSensitiveString(exception.error.stack)
+          : undefined,
       },
     };
   }
@@ -212,4 +249,3 @@ export async function sanitizeMonitoringEvent(
     userId: hashedUserId,
   };
 }
-

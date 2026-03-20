@@ -11,8 +11,8 @@ export interface Logger {
   info(message: string, metadata?: LogMetadata): void;
   warn(message: string, metadata?: LogMetadata): void;
   /**
-   * @param error - accepte `unknown` pour forcer une normalisation côté logger
-   * @param metadata - infos additionnelles (optionnel)
+   ‡* @param error - accepts `unknown` to force normalization within the logger
+   * @param metadata - additional information (optional)
    */
   error(message: string, error?: unknown, metadata?: LogMetadata): void;
 }
