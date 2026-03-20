@@ -7,6 +7,7 @@ import { Screen } from "@/src/components/ui/Screen";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { signOut } from "@/src/features/auth/services";
+import { logger } from "@/src/lib/logger";
 
 export function ProfileScreen() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function ProfileScreen() {
       router.replace(AUTH_ROUTES.email);
     } catch (error) {
       // Consider using a toast or alert to inform the user
-      console.error("Logout failed:", error);
+      logger.error("Logout failed", error);
     } finally {
       setLoggingOut(false);
     }
