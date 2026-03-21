@@ -1,12 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import i18n from "@/src/i18n";
 
+import type { AvailableLotteryRow } from "../services/getAvailableLotteriesPage";
 import {
-  getAvailableLotteries,
-  type AvailableLotteryRow,
-} from "../services/getAvailableLotteries";
+  AVAILABLE_LOTTERIES_PAGE_SIZE,
+  getAvailableLotteriesPage,
+} from "../services/getAvailableLotteriesPage";
 
 import type { LotteryStatus } from "../types";
 
@@ -72,11 +73,18 @@ export function useAvailableLotteriesQuery() {
   const { user } = useAuthSession();
   const userId = user?.id ?? null;
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["lotteries", "available", userId],
-    queryFn: () => getAvailableLotteries(),
-    enabled: !!userId,
+    queryFn: ({ pageParam }) =>
+      getAvailableLotteriesPage({ pageIndex: pageParam ?? 0 }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.lotteries.length === AVAILABLE_LOTTERIES_PAGE_SIZE
+        ? allPages.length
+        : undefined,
+    enabled: Boolean(userId),
     staleTime: 60 * 1000,
-    select: (rows): AvailableLotteryUi[] => rows.map(mapRowToUi),
+    select: (data): AvailableLotteryUi[] =>
+      data.pages.flatMap((page) => page.lotteries).map(mapRowToUi),
   });
 }

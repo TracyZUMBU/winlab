@@ -46,7 +46,16 @@ function LotteryCard({
 export function LotteriesScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { data, isLoading, isError, error, refetch } = useAvailableLotteriesQuery();
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useAvailableLotteriesQuery();
 
   const openDetail = (lotteryId: string) => {
     router.push(`/lotteries/${lotteryId}`);
@@ -114,6 +123,26 @@ export function LotteriesScreen() {
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={({ item }) => <LotteryCard lottery={item} onPress={openDetail} />}
+        ListFooterComponent={
+          hasNextPage ? (
+            <View style={styles.footer}>
+              <Pressable
+                onPress={() => void fetchNextPage()}
+                style={styles.loadMoreButton}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={theme.colors.accentSolid}
+                  />
+                ) : (
+                  <Text style={styles.loadMoreText}>{t("common.loadMore")}</Text>
+                )}
+              </Pressable>
+            </View>
+          ) : null
+        }
       />
     </Screen>
   );
@@ -203,5 +232,21 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     marginTop: theme.spacing.xs,
+  },
+  footer: {
+    paddingVertical: theme.spacing.md,
+    alignItems: "center",
+  },
+  loadMoreButton: {
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: theme.colors.borderSubtle,
+    backgroundColor: theme.colors.surface,
+  },
+  loadMoreText: {
+    color: theme.colors.text,
+    fontWeight: "500",
   },
 });

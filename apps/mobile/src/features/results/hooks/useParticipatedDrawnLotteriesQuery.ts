@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import i18n from "@/src/i18n";
 
 import {
-  getParticipatedDrawnLotteries,
+  getParticipatedDrawnLotteriesPage,
+  PARTICIPATED_DRAWN_LOTTERIES_PAGE_SIZE,
   type ParticipatedDrawnLotteryBrand,
   type ParticipatedDrawnLotteryRow,
 } from "../services/getParticipatedDrawnLotteries";
@@ -55,12 +56,22 @@ export function useParticipatedDrawnLotteriesQuery() {
   const { user } = useAuthSession();
   const userId = user?.id ?? null;
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["results", "participated", userId],
-    queryFn: () => getParticipatedDrawnLotteries(userId!),
+    queryFn: ({ pageParam }) =>
+      getParticipatedDrawnLotteriesPage({
+        userId: userId!,
+        pageIndex: pageParam ?? 0,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.lotteries.length === PARTICIPATED_DRAWN_LOTTERIES_PAGE_SIZE
+        ? allPages.length
+        : undefined,
     enabled: Boolean(userId),
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
-    select: (rows): ParticipatedDrawnLotteryUi[] => rows.map(mapRowToUi),
+    select: (data): ParticipatedDrawnLotteryUi[] =>
+      data.pages.flatMap((page) => page.lotteries).map(mapRowToUi),
   });
 }

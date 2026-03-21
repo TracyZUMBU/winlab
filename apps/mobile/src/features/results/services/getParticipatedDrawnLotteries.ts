@@ -24,9 +24,23 @@ type LotteryDrawnDbRow = {
   brand: ParticipatedDrawnLotteryBrand;
 };
 
-export async function getParticipatedDrawnLotteries(
-  userId: string,
-): Promise<ParticipatedDrawnLotteryRow[]> {
+export type GetParticipatedDrawnLotteriesPageParams = {
+  userId: string;
+  pageIndex: number;
+  pageSize?: number;
+};
+
+export type GetParticipatedDrawnLotteriesPageResult = {
+  lotteries: ParticipatedDrawnLotteryRow[];
+};
+
+export const PARTICIPATED_DRAWN_LOTTERIES_PAGE_SIZE = 15;
+
+export async function getParticipatedDrawnLotteriesPage(
+  params: GetParticipatedDrawnLotteriesPageParams,
+): Promise<GetParticipatedDrawnLotteriesPageResult> {
+  const { userId, pageIndex, pageSize = PARTICIPATED_DRAWN_LOTTERIES_PAGE_SIZE } =
+    params;
   const supabase = getSupabaseClient();
 
   const { data: ticketRows, error: ticketsError } = await supabase
@@ -44,8 +58,11 @@ export async function getParticipatedDrawnLotteries(
   ];
 
   if (participatedIds.length === 0) {
-    return [];
+    return { lotteries: [] };
   }
+
+  const from = pageIndex * pageSize;
+  const to = from + pageSize - 1;
 
   const { data: lotteryRows, error: lotteriesError } = await supabase
     .from("lotteries")
@@ -61,7 +78,9 @@ export async function getParticipatedDrawnLotteries(
     .in("id", participatedIds)
     .eq("status", "drawn")
     .eq("brands.is_active", true)
-    .order("draw_at", { ascending: false });
+    .order("draw_at", { ascending: false })
+    .order("id", { ascending: true })
+    .range(from, to);
 
   if (lotteriesError) {
     throw lotteriesError;
@@ -69,7 +88,7 @@ export async function getParticipatedDrawnLotteries(
 
   const lotteries = (lotteryRows ?? []) as LotteryDrawnDbRow[];
   if (lotteries.length === 0) {
-    return [];
+    return { lotteries: [] };
   }
 
   const drawnIds = lotteries.map((l) => l.id);
@@ -106,13 +125,15 @@ export async function getParticipatedDrawnLotteries(
     positionByLotteryId.set(row.lottery_id, row.position);
   }
 
-  return lotteries.map((lottery) => ({
-    id: lottery.id,
-    title: lottery.title,
-    image_url: lottery.image_url,
-    draw_at: lottery.draw_at,
-    brand: lottery.brand,
-    user_active_tickets_count: countsByLotteryId.get(lottery.id) ?? 0,
-    user_winner_position: positionByLotteryId.get(lottery.id) ?? null,
-  }));
+  return {
+    lotteries: lotteries.map((lottery) => ({
+      id: lottery.id,
+      title: lottery.title,
+      image_url: lottery.image_url,
+      draw_at: lottery.draw_at,
+      brand: lottery.brand,
+      user_active_tickets_count: countsByLotteryId.get(lottery.id) ?? 0,
+      user_winner_position: positionByLotteryId.get(lottery.id) ?? null,
+    })),
+  };
 }
