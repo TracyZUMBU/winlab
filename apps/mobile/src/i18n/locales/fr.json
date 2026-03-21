@@ -157,7 +157,8 @@
     "screen": {
       "loading": "Chargement des loteries...",
       "error": "Une erreur est survenue. Réessayez.",
-      "empty": "Aucune loterie disponible."
+      "empty": "Aucune loterie disponible.",
+      "goToResults": "Voir mes résultats"
     },
     "detail": {
       "loading": "Chargement de la loterie...",
@@ -174,5 +175,31 @@
   },
   "common": {
     "retry": "Réessayer"
+  },
+  "results": {
+    "layout": {
+      "listTitle": "Résultats",
+      "detailTitle": "Résultat"
+    },
+    "userStatus": {
+      "won": "Gagné",
+      "lost": "Perdu"
+    },
+    "screen": {
+      "loading": "Chargement des résultats...",
+      "error": "Une erreur est survenue.",
+      "empty": "Aucun résultat pour vos participations."
+    },
+    "detail": {
+      "loading": "Chargement...",
+      "notFound": "Résultat introuvable.",
+      "lotterySection": "Loterie",
+      "userSection": "Votre participation",
+      "winnersSection": "Gagnants",
+      "winnerLine": "Place {{position}} · {{pseudo}}"
+    },
+    "list": {
+      "winnerPosition": "Place {{position}}"
+    }
   }
 }

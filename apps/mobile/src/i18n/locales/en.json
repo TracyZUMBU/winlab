@@ -115,7 +115,8 @@
     "screen": {
       "loading": "Loading lotteries...",
       "error": "An error occurred. Please try again.",
-      "empty": "No lotteries available."
+      "empty": "No lotteries available.",
+      "goToResults": "My results"
     },
     "detail": {
       "loading": "Loading lottery...",
@@ -132,5 +133,31 @@
   },
   "common": {
     "retry": "Retry"
+  },
+  "results": {
+    "layout": {
+      "listTitle": "Results",
+      "detailTitle": "Result"
+    },
+    "userStatus": {
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "screen": {
+      "loading": "Loading results...",
+      "error": "Something went wrong.",
+      "empty": "No results for your entries yet."
+    },
+    "detail": {
+      "loading": "Loading...",
+      "notFound": "Result not found.",
+      "lotterySection": "Lottery",
+      "userSection": "Your entry",
+      "winnersSection": "Winners",
+      "winnerLine": "Rank {{position}} · {{pseudo}}"
+    },
+    "list": {
+      "winnerPosition": "Rank {{position}}"
+    }
   }
 }
