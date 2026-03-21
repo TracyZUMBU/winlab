@@ -1,25 +1,20 @@
 import { Stack } from "expo-router";
 import { t } from "i18next";
 
-export default function LotteriesLayout() {
+export default function LotteryResultsLayout() {
   return (
     <Stack
       screenOptions={{
         headerShown: true,
-        title: "Lotteries",
       }}
     >
       <Stack.Screen
         name="index"
-        options={{ title: t("lotteries.layout.title") }}
+        options={{ title: t("results.layout.listTitle") }}
       />
       <Stack.Screen
         name="[lotteryId]"
-        options={{ title: t("lotteries.layout.detail") }}
-      />
-      <Stack.Screen
-        name="results"
-        options={{ headerShown: false }}
+        options={{ title: t("results.layout.detailTitle") }}
       />
     </Stack>
   );

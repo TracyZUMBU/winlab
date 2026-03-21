@@ -13,64 +13,58 @@ import { useTranslation } from "react-i18next";
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
 
-import type { AvailableLotteryUi } from "../hooks/useAvailableLotteriesQuery";
-import { useAvailableLotteriesQuery } from "../hooks/useAvailableLotteriesQuery";
+import type { ParticipatedDrawnLotteryUi } from "../hooks/useParticipatedDrawnLotteriesQuery";
+import { useParticipatedDrawnLotteriesQuery } from "../hooks/useParticipatedDrawnLotteriesQuery";
 
-function LotteryCard({
-  lottery,
+function ResultRow({
+  item,
   onPress,
 }: {
-  lottery: AvailableLotteryUi;
+  item: ParticipatedDrawnLotteryUi;
   onPress: (lotteryId: string) => void;
 }) {
-  const brandName = lottery.brand?.name ?? "";
+  const { t } = useTranslation();
+  const brandName = item.brand?.name ?? "";
 
   return (
-    <Pressable style={styles.card} onPress={() => onPress(lottery.id)}>
-      {lottery.image_url ? (
-        <Image source={{ uri: lottery.image_url }} style={styles.image} />
+    <Pressable style={styles.card} onPress={() => onPress(item.id)}>
+      {item.image_url ? (
+        <Image source={{ uri: item.image_url }} style={styles.image} />
       ) : null}
       <View style={styles.cardBody}>
-        <Text style={styles.title}>{lottery.title}</Text>
+        <Text style={styles.title}>{item.title}</Text>
         {brandName ? <Text style={styles.brand}>{brandName}</Text> : null}
-        <View style={styles.row}>
-          <Text style={styles.meta}>{lottery.ticketCostLabel}</Text>
-          <Text style={styles.meta}>{lottery.participantsLabel}</Text>
-        </View>
-        <Text style={styles.time}>{lottery.timeRemainingLabel}</Text>
+        <Text style={styles.meta}>{item.drawAtLabel}</Text>
+        <Text style={styles.meta}>{item.userResultStatusLabel}</Text>
+        <Text style={styles.meta}>
+          {t("lottery.youHaveTickets", { count: item.userTicketsCount })}
+        </Text>
+        {item.winnerPosition != null ? (
+          <Text style={styles.meta}>
+            {t("results.list.winnerPosition", { position: item.winnerPosition })}
+          </Text>
+        ) : null}
       </View>
     </Pressable>
   );
 }
 
-export function LotteriesScreen() {
+export function ResultsListScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { data, isLoading, isError, error, refetch } = useAvailableLotteriesQuery();
+  const { data, isLoading, isError, error, refetch } =
+    useParticipatedDrawnLotteriesQuery();
 
   const openDetail = (lotteryId: string) => {
-    router.push(`/lotteries/${lotteryId}`);
+    router.push(`/lotteries/results/${lotteryId}`);
   };
-
-  const goToResults = () => {
-    router.push("/lotteries/results");
-  };
-
-  const resultsLink = (
-    <View style={styles.resultsLinkWrap}>
-      <Pressable onPress={goToResults}>
-        <Text style={styles.resultsLink}>{t("lottery.screen.goToResults")}</Text>
-      </Pressable>
-    </View>
-  );
 
   if (isLoading) {
     return (
       <Screen>
-        {resultsLink}
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
-          <Text style={styles.helper}>{t("lottery.screen.loading")}</Text>
+          <Text style={styles.helper}>{t("results.screen.loading")}</Text>
         </View>
       </Screen>
     );
@@ -79,9 +73,8 @@ export function LotteriesScreen() {
   if (isError) {
     return (
       <Screen>
-        {resultsLink}
         <View style={styles.centered}>
-          <Text style={styles.errorText}>{t("lottery.screen.error")}</Text>
+          <Text style={styles.errorText}>{t("results.screen.error")}</Text>
           {error instanceof Error ? (
             <Text style={styles.helper}>{error.message}</Text>
           ) : null}
@@ -93,13 +86,12 @@ export function LotteriesScreen() {
     );
   }
 
-  const lotteries = data ?? [];
-  if (lotteries.length === 0) {
+  const rows = data ?? [];
+  if (rows.length === 0) {
     return (
       <Screen>
-        {resultsLink}
         <View style={styles.centered}>
-          <Text style={styles.helper}>{t("lottery.screen.empty")}</Text>
+          <Text style={styles.helper}>{t("results.screen.empty")}</Text>
         </View>
       </Screen>
     );
@@ -107,29 +99,20 @@ export function LotteriesScreen() {
 
   return (
     <Screen>
-      {resultsLink}
       <FlatList
-        data={lotteries}
+        data={rows}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        renderItem={({ item }) => <LotteryCard lottery={item} onPress={openDetail} />}
+        renderItem={({ item }) => (
+          <ResultRow item={item} onPress={openDetail} />
+        )}
       />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  resultsLinkWrap: {
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.sm,
-    paddingBottom: theme.spacing.xs,
-  },
-  resultsLink: {
-    color: theme.colors.accentSolid,
-    fontSize: 15,
-    fontWeight: "600",
-  },
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -188,20 +171,8 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: 13,
   },
-  row: {
-    marginTop: theme.spacing.xs,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: theme.spacing.md,
-  },
   meta: {
     color: theme.colors.textMuted,
     fontSize: 13,
-  },
-  time: {
-    color: theme.colors.accentSolid,
-    fontSize: 13,
-    fontWeight: "600",
-    marginTop: theme.spacing.xs,
   },
 });
