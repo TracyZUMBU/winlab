@@ -1,6 +1,5 @@
 import type { Enums } from "@/src/lib/supabase.types";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-
 import { getLotteryActiveTicketCounts } from "./getLotteryActiveTicketCounts";
 
 export type AvailableLotteryBrand = {
@@ -8,7 +7,6 @@ export type AvailableLotteryBrand = {
   name: string;
   logo_url: string | null;
 };
-
 export type AvailableLotteryRow = {
   id: string;
   title: string;
@@ -23,9 +21,26 @@ export type AvailableLotteryRow = {
 
 type AvailableLotteryDbRow = Omit<AvailableLotteryRow, "active_tickets_count">;
 
-export async function getAvailableLotteries(): Promise<AvailableLotteryRow[]> {
+export type GetAvailableLotteriesPageParams = {
+  pageIndex: number;
+  pageSize?: number;
+};
+
+export type GetAvailableLotteriesPageResult = {
+  lotteries: AvailableLotteryRow[];
+};
+
+export const AVAILABLE_LOTTERIES_PAGE_SIZE = 15;
+
+export async function getAvailableLotteriesPage(
+  params: GetAvailableLotteriesPageParams,
+): Promise<GetAvailableLotteriesPageResult> {
+  const { pageIndex, pageSize = AVAILABLE_LOTTERIES_PAGE_SIZE } = params;
   const supabase = getSupabaseClient();
   const now = new Date().toISOString();
+
+  const from = pageIndex * pageSize;
+  const to = from + pageSize - 1;
 
   const { data, error } = await supabase
     .from("lotteries")
@@ -45,7 +60,9 @@ export async function getAvailableLotteries(): Promise<AvailableLotteryRow[]> {
     .eq("brands.is_active", true)
     .or(`starts_at.lte.${now},starts_at.is.null`)
     .or(`ends_at.gte.${now},ends_at.is.null`)
-    .order("ends_at", { ascending: true, nullsFirst: false });
+    .order("ends_at", { ascending: true, nullsFirst: false })
+    .order("id", { ascending: true })
+    .range(from, to);
 
   if (error) {
     throw error;
@@ -53,15 +70,17 @@ export async function getAvailableLotteries(): Promise<AvailableLotteryRow[]> {
 
   const rows = (data ?? []) as AvailableLotteryDbRow[];
   if (rows.length === 0) {
-    return [];
+    return { lotteries: [] };
   }
 
   const countsByLotteryId = await getLotteryActiveTicketCounts(
     rows.map((row) => row.id),
   );
 
-  return rows.map((row) => ({
-    ...row,
-    active_tickets_count: countsByLotteryId.get(row.id) ?? 0,
-  }));
+  return {
+    lotteries: rows.map((row) => ({
+      ...row,
+      active_tickets_count: countsByLotteryId.get(row.id) ?? 0,
+    })),
+  };
 }

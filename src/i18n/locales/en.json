@@ -132,7 +132,8 @@
     "unknown": "Unknown date"
   },
   "common": {
-    "retry": "Retry"
+    "retry": "Retry",
+    "loadMore": "Load more"
   },
   "results": {
     "layout": {

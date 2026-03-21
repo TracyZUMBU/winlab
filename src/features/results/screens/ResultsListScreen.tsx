@@ -52,8 +52,16 @@ function ResultRow({
 export function ResultsListScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { data, isLoading, isError, error, refetch } =
-    useParticipatedDrawnLotteriesQuery();
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useParticipatedDrawnLotteriesQuery();
 
   const openDetail = (lotteryId: string) => {
     router.push(`/lotteries/results/${lotteryId}`);
@@ -107,6 +115,26 @@ export function ResultsListScreen() {
         renderItem={({ item }) => (
           <ResultRow item={item} onPress={openDetail} />
         )}
+        ListFooterComponent={
+          hasNextPage ? (
+            <View style={styles.footer}>
+              <Pressable
+                onPress={() => void fetchNextPage()}
+                style={styles.loadMoreButton}
+                disabled={isFetchingNextPage}
+              >
+                {isFetchingNextPage ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={theme.colors.accentSolid}
+                  />
+                ) : (
+                  <Text style={styles.loadMoreText}>{t("common.loadMore")}</Text>
+                )}
+              </Pressable>
+            </View>
+          ) : null
+        }
       />
     </Screen>
   );
@@ -174,5 +202,21 @@ const styles = StyleSheet.create({
   meta: {
     color: theme.colors.textMuted,
     fontSize: 13,
+  },
+  footer: {
+    paddingVertical: theme.spacing.md,
+    alignItems: "center",
+  },
+  loadMoreButton: {
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: theme.colors.borderSubtle,
+    backgroundColor: theme.colors.surface,
+  },
+  loadMoreText: {
+    color: theme.colors.text,
+    fontWeight: "500",
   },
 });

@@ -174,7 +174,8 @@
     "unknown": "Date inconnue"
   },
   "common": {
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "loadMore": "Voir plus"
   },
   "results": {
     "layout": {
