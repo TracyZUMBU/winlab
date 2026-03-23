@@ -160,5 +160,29 @@
     "list": {
       "winnerPosition": "Rank {{position}}"
     }
+  },
+  "profile": {
+    "screen": {
+      "title": "Profile",
+      "loading": "Loading profile...",
+      "error": "Could not load profile.",
+      "sessionRequired": "You need to be signed in.",
+      "notFound": "Profile not found.",
+      "emailLabel": "Email",
+      "usernameLabel": "Username",
+      "referralLabel": "Referral code",
+      "memberSinceLabel": "Member since",
+      "emailUnknown": "Not set",
+      "valueUnknown": "—",
+      "usernamePlaceholder": "Your username",
+      "editUsername": "Edit username",
+      "saveUsername": "Save",
+      "savingUsername": "Saving...",
+      "cancelEdit": "Cancel",
+      "updateSuccess": "Profile updated.",
+      "logout": "Log out",
+      "loggingOut": "Signing out...",
+      "updateError": "Update failed. Please try again."
+    }
   }
 }

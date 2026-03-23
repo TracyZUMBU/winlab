@@ -202,5 +202,29 @@
     "list": {
       "winnerPosition": "Place {{position}}"
     }
+  },
+  "profile": {
+    "screen": {
+      "title": "Profil",
+      "loading": "Chargement du profil...",
+      "error": "Impossible de charger le profil.",
+      "sessionRequired": "Vous devez être connecté.",
+      "notFound": "Profil introuvable.",
+      "emailLabel": "Email",
+      "usernameLabel": "Pseudo",
+      "referralLabel": "Code de parrainage",
+      "memberSinceLabel": "Membre depuis",
+      "emailUnknown": "Non renseigné",
+      "valueUnknown": "—",
+      "usernamePlaceholder": "Votre pseudo",
+      "editUsername": "Modifier le pseudo",
+      "saveUsername": "Enregistrer",
+      "savingUsername": "Enregistrement...",
+      "cancelEdit": "Annuler",
+      "updateSuccess": "Profil mis à jour.",
+      "logout": "Se déconnecter",
+      "loggingOut": "Déconnexion...",
+      "updateError": "La mise à jour a échoué. Réessayez."
+    }
   }
 }

@@ -1,15 +1,15 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
+
 import type { Profile } from "../types/profileTypes";
 import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 
-const PROFILES_TABLE = "profiles";
-
-export async function getProfileByUserId(
-  userId: string,
-): Promise<Profile | null> {
+/**
+ * Profil de l’utilisateur connecté : à appeler avec `user.id` depuis la session.
+ */
+export async function getMyProfile(userId: string): Promise<Profile | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
-    .from(PROFILES_TABLE)
+    .from("profiles")
     .select(PROFILE_MVP_COLUMNS)
     .eq("id", userId)
     .maybeSingle();
