@@ -11,3 +11,7 @@ export type CreateProfilePayload = {
   email: string;
   username: string;
 };
+
+export type UpdateMyProfileInput = {
+  username: string;
+};

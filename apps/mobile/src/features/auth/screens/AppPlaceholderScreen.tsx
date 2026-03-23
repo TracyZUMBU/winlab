@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -10,25 +10,26 @@ import {
 } from "react-native";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { useAuthSession } from "../hooks/useAuthSession";
-import { signOut } from "../services";
+import { useSignOutMutation } from "../hooks/useSignOutMutation";
 
 const ACCENT = "#FF8C00";
 
 export const AppPlaceholderScreen: React.FC = () => {
   const router = useRouter();
   const { user } = useAuthSession();
-  const [loading, setLoading] = useState(false);
+  const signOutMutation = useSignOutMutation();
 
   const { t } = useTranslation();
 
-  const handleLogout = async () => {
-    setLoading(true);
-    try {
-      await signOut();
-      router.replace(AUTH_ROUTES.email);
-    } finally {
-      setLoading(false);
-    }
+  const handleLogout = () => {
+    signOutMutation.mutate(undefined, {
+      onSuccess: () => {
+        router.replace(AUTH_ROUTES.email);
+      },
+      onError: () => {
+        // Show error feedback (e.g., toast or alert)
+      },
+    });
   };
 
   return (
@@ -41,12 +42,12 @@ export const AppPlaceholderScreen: React.FC = () => {
         style={({ pressed }) => [
           styles.primaryButton,
           pressed && styles.primaryButtonPressed,
-          loading && styles.primaryButtonDisabled,
+          signOutMutation.isPending && styles.primaryButtonDisabled,
         ]}
         onPress={handleLogout}
-        disabled={loading}
+        disabled={signOutMutation.isPending}
       >
-        {loading ? (
+        {signOutMutation.isPending ? (
           <ActivityIndicator color="#FFFFFF" />
         ) : (
           <Text style={styles.primaryButtonText}>
