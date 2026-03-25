@@ -13,48 +13,14 @@ import {
 
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
-import { logger } from "@/src/lib/logger";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { theme } from "@/src/theme";
 
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
 import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
 
-function buyTicketErrorI18nKey(err: unknown): string {
-  const msg =
-    err &&
-    typeof err === "object" &&
-    "message" in err &&
-    typeof (err as { message: unknown }).message === "string"
-      ? (err as { message: string }).message
-      : "";
-
-  if (msg.includes("INSUFFICIENT_TOKENS")) {
-    return "lottery.detail.purchase.errors.INSUFFICIENT_TOKENS";
-  }
-  if (msg.includes("UNAUTHENTICATED")) {
-    return "lottery.detail.purchase.errors.UNAUTHENTICATED";
-  }
-  if (msg.includes("LOTTERY_NOT_FOUND")) {
-    return "lottery.detail.purchase.errors.LOTTERY_NOT_FOUND";
-  }
-  if (msg.includes("LOTTERY_NOT_PURCHASABLE")) {
-    return "lottery.detail.purchase.errors.LOTTERY_NOT_PURCHASABLE";
-  }
-  if (msg.includes("LOTTERY_NOT_STARTED")) {
-    return "lottery.detail.purchase.errors.LOTTERY_NOT_STARTED";
-  }
-  if (msg.includes("LOTTERY_EXPIRED")) {
-    return "lottery.detail.purchase.errors.LOTTERY_EXPIRED";
-  }
-  if (msg.includes("LOTTERY_DRAW_ALREADY_STARTED")) {
-    return "lottery.detail.purchase.errors.LOTTERY_DRAW_ALREADY_STARTED";
-  }
-
-  return "lottery.detail.purchase.errors.generic";
-}
-
 export function LotteryDetailScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useLocalSearchParams<{
     lotteryId?: string | string[];
   }>();
@@ -69,7 +35,7 @@ export function LotteryDetailScreen() {
     return undefined;
   }, [params.lotteryId]);
 
-  const { data, isLoading, isError, error, refetch } =
+  const { data, isLoading, isError, refetch } =
     useLotteryDetailQuery(lotteryId);
   const { mutateAsync, isPending } = useBuyTicketMutation();
   const [buyError, setBuyError] = useState<string | null>(null);
@@ -77,13 +43,26 @@ export function LotteryDetailScreen() {
   const onBuyTicket = async () => {
     if (!lotteryId) return;
     setBuyError(null);
-    try {
-      await mutateAsync({ lotteryId });
+    const result = await mutateAsync({ lotteryId });
+    if (result.success) {
       await refetch();
-    } catch (err) {
-      logger.error("Buy ticket failed", err);
-      setBuyError(t(buyTicketErrorI18nKey(err)));
+      return;
     }
+
+    if (result.kind === "business") {
+      setBuyError(
+        getI18nMessageForCode({
+          t,
+          i18n,
+          baseKey: "lottery.detail.purchase.errors",
+          code: result.errorCode,
+          fallbackKey: "lottery.detail.purchase.errors.generic",
+        }),
+      );
+      return;
+    }
+
+    setBuyError(t("lottery.detail.purchase.errors.generic"));
   };
 
   if (isLoading) {
@@ -102,9 +81,6 @@ export function LotteryDetailScreen() {
       <Screen>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("lottery.detail.error")}</Text>
-          {error instanceof Error ? (
-            <Text style={styles.helper}>{error.message}</Text>
-          ) : null}
           <Pressable style={styles.retryButton} onPress={() => void refetch()}>
             <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>

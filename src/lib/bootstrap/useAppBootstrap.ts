@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { getProfileByUserId } from "@/src/features/profile/services/getProfileByUserId";
 import type { Profile } from "@/src/features/profile/types/profileTypes";
-import { getCurrentSession } from "@/src/lib/supabase/session";
-import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
+import { logger } from "@/src/lib/logger";
 import { monitoring } from "@/src/lib/monitoring";
+import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
+import { getCurrentSession } from "@/src/lib/supabase/session";
+import { useEffect, useState } from "react";
 
 export type AppBootstrapStatus = "idle" | "loading" | "ready";
 
@@ -51,8 +52,24 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
         if (sessionUserId) {
           try {
             profile = await getProfileByUserId(sessionUserId);
-          } catch {
-            // conservative behavior: if the check fails, we consider that the profile doesn't exist.
+          } catch (error) {
+            logger.warn(
+              "[bootstrap] profile fetch failed; treating as no profile (same redirect as absent row)",
+              {
+                userId: sessionUserId,
+                error,
+              },
+            );
+            monitoring.captureException({
+              name: "bootstrap_profile_fetch_failed",
+              severity: "warning",
+              feature: "bootstrap",
+              message:
+                "Profile fetch failed during bootstrap; UX fallback matches missing profile",
+              error,
+              userId: sessionUserId,
+              extra: { action: "getProfileByUserId" },
+            });
             profile = null;
           }
         }
@@ -75,6 +92,12 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
         }
       } catch (error) {
         // conservative behavior: if session/hasSeenOnboarding fails, we send to onboarding.
+        logger.warn(
+          "[bootstrap] session or onboarding read failed; redirecting to onboarding",
+          {
+            error,
+          },
+        );
         monitoring.captureException({
           name: "app_bootstrap_failed",
           severity: "error",

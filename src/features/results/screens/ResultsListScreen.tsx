@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { Screen } from "@/src/components/ui/Screen";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
 import type { ParticipatedDrawnLotteryUi } from "../hooks/useParticipatedDrawnLotteriesQuery";
@@ -56,7 +57,6 @@ export function ResultsListScreen() {
     data,
     isLoading,
     isError,
-    error,
     refetch,
     hasNextPage,
     fetchNextPage,
@@ -83,9 +83,7 @@ export function ResultsListScreen() {
       <Screen>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("results.screen.error")}</Text>
-          {error instanceof Error ? (
-            <Text style={styles.helper}>{error.message}</Text>
-          ) : null}
+          <Text style={styles.helper}>{userFacingQueryLoadHint(t)}</Text>
           <Pressable style={styles.retryButton} onPress={() => void refetch()}>
             <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>

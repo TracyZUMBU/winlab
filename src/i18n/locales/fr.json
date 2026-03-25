@@ -58,6 +58,9 @@
     "genericError": "Une erreur est survenue. Merci de réessayer.",
     "emailSent": "Un code de connexion a été envoyé à votre adresse email.",
     "invalidCode": "Le code saisi est invalide ou expiré.",
+    "otp": {
+      "emailMissingInFlow": "L’email est manquant. Recommencez depuis l’écran de connexion."
+    },
     "email": {
       "title": "Entrez votre email",
       "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
@@ -113,7 +116,11 @@
     "screen": {
       "submitMission": "Mission soumise.",
       "unfoundMission": "Cette mission est introuvable ou une erreur est survenue.",
-      "unspecifiedMission": "Mission non précisée."
+      "unspecifiedMission": "Mission non précisée.",
+      "loading": "Chargement des missions…",
+      "error": "Impossible de charger les missions. Réessayez.",
+      "empty": "Aucune mission disponible.",
+      "loadMore": "Voir plus"
     }
   },
   "lotteries": {
@@ -123,6 +130,9 @@
     }
   },
   "wallet": {
+    "screen": {
+      "error": "Impossible de charger le portefeuille. Réessayez."
+    },
     "missionCompleted": "Mission complétée",
     "ticketPurchase": "Achat de billet",
     "referralBonus": "Bonus de référence",
@@ -187,7 +197,10 @@
   },
   "common": {
     "retry": "Réessayer",
-    "loadMore": "Voir plus"
+    "loadMore": "Voir plus",
+    "errors": {
+      "loadHint": "Vérifiez votre connexion et réessayez."
+    }
   },
   "results": {
     "layout": {
@@ -216,6 +229,13 @@
     }
   },
   "profile": {
+    "createProfile": {
+      "errors": {
+        "sessionExpired": "Votre session a expiré. Merci de vous reconnecter.",
+        "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
+        "submitFailed": "Impossible de créer votre profil. Réessayez."
+      }
+    },
     "screen": {
       "title": "Profil",
       "loading": "Chargement du profil...",
@@ -245,6 +265,20 @@
       "deleteAccountConfirmCta": "Supprimer",
       "deleteAccountErrorTitle": "Suppression impossible",
       "deleteAccountErrorMessage": "Nous n’avons pas pu supprimer votre compte. Réessayez."
+    },
+    "deleteAccount": {
+      "errors": {
+        "generic": "Nous n’avons pas pu supprimer votre compte. Réessayez.",
+        "UNAUTHENTICATED": "Votre session n’est plus valide. Reconnectez-vous.",
+        "SESSION_FORBIDDEN": "Cette action n’est pas autorisée pour votre compte.",
+        "METHOD_NOT_ALLOWED": "Une erreur est survenue. Réessayez.",
+        "SERVER_MISCONFIGURED": "Le service est temporairement indisponible. Réessayez plus tard.",
+        "ANONYMIZE_PROFILE_FAILED": "La suppression du compte n’a pas pu aboutir. Réessayez.",
+        "AUTH_DELETE_FAILED": "La suppression du compte n’a pas pu aboutir. Réessayez.",
+        "INVOKE_FAILED": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+        "INVALID_RESPONSE": "Une erreur est survenue. Réessayez.",
+        "UNKNOWN_ERROR": "Une erreur est survenue. Réessayez."
+      }
     }
   }
 }

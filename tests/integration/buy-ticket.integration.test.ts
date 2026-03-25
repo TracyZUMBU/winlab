@@ -6,12 +6,23 @@ import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
 
 const BUY_TICKET_RPC = "buy_ticket";
 
-const expectRpcErrorContains = (
+type BuyTicketRpcRow = {
+  success: boolean;
+  ticket_id: string | null;
+  error_code: string | null;
+};
+
+const expectRpcBusinessErrorCode = (
   result: { data: unknown; error: any },
-  expectedSubstring: string,
+  expectedErrorCode: string,
 ) => {
-  expect(result.error).toBeTruthy();
-  expect(result.error?.message).toContain(expectedSubstring);
+  expect(result.error).toBeNull();
+  expect(Array.isArray(result.data)).toBe(true);
+  const rows = result.data as unknown as BuyTicketRpcRow[];
+  expect(rows).toHaveLength(1);
+  expect(rows[0]!.success).toBe(false);
+  expect(rows[0]!.ticket_id).toBeNull();
+  expect(rows[0]!.error_code).toBe(expectedErrorCode);
 };
 
 describe("buy_ticket RPC (integration)", () => {
@@ -45,7 +56,13 @@ describe("buy_ticket RPC (integration)", () => {
       });
 
       expect(rpcResult.error).toBeNull();
-      const ticketId = rpcResult.data as string;
+      expect(Array.isArray(rpcResult.data)).toBe(true);
+      const rows = rpcResult.data as unknown as BuyTicketRpcRow[];
+      expect(rows).toHaveLength(1);
+      expect(rows[0]!.success).toBe(true);
+      const ticketId = rows[0]!.ticket_id as string;
+      expect(typeof ticketId).toBe("string");
+      expect(ticketId.length).toBeGreaterThan(10);
 
       // Ticket row
       const { data: ticketRow, error: ticketErr } = await admin
@@ -139,7 +156,7 @@ describe("buy_ticket RPC (integration)", () => {
         p_lottery_id: lottery.id,
       });
 
-      expectRpcErrorContains(rpcResult as any, "INSUFFICIENT_TOKENS");
+      expectRpcBusinessErrorCode(rpcResult as any, "INSUFFICIENT_TOKENS");
 
       const { data: tickets, error: ticketsErr } = await admin
         .from("lottery_tickets")
@@ -201,7 +218,7 @@ describe("buy_ticket RPC (integration)", () => {
         p_lottery_id: lottery.id,
       });
 
-      expectRpcErrorContains(rpcResult as any, "LOTTERY_EXPIRED");
+      expectRpcBusinessErrorCode(rpcResult as any, "LOTTERY_EXPIRED");
 
       // Should not create any ticket.
       const { data: tickets, error: ticketsErr } = await admin
@@ -265,7 +282,7 @@ describe("buy_ticket RPC (integration)", () => {
         p_lottery_id: lottery.id,
       });
 
-      expectRpcErrorContains(rpcResult as any, "LOTTERY_NOT_PURCHASABLE");
+      expectRpcBusinessErrorCode(rpcResult as any, "LOTTERY_NOT_PURCHASABLE");
 
       const { data: tickets, error: ticketsErr } = await admin
         .from("lottery_tickets")
@@ -335,16 +352,27 @@ describe("buy_ticket RPC (integration)", () => {
       ]);
 
       const results = [rpcResult1, rpcResult2] as any[];
-      const successes = results.filter((r) => r.error === null);
-      const failures = results.filter((r) => r.error !== null);
+      const successes = results.filter((r) => {
+        if (r.error) return false;
+        const rows = r.data as unknown as BuyTicketRpcRow[];
+        return Array.isArray(rows) && rows.length === 1 && rows[0]!.success === true;
+      });
+      const failures = results.filter((r) => {
+        if (r.error) return true;
+        const rows = r.data as unknown as BuyTicketRpcRow[];
+        return Array.isArray(rows) && rows.length === 1 && rows[0]!.success === false;
+      });
 
       expect(successes).toHaveLength(1);
       expect(failures).toHaveLength(1);
 
-      const createdTicketId = successes[0]!.data as string;
+      const createdTicketId = (
+        successes[0]!.data as unknown as BuyTicketRpcRow[]
+      )[0]!
+        .ticket_id as string;
       expect(typeof createdTicketId).toBe("string");
       expect(createdTicketId.length).toBeGreaterThan(10);
-      expectRpcErrorContains(failures[0]!, "INSUFFICIENT_TOKENS");
+      expectRpcBusinessErrorCode(failures[0]!, "INSUFFICIENT_TOKENS");
 
       const { data: tickets, error: ticketsErr } = await admin
         .from("lottery_tickets")

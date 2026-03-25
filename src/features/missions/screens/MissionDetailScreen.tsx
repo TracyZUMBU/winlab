@@ -12,6 +12,7 @@ import {
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
@@ -24,7 +25,6 @@ export function MissionDetailScreen() {
     data: mission,
     isLoading,
     isError,
-    error,
     refetch,
   } = useGetMissionByIdQuery(missionId);
 
@@ -72,8 +72,8 @@ export function MissionDetailScreen() {
               ? t("missions.screen.unfoundMission")
               : t("missions.screen.unspecifiedMission")}
           </Text>
-          {error instanceof Error ? (
-            <Text style={styles.muted}>{error.message}</Text>
+          {isError ? (
+            <Text style={styles.muted}>{userFacingQueryLoadHint(t)}</Text>
           ) : null}
           {missionId ? (
             <Pressable style={styles.retry} onPress={() => refetch()}>

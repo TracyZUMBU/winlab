@@ -12,7 +12,8 @@ export function useBuyTicketMutation() {
 
   return useMutation({
     mutationFn: (payload: BuyTicketParams) => buyTicket(payload),
-    onSuccess: (_, variables) => {
+    onSuccess: (result, variables) => {
+      if (!result.success) return;
       if (!userId) return;
 
       queryClient.invalidateQueries({
