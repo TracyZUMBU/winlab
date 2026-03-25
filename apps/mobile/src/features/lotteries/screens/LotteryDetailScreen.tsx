@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -12,26 +13,76 @@ import {
 
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
+import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
 import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
 
+function buyTicketErrorI18nKey(err: unknown): string {
+  const msg =
+    err &&
+    typeof err === "object" &&
+    "message" in err &&
+    typeof (err as { message: unknown }).message === "string"
+      ? (err as { message: string }).message
+      : "";
+
+  if (msg.includes("INSUFFICIENT_TOKENS")) {
+    return "lottery.detail.purchase.errors.INSUFFICIENT_TOKENS";
+  }
+  if (msg.includes("UNAUTHENTICATED")) {
+    return "lottery.detail.purchase.errors.UNAUTHENTICATED";
+  }
+  if (msg.includes("LOTTERY_NOT_FOUND")) {
+    return "lottery.detail.purchase.errors.LOTTERY_NOT_FOUND";
+  }
+  if (msg.includes("LOTTERY_NOT_PURCHASABLE")) {
+    return "lottery.detail.purchase.errors.LOTTERY_NOT_PURCHASABLE";
+  }
+  if (msg.includes("LOTTERY_NOT_STARTED")) {
+    return "lottery.detail.purchase.errors.LOTTERY_NOT_STARTED";
+  }
+  if (msg.includes("LOTTERY_EXPIRED")) {
+    return "lottery.detail.purchase.errors.LOTTERY_EXPIRED";
+  }
+  if (msg.includes("LOTTERY_DRAW_ALREADY_STARTED")) {
+    return "lottery.detail.purchase.errors.LOTTERY_DRAW_ALREADY_STARTED";
+  }
+
+  return "lottery.detail.purchase.errors.generic";
+}
+
 export function LotteryDetailScreen() {
   const { t } = useTranslation();
-  const { lotteryId } = useLocalSearchParams<{ lotteryId: string }>();
+  const params = useLocalSearchParams<{
+    lotteryId?: string | string[];
+  }>();
+  const lotteryId = useMemo(() => {
+    const raw = params.lotteryId;
+    if (typeof raw === "string" && raw.length > 0) {
+      return raw;
+    }
+    if (Array.isArray(raw) && typeof raw[0] === "string" && raw[0].length > 0) {
+      return raw[0];
+    }
+    return undefined;
+  }, [params.lotteryId]);
+
   const { data, isLoading, isError, error, refetch } =
     useLotteryDetailQuery(lotteryId);
   const { mutateAsync, isPending } = useBuyTicketMutation();
+  const [buyError, setBuyError] = useState<string | null>(null);
 
   const onBuyTicket = async () => {
     if (!lotteryId) return;
+    setBuyError(null);
     try {
       await mutateAsync({ lotteryId });
       await refetch();
     } catch (err) {
-      // Show error feedback to user (e.g., toast, alert)
-      console.error("Failed to buy ticket:", err);
+      logger.error("Buy ticket failed", err);
+      setBuyError(t(buyTicketErrorI18nKey(err)));
     }
   };
 
@@ -84,6 +135,8 @@ export function LotteryDetailScreen() {
         {data.description ? (
           <Text style={styles.description}>{data.description}</Text>
         ) : null}
+
+        {buyError ? <Text style={styles.buyError}>{buyError}</Text> : null}
 
         <Button
           title={
@@ -167,6 +220,11 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     fontSize: 14,
     lineHeight: 20,
+  },
+  buyError: {
+    marginTop: theme.spacing.md,
+    color: "#DC2626",
+    fontSize: 14,
   },
   buyButton: {
     marginTop: theme.spacing.lg,

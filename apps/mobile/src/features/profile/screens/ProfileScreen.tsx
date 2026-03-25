@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -19,6 +20,7 @@ import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
 import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
+import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
 
 function formatMemberSince(iso: string | null, locale: string): string {
@@ -40,6 +42,7 @@ export function ProfileScreen() {
 
   const profileQuery = useMyProfileQuery();
   const updateMutation = useUpdateMyProfileMutation();
+  const deleteMyAccountMutation = useDeleteMyAccountMutation();
   const signOutMutation = useSignOutMutation();
 
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -105,6 +108,45 @@ export function ProfileScreen() {
       },
     });
   }, [router, signOutMutation]);
+
+  const handleDeleteAccount = useCallback(() => {
+    Alert.alert(
+      t("profile.screen.deleteAccountConfirmTitle"),
+      t("profile.screen.deleteAccountConfirmMessage"),
+      [
+        {
+          text: t("profile.screen.deleteAccountCancel"),
+          style: "cancel",
+        },
+        {
+          text: t("profile.screen.deleteAccountConfirmCta"),
+          style: "destructive",
+          onPress: () => {
+            deleteMyAccountMutation.mutate(undefined, {
+              onSuccess: () => {
+                signOutMutation.mutate(undefined, {
+                  onSuccess: () => {
+                    router.replace(AUTH_ROUTES.email);
+                  },
+                  onError: (error) => {
+                    logger.error("Logout after delete failed", error);
+                    router.replace(AUTH_ROUTES.email);
+                  },
+                });
+              },
+              onError: (error) => {
+                logger.error("Delete account failed", error);
+                Alert.alert(
+                  t("profile.screen.deleteAccountErrorTitle"),
+                  t("profile.screen.deleteAccountErrorMessage"),
+                );
+              },
+            });
+          },
+        },
+      ],
+    );
+  }, [deleteMyAccountMutation, router, signOutMutation, t]);
 
   if (authStatus === "loading") {
     return (
@@ -254,8 +296,34 @@ export function ProfileScreen() {
               : t("profile.screen.logout")
           }
           onPress={handleLogout}
-          disabled={signOutMutation.isPending || updateMutation.isPending}
+          disabled={
+            signOutMutation.isPending ||
+            updateMutation.isPending ||
+            deleteMyAccountMutation.isPending
+          }
           variant="primary"
+        />
+
+        <Button
+          title={
+            deleteMyAccountMutation.isPending
+              ? t("profile.screen.deletingAccount")
+              : t("profile.screen.deleteAccount")
+          }
+          onPress={handleDeleteAccount}
+          disabled={
+            signOutMutation.isPending ||
+            updateMutation.isPending ||
+            deleteMyAccountMutation.isPending
+          }
+          variant="ghost"
+          style={{
+            borderWidth: 1,
+            borderColor: "#DC2626",
+          }}
+          textStyle={{
+            color: "#DC2626",
+          }}
         />
       </View>
     </Screen>
