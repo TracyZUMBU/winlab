@@ -4,5 +4,6 @@ export const spacing = {
   md: 16,
   lg: 24,
   xl: 32,
+  /** Horizontal inset for screen content (pilote list / headers). */
+  screenHorizontal: 20,
 } as const;
-

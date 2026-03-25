@@ -63,6 +63,20 @@
       "title": "Missions",
       "detail": "Mission detail"
     },
+    "card": {
+      "status": {
+        "available": "Available",
+        "pending": "Pending",
+        "completed": "Completed"
+      },
+      "cta": {
+        "start": "Start"
+      },
+      "tokenReward": "+{{count}} tokens",
+      "a11y": {
+        "brandLogo": "{{brand}} logo"
+      }
+    },
     "submission": {
       "errors": {
         "UNAUTHENTICATED": "You need to be signed in to submit a mission.",

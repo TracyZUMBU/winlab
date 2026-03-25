@@ -10,7 +10,7 @@ import {
 
 import { theme } from "@/src/theme";
 
-type ButtonVariant = "primary" | "ghost";
+type ButtonVariant = "primary" | "soft" | "ghost";
 
 type ButtonProps = {
   title: string;
@@ -20,6 +20,8 @@ type ButtonProps = {
   textStyle?: TextStyle;
   disabled?: boolean;
   leftIcon?: ReactNode;
+  /** Full-width row (e.g. CTA inside a card). */
+  fullWidth?: boolean;
 };
 
 export function Button({
@@ -30,9 +32,8 @@ export function Button({
   textStyle,
   disabled,
   leftIcon,
+  fullWidth,
 }: ButtonProps) {
-  const isPrimary = variant === "primary";
-
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -40,7 +41,10 @@ export function Button({
       disabled={disabled}
       style={[
         styles.base,
-        isPrimary ? styles.primary : styles.ghost,
+        fullWidth && styles.fullWidth,
+        variant === "primary" && styles.primary,
+        variant === "soft" && styles.soft,
+        variant === "ghost" && styles.ghost,
         disabled && styles.disabled,
         style,
       ]}
@@ -49,7 +53,9 @@ export function Button({
       <Text
         style={[
           styles.textBase,
-          isPrimary ? styles.textPrimary : styles.textGhost,
+          variant === "primary" && styles.textOnAccent,
+          variant === "soft" && styles.textDefault,
+          variant === "ghost" && styles.textDefault,
           textStyle,
         ]}
       >
@@ -64,17 +70,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: theme.spacing.md,
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm + 4,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: theme.radius.lg,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 4,
+    borderRadius: theme.radius.sm,
+  },
+  fullWidth: {
+    alignSelf: "stretch",
+    width: "100%",
   },
   primary: {
     backgroundColor: theme.colors.accentSolid,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 1,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  soft: {
+    backgroundColor: theme.colors.accentMuted,
   },
   ghost: {
     backgroundColor: "transparent",
@@ -84,12 +98,12 @@ const styles = StyleSheet.create({
   },
   textBase: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
-  textPrimary: {
-    color: "#FFFFFF",
+  textOnAccent: {
+    color: theme.colors.onAccent,
   },
-  textGhost: {
+  textDefault: {
     color: theme.colors.text,
   },
 });

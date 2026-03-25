@@ -100,6 +100,20 @@
       "title": "Missions",
       "detail": "Détail mission"
     },
+    "card": {
+      "status": {
+        "available": "Disponible",
+        "pending": "En attente",
+        "completed": "Complétée"
+      },
+      "cta": {
+        "start": "Commencer"
+      },
+      "tokenReward": "+{{count}} jetons",
+      "a11y": {
+        "brandLogo": "Logo {{brand}}"
+      }
+    },
     "submission": {
       "errors": {
         "UNAUTHENTICATED": "Vous devez être connecté pour soumettre une mission.",
