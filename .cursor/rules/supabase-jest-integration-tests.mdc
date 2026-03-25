@@ -1,0 +1,56 @@
+---
+description: Strict rules for Supabase local integration tests (Jest)
+globs: apps/**/tests/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Supabase (local) integration tests — strict rules
+
+These rules apply when creating or editing test files under `apps/**/tests/**`.
+
+## Hard requirements (must always hold)
+
+- **Local-only target**: tests MUST hit Supabase **local** only. `process.env.SUPABASE_URL` must resolve to `http://127.0.0.1:54321` (or equivalent local host/port). NEVER use staging/prod/cloud URLs.
+- **Env source**: tests MUST rely on `.env.test.local` (loaded by Jest setup). Always use `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. NEVER use `EXPO_PUBLIC_*` variables in tests/helpers.
+- **No mocks**: NEVER mock `@supabase/supabase-js` or the Supabase client in integration tests. Use the real local instance.
+- **No direct DB inserts in tests**: any `.insert(...)` into Supabase tables inside integration tests must be done through a factory/helper under `apps/**/tests/factories/`. If a factory doesn't exist yet, create it and use `overrides` (do not write `.from("...").insert(...)` inline in tests).
+- **Data isolation**: each `it(...)` is fully independent (no shared state/data between tests, no order dependence).
+- **Per-test user**: each test creates its own authenticated user; NEVER reuse users across tests.
+- **Unique data everywhere**: every entity created must be unique (emails, names, slugs, and any unique fields). Use:
+  - `const uniqueId = \`\${Date.now()}-\${Math.random()}\`;`
+  - Apply suffixes like ``email-${uniqueId}@example.com``, ``brand-${uniqueId}``, ``slug-${uniqueId}``.
+- **No cleanup logic**: DO NOT add `afterEach` cleanup, manual DELETEs, or “truncate” helpers. Tests must not rely on cleanup.
+- **No in-test reset**: database reset is external (`supabase db reset` before suite). Tests MUST NOT call reset/seed/DDL operations.
+- **Assertions**: assert **DB side effects** and business logic correctness, not only RPC/API responses.
+- **Determinism**: avoid race conditions and timing flakiness; tests must be compatible with sequential execution and not rely on ordering.
+- **Timeouts**: set longer timeouts when needed (per-test or per-suite) rather than making tests flaky.
+
+## Required structure
+
+Use this shape (Arrange/Act/Assert):
+
+```ts
+describe("feature (integration)", () => {
+  it("should ...", async () => {
+    // Arrange
+    const user = await createAuthenticatedTestUser();
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-${uniqueId}` });
+
+    // Act
+    const result = await user.client.rpc("rpc_name", { /* ... */ });
+
+    // Assert
+    expect(result.error).toBeNull();
+    // Verify DB side effects via admin client queries
+  });
+});
+```
+
+## Helpers
+
+Prefer existing helpers (`createAuthenticatedTestUser`, `createBrand`, `createMission`, etc.). Helpers MUST also follow local-only env usage and uniqueness rules.
+
+## Auto-correction policy
+
+If a generated/edited test violates any requirement above, automatically rewrite it to comply (especially: local URL, env vars, uniqueness, per-test user, no cleanup, no mocks, and DB side-effect assertions).

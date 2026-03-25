@@ -1,0 +1,57 @@
+---
+description: Winlab frontend data access - screens, hooks, services pattern (TanStack Query + Supabase)
+globs: apps/mobile/src/features/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Winlab frontend data access rule
+
+## Objective
+When connecting screens to real data or real business actions, always follow this architecture:
+
+- screens = UI only
+- hooks = TanStack Query hooks (useQuery / useMutation)
+- services = Supabase queries / RPC calls
+- no direct Supabase calls inside screens
+
+## Mandatory pattern
+For each feature:
+- `screens/` contains screen components only
+- `hooks/` contains query and mutation hooks
+- `services/` contains raw Supabase access functions
+- `components/` contains presentational or feature-specific reusable UI parts
+
+## Rules
+1. Never call `supabase.from(...)`, `supabase.rpc(...)`, or `supabase.auth...` directly inside a screen.
+2. All read operations must go through a service, then a `useQuery` hook.
+3. All write operations / RPC actions must go through a service, then a `useMutation` hook.
+4. Screens must consume hooks and render UI states:
+   - loading
+   - error
+   - empty state
+   - success state
+5. Query keys must be explicit and stable.
+6. After mutations, invalidate or refetch the relevant queries.
+7. Reuse existing services/hooks if they already match the expected behavior.
+8. Do not refactor unrelated files.
+9. Prefer minimal changes over broad rewrites.
+10. Use explicit names:
+   - `getMissions`
+   - `useMissionsQuery`
+   - `submitMissionCompletion`
+   - `useSubmitMissionCompletionMutation`
+
+## Expected flow
+- service -> hook -> screen
+
+## Anti-patterns
+- Supabase calls inside screens
+- business logic directly inside route files
+- loading/error logic duplicated everywhere
+- mixing query logic and presentational UI in the same large file
+
+## Delivery style
+- work incrementally
+- audit existing code first
+- if the expected pattern is partially present, adapt it instead of rebuilding everything
+- stop after each requested step and wait for validation

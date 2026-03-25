@@ -1,0 +1,50 @@
+---
+description: Enforce i18n for any user-visible text (no hardcoded strings)
+globs:
+  - apps/mobile/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# i18n - No hardcoded UI text
+
+## Mission
+Dès qu’il y a du texte affiché à l’utilisateur dans le code (anglais ou français), il doit passer par i18n, avec une clé ajoutée dans :
+- `apps/mobile/src/i18n/locales/fr.json`
+- `apps/mobile/src/i18n/locales/en.json`
+
+## Règles obligatoires
+1. Interdit d’écrire du texte utilisateur en dur dans le code.
+   - Exemple: contenu direct d’un composant `Text`, libellés de boutons, `title`, `subtitle`, `label`, `placeholder`, messages d’erreur/toasts visibles, etc.
+2. Utiliser i18n à la place :
+   - En composants/screens : `const { t } = useTranslation();` puis `t("some.key")`
+   - Hors composants (validators, constants, schémas) : utiliser l’instance `i18n.t("some.key")` (comme déjà présent dans le projet)
+3. Pour toute nouvelle clé de traduction utilisée dans le code :
+   - ajouter la clé dans `fr.json` et dans `en.json`
+   - même chemin de clé dans les deux fichiers
+4. Interpolation : si le texte dépend de variables, utiliser `t("key", { var })` et mettre `{{var}}` dans les JSON.
+5. Ne pas utiliser de “texte en anglais/français en dur” comme fallback dans le code. Le code doit uniquement référencer des clés.
+
+## Exceptions (autorisées)
+- Identifiants techniques non affichés à l’utilisateur : IDs, noms internes, routes internes, noms de colonnes/colonnes DB, query keys, classes techniques, etc.
+- Fichiers i18n uniquement : ne pas appliquer ces règles dans `apps/mobile/src/i18n/**` (là on modifie les traductions).
+
+## Exemples
+❌
+```ts
+<Text>Skip</Text>
+```
+
+✅
+```ts
+<Text>{t("onboarding.skip")}</Text>
+```
+
+❌
+```ts
+.min(3, "Le pseudo doit contenir au moins 3 caractères")
+```
+
+✅
+```ts
+.min(3, i18n.t("schema.username.error.min"))
+```

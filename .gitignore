@@ -1,0 +1,9 @@
+# Monorepo root — dependencies often hoisted here
+node_modules/
+
+# OS / editor noise
+.DS_Store
+
+# Local secrets at repo root (if any)
+.env
+.env.*.local

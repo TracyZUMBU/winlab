@@ -1,0 +1,84 @@
+---
+description: Winlab error handling conventions (mobile app + Supabase edge functions)
+globs: apps/mobile/src/**/*.{ts,tsx},supabase/functions/**/*.ts,supabase/schemas/functions/**/*.sql
+alwaysApply: false
+---
+
+# Winlab error handling conventions
+
+## Mission
+When adding or modifying error handling, enforce a consistent end-to-end error experience:
+- stable business error codes
+- i18n mapping based on codes
+- no raw technical messages shown to users
+- clear logging + monitoring responsibilities
+
+## Non-negotiable rules (DO NOT DO)
+
+1. **Never display `error.message` directly in UI**
+   - Forbidden examples:
+     - `<Text>{error.message}</Text>`
+     - `setServerError(error?.message ?? "...")`
+   - UI must use i18n keys and stable codes.
+
+2. **Never parse business meaning from a text message**
+   - Forbidden patterns:
+     - `error.message.includes("...")`
+     - `String(error).includes("...")`
+     - regex parsing of Supabase/PostgREST messages to decide a business case
+   - Business errors must come with a **stable code** (e.g. `errorCode`).
+
+3. **No duplicate logging across layers**
+   - Do not log the same failure in **service + hook + screen**.
+   - Default: the **service/use case layer** owns the primary log with context.
+
+4. **Do not send normal business errors to monitoring**
+   - Monitoring is reserved for **technical** and **unexpected** errors.
+   - Business errors (expected user-facing outcomes) should not create incidents.
+
+## Preferred design (DO)
+
+### Error taxonomy
+- **Business**: expected, code-driven (`INSUFFICIENT_TOKENS`, `MISSION_EXPIRED`, ...)
+- **Technical**: infrastructure/SDK/network/DB issues
+- **Unexpected**: invariant broken, invalid server response, impossible state
+
+### Where to handle what
+- **Services (`features/**/services`)**
+  - Normalize errors here.
+  - Prefer returning a structured result for business outcomes:
+    - `{ success: false, errorCode: "..." }`
+  - Throw only technical/unexpected errors (or wrap them with clear context).
+  - This is where the primary log should live (feature + action + ids).
+
+- **Hooks (`features/**/hooks`)**
+  - No message parsing for business logic.
+  - Avoid re-logging if the service already logged.
+
+- **Screens (`features/**/screens`)**
+  - Render UI states (loading/error/empty/success).
+  - User-facing messages come from i18n keys based on stable codes.
+
+- **Supabase edge functions (`supabase/functions/**`)**
+  - Prefer returning structured error codes for business outcomes.
+  - Avoid returning raw technical details to the app.
+
+### i18n mapping
+- Map business errors using stable codes:
+  - `t("feature.action.errors." + errorCode)`
+- Use a generic i18n fallback key, never raw message fallbacks.
+
+### Fallback catches
+If you keep a silent fallback (`catch { ...default }`), leave **at least one trace**:
+- log or monitoring (depending on impact)
+- include non-sensitive context (feature/action/ids)
+
+## Review checklist
+- [ ] No `error.message` displayed in UI.
+- [ ] No `message.includes(...)` for business decisions.
+- [ ] Business errors use stable codes.
+- [ ] i18n mapping is code-based with a generic fallback key.
+- [ ] Logging is not duplicated across service/hook/screen.
+- [ ] Monitoring excludes normal business errors.
+- [ ] Any silent fallback leaves a trace with context.
+

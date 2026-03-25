@@ -1,0 +1,28 @@
+---
+description: Postgres functions in migrations must be mirrored under supabase/schemas/functions
+globs: supabase/migrations/**/*.sql,supabase/schemas/functions/**/*.sql
+alwaysApply: false
+---
+
+# Supabase SQL mirroring (`schemas/functions`)
+
+## Obligation
+
+Dès qu’une **migration** sous `supabase/migrations/` définit ou modifie du SQL Postgres qui inclut une **fonction** (`CREATE FUNCTION`, `CREATE OR REPLACE FUNCTION`, y compris fonctions trigger, helpers, RPC `SECURITY DEFINER`, etc.) :
+
+1. **Créer ou mettre à jour** le fichier canonique correspondant sous **`supabase/schemas/functions/`**.
+2. **Garder le même SQL** (ou la même intention) entre le fichier schema et la migration : la migration reste l’historique versionné appliqué aux environnements ; le fichier sous `schemas/functions/` est la **source de vérité** lisible et réutilisable pour les prochains changements.
+
+## Fichier sous `schemas/functions/`
+
+- **Nom** : descriptif du domaine (ex. `profiles_referral_code.sql`, `submit_mission_completion.sql`), pas besoin de reprendre le timestamp de la migration.
+- **Contenu** : tout ce qui va avec la fonction si c’est cohérent au même endroit — par ex. triggers qui l’appellent, `ALTER FUNCTION ... OWNER`, contraintes étroitement liées introduites en même temps (comme dans les autres fichiers du dossier).
+
+## RPC / PostgREST
+
+Les fonctions exposées en RPC suivent la **même règle** : définition canonique dans `supabase/schemas/functions/` + migration qui applique le changement.
+
+## Checklist (pour l’agent / la revue)
+
+- [ ] Nouvelle migration avec `CREATE [OR REPLACE] FUNCTION` → fichier ajouté ou mis à jour dans `supabase/schemas/functions/`.
+- [ ] Le corps SQL du schema file et de la migration correspondent (copier depuis le schema vers une **nouvelle** migration si tu modifies le comportement après coup).

@@ -1,0 +1,39 @@
+---
+description: Interdit d'utiliser console.* directement (utiliser le logger partagé)
+globs:
+  - apps/mobile/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Logging - No direct `console.*`
+
+## Mission
+Centraliser tous les logs applicatifs derrière `logger` pour garantir une règle dev/prod cohérente et permettre une évolution future vers d'autres transports (Slack/Sentry/etc.).
+
+## Règles obligatoires
+1. Interdit d'appeler `console.log`, `console.info`, `console.warn` ou `console.error` directement dans le code applicatif.
+2. Exception autorisée :
+   - `apps/mobile/src/lib/logger/**` (c'est là que le transport console est implémenté).
+3. Utiliser le logger partagé :
+   - `import { logger } from "@/src/lib/logger";`
+4. Ne jamais logger de données sensibles :
+   - pas de tokens, mots de passe, secrets, ni de données personnelles dans `message` ou `metadata`.
+5. `logger.error` est réservé au debug dev :
+   - en production, `logger.error(...)` ne loggue rien et ne doit pas être utilisé comme mécanisme de reporting en prod.
+6. Toute future évolution du logging doit passer par l'abstraction centrale (`logger` / transports), pas par des appels `console.*` ad hoc.
+
+## Exemples
+✅ Bon
+```ts
+import { logger } from "@/src/lib/logger";
+
+logger.warn("Failed to persist state", { userId });
+logger.error("Logout failed", error);
+```
+
+❌ Mauvais
+```ts
+console.warn("Failed to persist state");
+console.error("Logout failed", error);
+```
+

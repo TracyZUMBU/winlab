@@ -1,0 +1,484 @@
+---
+description: Enforce clean architecture and best practices for TanStack Query with Supabase in React / React Native TypeScript projects
+globs:
+  - "**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# TanStack Query + Supabase Rule
+
+## Mission
+
+When generating, editing, or refactoring data fetching and server state code, always follow clean architecture and TanStack Query best practices.
+
+The stack target is:
+
+- React or React Native
+- TypeScript
+- TanStack Query
+- Supabase
+- feature-first architecture
+
+You must optimize for:
+
+- readability
+- explicit naming
+- separation of concerns
+- predictable cache behavior
+- type safety
+- easy maintenance
+- easy invalidation/refetch patterns
+
+---
+
+## Core principles
+
+### 1. Separate responsibilities
+
+Always separate the following concerns:
+
+1. **Service / repository layer**
+   - Responsible only for calling Supabase
+   - No UI logic
+   - No TanStack Query logic
+   - No React hooks inside
+   - Must return typed data
+   - Must throw explicit errors when appropriate
+
+2. **Query or mutation options layer**
+   - Responsible for `queryKey`, `queryFn`, mutation function, cache behavior, invalidation strategy
+   - Prefer colocated query option factories
+
+3. **Custom hook layer**
+   - Exposes `useQuery` / `useMutation`
+   - Keeps component usage simple
+   - Should not contain heavy transformation logic
+
+4. **UI / screen / component layer**
+   - Must not call Supabase directly
+   - Must not build raw query keys inline if a factory exists
+   - Must not contain data access logic
+
+---
+
+## Mandatory architecture rules
+
+### For reads
+
+For data fetching, prefer this structure:
+
+- `services/get-<entity>-by-id.ts`
+- `queries/<entity>.keys.ts`
+- `queries/get-<entity>-by-id.query.ts`
+- `hooks/use-<entity>-detail.ts`
+
+If the project already uses another naming convention, follow the existing convention consistently.
+
+### For writes
+
+For create/update/delete/business actions, prefer:
+
+- `services/<action>.ts`
+- `mutations/<action>.mutation.ts`
+- `hooks/use-<action>.ts`
+
+---
+
+## Query key rules
+
+Always use query key factories.
+
+### Good
+
+```ts
+export const missionKeys = {
+  all: ["missions"] as const,
+  lists: () => ["missions", "list"] as const,
+  list: (filters: MissionListFilters) => ["missions", "list", filters] as const,
+  details: () => ["missions", "detail"] as const,
+  detail: (missionId: string) => ["missions", "detail", missionId] as const,
+};
+```
+
+### Bad
+
+```ts
+useQuery({
+  queryKey: ["mission", id],
+});
+```
+
+Rules:
+
+- Query keys must always be arrays
+- Query keys must be explicit and stable
+- Query keys must include every variable that changes the result
+- Use plural resource namespaces when relevant
+- Use hierarchical keys such as `['missions', 'detail', missionId]`
+- Never create ad hoc inconsistent keys across files
+
+---
+
+## `useQuery` decision rules
+
+Use `useQuery` when:
+
+- reading remote server data
+- fetching by id
+- fetching lists
+- fetching derived remote data that should be cached
+
+Before generating a query, determine:
+
+1. What uniquely identifies the data?
+2. Is the id or parameter always available on first render?
+3. Can the resource be missing?
+4. Does the query depend only on id, or also on userId, locale, tenant, role, or filters?
+5. Should the data be considered fresh for some time (`staleTime`)?
+6. Should the cache survive screen unmounts for navigation back/forth (`gcTime`)?
+7. Do we need `select`, or should transformation happen in a mapper?
+8. Should we use `placeholderData` from an existing list cache?
+9. Should retry be enabled for this resource?
+
+If the answer is unclear, ask questions before coding.
+
+---
+
+## `useMutation` decision rules
+
+Use `useMutation` when:
+
+- creating data
+- updating data
+- deleting data
+- triggering server-side actions
+- submitting forms
+- performing RPC / business actions
+
+Before generating a mutation, determine:
+
+1. What is the exact business action?
+2. Is it create / update / delete / custom action?
+3. What data does it require?
+4. What should happen on success?
+   - invalidate one detail query?
+   - invalidate a list?
+   - update cache manually?
+   - navigate?
+   - show toast?
+5. What should happen on error?
+6. Is optimistic update appropriate or risky?
+7. Should the mutation return the created/updated resource?
+8. Is this actually a mutation, or should it be a query with parameters?
+
+If unclear, ask questions before coding.
+
+---
+
+## Questions you must ask when context is insufficient
+
+When the context does not clearly define the right query or mutation shape, stop and ask only the minimum useful questions.
+
+### For a query
+
+Ask:
+
+- What is the entity name?
+- Is this a detail fetch, list fetch, or derived fetch?
+- What parameter uniquely identifies the resource?
+- Can this parameter be undefined at first render?
+- Should the resource return an error if not found, or `null`?
+- Does the result depend on other parameters like user, locale, workspace, role, or filters?
+- Do you want the cached data kept fresh for a long time or refetched often?
+- Do you want a lightweight `select` projection, or the full raw data?
+
+### For a mutation
+
+Ask:
+
+- What exact business action are we performing?
+- What input payload is required?
+- What query caches should be invalidated after success?
+- Should we update cache manually or just invalidate?
+- Is optimistic update desired?
+- What should happen in the UI on success and on failure?
+
+### Important behavior
+
+If the context already strongly implies the answer, do not ask unnecessary questions.
+If uncertain about best practice, ask.
+Do not silently invent business behavior.
+
+---
+
+## Supabase service rules
+
+When writing Supabase service functions:
+
+- The service must do only the database/API call
+- Use explicit return types
+- Select only needed columns
+- Use `.single()` only when the business contract guarantees exactly one row
+- Use `.maybeSingle()` when “not found” is a valid state
+- Throw errors instead of returning ambiguous shapes unless the project convention says otherwise
+- Never put TanStack Query config in the service
+- Never put UI toast/navigation logic in the service
+
+### Good example
+
+```ts
+export async function getMissionById(missionId: string): Promise<Mission> {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("id, title, status")
+    .eq("id", missionId)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+```
+
+---
+
+## `select` rules
+
+Use `select` only for light projection of already valid server data.
+
+Use `select` when:
+
+- extracting one field
+- building a lightweight view model
+- avoiding repeated trivial transformations in many components
+
+Do not use `select` when:
+
+- transformation is heavy
+- business logic is involved
+- the transformation is screen-specific and substantial
+- it hides poor service design
+
+Rule:
+
+- cache should store useful source data
+- `select` should only expose a lighter consumer-facing shape
+
+---
+
+## `enabled` rules
+
+Use `enabled` when a query parameter may be unavailable at first render.
+
+### Good
+
+```ts
+enabled: Boolean(missionId);
+```
+
+Do not use `enabled` unnecessarily if the parameter is guaranteed.
+
+---
+
+## Invalidation rules
+
+For mutations, always think through invalidation.
+
+Examples:
+
+- create item -> invalidate relevant lists
+- update item -> invalidate detail and maybe lists
+- delete item -> invalidate lists and remove/invalidate detail
+- business action -> invalidate every cache affected by resulting server state
+
+Prefer explicit invalidation using query key factories.
+
+### Good
+
+```ts
+queryClient.invalidateQueries({ queryKey: missionKeys.detail(missionId) });
+queryClient.invalidateQueries({ queryKey: missionKeys.lists() });
+```
+
+Do not use vague or inconsistent keys.
+
+---
+
+## Manual cache update rules
+
+Use manual `setQueryData` only when:
+
+- the new value is known with confidence
+- it improves UX meaningfully
+- it avoids unnecessary refetch
+- the consistency risk is low
+
+Otherwise prefer invalidation.
+
+If unsure, prefer invalidation.
+
+---
+
+## File generation rules
+
+When asked to generate a query or mutation, produce all required pieces, not just the hook, unless the user asked for a partial change.
+
+Default expectation:
+
+- types if needed
+- service function
+- query keys
+- query/mutation options
+- custom hook
+- example usage if helpful
+
+But first inspect the project structure and follow existing conventions if they are already consistent.
+
+---
+
+## Naming rules
+
+Use explicit names.
+
+### Good
+
+- `getMissionById`
+- `missionKeys`
+- `missionDetailOptions`
+- `useMissionDetail`
+- `updateMissionStatus`
+- `useUpdateMissionStatus`
+
+### Bad
+
+- `fetchData`
+- `useThing`
+- `getItem`
+- `dataQuery`
+
+Variable names must reflect domain meaning clearly.
+
+---
+
+## Do not do these things
+
+- Do not call Supabase directly inside screens/components
+- Do not define unstable inline query keys everywhere
+- Do not mix fetch logic and presentation logic
+- Do not overuse `select`
+- Do not use mutations for reads
+- Do not use queries for writes
+- Do not invent invalidation strategy without thinking through affected caches
+- Do not choose `.single()` vs `.maybeSingle()` arbitrarily
+- Do not return loosely typed `any`
+- Do not rewrite unrelated code
+- Do not break existing feature-first architecture
+
+---
+
+## Response behavior when asked to implement
+
+When the user asks you to create a query or mutation:
+
+1. Inspect surrounding code conventions first
+2. Determine whether it is a query or mutation
+3. If enough context exists, implement directly with best practices
+4. If key information is missing, ask targeted questions
+5. Explain briefly why you chose the pattern if useful
+6. Keep the implementation aligned with existing project architecture
+
+---
+
+## Preferred implementation pattern for a detail query
+
+```ts
+export const missionKeys = {
+  all: ["missions"] as const,
+  details: () => ["missions", "detail"] as const,
+  detail: (missionId: string) => ["missions", "detail", missionId] as const,
+};
+```
+
+```ts
+export async function getMissionById(missionId: string): Promise<Mission> {
+  const { data, error } = await supabase
+    .from("missions")
+    .select("id, title, status")
+    .eq("id", missionId)
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
+```
+
+```ts
+export function missionDetailOptions(missionId: string) {
+  return queryOptions({
+    queryKey: missionKeys.detail(missionId),
+    queryFn: () => getMissionById(missionId),
+    enabled: Boolean(missionId),
+  });
+}
+```
+
+```ts
+export function useMissionDetail(missionId: string) {
+  return useQuery(missionDetailOptions(missionId));
+}
+```
+
+---
+
+## Preferred implementation pattern for a mutation
+
+```ts
+export async function updateMissionStatus(
+  input: UpdateMissionStatusInput,
+): Promise<Mission> {
+  const { data, error } = await supabase
+    .from("missions")
+    .update({ status: input.status })
+    .eq("id", input.missionId)
+    .select("id, status")
+    .single();
+
+  if (error) throw error;
+
+  return data;
+}
+```
+
+```ts
+export function useUpdateMissionStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateMissionStatus,
+    onSuccess: (updatedMission) => {
+      queryClient.invalidateQueries({
+        queryKey: missionKeys.detail(updatedMission.id),
+      });
+      queryClient.invalidateQueries({ queryKey: missionKeys.lists() });
+    },
+  });
+}
+```
+
+---
+
+## Final rule
+
+If you are not confident about:
+
+- the business contract
+- missing/null behavior
+- cache invalidation strategy
+- optimistic update safety
+- whether to use query or mutation
+- whether to use `.single()` or `.maybeSingle()`
+
+you must ask a few focused questions before generating code.
