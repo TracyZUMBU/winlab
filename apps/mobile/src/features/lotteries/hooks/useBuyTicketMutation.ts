@@ -12,8 +12,16 @@ export function useBuyTicketMutation() {
 
   return useMutation({
     mutationFn: (payload: BuyTicketParams) => buyTicket(payload),
-    onSuccess: () => {
+    onSuccess: (result, variables) => {
+      if (!result.success) return;
       if (!userId) return;
+
+      queryClient.invalidateQueries({
+        queryKey: ["lotteries", "available", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["lotteries", "detail", variables.lotteryId, userId],
+      });
 
       // Buying a ticket affects:
       // - wallet balance (debit)

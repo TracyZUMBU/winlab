@@ -31,11 +31,28 @@
   "home": {
     "title": "Home"
   },
+  "auth": {
+    "genericError": "Something went wrong. Please try again.",
+    "emailSent": "A sign-in code was sent to your email address.",
+    "invalidCode": "The code is invalid or has expired.",
+    "otp": {
+      "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen."
+    }
+  },
   "emailScreen": {
     "title": "Enter your email",
-    "subtitle": "Join Winlab and start earning tokens for exclusive brand lotteries.",
+    "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
     "label": "EMAIL ADDRESS",
     "continue": "Continue",
+    "dev": {
+      "title": "Development mode",
+      "subtitle": "Password sign-in using the email above (e.g. seed accounts). Omitted from release builds.",
+      "passwordLabel": "PASSWORD",
+      "submit": "Dev sign-in",
+      "error": {
+        "passwordRequired": "Password is required"
+      }
+    },
     "error": {
       "required": "Email is required",
       "email": "Email is invalid"
@@ -62,10 +79,23 @@
     "screen": {
       "submitMission": "Mission submitted.",
       "unfoundMission": "This mission could not be found or an error occurred.",
-      "unspecifiedMission": "Mission not specified."
+      "unspecifiedMission": "Mission not specified.",
+      "loading": "Loading missions…",
+      "error": "Could not load missions. Please try again.",
+      "empty": "No missions available.",
+      "loadMore": "Load more"
+    }
+  },
+  "lotteries": {
+    "layout": {
+      "title": "Lotteries",
+      "detail": "Lottery detail"
     }
   },
   "wallet": {
+    "screen": {
+      "error": "Could not load wallet data. Please try again."
+    },
     "missionCompleted": "Mission completed",
     "ticketPurchase": "Lottery entry",
     "referralBonus": "Referral bonus",
@@ -87,6 +117,39 @@
       "closed": "Drawing soon",
       "drawn": "Finished",
       "unknown": "Unknown"
+    },
+    "entries": "{{count}} entries",
+    "tokens": "{{count}} tokens",
+    "youHaveTickets": "You have {{count}} tickets",
+    "time": {
+      "ongoing": "Ongoing",
+      "zero": "0h 0m",
+      "daysHours": "{{days}}d {{hours}}h",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "screen": {
+      "loading": "Loading lotteries...",
+      "error": "An error occurred. Please try again.",
+      "empty": "No lotteries available.",
+      "goToResults": "My results"
+    },
+    "detail": {
+      "loading": "Loading lottery...",
+      "error": "Lottery not found or unavailable.",
+      "buyTicket": "Buy ticket",
+      "buyingTicket": "Buying ticket...",
+      "purchase": {
+        "errors": {
+          "generic": "Could not buy a ticket. Please try again.",
+          "UNAUTHENTICATED": "You need to be signed in.",
+          "LOTTERY_NOT_FOUND": "This lottery does not exist.",
+          "LOTTERY_NOT_PURCHASABLE": "This lottery is not available for purchase.",
+          "LOTTERY_NOT_STARTED": "This lottery has not started yet.",
+          "LOTTERY_EXPIRED": "This lottery has ended.",
+          "LOTTERY_DRAW_ALREADY_STARTED": "The draw has already started.",
+          "INSUFFICIENT_TOKENS": "Insufficient balance."
+        }
+      }
     }
   },
   "date": {
@@ -96,6 +159,89 @@
     "unknown": "Unknown date"
   },
   "common": {
-    "retry": "Retry"
+    "retry": "Retry",
+    "loadMore": "Load more",
+    "errors": {
+      "loadHint": "Check your connection and try again."
+    }
+  },
+  "results": {
+    "layout": {
+      "listTitle": "Results",
+      "detailTitle": "Result"
+    },
+    "userStatus": {
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "screen": {
+      "loading": "Loading results...",
+      "error": "Something went wrong.",
+      "empty": "No results for your entries yet."
+    },
+    "detail": {
+      "loading": "Loading...",
+      "notFound": "Result not found.",
+      "lotterySection": "Lottery",
+      "userSection": "Your entry",
+      "winnersSection": "Winners",
+      "winnerLine": "Rank {{position}} · {{pseudo}}"
+    },
+    "list": {
+      "winnerPosition": "Rank {{position}}"
+    }
+  },
+  "profile": {
+    "createProfile": {
+      "errors": {
+        "sessionExpired": "Your session has expired. Please sign in again.",
+        "emailUnavailable": "We could not read your email. Please sign in again.",
+        "submitFailed": "We could not create your profile. Please try again."
+      }
+    },
+    "screen": {
+      "title": "Profile",
+      "loading": "Loading profile...",
+      "error": "Could not load profile.",
+      "sessionRequired": "You need to be signed in.",
+      "notFound": "Profile not found.",
+      "emailLabel": "Email",
+      "usernameLabel": "Username",
+      "referralLabel": "Referral code",
+      "memberSinceLabel": "Member since",
+      "emailUnknown": "Not set",
+      "valueUnknown": "—",
+      "usernamePlaceholder": "Your username",
+      "editUsername": "Edit username",
+      "saveUsername": "Save",
+      "savingUsername": "Saving...",
+      "cancelEdit": "Cancel",
+      "updateSuccess": "Profile updated.",
+      "logout": "Log out",
+      "loggingOut": "Signing out...",
+      "updateError": "Update failed. Please try again.",
+      "deleteAccount": "Delete my account",
+      "deletingAccount": "Deleting account...",
+      "deleteAccountConfirmTitle": "Delete account",
+      "deleteAccountConfirmMessage": "This will anonymize your profile and disable your account. This action cannot be undone.",
+      "deleteAccountCancel": "Cancel",
+      "deleteAccountConfirmCta": "Delete",
+      "deleteAccountErrorTitle": "Deletion failed",
+      "deleteAccountErrorMessage": "We couldn't delete your account. Please try again."
+    },
+    "deleteAccount": {
+      "errors": {
+        "generic": "We couldn't delete your account. Please try again.",
+        "UNAUTHENTICATED": "Your session is invalid. Please sign in again.",
+        "SESSION_FORBIDDEN": "This action is not allowed for your account.",
+        "METHOD_NOT_ALLOWED": "Something went wrong. Please try again.",
+        "SERVER_MISCONFIGURED": "The service is temporarily unavailable. Please try again later.",
+        "ANONYMIZE_PROFILE_FAILED": "We couldn't complete account deletion. Please try again.",
+        "AUTH_DELETE_FAILED": "We couldn't complete account deletion. Please try again.",
+        "INVOKE_FAILED": "We couldn't reach the server. Check your connection and try again.",
+        "INVALID_RESPONSE": "Something went wrong. Please try again.",
+        "UNKNOWN_ERROR": "Something went wrong. Please try again."
+      }
+    }
   }
 }

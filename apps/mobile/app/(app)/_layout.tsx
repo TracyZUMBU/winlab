@@ -60,7 +60,7 @@ export default function AppTabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="loteries"
+        name="lotteries"
         options={{
           title: "Lotteries",
           tabBarIcon: ({ color, size }) => (

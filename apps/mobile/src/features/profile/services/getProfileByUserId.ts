@@ -1,15 +1,16 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import type { Profile } from "../types/profileTypes";
+import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 
 const PROFILES_TABLE = "profiles";
 
-export const getProfileByUserId = async (
+export async function getProfileByUserId(
   userId: string,
-): Promise<Profile | null> => {
+): Promise<Profile | null> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from(PROFILES_TABLE)
-    .select("*")
+    .select(PROFILE_MVP_COLUMNS)
     .eq("id", userId)
     .maybeSingle();
 
@@ -18,4 +19,4 @@ export const getProfileByUserId = async (
   }
 
   return data ?? null;
-};
+}

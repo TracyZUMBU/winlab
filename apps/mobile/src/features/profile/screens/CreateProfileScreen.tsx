@@ -11,14 +11,16 @@ import {
   View,
 } from "react-native";
 import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
-import { AUTH_MESSAGES, AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { usernameSchema, type UsernameFormValues } from "@/src/features/auth/validators";
+import { useTranslation } from "react-i18next";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
 
 const ACCENT = "#FF8C00";
 
 export const CreateProfileScreen: React.FC = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, status } = useAuthSession();
   const createProfileMutation = useCreateProfileMutation();
@@ -44,15 +46,13 @@ export const CreateProfileScreen: React.FC = () => {
     setServerError(null);
 
     if (!user) {
-      setServerError("Votre session a expire. Merci de vous reconnecter.");
+      setServerError(t("profile.createProfile.errors.sessionExpired"));
       router.replace(AUTH_ROUTES.email);
       return;
     }
 
     if (!user.email) {
-      setServerError(
-        "Impossible de recuperer votre email. Merci de vous reconnecter.",
-      );
+      setServerError(t("profile.createProfile.errors.emailUnavailable"));
       router.replace(AUTH_ROUTES.email);
       return;
     }
@@ -64,10 +64,8 @@ export const CreateProfileScreen: React.FC = () => {
         username: values.username,
       });
       router.replace("/home");
-    } catch (error: unknown) {
-      setServerError(
-        error instanceof Error ? error.message : AUTH_MESSAGES.genericError,
-      );
+    } catch {
+      setServerError(t("profile.createProfile.errors.submitFailed"));
     }
   };
 

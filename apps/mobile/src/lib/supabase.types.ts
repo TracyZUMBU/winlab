@@ -865,6 +865,13 @@ export type Database = {
         }[]
       }
       buy_ticket: { Args: { p_lottery_id: string }; Returns: string }
+      get_lottery_active_ticket_counts: {
+        Args: { p_lottery_ids: string[] }
+        Returns: {
+          lottery_id: string
+          active_tickets_count: number
+        }[]
+      }
       handle_referral_after_first_mission: {
         Args: { p_user_id: string }
         Returns: undefined

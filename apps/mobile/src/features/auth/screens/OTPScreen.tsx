@@ -10,15 +10,17 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { getProfileByUserId } from '@/src/features/profile/services/getProfileByUserId';
+import { useTranslation } from 'react-i18next';
 import { AuthScreenLayout } from '../components/AuthScreenLayout';
+import { redirectAfterAuthSession } from '../utils/redirectAfterAuthSession';
 import { otpSchema, type OtpFormValues } from '../validators';
 import { sendEmailOtp, verifyEmailOtp } from '../services';
-import { AUTH_MESSAGES, AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
+import { AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
 
 const ACCENT = '#FF8C00';
 
 export const OTPScreen: React.FC = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string }>();
   const emailFromParams = typeof params.email === 'string' ? params.email : '';
@@ -48,7 +50,7 @@ export const OTPScreen: React.FC = () => {
 
     const email = values.email ?? emailFromParams;
     if (!email) {
-      setServerError("L'email est manquant, veuillez recommencer le flux.");
+      setServerError(t("auth.otp.emailMissingInFlow"));
       router.replace(AUTH_ROUTES.email);
       return;
     }
@@ -56,31 +58,23 @@ export const OTPScreen: React.FC = () => {
     const result = await verifyEmailOtp({ email, token: values.code });
 
     if (!result.success) {
-      setServerError(result.errorMessage ?? AUTH_MESSAGES.invalidCode);
+      setServerError(t("auth.invalidCode"));
       return;
     }
 
     const user = result.user;
 
     try {
-      const profile = await getProfileByUserId(user.id);
-
-      if (profile) {
-        router.replace(AUTH_ROUTES.appIndex);
-      } else {
-        router.replace({
-          pathname: AUTH_ROUTES.createProfile,
-        });
-      }
-    } catch (error: any) {
-      setServerError(error?.message ?? AUTH_MESSAGES.genericError);
+      await redirectAfterAuthSession(router, user.id);
+    } catch {
+      setServerError(t("auth.genericError"));
     }
   };
 
   const handleResend = async () => {
     const email = emailFromParams;
     if (!email) {
-      setServerError("L'email est manquant, veuillez recommencer le flux.");
+      setServerError(t("auth.otp.emailMissingInFlow"));
       router.replace(AUTH_ROUTES.email);
       return;
     }
@@ -89,8 +83,8 @@ export const OTPScreen: React.FC = () => {
     setResendLoading(true);
     try {
       await sendEmailOtp({ email });
-    } catch (error: any) {
-      setServerError(error?.message ?? AUTH_MESSAGES.genericError);
+    } catch {
+      setServerError(t("auth.genericError"));
     } finally {
       setResendLoading(false);
     }

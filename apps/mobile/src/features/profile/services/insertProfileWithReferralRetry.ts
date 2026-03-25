@@ -1,16 +1,14 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
 /** Postgres unique constraint on profiles.referral_code */
-export const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
+const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
   "profiles_referral_code_unique";
 
 /**
  * Race: two inserts can still collide after the trigger's NOT EXISTS check.
  * Retry only for that constraint.
  */
-export function isProfileReferralCodeUniqueViolation(
-  error: PostgrestError,
-): boolean {
+function isProfileReferralCodeUniqueViolation(error: PostgrestError): boolean {
   if (error.code !== "23505") {
     return false;
   }
@@ -36,6 +34,10 @@ export async function insertProfileWithReferralRetry<T>(
 
     if (!error && data !== null) {
       return data;
+    }
+
+    if (!error && data === null) {
+      throw new Error("Profile insert returned no data without an error");
     }
 
     if (error && isProfileReferralCodeUniqueViolation(error)) {

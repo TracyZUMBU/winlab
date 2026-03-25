@@ -9,9 +9,10 @@ import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
 
 import { setHasSeenOnboardingTrue } from "@/src/lib/onboardingStorage";
+import { logger } from "@/src/lib/logger";
 import { useRouter } from "expo-router";
 import { AUTH_ROUTES } from "../../auth/constants/authConstants";
-import { ONBOARDING_SLIDES } from "../onboardingSlides";
+import { ONBOARDING_SLIDES } from "../constants";
 
 export function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -30,7 +31,7 @@ export function OnboardingScreen() {
         await setHasSeenOnboardingTrue();
       } catch (error: unknown) {
         // don't block the user if the write fails (app still works).
-        console.warn("Failed to persist onboarding state:", error);
+        logger.warn("Failed to persist onboarding state", { error });
       }
       router.replace(AUTH_ROUTES.email);
     }

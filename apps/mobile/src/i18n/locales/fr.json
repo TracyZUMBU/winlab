@@ -33,9 +33,18 @@
   },
   "emailScreen": {
     "title": "Entrez votre email",
-    "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+    "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
     "label": "ADRESSE EMAIL",
     "continue": "Continuer",
+    "dev": {
+      "title": "Mode développement",
+      "subtitle": "Connexion par mot de passe avec l’email saisi ci-dessus (ex. comptes seed). Absent des builds release.",
+      "passwordLabel": "MOT DE PASSE",
+      "submit": "Connexion dev",
+      "error": {
+        "passwordRequired": "Le mot de passe est requis"
+      }
+    },
     "secureAndEncryptedAuthentication": "Authentification sécurisée et chiffrée",
     "termsOfService": "Conditions d'utilisation",
     "privacyPolicy": "Politique de confidentialité",
@@ -49,9 +58,12 @@
     "genericError": "Une erreur est survenue. Merci de réessayer.",
     "emailSent": "Un code de connexion a été envoyé à votre adresse email.",
     "invalidCode": "Le code saisi est invalide ou expiré.",
+    "otp": {
+      "emailMissingInFlow": "L’email est manquant. Recommencez depuis l’écran de connexion."
+    },
     "email": {
       "title": "Entrez votre email",
-      "subtitle": "Rejoignez Winlab et commencez à gagner des jetons pour participer aux meilleures loteries de marques.",
+      "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
       "label": "ADRESSE EMAIL"
     }
   },
@@ -104,10 +116,23 @@
     "screen": {
       "submitMission": "Mission soumise.",
       "unfoundMission": "Cette mission est introuvable ou une erreur est survenue.",
-      "unspecifiedMission": "Mission non précisée."
+      "unspecifiedMission": "Mission non précisée.",
+      "loading": "Chargement des missions…",
+      "error": "Impossible de charger les missions. Réessayez.",
+      "empty": "Aucune mission disponible.",
+      "loadMore": "Voir plus"
+    }
+  },
+  "lotteries": {
+    "layout": {
+      "title": "Loteries",
+      "detail": "Détail loterie"
     }
   },
   "wallet": {
+    "screen": {
+      "error": "Impossible de charger le portefeuille. Réessayez."
+    },
     "missionCompleted": "Mission complétée",
     "ticketPurchase": "Achat de billet",
     "referralBonus": "Bonus de référence",
@@ -126,9 +151,42 @@
   "lottery": {
     "status": {
       "active": "En cours",
-      "closed": "Clôturé",
-      "drawn": "Tiré",
+      "closed": "Tirage bientôt",
+      "drawn": "Terminé",
       "unknown": "Inconnu"
+    },
+    "entries": "{{count}} participations",
+    "tokens": "{{count}} jetons",
+    "youHaveTickets": "Vous avez {{count}} tickets",
+    "time": {
+      "ongoing": "En cours",
+      "zero": "0 h 0 min",
+      "daysHours": "{{days}} j {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "screen": {
+      "loading": "Chargement des loteries...",
+      "error": "Une erreur est survenue. Réessayez.",
+      "empty": "Aucune loterie disponible.",
+      "goToResults": "Voir mes résultats"
+    },
+    "detail": {
+      "loading": "Chargement de la loterie...",
+      "error": "Loterie introuvable ou indisponible.",
+      "buyTicket": "Acheter un ticket",
+      "buyingTicket": "Achat du ticket...",
+      "purchase": {
+        "errors": {
+          "generic": "Impossible d'acheter le ticket. Réessayez.",
+          "UNAUTHENTICATED": "Vous devez être connecté.",
+          "LOTTERY_NOT_FOUND": "Cette loterie n'existe pas.",
+          "LOTTERY_NOT_PURCHASABLE": "Cette loterie n'est pas disponible à l'achat.",
+          "LOTTERY_NOT_STARTED": "La loterie n'a pas encore commencé.",
+          "LOTTERY_EXPIRED": "Cette loterie est terminée.",
+          "LOTTERY_DRAW_ALREADY_STARTED": "Le tirage a déjà commencé.",
+          "INSUFFICIENT_TOKENS": "Solde insuffisant."
+        }
+      }
     }
   },
   "date": {
@@ -138,6 +196,89 @@
     "unknown": "Date inconnue"
   },
   "common": {
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "loadMore": "Voir plus",
+    "errors": {
+      "loadHint": "Vérifiez votre connexion et réessayez."
+    }
+  },
+  "results": {
+    "layout": {
+      "listTitle": "Résultats",
+      "detailTitle": "Résultat"
+    },
+    "userStatus": {
+      "won": "Gagné",
+      "lost": "Perdu"
+    },
+    "screen": {
+      "loading": "Chargement des résultats...",
+      "error": "Une erreur est survenue.",
+      "empty": "Aucun résultat pour vos participations."
+    },
+    "detail": {
+      "loading": "Chargement...",
+      "notFound": "Résultat introuvable.",
+      "lotterySection": "Loterie",
+      "userSection": "Votre participation",
+      "winnersSection": "Gagnants",
+      "winnerLine": "Place {{position}} · {{pseudo}}"
+    },
+    "list": {
+      "winnerPosition": "Place {{position}}"
+    }
+  },
+  "profile": {
+    "createProfile": {
+      "errors": {
+        "sessionExpired": "Votre session a expiré. Merci de vous reconnecter.",
+        "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
+        "submitFailed": "Impossible de créer votre profil. Réessayez."
+      }
+    },
+    "screen": {
+      "title": "Profil",
+      "loading": "Chargement du profil...",
+      "error": "Impossible de charger le profil.",
+      "sessionRequired": "Vous devez être connecté.",
+      "notFound": "Profil introuvable.",
+      "emailLabel": "Email",
+      "usernameLabel": "Pseudo",
+      "referralLabel": "Code de parrainage",
+      "memberSinceLabel": "Membre depuis",
+      "emailUnknown": "Non renseigné",
+      "valueUnknown": "—",
+      "usernamePlaceholder": "Votre pseudo",
+      "editUsername": "Modifier le pseudo",
+      "saveUsername": "Enregistrer",
+      "savingUsername": "Enregistrement...",
+      "cancelEdit": "Annuler",
+      "updateSuccess": "Profil mis à jour.",
+      "logout": "Se déconnecter",
+      "loggingOut": "Déconnexion...",
+      "updateError": "La mise à jour a échoué. Réessayez.",
+      "deleteAccount": "Supprimer mon compte",
+      "deletingAccount": "Suppression du compte...",
+      "deleteAccountConfirmTitle": "Supprimer le compte",
+      "deleteAccountConfirmMessage": "Votre profil sera anonymisé et votre compte sera désactivé. Cette action est irréversible.",
+      "deleteAccountCancel": "Annuler",
+      "deleteAccountConfirmCta": "Supprimer",
+      "deleteAccountErrorTitle": "Suppression impossible",
+      "deleteAccountErrorMessage": "Nous n’avons pas pu supprimer votre compte. Réessayez."
+    },
+    "deleteAccount": {
+      "errors": {
+        "generic": "Nous n’avons pas pu supprimer votre compte. Réessayez.",
+        "UNAUTHENTICATED": "Votre session n’est plus valide. Reconnectez-vous.",
+        "SESSION_FORBIDDEN": "Cette action n’est pas autorisée pour votre compte.",
+        "METHOD_NOT_ALLOWED": "Une erreur est survenue. Réessayez.",
+        "SERVER_MISCONFIGURED": "Le service est temporairement indisponible. Réessayez plus tard.",
+        "ANONYMIZE_PROFILE_FAILED": "La suppression du compte n’a pas pu aboutir. Réessayez.",
+        "AUTH_DELETE_FAILED": "La suppression du compte n’a pas pu aboutir. Réessayez.",
+        "INVOKE_FAILED": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+        "INVALID_RESPONSE": "Une erreur est survenue. Réessayez.",
+        "UNKNOWN_ERROR": "Une erreur est survenue. Réessayez."
+      }
+    }
   }
 }
