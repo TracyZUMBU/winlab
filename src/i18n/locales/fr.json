@@ -164,7 +164,19 @@
       "loading": "Chargement de la loterie...",
       "error": "Loterie introuvable ou indisponible.",
       "buyTicket": "Acheter un ticket",
-      "buyingTicket": "Achat du ticket..."
+      "buyingTicket": "Achat du ticket...",
+      "purchase": {
+        "errors": {
+          "generic": "Impossible d'acheter le ticket. Réessayez.",
+          "UNAUTHENTICATED": "Vous devez être connecté.",
+          "LOTTERY_NOT_FOUND": "Cette loterie n'existe pas.",
+          "LOTTERY_NOT_PURCHASABLE": "Cette loterie n'est pas disponible à l'achat.",
+          "LOTTERY_NOT_STARTED": "La loterie n'a pas encore commencé.",
+          "LOTTERY_EXPIRED": "Cette loterie est terminée.",
+          "LOTTERY_DRAW_ALREADY_STARTED": "Le tirage a déjà commencé.",
+          "INSUFFICIENT_TOKENS": "Solde insuffisant."
+        }
+      }
     }
   },
   "date": {
@@ -224,7 +236,15 @@
       "updateSuccess": "Profil mis à jour.",
       "logout": "Se déconnecter",
       "loggingOut": "Déconnexion...",
-      "updateError": "La mise à jour a échoué. Réessayez."
+      "updateError": "La mise à jour a échoué. Réessayez.",
+      "deleteAccount": "Supprimer mon compte",
+      "deletingAccount": "Suppression du compte...",
+      "deleteAccountConfirmTitle": "Supprimer le compte",
+      "deleteAccountConfirmMessage": "Votre profil sera anonymisé et votre compte sera désactivé. Cette action est irréversible.",
+      "deleteAccountCancel": "Annuler",
+      "deleteAccountConfirmCta": "Supprimer",
+      "deleteAccountErrorTitle": "Suppression impossible",
+      "deleteAccountErrorMessage": "Nous n’avons pas pu supprimer votre compte. Réessayez."
     }
   }
 }

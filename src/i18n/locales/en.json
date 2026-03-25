@@ -122,7 +122,19 @@
       "loading": "Loading lottery...",
       "error": "Lottery not found or unavailable.",
       "buyTicket": "Buy ticket",
-      "buyingTicket": "Buying ticket..."
+      "buyingTicket": "Buying ticket...",
+      "purchase": {
+        "errors": {
+          "generic": "Could not buy a ticket. Please try again.",
+          "UNAUTHENTICATED": "You need to be signed in.",
+          "LOTTERY_NOT_FOUND": "This lottery does not exist.",
+          "LOTTERY_NOT_PURCHASABLE": "This lottery is not available for purchase.",
+          "LOTTERY_NOT_STARTED": "This lottery has not started yet.",
+          "LOTTERY_EXPIRED": "This lottery has ended.",
+          "LOTTERY_DRAW_ALREADY_STARTED": "The draw has already started.",
+          "INSUFFICIENT_TOKENS": "Insufficient balance."
+        }
+      }
     }
   },
   "date": {
@@ -182,7 +194,15 @@
       "updateSuccess": "Profile updated.",
       "logout": "Log out",
       "loggingOut": "Signing out...",
-      "updateError": "Update failed. Please try again."
+      "updateError": "Update failed. Please try again.",
+      "deleteAccount": "Delete my account",
+      "deletingAccount": "Deleting account...",
+      "deleteAccountConfirmTitle": "Delete account",
+      "deleteAccountConfirmMessage": "This will anonymize your profile and disable your account. This action cannot be undone.",
+      "deleteAccountCancel": "Cancel",
+      "deleteAccountConfirmCta": "Delete",
+      "deleteAccountErrorTitle": "Deletion failed",
+      "deleteAccountErrorMessage": "We couldn't delete your account. Please try again."
     }
   }
 }
