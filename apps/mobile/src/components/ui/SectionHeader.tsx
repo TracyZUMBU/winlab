@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     ...theme.typography.sectionTitle,
   },
   subtitle: {
-    color: theme.colors.textMuted,
+    color: theme.colors.textMutedAccent,
     ...theme.typography.cardBody,
   },
 });

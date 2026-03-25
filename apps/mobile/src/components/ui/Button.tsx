@@ -20,6 +20,7 @@ type ButtonProps = {
   textStyle?: TextStyle;
   disabled?: boolean;
   leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   /** Full-width row (e.g. CTA inside a card). */
   fullWidth?: boolean;
 };
@@ -32,6 +33,7 @@ export function Button({
   textStyle,
   disabled,
   leftIcon,
+  rightIcon,
   fullWidth,
 }: ButtonProps) {
   return (
@@ -61,6 +63,7 @@ export function Button({
       >
         {title}
       </Text>
+      {rightIcon}
     </TouchableOpacity>
   );
 }

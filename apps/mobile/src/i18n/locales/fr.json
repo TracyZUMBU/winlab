@@ -107,11 +107,80 @@
         "completed": "Complétée"
       },
       "cta": {
-        "start": "Commencer"
+        "start": "Commencer",
+        "pending": "En attente de validation",
+        "completed": "Voir le détail"
       },
       "tokenReward": "+{{count}} jetons",
       "a11y": {
-        "brandLogo": "Logo {{brand}}"
+        "brandLogo": "Logo {{brand}}",
+        "missionIllustration": "Image de mission pour {{brand}}"
+      }
+    },
+    "list": {
+      "filter": {
+        "all": "Tout",
+        "survey": "Sondages",
+        "video": "Vidéos",
+        "follow": "Social"
+      },
+      "sectionTitle": "Missions disponibles",
+      "sectionSubtitle": "Complétez des tâches pour gagner des entrées",
+      "infoBanner": "De nouvelles missions sont ajoutées chaque jour. Revenez demain pour plus de jetons !",
+      "tokenBalance": "{{amount}} jetons",
+      "emptyFilter": "Aucune mission dans cette catégorie."
+    },
+    "durationHint": {
+      "survey": "2 min",
+      "video": "30 sec",
+      "follow": "15 sec"
+    },
+    "detail": {
+      "screen": {
+        "loading": "Chargement de la mission…"
+      },
+      "typeLabel": {
+        "survey": "Sondage de consommation",
+        "video": "Vidéo de consommation",
+        "follow": "Tâche sociale",
+        "referral": "Parrainage",
+        "custom": "Mission"
+      },
+      "progress": {
+        "title": "Progression",
+        "percent": "{{percent}}%"
+      },
+      "meta": {
+        "tokenRewardTitle": "Récompense",
+        "tokenReward": "{{count}} jetons",
+        "estimatedTimeTitle": "Temps estimé"
+      },
+      "duration": {
+        "minutes": "{{minutes}} min",
+        "seconds": "{{seconds}} sec",
+        "unknown": "—"
+      },
+      "about": {
+        "title": "À propos de la mission",
+        "descriptionFallback": "Aucune description de mission n’est disponible."
+      },
+      "features": {
+        "anonymous": {
+          "title": "Réponses anonymes",
+          "description": "Vos données sont protégées et traitées uniquement à des fins statistiques."
+        },
+        "validationInstant": {
+          "title": "Validation instantanée",
+          "description": "Recevez vos jetons dès la fin du questionnaire."
+        },
+        "validationManual": {
+          "title": "Validation manuelle",
+          "description": "Recevez vos jetons après validation."
+        }
+      },
+      "cta": {
+        "launch": "Lancer la mission",
+        "launchPending": "Lancement…"
       }
     },
     "submission": {
@@ -210,7 +279,9 @@
     "unknown": "Date inconnue"
   },
   "common": {
+    "back": "Retour",
     "retry": "Réessayer",
+    "share": "Partager",
     "loadMore": "Voir plus",
     "errors": {
       "loadHint": "Vérifiez votre connexion et réessayez."

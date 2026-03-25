@@ -1,90 +1,73 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/src/components/ui/AppHeader";
+import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
+import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
+import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
+
+import { MissionCard } from "../components/MissionCard";
 import type { AvailableMission } from "../hooks/useAvailableMissionsQuery";
 import { useAvailableMissionsQuery } from "../hooks/useAvailableMissionsQuery";
 
-const DESCRIPTION_MAX_LENGTH = 80;
+type MissionFilterId = "all" | "survey" | "video" | "follow";
 
-function truncateDescription(description: string | null): string {
-  if (!description) return "";
-  if (description.length <= DESCRIPTION_MAX_LENGTH) return description;
-  return description.slice(0, DESCRIPTION_MAX_LENGTH).trim() + "…";
-}
+const FILTER_ORDER: MissionFilterId[] = ["all", "survey", "video", "follow"];
 
-function StatusBadge({ status }: { status: AvailableMission["userStatus"] }) {
-  const labels: Record<AvailableMission["userStatus"], string> = {
-    available: "Disponible",
-    pending: "En attente",
-    completed: "Complétée",
-  };
-  const statusStyle =
-    status === "completed"
-      ? styles.badgeCompleted
-      : status === "pending"
-        ? styles.badgePending
-        : styles.badgeAvailable;
+function HeaderTokenBalance() {
+  const { t, i18n } = useTranslation();
+  const { data, isLoading } = useWalletBalanceQuery();
+  const locale = i18n.language.startsWith("fr") ? "fr-FR" : "en-US";
+  const amount =
+    data == null
+      ? isLoading
+        ? "…"
+        : "0"
+      : new Intl.NumberFormat(locale).format(data.balance);
 
   return (
-    <View style={[styles.badge, statusStyle]}>
-      <Text style={styles.badgeText}>{labels[status]}</Text>
+    <View style={pillStyles.root}>
+      <MaterialIcons name="token" size={16} color={theme.colors.text} />
+      <Text style={pillStyles.text}>{t("missions.list.tokenBalance", { amount })}</Text>
     </View>
   );
 }
 
-function MissionCard({
-  mission,
-  onPress,
-}: {
-  mission: AvailableMission;
-  onPress: (mission: AvailableMission) => void;
-}) {
-  const brandName = mission.brand?.name ?? "—";
-  const description = truncateDescription(mission.description);
-
+function MissionsInfoBanner() {
+  const { t } = useTranslation();
   return (
-    <Pressable style={styles.card} onPress={() => onPress(mission)}>
-      <View style={styles.cardHeader}>
-        {mission.brand?.logo_url ? (
-          <Image
-            source={{ uri: mission.brand.logo_url }}
-            style={styles.brandLogo}
-            accessibilityLabel={`Logo ${brandName}`}
-          />
-        ) : null}
-        <Text style={styles.brandName}>{brandName}</Text>
-        <StatusBadge status={mission.userStatus} />
-      </View>
-      <Text style={styles.title}>{mission.title}</Text>
-      {description ? (
-        <Text style={styles.description} numberOfLines={2}>
-          {description}
-        </Text>
-      ) : null}
-      <View style={styles.meta}>
-        <Text style={styles.metaText}>{mission.mission_type}</Text>
-        <Text style={styles.metaText}>•</Text>
-        <Text style={styles.tokenReward}>{mission.token_reward} tokens</Text>
-      </View>
-    </Pressable>
+    <View style={bannerStyles.root}>
+      <MaterialIcons
+        name="info-outline"
+        size={22}
+        color={theme.colors.accentSolid}
+      />
+      <Text style={bannerStyles.text}>{t("missions.list.infoBanner")}</Text>
+    </View>
   );
 }
 
 export function MissionsScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+  const [filter, setFilter] = useState<MissionFilterId>("all");
+
   const {
     data: missions,
     isLoading,
@@ -95,13 +78,31 @@ export function MissionsScreen() {
     isFetchingNextPage,
   } = useAvailableMissionsQuery();
 
+  const filteredMissions = useMemo(() => {
+    if (!missions) return [];
+    if (filter === "all") return missions;
+    return missions.filter((m) => m.mission_type === filter);
+  }, [missions, filter]);
+
   const handleMissionPress = (mission: AvailableMission) => {
     router.push(`/missions/${mission.id}`);
   };
 
+  const listBottomPadding =
+    theme.spacing.xl + Math.max(insets.bottom, theme.spacing.sm);
+
+  const shellHeader = (
+    <AppHeader
+      title={t("missions.layout.title")}
+      titleAlign="start"
+      rightSlot={<HeaderTokenBalance />}
+    />
+  );
+
   if (isLoading) {
     return (
-      <Screen>
+      <Screen edges={["top", "bottom"]}>
+        {shellHeader}
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
           <Text style={styles.loadingText}>{t("missions.screen.loading")}</Text>
@@ -112,13 +113,14 @@ export function MissionsScreen() {
 
   if (isError) {
     return (
-      <Screen>
+      <Screen edges={["top", "bottom"]}>
+        {shellHeader}
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
           <Text style={styles.errorDetail}>{userFacingQueryLoadHint(t)}</Text>
-          <Pressable style={styles.retryButton} onPress={() => refetch()}>
-            <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
-          </Pressable>
+          <View style={styles.retryWrap}>
+            <Button title={t("common.retry")} onPress={() => refetch()} />
+          </View>
         </View>
       </Screen>
     );
@@ -126,7 +128,8 @@ export function MissionsScreen() {
 
   if (!missions || missions.length === 0) {
     return (
-      <Screen>
+      <Screen edges={["top", "bottom"]}>
+        {shellHeader}
         <View style={styles.centered}>
           <Text style={styles.emptyText}>{t("missions.screen.empty")}</Text>
         </View>
@@ -134,19 +137,66 @@ export function MissionsScreen() {
     );
   }
 
+  const listHeader = (
+    <View style={styles.listHeader}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.chipsScroll}
+      >
+        {FILTER_ORDER.map((id) => {
+          const selected = filter === id;
+          return (
+            <Pressable
+              key={id}
+              onPress={() => setFilter(id)}
+              style={[styles.chip, selected ? styles.chipActive : styles.chipIdle]}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+            >
+              <Text
+                style={[
+                  styles.chipLabel,
+                  selected ? styles.chipLabelActive : styles.chipLabelIdle,
+                ]}
+              >
+                {t(`missions.list.filter.${id}`)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+      <SectionHeader
+        title={t("missions.list.sectionTitle")}
+        subtitle={t("missions.list.sectionSubtitle")}
+      />
+    </View>
+  );
+
   return (
-    <Screen>
+    <Screen edges={["top", "bottom"]} style={styles.screen}>
+      {shellHeader}
       <FlatList
-        data={missions}
+        data={filteredMissions}
         keyExtractor={(item) => item.id}
+        ListHeaderComponent={listHeader}
+        ListEmptyComponent={
+          <View style={styles.filteredEmpty}>
+            <Text style={styles.emptyText}>{t("missions.list.emptyFilter")}</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <MissionCard mission={item} onPress={handleMissionPress} />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: listBottomPadding },
+        ]}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListFooterComponent={
-          hasNextPage ? (
-            <View style={styles.footer}>
+          <View style={styles.footer}>
+            {filteredMissions.length > 0 ? <MissionsInfoBanner /> : null}
+            {hasNextPage ? (
               <Pressable
                 onPress={() => fetchNextPage()}
                 style={styles.loadMoreButton}
@@ -163,15 +213,60 @@ export function MissionsScreen() {
                   </Text>
                 )}
               </Pressable>
-            </View>
-          ) : null
+            ) : null}
+          </View>
         }
       />
     </Screen>
   );
 }
 
+const pillStyles = StyleSheet.create({
+  root: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.accentSolid,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  text: {
+    color: theme.colors.text,
+    fontSize: 13,
+    fontWeight: "700",
+  },
+});
+
+const bannerStyles = StyleSheet.create({
+  root: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: theme.spacing.md,
+    marginTop: theme.spacing.md,
+    padding: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.accentWash,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.accentBorderMuted,
+  },
+  text: {
+    flex: 1,
+    ...theme.typography.cardBody,
+    color: theme.colors.textMutedAccent,
+    lineHeight: 20,
+  },
+});
+
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: theme.colors.background,
+  },
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -180,7 +275,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: theme.spacing.md,
-    color: theme.colors.textMuted,
+    color: theme.colors.textMutedAccent,
   },
   errorText: {
     color: theme.colors.text,
@@ -192,104 +287,69 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
   },
-  retryButton: {
+  retryWrap: {
     marginTop: theme.spacing.lg,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-    backgroundColor: theme.colors.accentSolid,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: "#fff",
-    fontWeight: "600",
   },
   emptyText: {
-    color: theme.colors.textMuted,
+    color: theme.colors.textMutedAccent,
     textAlign: "center",
   },
+  listHeader: {
+    gap: theme.spacing.lg,
+    paddingBottom: theme.spacing.sm,
+  },
+  chipsScroll: {
+    flexDirection: "row",
+    gap: theme.spacing.sm,
+    paddingBottom: theme.spacing.xs,
+  },
+  chip: {
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  chipActive: {
+    backgroundColor: theme.colors.text,
+    borderColor: theme.colors.text,
+  },
+  chipIdle: {
+    backgroundColor: theme.colors.surface,
+    borderColor: theme.colors.borderSubtle,
+  },
+  chipLabel: {
+    fontSize: 14,
+  },
+  chipLabelActive: {
+    color: theme.colors.surface,
+    fontWeight: "600",
+  },
+  chipLabelIdle: {
+    color: theme.colors.textMutedAccent,
+    fontWeight: "500",
+  },
   listContent: {
-    padding: theme.spacing.md,
-    paddingBottom: theme.spacing.xl,
+    flexGrow: 1,
+    paddingHorizontal: theme.spacing.screenHorizontal,
+    paddingTop: theme.spacing.sm,
   },
   separator: {
     height: theme.spacing.md,
   },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.borderSubtle,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: theme.spacing.sm,
-    gap: theme.spacing.sm,
-  },
-  brandLogo: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  brandName: {
-    flex: 1,
-    fontSize: 13,
-    color: theme.colors.textMuted,
-  },
-  badge: {
+  filteredEmpty: {
+    paddingVertical: theme.spacing.xl,
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  badgeAvailable: {
-    backgroundColor: "rgba(22, 163, 74, 0.15)",
-  },
-  badgePending: {
-    backgroundColor: "rgba(245, 158, 11, 0.15)",
-  },
-  badgeCompleted: {
-    backgroundColor: "rgba(107, 114, 128, 0.15)",
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: theme.colors.text,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
-  },
-  description: {
-    fontSize: 14,
-    color: theme.colors.textMuted,
-    marginBottom: theme.spacing.sm,
-  },
-  meta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.xs,
-  },
-  metaText: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
-  },
-  tokenReward: {
-    fontSize: 12,
-    color: theme.colors.accentSolid,
-    fontWeight: "600",
   },
   footer: {
-    paddingVertical: theme.spacing.md,
     alignItems: "center",
+    gap: theme.spacing.md,
+    paddingTop: theme.spacing.sm,
   },
   loadMoreButton: {
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: 999,
-    borderWidth: 1,
+    borderRadius: theme.radius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: theme.colors.borderSubtle,
     backgroundColor: theme.colors.surface,
   },

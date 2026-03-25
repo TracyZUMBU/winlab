@@ -70,11 +70,80 @@
         "completed": "Completed"
       },
       "cta": {
-        "start": "Start"
+        "start": "Start",
+        "pending": "Awaiting review",
+        "completed": "View details"
       },
       "tokenReward": "+{{count}} tokens",
       "a11y": {
-        "brandLogo": "{{brand}} logo"
+        "brandLogo": "{{brand}} logo",
+        "missionIllustration": "Mission image for {{brand}}"
+      }
+    },
+    "list": {
+      "filter": {
+        "all": "All",
+        "survey": "Surveys",
+        "video": "Videos",
+        "follow": "Social"
+      },
+      "sectionTitle": "Available missions",
+      "sectionSubtitle": "Complete tasks to earn entries",
+      "infoBanner": "New missions are added every day. Come back tomorrow for more tokens!",
+      "tokenBalance": "{{amount}} tokens",
+      "emptyFilter": "No missions in this category."
+    },
+    "durationHint": {
+      "survey": "2 min",
+      "video": "30 sec",
+      "follow": "15 sec"
+    },
+    "detail": {
+      "screen": {
+        "loading": "Loading mission…"
+      },
+      "typeLabel": {
+        "survey": "Consumer survey",
+        "video": "Consumption video",
+        "follow": "Social task",
+        "referral": "Referral",
+        "custom": "Mission"
+      },
+      "progress": {
+        "title": "Progress",
+        "percent": "{{percent}}%"
+      },
+      "meta": {
+        "tokenRewardTitle": "Reward",
+        "tokenReward": "{{count}} tokens",
+        "estimatedTimeTitle": "Estimated time"
+      },
+      "duration": {
+        "minutes": "{{minutes}} min",
+        "seconds": "{{seconds}} sec",
+        "unknown": "—"
+      },
+      "about": {
+        "title": "About the mission",
+        "descriptionFallback": "No mission description available."
+      },
+      "features": {
+        "anonymous": {
+          "title": "Anonymous responses",
+          "description": "Your data is protected and processed only for statistical purposes."
+        },
+        "validationInstant": {
+          "title": "Instant validation",
+          "description": "Receive your tokens right after the questionnaire ends."
+        },
+        "validationManual": {
+          "title": "Manual validation",
+          "description": "Receive your tokens after review."
+        }
+      },
+      "cta": {
+        "launch": "Launch mission",
+        "launchPending": "Launching…"
       }
     },
     "submission": {
@@ -173,7 +242,9 @@
     "unknown": "Unknown date"
   },
   "common": {
+    "back": "Back",
     "retry": "Retry",
+    "share": "Share",
     "loadMore": "Load more",
     "errors": {
       "loadHint": "Check your connection and try again."

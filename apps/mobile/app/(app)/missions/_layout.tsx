@@ -5,7 +5,7 @@ export default function MissionsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         title: "Missions",
       }}
     >

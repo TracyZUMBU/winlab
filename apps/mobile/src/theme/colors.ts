@@ -1,17 +1,38 @@
+import { mixHex } from "./mixHex";
+
+/** Single source for solid accent — `textMutedAccent` is derived from this. */
+const ACCENT_SOLID = "#FF8C00";
+
+const TEXT = "#020617";
+const TEXT_MUTED = "#6B7280";
+
+/**
+ * Secondary copy with a hint of the accent hue (maquette: #61896f from green).
+ * Recomputed when `ACCENT_SOLID` changes; do not hardcode a separate tint.
+ */
+const TEXT_MUTED_ACCENT = mixHex(ACCENT_SOLID, TEXT_MUTED, 0.4);
+
 export const colors = {
-  // Base
-  background: "#F9FAFB",
+  // Base (list/dashboard canvas — maquette #f6f8f6)
+  background: "#F6F8F6",
   backgroundDark: "#020617",
 
   // Brand / accent (never hardcode mockup green in components)
   accent: "rgba(255, 140, 0, 0.9)",
-  accentSolid: "#FF8C00",
+  accentSolid: ACCENT_SOLID,
   accentMuted: "rgba(255, 140, 0, 0.2)",
+  /** Full-width info strip (maquette primary/10) */
+  accentWash: "rgba(255, 140, 0, 0.1)",
+  /** Hairline around accent-tinted surfaces (maquette primary/20) */
+  accentBorderMuted: "rgba(255, 140, 0, 0.22)",
   onAccent: "#FFFFFF",
 
   // Text
-  text: "#020617",
-  textMuted: "#6B7280",
+  text: TEXT,
+  /** Neutral gray (errors, placeholders, non–accent-tinted hints). */
+  textMuted: TEXT_MUTED,
+  /** Body / subtitle / inactive UI: gray slightly pulled toward `accentSolid`. */
+  textMutedAccent: TEXT_MUTED_ACCENT,
 
   // Surfaces
   surface: "#FFFFFF",
@@ -34,4 +55,7 @@ export const colors = {
 
   /** Neutral shadow (not tied to accent). */
   shadow: "rgba(0, 0, 0, 0.08)",
+
+  /** Scrim on media thumbnails (e.g. video play overlay). */
+  overlayScrim: "rgba(0, 0, 0, 0.2)",
 } as const;

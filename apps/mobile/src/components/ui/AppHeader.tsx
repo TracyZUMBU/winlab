@@ -3,12 +3,16 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { theme } from "@/src/theme";
 
+export type AppHeaderTitleAlign = "center" | "start";
+
 export type AppHeaderProps = {
   title: string;
   leftSlot?: ReactNode;
   rightSlot?: ReactNode;
   /** Bottom hairline (e.g. under sticky header). Default true. */
   showBottomBorder?: boolean;
+  /** Dashboard style: title flush start + trailing slot (default center). */
+  titleAlign?: AppHeaderTitleAlign;
 };
 
 export function AppHeader({
@@ -16,13 +20,30 @@ export function AppHeader({
   leftSlot,
   rightSlot,
   showBottomBorder = true,
+  titleAlign = "center",
 }: AppHeaderProps) {
+  if (titleAlign === "start") {
+    return (
+      <View
+        style={[styles.rootStart, showBottomBorder && styles.rootBordered]}
+      >
+        {leftSlot ? (
+          <View style={styles.startLeft}>{leftSlot}</View>
+        ) : null}
+        <Text style={styles.titleStart} numberOfLines={1}>
+          {title}
+        </Text>
+        {rightSlot ? (
+          <View style={styles.startRight}>{rightSlot}</View>
+        ) : null}
+      </View>
+    );
+  }
+
   return (
-    <View
-      style={[styles.root, showBottomBorder && styles.rootBordered]}
-    >
+    <View style={[styles.root, showBottomBorder && styles.rootBordered]}>
       <View style={styles.side}>{leftSlot ?? <View style={styles.sideSpacer} />}</View>
-      <Text style={styles.title} numberOfLines={1}>
+      <Text style={styles.titleCenter} numberOfLines={1}>
         {title}
       </Text>
       <View style={styles.side}>{rightSlot ?? <View style={styles.sideSpacer} />}</View>
@@ -39,6 +60,14 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.screenHorizontal,
   },
+  rootStart: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: theme.layout.headerContentMinHeight,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.screenHorizontal,
+    gap: theme.spacing.sm,
+  },
   rootBordered: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.borderSubtle,
@@ -51,10 +80,23 @@ const styles = StyleSheet.create({
   sideSpacer: {
     width: theme.layout.minTouchTarget,
   },
-  title: {
+  titleCenter: {
     flex: 1,
     textAlign: "center",
     color: theme.colors.text,
     ...theme.typography.screenTitle,
+  },
+  startLeft: {
+    marginRight: theme.spacing.xs,
+  },
+  titleStart: {
+    flex: 1,
+    minWidth: 0,
+    textAlign: "left",
+    color: theme.colors.text,
+    ...theme.typography.screenTitle,
+  },
+  startRight: {
+    flexShrink: 0,
   },
 });

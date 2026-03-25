@@ -35,7 +35,7 @@ export default function AppTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.accentSolid,
-        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarInactiveTintColor: theme.colors.textMutedAccent,
         tabBarStyle: {
           borderTopColor: theme.colors.borderSubtle,
         },
