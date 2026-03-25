@@ -33,7 +33,11 @@ export class ConsoleMonitoringProvider implements MonitoringProvider {
     }
 
     if (event.severity === "error" || event.severity === "critical") {
-      logger.error(prefix, metadata);
+      logger.error(
+        prefix,
+        event.type === "exception" ? event.error : undefined,
+        metadata,
+      );
       return;
     }
 

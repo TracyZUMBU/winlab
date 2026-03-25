@@ -31,6 +31,14 @@
   "home": {
     "title": "Home"
   },
+  "auth": {
+    "genericError": "Something went wrong. Please try again.",
+    "emailSent": "A sign-in code was sent to your email address.",
+    "invalidCode": "The code is invalid or has expired.",
+    "otp": {
+      "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen."
+    }
+  },
   "emailScreen": {
     "title": "Enter your email",
     "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
@@ -71,7 +79,11 @@
     "screen": {
       "submitMission": "Mission submitted.",
       "unfoundMission": "This mission could not be found or an error occurred.",
-      "unspecifiedMission": "Mission not specified."
+      "unspecifiedMission": "Mission not specified.",
+      "loading": "Loading missions…",
+      "error": "Could not load missions. Please try again.",
+      "empty": "No missions available.",
+      "loadMore": "Load more"
     }
   },
   "lotteries": {
@@ -81,6 +93,9 @@
     }
   },
   "wallet": {
+    "screen": {
+      "error": "Could not load wallet data. Please try again."
+    },
     "missionCompleted": "Mission completed",
     "ticketPurchase": "Lottery entry",
     "referralBonus": "Referral bonus",
@@ -145,7 +160,10 @@
   },
   "common": {
     "retry": "Retry",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "errors": {
+      "loadHint": "Check your connection and try again."
+    }
   },
   "results": {
     "layout": {
@@ -174,6 +192,13 @@
     }
   },
   "profile": {
+    "createProfile": {
+      "errors": {
+        "sessionExpired": "Your session has expired. Please sign in again.",
+        "emailUnavailable": "We could not read your email. Please sign in again.",
+        "submitFailed": "We could not create your profile. Please try again."
+      }
+    },
     "screen": {
       "title": "Profile",
       "loading": "Loading profile...",
@@ -203,6 +228,20 @@
       "deleteAccountConfirmCta": "Delete",
       "deleteAccountErrorTitle": "Deletion failed",
       "deleteAccountErrorMessage": "We couldn't delete your account. Please try again."
+    },
+    "deleteAccount": {
+      "errors": {
+        "generic": "We couldn't delete your account. Please try again.",
+        "UNAUTHENTICATED": "Your session is invalid. Please sign in again.",
+        "SESSION_FORBIDDEN": "This action is not allowed for your account.",
+        "METHOD_NOT_ALLOWED": "Something went wrong. Please try again.",
+        "SERVER_MISCONFIGURED": "The service is temporarily unavailable. Please try again later.",
+        "ANONYMIZE_PROFILE_FAILED": "We couldn't complete account deletion. Please try again.",
+        "AUTH_DELETE_FAILED": "We couldn't complete account deletion. Please try again.",
+        "INVOKE_FAILED": "We couldn't reach the server. Check your connection and try again.",
+        "INVALID_RESPONSE": "Something went wrong. Please try again.",
+        "UNKNOWN_ERROR": "Something went wrong. Please try again."
+      }
     }
   }
 }

@@ -57,8 +57,8 @@ export const EmailScreen: React.FC = () => {
           email: values.email,
         },
       });
-    } catch (error: any) {
-      setServerError(error?.message ?? AUTH_MESSAGES.genericError);
+    } catch {
+      setServerError(t("auth.genericError"));
     }
   };
 

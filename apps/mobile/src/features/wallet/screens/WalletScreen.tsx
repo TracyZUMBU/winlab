@@ -13,6 +13,7 @@ import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
 
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { usePendingRewardsQuery } from "../hooks/usePendingRewardsQuery";
 import { usePurchasedTicketsQuery } from "../hooks/usePurchasedTicketsQuery";
 import { useWalletBalanceQuery } from "../hooks/useWalletBalanceQuery";
@@ -52,8 +53,9 @@ export function WalletScreen() {
     return (
       <Screen>
         <View style={styles.centered}>
-          <Text style={styles.errorText}>
-            {error instanceof Error ? error.message : String(error)}
+          <Text style={styles.errorText}>{t("wallet.screen.error")}</Text>
+          <Text style={[styles.errorText, styles.errorHint]}>
+            {userFacingQueryLoadHint(t)}
           </Text>
           <View style={styles.retryButton}>
             <Button
@@ -227,6 +229,12 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 14,
     color: theme.colors.text,
+    textAlign: "center",
+  },
+  errorHint: {
+    marginTop: theme.spacing.sm,
+    fontSize: 13,
+    color: theme.colors.textMuted,
     textAlign: "center",
   },
 });

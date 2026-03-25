@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,6 +11,7 @@ import {
 } from "react-native";
 
 import { Screen } from "@/src/components/ui/Screen";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import type { AvailableMission } from "../hooks/useAvailableMissionsQuery";
 import { useAvailableMissionsQuery } from "../hooks/useAvailableMissionsQuery";
@@ -82,11 +84,11 @@ function MissionCard({
 
 export function MissionsScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const {
     data: missions,
     isLoading,
     isError,
-    error,
     refetch,
     hasNextPage,
     fetchNextPage,
@@ -102,7 +104,7 @@ export function MissionsScreen() {
       <Screen>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
-          <Text style={styles.loadingText}>Chargement des missions…</Text>
+          <Text style={styles.loadingText}>{t("missions.screen.loading")}</Text>
         </View>
       </Screen>
     );
@@ -112,14 +114,10 @@ export function MissionsScreen() {
     return (
       <Screen>
         <View style={styles.centered}>
-          <Text style={styles.errorText}>
-            Une erreur est survenue. Réessayez.
-          </Text>
-          {error instanceof Error ? (
-            <Text style={styles.errorDetail}>{error.message}</Text>
-          ) : null}
+          <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
+          <Text style={styles.errorDetail}>{userFacingQueryLoadHint(t)}</Text>
           <Pressable style={styles.retryButton} onPress={() => refetch()}>
-            <Text style={styles.retryButtonText}>Réessayer</Text>
+            <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>
         </View>
       </Screen>
@@ -130,7 +128,7 @@ export function MissionsScreen() {
     return (
       <Screen>
         <View style={styles.centered}>
-          <Text style={styles.emptyText}>Aucune mission disponible.</Text>
+          <Text style={styles.emptyText}>{t("missions.screen.empty")}</Text>
         </View>
       </Screen>
     );
@@ -160,7 +158,9 @@ export function MissionsScreen() {
                     color={theme.colors.accentSolid}
                   />
                 ) : (
-                  <Text style={styles.loadMoreText}>Voir plus</Text>
+                  <Text style={styles.loadMoreText}>
+                    {t("missions.screen.loadMore")}
+                  </Text>
                 )}
               </Pressable>
             </View>

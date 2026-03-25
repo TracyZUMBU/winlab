@@ -10,10 +10,10 @@ import {
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
-import { AUTH_MESSAGES } from "../constants/authConstants";
 import { signInWithEmailPassword } from "../services";
 import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
 import { devPasswordLoginSchema, emailSchema } from "../validators";
+import { AUTH_MESSAGES } from "../constants/authConstants";
 
 export type DevPasswordLoginPanelProps = {
   /** Valeur courante du champ email sur EmailScreen (même flux que l’OTP). */
@@ -57,10 +57,8 @@ export const DevPasswordLoginPanel: React.FC<DevPasswordLoginPanelProps> = ({
         password: pwdParsed.data.password,
       });
       await redirectAfterAuthSession(router, user.id);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : AUTH_MESSAGES.genericError;
-      setError(message);
+    } catch {
+      setError(t("auth.genericError"));
     } finally {
       setSubmitting(false);
     }

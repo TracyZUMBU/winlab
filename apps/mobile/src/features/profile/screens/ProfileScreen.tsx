@@ -16,6 +16,7 @@ import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
 import { usernameSchema } from "@/src/features/auth/validators";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
@@ -122,31 +123,38 @@ export function ProfileScreen() {
           text: t("profile.screen.deleteAccountConfirmCta"),
           style: "destructive",
           onPress: () => {
-            deleteMyAccountMutation.mutate(undefined, {
-              onSuccess: () => {
-                signOutMutation.mutate(undefined, {
-                  onSuccess: () => {
-                    router.replace(AUTH_ROUTES.email);
-                  },
-                  onError: (error) => {
-                    logger.error("Logout after delete failed", error);
-                    router.replace(AUTH_ROUTES.email);
-                  },
+            void (async () => {
+              const result = await deleteMyAccountMutation.mutateAsync();
+              if (!result.ok) {
+                const message = getI18nMessageForCode({
+                  t,
+                  i18n,
+                  baseKey: "profile.deleteAccount.errors",
+                  code: result.code,
+                  fallbackKey: "profile.deleteAccount.errors.generic",
                 });
-              },
-              onError: (error) => {
-                logger.error("Delete account failed", error);
                 Alert.alert(
                   t("profile.screen.deleteAccountErrorTitle"),
-                  t("profile.screen.deleteAccountErrorMessage"),
+                  message,
                 );
-              },
-            });
+                return;
+              }
+
+              signOutMutation.mutate(undefined, {
+                onSuccess: () => {
+                  router.replace(AUTH_ROUTES.email);
+                },
+                onError: (error) => {
+                  logger.error("Logout after delete failed", error);
+                  router.replace(AUTH_ROUTES.email);
+                },
+              });
+            })();
           },
         },
       ],
     );
-  }, [deleteMyAccountMutation, router, signOutMutation, t]);
+  }, [deleteMyAccountMutation, i18n, router, signOutMutation, t]);
 
   if (authStatus === "loading") {
     return (
