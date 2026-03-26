@@ -31,6 +31,7 @@ export function LotteriesScreen() {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryId>("all");
+
   const {
     data,
     isLoading,
@@ -429,7 +430,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: theme.spacing.screenHorizontal,
     paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.xl,
+    // paddingBottom: theme.spacing.xl,
     gap: theme.spacing.lg,
   },
   sectionHeaderRow: {

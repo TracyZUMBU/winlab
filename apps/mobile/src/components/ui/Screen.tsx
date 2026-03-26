@@ -13,7 +13,9 @@ export type ScreenProps = {
 export function Screen({
   children,
   style,
-  edges = ["top", "bottom"],
+  // Default: avoid applying bottom safe-area under `Tabs` screens.
+  // Individual screens can override when they need bottom padding.
+  edges = ["top"],
 }: ScreenProps) {
   return (
     <SafeAreaView style={[styles.container, style]} edges={edges}>

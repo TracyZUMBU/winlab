@@ -156,7 +156,7 @@ export function MissionDetailScreen() {
 
   if (isLoading) {
     return (
-      <Screen edges={["top", "bottom"]}>
+      <Screen>
         {shellHeader}
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
@@ -170,7 +170,7 @@ export function MissionDetailScreen() {
 
   if (isError || !mission) {
     return (
-      <Screen edges={["top", "bottom"]}>
+      <Screen>
         {shellHeader}
         <View style={styles.centered}>
           <Text style={styles.error}>
@@ -206,7 +206,7 @@ export function MissionDetailScreen() {
   });
 
   return (
-    <Screen edges={["top", "bottom"]}>
+    <Screen>
       {shellHeader}
 
       <View style={styles.container}>

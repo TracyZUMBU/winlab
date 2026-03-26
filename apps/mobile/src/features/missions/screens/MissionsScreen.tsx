@@ -82,7 +82,7 @@ export function MissionsScreen() {
 
   if (isLoading) {
     return (
-      <Screen edges={["top", "bottom"]}>
+      <Screen>
         {shellHeader}
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
@@ -94,7 +94,7 @@ export function MissionsScreen() {
 
   if (isError) {
     return (
-      <Screen edges={["top", "bottom"]}>
+      <Screen>
         {shellHeader}
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
@@ -109,7 +109,7 @@ export function MissionsScreen() {
 
   if (!missions || missions.length === 0) {
     return (
-      <Screen edges={["top", "bottom"]}>
+      <Screen>
         {shellHeader}
         <View style={styles.centered}>
           <Text style={styles.emptyText}>{t("missions.screen.empty")}</Text>
@@ -131,7 +131,10 @@ export function MissionsScreen() {
             <Pressable
               key={id}
               onPress={() => setFilter(id)}
-              style={[styles.chip, selected ? styles.chipActive : styles.chipIdle]}
+              style={[
+                styles.chip,
+                selected ? styles.chipActive : styles.chipIdle,
+              ]}
               accessibilityRole="button"
               accessibilityState={{ selected }}
             >
@@ -155,7 +158,7 @@ export function MissionsScreen() {
   );
 
   return (
-    <Screen edges={["top", "bottom"]} style={styles.screen}>
+    <Screen style={styles.screen}>
       {shellHeader}
       <FlatList
         data={filteredMissions}
@@ -163,7 +166,9 @@ export function MissionsScreen() {
         ListHeaderComponent={listHeader}
         ListEmptyComponent={
           <View style={styles.filteredEmpty}>
-            <Text style={styles.emptyText}>{t("missions.list.emptyFilter")}</Text>
+            <Text style={styles.emptyText}>
+              {t("missions.list.emptyFilter")}
+            </Text>
           </View>
         }
         renderItem={({ item }) => (
