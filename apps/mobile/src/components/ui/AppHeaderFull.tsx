@@ -2,10 +2,11 @@ import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { theme } from "@/src/theme";
+import { AppHeaderTitleAlign } from "./AppHeader";
 
-export type AppHeaderTitleAlign = "center" | "start";
+export type AppHeaderFullTitleAlign = "center" | "start";
 
-export type AppHeaderProps = {
+export type AppHeaderFullProps = {
   title: string;
   leftSlot?: ReactNode;
   rightSlot?: ReactNode;
@@ -15,13 +16,13 @@ export type AppHeaderProps = {
   titleAlign?: AppHeaderTitleAlign;
 };
 
-export function AppHeader({
+export function AppHeaderFull({
   title,
   leftSlot,
   rightSlot,
   showBottomBorder = true,
   titleAlign = "center",
-}: AppHeaderProps) {
+}: AppHeaderFullProps) {
   if (titleAlign === "start") {
     return (
       <View style={[styles.rootStart, showBottomBorder && styles.rootBordered]}>
@@ -56,14 +57,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: theme.layout.headerContentMinHeight,
     paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.screenHorizontal,
   },
   rootStart: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: theme.layout.headerContentMinHeight,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.screenHorizontal,
+    paddingTop: theme.spacing.md,
+
     gap: theme.spacing.sm,
   },
   rootBordered: {

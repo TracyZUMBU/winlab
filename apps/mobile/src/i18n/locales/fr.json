@@ -210,6 +210,35 @@
     "layout": {
       "title": "Loteries",
       "detail": "Détail loterie"
+    },
+    "time": {
+      "inZero": "dans 0 min",
+      "inDays_one": "dans {{count}} jour",
+      "inDays_other": "dans {{count}} jours",
+      "inHoursMinutes": "dans {{hours}} h {{minutes}} min",
+      "tomorrow": "Demain",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "list": {
+      "searchPlaceholder": "Rechercher un lot, une marque...",
+      "seeAll": "Voir tout",
+      "drawIn": "Tirage {{time}}",
+      "enter": "PARTICIPER",
+      "nextDraw": "Prochain tirage : {{time}}",
+      "tokensCta": "{{count}} jetons",
+      "categories": {
+        "all": "Tout"
+      },
+      "sections": {
+        "endingSoon": "Se termine bientôt",
+        "featuredPrizes": "Lots à la une",
+        "giftCards": "Cartes cadeaux"
+      },
+      "a11y": {
+        "openLottery": "Ouvrir la loterie : {{title}}"
+      }
     }
   },
   "wallet": {
@@ -283,6 +312,9 @@
     "retry": "Réessayer",
     "share": "Partager",
     "loadMore": "Voir plus",
+    "a11y": {
+      "tokenBalance": "Solde de jetons : {{amount}}"
+    },
     "errors": {
       "loadHint": "Vérifiez votre connexion et réessayez."
     }

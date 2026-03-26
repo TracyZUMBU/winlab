@@ -1,9 +1,9 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
-import { useEffect, useMemo, useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import type { ComponentProps } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -16,12 +16,12 @@ import {
 import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
-import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { Screen } from "@/src/components/ui/Screen";
+import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 import {
@@ -389,10 +389,7 @@ export function MissionDetailScreen() {
             end={{ x: 0, y: 1 }}
           />
           <View
-            style={[
-              styles.bottomBarInner,
-              { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) },
-            ]}
+            style={[styles.bottomBarInner, { paddingBottom: theme.spacing.sm }]}
           >
             <Button
               title={

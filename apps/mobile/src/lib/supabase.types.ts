@@ -169,7 +169,9 @@ export type Database = {
           ends_at: string | null
           id: string
           image_url: string | null
+          is_featured: boolean
           number_of_winners: number
+          short_description: string | null
           slug: string | null
           starts_at: string | null
           status: Database["public"]["Enums"]["lottery_status"]
@@ -186,7 +188,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           number_of_winners?: number
+          short_description?: string | null
           slug?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["lottery_status"]
@@ -203,7 +207,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           number_of_winners?: number
+          short_description?: string | null
           slug?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["lottery_status"]

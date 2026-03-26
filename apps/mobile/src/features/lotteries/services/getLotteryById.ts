@@ -14,10 +14,12 @@ export type LotteryDetailRow = {
   id: string;
   title: string;
   description: string | null;
+  short_description: string | null;
   image_url: string | null;
   ticket_cost: number;
   ends_at: string | null;
   category: string | null;
+  is_featured: boolean;
   status: Enums<"lottery_status">;
   brand: LotteryDetailBrand | null;
   active_tickets_count: number;
@@ -42,10 +44,12 @@ export async function getLotteryById(
       id,
       title,
       description,
+      short_description,
       image_url,
       ticket_cost,
       ends_at,
       category,
+      is_featured,
       status,
       brand:brands!inner(id, name, logo_url)
     `,

@@ -5,7 +5,7 @@ export default function LotteriesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         title: "Lotteries",
       }}
     >

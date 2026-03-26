@@ -44,6 +44,10 @@ export const colors = {
   /** Flat success (icons, sparse use) */
   success: "#16A34A",
 
+  /** Error / destructive (text, chips, alerts) */
+  dangerSolid: "#DC2626",
+  dangerMuted: "rgba(220, 38, 38, 0.15)",
+
   /**
    * Muted surface tints for status / info chips (semantic, not domain-specific names).
    */

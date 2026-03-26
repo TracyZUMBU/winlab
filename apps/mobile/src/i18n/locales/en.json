@@ -173,6 +173,35 @@
     "layout": {
       "title": "Lotteries",
       "detail": "Lottery detail"
+    },
+    "time": {
+      "inZero": "in 0m",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "inHoursMinutes": "in {{hours}}h {{minutes}}m",
+      "tomorrow": "Tomorrow",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "list": {
+      "searchPlaceholder": "Search prizes, brands...",
+      "seeAll": "See all",
+      "drawIn": "Draw in {{time}}",
+      "enter": "ENTER",
+      "nextDraw": "Next draw: {{time}}",
+      "tokensCta": "{{count}} Tokens",
+      "categories": {
+        "all": "All"
+      },
+      "sections": {
+        "endingSoon": "Ending Soon",
+        "featuredPrizes": "Featured Prizes",
+        "giftCards": "Gift Cards"
+      },
+      "a11y": {
+        "openLottery": "Open lottery: {{title}}"
+      }
     }
   },
   "wallet": {
@@ -246,6 +275,9 @@
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",
+    "a11y": {
+      "tokenBalance": "Token balance: {{amount}}"
+    },
     "errors": {
       "loadHint": "Check your connection and try again."
     }

@@ -17,9 +17,9 @@ import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
+import { TokenBalancePill } from "@/src/components/ui/TokenBalancePill";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
-import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 
 import { MissionCard } from "../components/MissionCard";
 import type { AvailableMission } from "../hooks/useAvailableMissionsQuery";
@@ -28,25 +28,6 @@ import { useAvailableMissionsQuery } from "../hooks/useAvailableMissionsQuery";
 type MissionFilterId = "all" | "survey" | "video" | "follow";
 
 const FILTER_ORDER: MissionFilterId[] = ["all", "survey", "video", "follow"];
-
-function HeaderTokenBalance() {
-  const { t, i18n } = useTranslation();
-  const { data, isLoading } = useWalletBalanceQuery();
-  const locale = i18n.language.startsWith("fr") ? "fr-FR" : "en-US";
-  const amount =
-    data == null
-      ? isLoading
-        ? "…"
-        : "0"
-      : new Intl.NumberFormat(locale).format(data.balance);
-
-  return (
-    <View style={pillStyles.root}>
-      <MaterialIcons name="token" size={16} color={theme.colors.text} />
-      <Text style={pillStyles.text}>{t("missions.list.tokenBalance", { amount })}</Text>
-    </View>
-  );
-}
 
 function MissionsInfoBanner() {
   const { t } = useTranslation();
@@ -95,7 +76,7 @@ export function MissionsScreen() {
     <AppHeader
       title={t("missions.layout.title")}
       titleAlign="start"
-      rightSlot={<HeaderTokenBalance />}
+      rightSlot={<TokenBalancePill />}
     />
   );
 
@@ -220,28 +201,6 @@ export function MissionsScreen() {
     </Screen>
   );
 }
-
-const pillStyles = StyleSheet.create({
-  root: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.sm,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSolid,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  text: {
-    color: theme.colors.text,
-    fontSize: 13,
-    fontWeight: "700",
-  },
-});
 
 const bannerStyles = StyleSheet.create({
   root: {
