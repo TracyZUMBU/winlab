@@ -1,6 +1,6 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
-import { MissionStatus, MissionType, MissionValidationMode } from "../types";
+import { MissionType, MissionValidationMode } from "../types";
 
 type MissionBrand = {
   id: string;
@@ -9,12 +9,7 @@ type MissionBrand = {
 };
 
 type MissionRow = {
-  brand_id: string;
-  created_at: string;
   id: string;
-  max_completions_per_user: number;
-  max_completions_total: number | null;
-  status: MissionStatus;
   title: string;
   token_reward: number;
   description: string | null;
@@ -23,7 +18,6 @@ type MissionRow = {
   ends_at: string | null;
   metadata: Json | null;
   validation_mode: MissionValidationMode;
-  updated_at: string;
   brand: MissionBrand;
 };
 
@@ -32,7 +26,18 @@ export async function getMissionById(missionId: string): Promise<MissionRow> {
   const { data, error } = await supabase
     .from("missions")
     .select(
-      `*, brand:brands!inner(id, name, logo_url)`,
+      `
+      id,
+      title,
+      description,
+      mission_type,
+      token_reward,
+      starts_at,
+      ends_at,
+      metadata,
+      validation_mode,
+      brand:brands!inner(id, name, logo_url)
+    `,
     )
     .eq("id", missionId)
     .single();

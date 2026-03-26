@@ -7,7 +7,6 @@ import type { ComponentProps } from "react";
 import {
   ActivityIndicator,
   Pressable,
-  Share,
   ScrollView,
   StyleSheet,
   Text,
@@ -131,11 +130,6 @@ export function MissionDetailScreen() {
     };
   }, [mission, t]);
 
-  const onShare = async () => {
-    if (!mission) return;
-    await Share.share({ message: mission.title });
-  };
-
   const shellHeader = (
     <AppHeader
       title={t("missions.layout.detail")}
@@ -146,17 +140,11 @@ export function MissionDetailScreen() {
           accessibilityLabel={t("common.back")}
           style={styles.headerIconButton}
         >
-          <MaterialIcons name="arrow-back" size={22} color={theme.colors.text} />
-        </Pressable>
-      }
-      rightSlot={
-        <Pressable
-          onPress={onShare}
-          accessibilityRole="button"
-          accessibilityLabel={t("common.share")}
-          style={styles.headerIconButton}
-        >
-          <MaterialIcons name="share" size={22} color={theme.colors.text} />
+          <MaterialIcons
+            name="arrow-back"
+            size={22}
+            color={theme.colors.text}
+          />
         </Pressable>
       }
       showBottomBorder
@@ -172,7 +160,9 @@ export function MissionDetailScreen() {
         {shellHeader}
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
-          <Text style={styles.muted}>{t("missions.detail.screen.loading")}</Text>
+          <Text style={styles.muted}>
+            {t("missions.detail.screen.loading")}
+          </Text>
         </View>
       </Screen>
     );
@@ -222,16 +212,10 @@ export function MissionDetailScreen() {
       <View style={styles.container}>
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[
-            styles.content,
-            {
-              paddingBottom:
-                theme.spacing.xl + Math.max(insets.bottom, theme.spacing.sm),
-            },
-          ]}
+          contentContainerStyle={[styles.content]}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.hero}>
+          <View style={styles.hero} pointerEvents="none">
             <LinearGradient
               colors={[
                 theme.colors.accentWash,
@@ -271,9 +255,7 @@ export function MissionDetailScreen() {
               {brandName}
             </Text>
             {missionTypeLabelKey ? (
-              <Text style={styles.typeLabel}>
-                {t(missionTypeLabelKey)}
-              </Text>
+              <Text style={styles.typeLabel}>{t(missionTypeLabelKey)}</Text>
             ) : null}
           </View>
 
@@ -300,7 +282,13 @@ export function MissionDetailScreen() {
           </View>
 
           <View style={styles.metaCardsRow}>
-            <Card variant="outlined" style={styles.metaCard}>
+            <Card
+              variant="outlined"
+              style={StyleSheet.flatten([
+                styles.metaCard,
+                styles.metaCardSurface,
+              ])}
+            >
               <MaterialIcons
                 name="redeem"
                 size={30}
@@ -316,7 +304,13 @@ export function MissionDetailScreen() {
               </Text>
             </Card>
 
-            <Card variant="outlined" style={styles.metaCard}>
+            <Card
+              variant="outlined"
+              style={StyleSheet.flatten([
+                styles.metaCard,
+                styles.metaCardSurface,
+              ])}
+            >
               <MaterialIcons
                 name="schedule"
                 size={30}
@@ -387,21 +381,19 @@ export function MissionDetailScreen() {
           ) : null}
         </ScrollView>
 
-        <View
-          style={[
-            styles.bottomCtaOuter,
-            { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) },
-          ]}
-          pointerEvents="box-none"
-        >
+        <View style={styles.bottomBar} pointerEvents="box-none">
           <LinearGradient
-            colors={[theme.colors.surface, "transparent"]}
-            style={styles.bottomCtaGradient}
+            colors={["transparent", theme.colors.surface, theme.colors.surface]}
+            style={StyleSheet.absoluteFill}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
           />
-
-          <View style={styles.bottomCtaInner}>
+          <View
+            style={[
+              styles.bottomBarInner,
+              { paddingBottom: Math.max(insets.bottom, theme.spacing.sm) },
+            ]}
+          >
             <Button
               title={
                 isPending
@@ -440,21 +432,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    paddingTop: 0,
     paddingHorizontal: theme.spacing.screenHorizontal,
-    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.lg,
   },
 
   hero: {
-    height: 160,
+    height: 192,
     backgroundColor: theme.colors.surfaceSoft,
     overflow: "hidden",
-    borderRadius: theme.radius.xl,
+    marginHorizontal: -theme.spacing.screenHorizontal,
   },
 
   brandBlock: {
     marginTop: -theme.spacing.xl / 2,
     alignItems: "center",
     gap: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.screenHorizontal,
   },
   brandLogoOuter: {
     width: 88,
@@ -524,11 +518,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: theme.spacing.xs,
+    padding: theme.spacing.lg,
+  },
+  metaCardSurface: {
+    backgroundColor: theme.colors.surfaceSoft,
+    borderColor: theme.colors.borderSubtle,
   },
   metaCardLabel: {
     ...theme.typography.overline,
     color: theme.colors.textMutedAccent,
     textAlign: "center",
+    textTransform: "uppercase",
   },
   metaCardValue: {
     ...theme.typography.subtitle,
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
   },
   aboutDescription: {
-    color: theme.colors.textMutedAccent,
+    color: theme.colors.textMuted,
     ...theme.typography.body,
     lineHeight: 22,
   },
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
   },
   featureDescription: {
     ...theme.typography.cardBody,
-    color: theme.colors.textMutedAccent,
+    color: theme.colors.textMuted,
   },
 
   submitError: {
@@ -581,25 +581,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
   },
 
-  bottomCtaOuter: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: "center",
-  },
-  bottomCtaGradient: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 110,
-  },
-  bottomCtaInner: {
+  bottomBar: {
     width: "100%",
+  },
+  bottomBarInner: {
     paddingHorizontal: theme.spacing.screenHorizontal,
     paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.sm,
   },
 
   headerIconButton: {
