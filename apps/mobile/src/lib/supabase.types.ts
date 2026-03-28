@@ -878,6 +878,21 @@ export type Database = {
           active_tickets_count: number
         }[]
       }
+      get_wallet_transactions_enriched: {
+        Args: never
+        Returns: {
+          id: string
+          amount: number
+          context_title: string | null
+          created_at: string
+          direction: Database["public"]["Enums"]["wallet_direction"]
+          reference_id: string | null
+          reference_type:
+            | Database["public"]["Enums"]["wallet_reference_type"]
+            | null
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+        }[]
+      }
       handle_referral_after_first_mission: {
         Args: { p_user_id: string }
         Returns: undefined

@@ -242,6 +242,32 @@
     }
   },
   "wallet": {
+    "layout": {
+      "title": "Portefeuille"
+    },
+    "hero": {
+      "totalBalance": "Solde total",
+      "tokens": "Jetons",
+      "pendingRewards": "Récompenses en attente",
+      "earnMore": "Gagner plus"
+    },
+    "tab": {
+      "history": "Historique",
+      "myTickets": "Mes tickets"
+    },
+    "recentActivity": "Activité récente",
+    "filter": {
+      "action": "Filtrer",
+      "a11y": "Changer le filtre d’activité : tout, crédits ou débits"
+    },
+    "info": {
+      "title": "À propos du portefeuille",
+      "message": "Votre solde correspond aux jetons disponibles pour participer. Les récompenses en attente seront créditées une fois les actions validées."
+    },
+    "a11y": {
+      "back": "Retour",
+      "info": "Aide portefeuille"
+    },
     "screen": {
       "error": "Impossible de charger le portefeuille. Réessayez."
     },
@@ -332,7 +358,7 @@
   "date": {
     "today": "Aujourd'hui",
     "yesterday": "Hier",
-    "daysAgo": "{{days}} jours auparavant",
+    "daysAgo": "il y a {{days}} jours",
     "unknown": "Date inconnue"
   },
   "common": {

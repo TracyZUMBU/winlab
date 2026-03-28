@@ -205,6 +205,32 @@
     }
   },
   "wallet": {
+    "layout": {
+      "title": "Wallet"
+    },
+    "hero": {
+      "totalBalance": "Total balance",
+      "tokens": "Tokens",
+      "pendingRewards": "Pending rewards",
+      "earnMore": "Earn more"
+    },
+    "tab": {
+      "history": "History",
+      "myTickets": "My tickets"
+    },
+    "recentActivity": "Recent activity",
+    "filter": {
+      "action": "Filter",
+      "a11y": "Cycle activity filter: all, credits, or debits"
+    },
+    "info": {
+      "title": "About your wallet",
+      "message": "Your balance is the number of tokens you can spend. Pending rewards are tokens that will be added once the related actions are confirmed."
+    },
+    "a11y": {
+      "back": "Go back",
+      "info": "Wallet help"
+    },
     "screen": {
       "error": "Could not load wallet data. Please try again."
     },

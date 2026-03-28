@@ -1,31 +1,27 @@
 import type { Database } from "@/src/lib/supabase.types";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 
-export type WalletTransactionRow = Pick<
-  Database["public"]["Tables"]["wallet_transactions"]["Row"],
-  | "amount"
-  | "direction"
-  | "transaction_type"
-  | "reference_type"
-  | "reference_id"
-  | "created_at"
->;
+/** Row returned by RPC `get_wallet_transactions_enriched`. */
+export type WalletTransactionRow = {
+  id: string;
+  amount: number;
+  direction: Database["public"]["Enums"]["wallet_direction"];
+  transaction_type: Database["public"]["Enums"]["wallet_transaction_type"];
+  reference_type: Database["public"]["Enums"]["wallet_reference_type"] | null;
+  reference_id: string | null;
+  created_at: string;
+  context_title: string | null;
+};
 
-export async function getWalletTransactions(
-  userId: string,
-): Promise<WalletTransactionRow[]> {
+export async function getWalletTransactions(): Promise<WalletTransactionRow[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("wallet_transactions")
-    .select(
-      "amount, direction, transaction_type, reference_type, reference_id, created_at",
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc(
+    "get_wallet_transactions_enriched",
+  );
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return (data ?? []) as WalletTransactionRow[];
 }
