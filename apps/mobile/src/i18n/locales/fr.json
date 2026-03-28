@@ -287,6 +287,34 @@
       "error": "Loterie introuvable ou indisponible.",
       "buyTicket": "Acheter un ticket",
       "buyingTicket": "Achat du ticket...",
+      "verifiedOffer": "Offre vérifiée",
+      "countdown": {
+        "title": "Tirage au sort dans :",
+        "daysLabel": "Jours",
+        "hoursLabel": "Heures",
+        "minutesLabel": "Min",
+        "secondsLabel": "Sec"
+      },
+      "tokensPerTicket": "{{count}} jetons / ticket",
+      "currentBalancePrefix": "Solde actuel :",
+      "currentBalanceSuffix": "jetons",
+      "gainMore": "Gagner plus",
+      "yourParticipation": "Votre participation",
+      "aboutTitle": "À propos de ce prix",
+      "featurePills": {
+        "certifiedDraw": "Tirage certifié",
+        "freeDelivery": "Livraison gratuite"
+      },
+      "footer": {
+        "totalPriceLabel": "Prix Total : {{count}} Jetons",
+        "eligible": "✓ Éligible",
+        "notEligible": "Non éligible",
+        "buyTicketLabel": "Acheter 1 ticket",
+        "buyingTicketLabel": "Achat de 1 ticket...",
+        "noteBeforeTerms": "En participant, vous acceptez nos",
+        "noteTermsLabel": "Conditions Générales",
+        "noteAfterTerms": "et confirmez avoir plus de 18 ans."
+      },
       "purchase": {
         "errors": {
           "generic": "Impossible d'acheter le ticket. Réessayez.",

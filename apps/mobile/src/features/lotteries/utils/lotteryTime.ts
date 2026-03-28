@@ -124,3 +124,46 @@ export function formatGiftCardTime(
   });
 }
 
+export type CountdownParts =
+  | { kind: "ongoing" }
+  | { kind: "expired" }
+  | {
+      kind: "remaining";
+      days: number;
+      hours: number;
+      minutes: number;
+      seconds: number;
+    };
+
+function clampNonNegativeIntFromSeconds(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.floor(value));
+}
+
+export function getCountdownParts(
+  endsAt: string | null,
+  nowMs: number,
+): CountdownParts {
+  if (!endsAt) return { kind: "ongoing" };
+
+  const target = new Date(endsAt).getTime();
+  const diffMs = target - nowMs;
+
+  if (!Number.isFinite(diffMs) || diffMs <= 0) {
+    return { kind: "expired" };
+  }
+
+  const totalSeconds = clampNonNegativeIntFromSeconds(diffMs / 1000);
+
+  const days = Math.floor(totalSeconds / 86400);
+  const remainingAfterDays = totalSeconds - days * 86400;
+
+  const hours = Math.floor(remainingAfterDays / 3600);
+  const remainingAfterHours = remainingAfterDays - hours * 3600;
+
+  const minutes = Math.floor(remainingAfterHours / 60);
+  const seconds = remainingAfterHours - minutes * 60;
+
+  return { kind: "remaining", days, hours, minutes, seconds };
+}
+

@@ -1,7 +1,9 @@
 import {
   formatEndingSoonTime,
   formatFeaturedTime,
+  formatGiftCardTime,
   getTimeRemaining,
+  getCountdownParts,
 } from "./lotteryTime";
 
 function fakeT(key: string, params?: Record<string, unknown>) {
@@ -85,11 +87,37 @@ describe("lotteryTime", () => {
 
   describe("formatGiftCardTime", () => {
     it("uses tomorrow when days === 1", () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { formatGiftCardTime } = require("./lotteryTime");
       expect(
         formatGiftCardTime(fakeT as any, { days: 1, hours: 2, minutes: 0 }),
       ).toBe("lotteries.time.tomorrow");
+    });
+  });
+
+  describe("getCountdownParts", () => {
+    it("returns ongoing when endsAt is null", () => {
+      expect(getCountdownParts(null, 1000)).toEqual({ kind: "ongoing" });
+    });
+
+    it("returns expired when endsAt is in the past", () => {
+      expect(getCountdownParts(new Date(0).toISOString(), 1000)).toEqual({
+        kind: "expired",
+      });
+    });
+
+    it("splits into days/hours/minutes/seconds", () => {
+      const now = new Date("2026-01-01T00:00:00.000Z").getTime();
+      const endsAt = new Date(
+        now +
+          (2 * 86400 + 3 * 3600 + 4 * 60 + 5) * 1000,
+      ).toISOString();
+
+      expect(getCountdownParts(endsAt, now)).toEqual({
+        kind: "remaining",
+        days: 2,
+        hours: 3,
+        minutes: 4,
+        seconds: 5,
+      });
     });
   });
 });

@@ -250,6 +250,34 @@
       "error": "Lottery not found or unavailable.",
       "buyTicket": "Buy ticket",
       "buyingTicket": "Buying ticket...",
+      "verifiedOffer": "Verified offer",
+      "countdown": {
+        "title": "Draw in :",
+        "daysLabel": "Days",
+        "hoursLabel": "Hours",
+        "minutesLabel": "Min",
+        "secondsLabel": "Sec"
+      },
+      "tokensPerTicket": "{{count}} tokens / ticket",
+      "currentBalancePrefix": "Current balance :",
+      "currentBalanceSuffix": "tokens",
+      "gainMore": "Gain more",
+      "yourParticipation": "Your participation",
+      "aboutTitle": "About this prize",
+      "featurePills": {
+        "certifiedDraw": "Certified draw",
+        "freeDelivery": "Free delivery"
+      },
+      "footer": {
+        "totalPriceLabel": "Total price : {{count}} Tokens",
+        "eligible": "✓ Eligible",
+        "notEligible": "Not eligible",
+        "buyTicketLabel": "Buy 1 ticket",
+        "buyingTicketLabel": "Buying 1 ticket...",
+        "noteBeforeTerms": "By participating, you accept our",
+        "noteTermsLabel": "Terms and Conditions",
+        "noteAfterTerms": "and confirm you are over 18."
+      },
       "purchase": {
         "errors": {
           "generic": "Could not buy a ticket. Please try again.",
