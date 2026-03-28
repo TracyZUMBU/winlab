@@ -117,7 +117,7 @@ export function MissionCard({
   const { t } = useTranslation();
   const [imageFailed, setImageFailed] = useState(false);
   const brandName = mission.brand?.name ?? "—";
-  const logoUri = mission.brand?.logo_url?.trim() || null;
+  const logoUri = mission.image_url?.trim() || null;
   const thumbnailUri =
     logoUri ?? getMissionThumbnailFallbackUri(mission.id, mission.mission_type);
 

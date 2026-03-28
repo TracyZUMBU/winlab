@@ -102,14 +102,14 @@ export function ProfileScreen() {
     }
     if (balanceQuery.isError) {
       return t("profile.hero.tokensLine", {
-        count: "0",
+        count: 0,
         tokens: t("wallet.hero.tokens"),
       });
     }
     const n = balanceQuery.data?.balance ?? 0;
     const formatted = formatTokenBalance(n, i18n.language);
     return t("profile.hero.tokensLine", {
-      count: formatted,
+      count: Number(formatted),
       tokens: t("wallet.hero.tokens"),
     });
   }, [
@@ -364,6 +364,7 @@ export function ProfileScreen() {
           balanceLine={balanceLine}
           onPressEdit={startEditUsername}
           editA11yLabel={t("profile.hero.a11yEdit")}
+          avatarUri={profile.avatar_url}
         />
 
         <ScreenSectionOverline label={t("profile.section.activityRewards")} />

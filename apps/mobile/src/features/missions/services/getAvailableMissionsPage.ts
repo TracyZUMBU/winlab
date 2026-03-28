@@ -15,6 +15,7 @@ export type PagedMissionCompletion = {
 
 export type PagedMissionRow = {
   id: string;
+  image_url: string | null;
   title: string;
   description: string | null;
   mission_type: Enums<"mission_type">;
@@ -56,6 +57,7 @@ export async function getAvailableMissionsPage(
       mission_type,
       token_reward,
       ends_at,
+      image_url,
       brand:brands!inner(id, name, logo_url),
       mission_completions(id, status, user_id)
     `,

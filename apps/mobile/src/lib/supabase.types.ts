@@ -435,6 +435,7 @@ export type Database = {
           description: string | null
           ends_at: string | null
           id: string
+          image_url: string | null
           max_completions_per_user: number
           max_completions_total: number | null
           metadata: Json
@@ -452,6 +453,7 @@ export type Database = {
           description?: string | null
           ends_at?: string | null
           id?: string
+          image_url?: string | null
           max_completions_per_user?: number
           max_completions_total?: number | null
           metadata?: Json
@@ -469,6 +471,7 @@ export type Database = {
           description?: string | null
           ends_at?: string | null
           id?: string
+          image_url?: string | null
           max_completions_per_user?: number
           max_completions_total?: number | null
           metadata?: Json
@@ -492,6 +495,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string
           id: string
@@ -500,6 +504,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email: string
           id: string
@@ -508,6 +513,7 @@ export type Database = {
           username: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string
           id?: string

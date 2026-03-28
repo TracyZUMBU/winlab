@@ -1,6 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { Image } from "expo-image";
 import { theme } from "@/src/theme";
 
 export type ProfileHeroHeaderProps = {
@@ -9,6 +10,7 @@ export type ProfileHeroHeaderProps = {
   balanceLine: string;
   onPressEdit: () => void;
   editA11yLabel: string;
+  avatarUri: string | null;
 };
 
 function initialsFromName(name: string): string {
@@ -27,6 +29,7 @@ export function ProfileHeroHeader({
   balanceLine,
   onPressEdit,
   editA11yLabel,
+  avatarUri,
 }: ProfileHeroHeaderProps) {
   const initials = initialsFromName(displayName);
 
@@ -34,7 +37,11 @@ export function ProfileHeroHeader({
     <View style={styles.wrap}>
       <View style={styles.avatarWrap}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarInitials}>{initials}</Text>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarInitials}>{initials}</Text>
+          )}
         </View>
         <Pressable
           onPress={onPressEdit}
@@ -50,7 +57,11 @@ export function ProfileHeroHeader({
       <Text style={styles.handle}>{handleLabel}</Text>
 
       <View style={styles.tokenPill}>
-        <MaterialIcons name="stars" size={22} color={theme.colors.accentSolid} />
+        <MaterialIcons
+          name="stars"
+          size={22}
+          color={theme.colors.accentSolid}
+        />
         <Text style={styles.tokenText}>{balanceLine}</Text>
       </View>
     </View>
@@ -86,6 +97,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 12,
     elevation: 4,
+  },
+  avatarImage: {
+    width: AVATAR,
+    height: AVATAR,
+    borderRadius: AVATAR / 2,
   },
   avatarInitials: {
     fontSize: 40,
