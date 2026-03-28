@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   },
   titleCenter: {
     flex: 1,
+    minWidth: 0,
     textAlign: "center",
     color: theme.colors.text,
     ...theme.typography.screenTitle,

@@ -56,38 +56,31 @@ export function LotteryDetailScreenMaquette() {
     if (!lotteryId) return;
     setBuyError(null);
 
-    const result = await mutateAsync({ lotteryId });
-    if (result.success) {
-      await refetch();
-      return;
-    }
+    try {
+      const result = await mutateAsync({ lotteryId });
+      if (result.success) {
+        await refetch();
+        return;
+      }
 
-    if (result.kind === "business") {
-      setBuyError(
-        getI18nMessageForCode({
-          t,
-          i18n,
-          baseKey: "lottery.detail.purchase.errors",
-          code: result.errorCode,
-          fallbackKey: "lottery.detail.purchase.errors.generic",
-        }),
-      );
-      return;
-    }
+      if (result.kind === "business") {
+        setBuyError(
+          getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "lottery.detail.purchase.errors",
+            code: result.errorCode,
+            fallbackKey: "lottery.detail.purchase.errors.generic",
+          }),
+        );
+        return;
+      }
 
-    setBuyError(t("lottery.detail.purchase.errors.generic"));
+      setBuyError(t("lottery.detail.purchase.errors.generic"));
+    } catch {
+      setBuyError(t("lottery.detail.purchase.errors.generic"));
+    }
   };
-
-  if (isLoading || !data) {
-    return (
-      <Screen edges={["top"]} style={styles.screen}>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" color={theme.colors.accentSolid} />
-          <Text style={styles.helper}>{t("lottery.detail.loading")}</Text>
-        </View>
-      </Screen>
-    );
-  }
 
   if (isError) {
     return (
@@ -97,6 +90,17 @@ export function LotteryDetailScreenMaquette() {
           <Pressable style={styles.retryButton} onPress={() => void refetch()}>
             <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (isLoading || !data) {
+    return (
+      <Screen edges={["top"]} style={styles.screen}>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={theme.colors.accentSolid} />
+          <Text style={styles.helper}>{t("lottery.detail.loading")}</Text>
         </View>
       </Screen>
     );

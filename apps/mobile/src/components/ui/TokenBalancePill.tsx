@@ -1,6 +1,6 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
 
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { theme } from "@/src/theme";
@@ -16,12 +16,13 @@ export function TokenBalancePill() {
         ? "…"
         : "0"
       : new Intl.NumberFormat(locale).format(data.balance);
+  const a11yAmount = isLoading ? t("common.loading") : amount;
 
   return (
     <View
       style={styles.root}
       accessibilityRole="text"
-      accessibilityLabel={t("common.a11y.tokenBalance", { amount })}
+      accessibilityLabel={t("common.a11y.tokenBalance", { amount: a11yAmount })}
     >
       <MaterialIcons name="token" size={16} color={theme.colors.text} />
       <Text style={styles.text}>{amount}</Text>
@@ -52,4 +53,3 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 });
-

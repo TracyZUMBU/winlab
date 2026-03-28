@@ -13,10 +13,10 @@ export function useNow(options: UseNowOptions = {}) {
   const [nowMs, setNowMs] = useState(() => Date.now());
 
   useEffect(() => {
+    setNowMs(Date.now());
     const id = setInterval(() => setNowMs(Date.now()), intervalMs);
     return () => clearInterval(id);
   }, [intervalMs]);
 
   return nowMs;
 }
-

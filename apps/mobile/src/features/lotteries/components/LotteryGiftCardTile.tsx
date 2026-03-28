@@ -75,6 +75,7 @@ export function LotteryGiftCardTile({
           fullWidth
           style={styles.cta}
           textStyle={styles.ctaText}
+          onPress={() => onPress(lottery.id)}
         />
       </View>
     </Pressable>

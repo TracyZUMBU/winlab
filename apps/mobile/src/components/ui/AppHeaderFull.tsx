@@ -4,8 +4,6 @@ import { StyleSheet, Text, View } from "react-native";
 import { theme } from "@/src/theme";
 import { AppHeaderTitleAlign } from "./AppHeader";
 
-export type AppHeaderFullTitleAlign = "center" | "start";
-
 export type AppHeaderFullProps = {
   title: string;
   leftSlot?: ReactNode;

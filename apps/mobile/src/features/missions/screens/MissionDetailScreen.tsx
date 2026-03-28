@@ -21,7 +21,6 @@ import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 import {
@@ -36,7 +35,7 @@ type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 export function MissionDetailScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+
   const { missionId } = useLocalSearchParams<{ missionId: string }>();
   const {
     data: mission,

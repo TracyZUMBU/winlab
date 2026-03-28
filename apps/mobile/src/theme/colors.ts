@@ -12,6 +12,9 @@ const TEXT_MUTED = "#6B7280";
  */
 const TEXT_MUTED_ACCENT = mixHex(ACCENT_SOLID, TEXT_MUTED, 0.4);
 
+/** Muted danger tint (icon/chip backgrounds). Shared by top-level and `semantic`. */
+const DANGER_MUTED = "rgba(220, 38, 38, 0.15)";
+
 export const colors = {
   // Base (list/dashboard canvas — maquette #f6f8f6)
   background: "#F6F8F6",
@@ -46,7 +49,7 @@ export const colors = {
 
   /** Error / destructive (text, chips, alerts) */
   dangerSolid: "#DC2626",
-  dangerMuted: "rgba(220, 38, 38, 0.15)",
+  dangerMuted: DANGER_MUTED,
 
   /**
    * Muted surface tints for status / info chips (semantic, not domain-specific names).
@@ -55,6 +58,7 @@ export const colors = {
     successMuted: "rgba(22, 163, 74, 0.15)",
     warningMuted: "rgba(245, 158, 11, 0.15)",
     neutralMuted: "rgba(107, 114, 128, 0.15)",
+    dangerMuted: DANGER_MUTED,
   },
 
   /** Neutral shadow (not tied to accent). */

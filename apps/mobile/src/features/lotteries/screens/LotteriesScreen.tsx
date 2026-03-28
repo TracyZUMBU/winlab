@@ -191,29 +191,41 @@ export function LotteriesScreen() {
           ))}
         </View>
 
-        <Text style={styles.sectionTitleSolo}>
-          {t("lotteries.list.sections.featuredPrizes")}
-        </Text>
-        <View style={styles.stack}>
-          {featured.map((l) => (
-            <LotteryFeaturedCard key={l.id} lottery={l} onPress={openDetail} />
-          ))}
-        </View>
-
-        <Text style={styles.sectionTitleSolo}>
-          {t("lotteries.list.sections.giftCards")}
-        </Text>
-        <View style={styles.grid2}>
-          {giftCards.map((l, index) => (
-            <View key={l.id} style={styles.gridItem}>
-              <LotteryGiftCardTile
-                lottery={l}
-                onPress={openDetail}
-                variant={index % 2 === 0 ? "warm" : "fresh"}
-              />
+        {featured.length > 0 && (
+          <>
+            <Text style={styles.sectionTitleSolo}>
+              {t("lotteries.list.sections.featuredPrizes")}
+            </Text>
+            <View style={styles.stack}>
+              {featured.map((l) => (
+                <LotteryFeaturedCard
+                  key={l.id}
+                  lottery={l}
+                  onPress={openDetail}
+                />
+              ))}
             </View>
-          ))}
-        </View>
+          </>
+        )}
+
+        {giftCards.length > 0 && (
+          <>
+            <Text style={styles.sectionTitleSolo}>
+              {t("lotteries.list.sections.giftCards")}
+            </Text>
+            <View style={styles.grid2}>
+              {giftCards.map((l, index) => (
+                <View key={l.id} style={styles.gridItem}>
+                  <LotteryGiftCardTile
+                    lottery={l}
+                    onPress={openDetail}
+                    variant={index % 2 === 0 ? "warm" : "fresh"}
+                  />
+                </View>
+              ))}
+            </View>
+          </>
+        )}
 
         {hasNextPage ? (
           <View style={styles.footer}>

@@ -88,7 +88,7 @@
         "follow": "Social"
       },
       "sectionTitle": "Available missions",
-      "sectionSubtitle": "Complete tasks to earn entries",
+      "sectionSubtitle": "Complete tasks to earn tokens",
       "infoBanner": "New missions are added every day. Come back tomorrow for more tokens!",
       "tokenBalance": "{{amount}} tokens",
       "emptyFilter": "No missions in this category."
@@ -104,7 +104,7 @@
       },
       "typeLabel": {
         "survey": "Consumer survey",
-        "video": "Consumption video",
+        "video": "Video",
         "follow": "Social task",
         "referral": "Referral",
         "custom": "Mission"
@@ -200,8 +200,10 @@
         "giftCards": "Gift Cards"
       },
       "a11y": {
-        "openLottery": "Open lottery: {{title}}"
-      }
+        "openLottery": "Open lottery: {{title}}",
+        "endedLottery": "Lottery ended: {{title}}"
+      },
+      "ended": "Ended"
     }
   },
   "wallet": {
@@ -229,7 +231,8 @@
     },
     "a11y": {
       "back": "Go back",
-      "info": "Wallet help"
+      "info": "Wallet help",
+      "ticketRow": "{{title}}, {{status}}, {{date}}"
     },
     "screen": {
       "error": "Could not load wallet data. Please try again."
@@ -278,14 +281,14 @@
       "buyingTicket": "Buying ticket...",
       "verifiedOffer": "Verified offer",
       "countdown": {
-        "title": "Draw in :",
+        "title": "Draw in:",
         "daysLabel": "Days",
         "hoursLabel": "Hours",
         "minutesLabel": "Min",
         "secondsLabel": "Sec"
       },
       "tokensPerTicket": "{{count}} tokens / ticket",
-      "currentBalancePrefix": "Current balance :",
+      "currentBalancePrefix": "Current balance:",
       "currentBalanceSuffix": "tokens",
       "gainMore": "Gain more",
       "yourParticipation": "Your participation",
@@ -295,7 +298,7 @@
         "freeDelivery": "Free delivery"
       },
       "footer": {
-        "totalPriceLabel": "Total price : {{count}} Tokens",
+        "totalPriceLabel": "Total price: {{count}} tokens",
         "eligible": "✓ Eligible",
         "notEligible": "Not eligible",
         "buyTicketLabel": "Buy 1 ticket",
@@ -326,6 +329,7 @@
   },
   "common": {
     "back": "Back",
+    "close": "Close",
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",
@@ -369,6 +373,43 @@
         "emailUnavailable": "We could not read your email. Please sign in again.",
         "submitFailed": "We could not create your profile. Please try again."
       }
+    },
+    "layout": {
+      "a11yBack": "Go back",
+      "a11ySettings": "Account settings"
+    },
+    "section": {
+      "activityRewards": "Activity & rewards",
+      "supportInfo": "Support & info"
+    },
+    "menu": {
+      "participations": "My participations",
+      "participationsA11y": "Open my participations",
+      "referral": "Referral",
+      "referralSubtitle": "Invite friends and earn tokens",
+      "referralA11y": "View referral code",
+      "referralAlertTitle": "Your referral code",
+      "referralAlertHint": "Share this code so friends can join Winlab and unlock rewards together.",
+      "support": "Support",
+      "supportA11y": "Contact support",
+      "supportMessage": "Our support team will get back to you soon. Please reach out using the email on your account.",
+      "regulations": "Regulations",
+      "regulationsA11y": "View regulations",
+      "regulationsMessage": "Terms and sweepstakes rules will be available here soon."
+    },
+    "settings": {
+      "title": "Account"
+    },
+    "hero": {
+      "defaultDisplayName": "Winlab member",
+      "handlePlaceholder": "@username",
+      "a11yEdit": "Edit username",
+      "balanceLoading": "…",
+      "tokensLine": "{{count}} {{tokens}}"
+    },
+    "footer": {
+      "versionLine": "{{appName}} version {{version}} (Build {{build}})",
+      "tagline": "Made with love for the lucky winners."
     },
     "screen": {
       "title": "Profile",

@@ -9,7 +9,7 @@ export type SectionHeaderProps = {
 
 export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
   return (
-    <View style={styles.root}>
+    <View style={styles.root} accessibilityRole="header">
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>

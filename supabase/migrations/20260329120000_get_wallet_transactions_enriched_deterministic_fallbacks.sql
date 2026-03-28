@@ -1,3 +1,6 @@
+-- Deterministic fallback titles: ORDER BY before LIMIT 1 on reward_transaction_id /
+-- wallet_transaction_id subqueries (avoids arbitrary row when duplicates exist).
+
 CREATE OR REPLACE FUNCTION public.get_wallet_transactions_enriched()
 RETURNS TABLE (
   id uuid,

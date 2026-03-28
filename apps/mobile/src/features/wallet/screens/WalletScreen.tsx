@@ -22,8 +22,8 @@ import { useWalletBalanceQuery } from "../hooks/useWalletBalanceQuery";
 import type { WalletTransactionUi } from "../hooks/useWalletTransactionsQuery";
 import { useWalletTransactionsQuery } from "../hooks/useWalletTransactionsQuery";
 
-import { Button } from "@/src/components/ui/Button";
 import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
@@ -49,9 +49,7 @@ export function WalletScreen() {
   const balanceQuery = useWalletBalanceQuery();
   const pendingRewardsQuery = usePendingRewardsQuery();
   const transactionsQuery = useWalletTransactionsQuery();
-  console.log("transactionsQuery:", transactionsQuery);
   const ticketsQuery = usePurchasedTicketsQuery();
-  console.log("ticketsQuery:", ticketsQuery);
 
   const isLoading =
     balanceQuery.isLoading ||

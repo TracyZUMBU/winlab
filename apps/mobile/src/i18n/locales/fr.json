@@ -237,8 +237,10 @@
         "giftCards": "Cartes cadeaux"
       },
       "a11y": {
-        "openLottery": "Ouvrir la loterie : {{title}}"
-      }
+        "openLottery": "Ouvrir la loterie : {{title}}",
+        "endedLottery": "Loterie terminée : {{title}}"
+      },
+      "ended": "Terminé"
     }
   },
   "wallet": {
@@ -266,7 +268,8 @@
     },
     "a11y": {
       "back": "Retour",
-      "info": "Aide portefeuille"
+      "info": "Aide portefeuille",
+      "ticketRow": "{{title}}, {{status}}, {{date}}"
     },
     "screen": {
       "error": "Impossible de charger le portefeuille. Réessayez."
@@ -363,6 +366,7 @@
   },
   "common": {
     "back": "Retour",
+    "close": "Fermer",
     "retry": "Réessayer",
     "share": "Partager",
     "loadMore": "Voir plus",
@@ -406,6 +410,43 @@
         "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
         "submitFailed": "Impossible de créer votre profil. Réessayez."
       }
+    },
+    "layout": {
+      "a11yBack": "Retour",
+      "a11ySettings": "Réglages du compte"
+    },
+    "section": {
+      "activityRewards": "Activité & récompenses",
+      "supportInfo": "Aide & infos"
+    },
+    "menu": {
+      "participations": "Mes participations",
+      "participationsA11y": "Ouvrir mes participations",
+      "referral": "Parrainage",
+      "referralSubtitle": "Invitez des amis et gagnez des jetons",
+      "referralA11y": "Voir mon code de parrainage",
+      "referralAlertTitle": "Votre code de parrainage",
+      "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
+      "support": "Support",
+      "supportA11y": "Contacter le support",
+      "supportMessage": "Notre équipe support vous répondra bientôt. Utilisez l’email associé à votre compte pour nous écrire.",
+      "regulations": "Règlement",
+      "regulationsA11y": "Voir le règlement",
+      "regulationsMessage": "Les conditions générales et le règlement des jeux seront disponibles ici prochainement."
+    },
+    "settings": {
+      "title": "Compte"
+    },
+    "hero": {
+      "defaultDisplayName": "Membre Winlab",
+      "handlePlaceholder": "@pseudo",
+      "a11yEdit": "Modifier le pseudo",
+      "balanceLoading": "…",
+      "tokensLine": "{{count}} {{tokens}}"
+    },
+    "footer": {
+      "versionLine": "{{appName}} version {{version}} (Build {{build}})",
+      "tagline": "Fait avec amour pour les heureux gagnants."
     },
     "screen": {
       "title": "Profil",
