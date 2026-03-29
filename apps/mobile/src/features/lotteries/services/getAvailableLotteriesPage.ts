@@ -1,6 +1,7 @@
 import type { Enums } from "@/src/lib/supabase.types";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { getLotteryActiveTicketCounts } from "./getLotteryActiveTicketCounts";
+import { getUserActiveTicketCountsByLotteryIds } from "./getUserActiveTicketCountsByLotteryIds";
 
 export type AvailableLotteryBrand = {
   id: string;
@@ -19,9 +20,13 @@ export type AvailableLotteryRow = {
   status: Enums<"lottery_status">;
   brand: AvailableLotteryBrand | null;
   active_tickets_count: number;
+  user_active_tickets_count: number;
 };
 
-type AvailableLotteryDbRow = Omit<AvailableLotteryRow, "active_tickets_count">;
+type AvailableLotteryDbRow = Omit<
+  AvailableLotteryRow,
+  "active_tickets_count" | "user_active_tickets_count"
+>;
 
 export type GetAvailableLotteriesPageParams = {
   pageIndex: number;
@@ -64,6 +69,7 @@ export async function getAvailableLotteriesPage(
     .eq("brands.is_active", true)
     .or(`starts_at.lte.${now},starts_at.is.null`)
     .or(`ends_at.gte.${now},ends_at.is.null`)
+    .order("is_featured", { ascending: false })
     .order("ends_at", { ascending: true, nullsFirst: false })
     .order("id", { ascending: true })
     .range(from, to);
@@ -77,14 +83,18 @@ export async function getAvailableLotteriesPage(
     return { lotteries: [] };
   }
 
-  const countsByLotteryId = await getLotteryActiveTicketCounts(
-    rows.map((row) => row.id),
-  );
+  const ids = rows.map((row) => row.id);
+
+  const [countsByLotteryId, userCountsByLotteryId] = await Promise.all([
+    getLotteryActiveTicketCounts(ids),
+    getUserActiveTicketCountsByLotteryIds(ids),
+  ]);
 
   return {
     lotteries: rows.map((row) => ({
       ...row,
       active_tickets_count: countsByLotteryId.get(row.id) ?? 0,
+      user_active_tickets_count: userCountsByLotteryId.get(row.id) ?? 0,
     })),
   };
 }

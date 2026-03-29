@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import i18n from "@/src/i18n";
 
+import { lotteryListKeys } from "../queries/lotteryListKeys";
 import type { AvailableLotteryRow } from "../services/getAvailableLotteriesPage";
 import {
   AVAILABLE_LOTTERIES_PAGE_SIZE,
@@ -15,6 +16,7 @@ export type AvailableLotteryUi = AvailableLotteryRow & {
   statusLabel: string;
   participantsLabel: string;
   ticketCostLabel: string;
+  userTicketsLabel: string;
 };
 
 function mapLotteryStatusToLabel(status: LotteryStatus): string {
@@ -38,6 +40,9 @@ function mapRowToUi(row: AvailableLotteryRow): AvailableLotteryUi {
       count: row.active_tickets_count,
     }),
     ticketCostLabel: i18n.t("lottery.tokens", { count: row.ticket_cost }),
+    userTicketsLabel: i18n.t("lottery.youHaveTickets", {
+      count: row.user_active_tickets_count,
+    }),
   };
 }
 
@@ -46,7 +51,7 @@ export function useAvailableLotteriesQuery() {
   const userId = user?.id ?? null;
 
   return useInfiniteQuery({
-    queryKey: ["lotteries", "available", userId],
+    queryKey: lotteryListKeys.available(userId),
     queryFn: ({ pageParam }) =>
       getAvailableLotteriesPage({ pageIndex: pageParam ?? 0 }),
     initialPageParam: 0,

@@ -4,6 +4,7 @@ import {
   formatGiftCardTime,
   getTimeRemaining,
   getCountdownParts,
+  lotteryEndsWithinOneDay,
 } from "./lotteryTime";
 
 function fakeT(key: string, params?: Record<string, unknown>) {
@@ -14,6 +15,32 @@ function fakeT(key: string, params?: Record<string, unknown>) {
 }
 
 describe("lotteryTime", () => {
+  describe("lotteryEndsWithinOneDay", () => {
+    it("is false without endsAt", () => {
+      expect(lotteryEndsWithinOneDay(null, Date.now())).toBe(false);
+    });
+
+    it("is false when 24h or more remain", () => {
+      const now = Date.now();
+      const endsAt = new Date(now + 25 * 60 * 60 * 1000).toISOString();
+      expect(lotteryEndsWithinOneDay(endsAt, now)).toBe(false);
+      const exactDay = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+      expect(lotteryEndsWithinOneDay(exactDay, now)).toBe(false);
+    });
+
+    it("is true when less than 24h remain", () => {
+      const now = Date.now();
+      const endsAt = new Date(now + 12 * 60 * 60 * 1000).toISOString();
+      expect(lotteryEndsWithinOneDay(endsAt, now)).toBe(true);
+    });
+
+    it("is false when already ended", () => {
+      const now = Date.now();
+      const endsAt = new Date(now - 1000).toISOString();
+      expect(lotteryEndsWithinOneDay(endsAt, now)).toBe(false);
+    });
+  });
+
   describe("getTimeRemaining", () => {
     it("returns ongoing when endsAt is null", () => {
       expect(getTimeRemaining(null, 1000)).toEqual({ kind: "ongoing" });

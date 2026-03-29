@@ -46,6 +46,19 @@ export function getTimeRemaining(
   return { days, hours, minutes };
 }
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+/** True if the lottery ends in the future in strictly less than 24 hours. */
+export function lotteryEndsWithinOneDay(
+  endsAt: string | null,
+  nowMs: number,
+): boolean {
+  if (!endsAt) return false;
+  const end = new Date(endsAt).getTime();
+  const msLeft = end - nowMs;
+  return msLeft > 0 && msLeft < ONE_DAY_MS;
+}
+
 /**
  * Ending soon badge format (maquette): "3d 5h" or "2h 12m".
  * Reuses existing `lottery.time.*` keys.

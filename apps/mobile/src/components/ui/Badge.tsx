@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 import { theme } from "@/src/theme";
@@ -6,7 +5,7 @@ import { theme } from "@/src/theme";
 export type BadgeTone = "accent" | "success" | "warning" | "neutral";
 
 type BadgeProps = {
-  children: ReactNode;
+  children: string | number;
   tone?: BadgeTone;
 };
 

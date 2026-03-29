@@ -884,6 +884,13 @@ export type Database = {
           active_tickets_count: number
         }[]
       }
+      get_user_active_ticket_counts_by_lottery: {
+        Args: { p_lottery_ids: string[] }
+        Returns: {
+          lottery_id: string
+          active_count: number
+        }[]
+      }
       get_wallet_transactions_enriched: {
         Args: never
         Returns: {

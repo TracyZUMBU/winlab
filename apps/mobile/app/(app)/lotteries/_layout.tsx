@@ -18,6 +18,10 @@ export default function LotteriesLayout() {
         options={{ title: t("lotteries.layout.detail") }}
       />
       <Stack.Screen
+        name="all"
+        options={{ title: t("lotteries.layout.catalog") }}
+      />
+      <Stack.Screen
         name="results"
         options={{ headerShown: false }}
       />

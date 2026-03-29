@@ -38,17 +38,6 @@ import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation"
 import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
 
-function formatMemberSince(iso: string | null, locale: string): string {
-  if (!iso) {
-    return "";
-  }
-  const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) {
-    return "";
-  }
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(d);
-}
-
 function formatTokenBalance(value: number, locale: string): string {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
     value,
@@ -88,13 +77,6 @@ export function ProfileScreen() {
   const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
   const profile = profileQuery.data;
-
-  const memberSinceLabel = useMemo(
-    () =>
-      formatMemberSince(profile?.created_at ?? null, i18n.language) ||
-      t("profile.screen.valueUnknown"),
-    [profile?.created_at, i18n.language, t],
-  );
 
   const balanceLine = useMemo(() => {
     if (balanceQuery.isLoading) {
@@ -215,28 +197,6 @@ export function ProfileScreen() {
       ],
     );
   }, [deleteMyAccountMutation, i18n, router, signOutMutation, t]);
-
-  const openSettings = useCallback(() => {
-    const emailDisplay =
-      profile?.email?.trim() ||
-      user?.email?.trim() ||
-      t("profile.screen.emailUnknown");
-    Alert.alert(
-      t("profile.settings.title"),
-      [
-        `${t("profile.screen.emailLabel")}: ${emailDisplay}`,
-        `${t("profile.screen.memberSinceLabel")}: ${memberSinceLabel}`,
-      ].join("\n"),
-      [
-        {
-          text: t("profile.screen.deleteAccount"),
-          style: "destructive",
-          onPress: () => handleDeleteAccount(),
-        },
-        { text: t("common.close"), style: "cancel" },
-      ],
-    );
-  }, [handleDeleteAccount, memberSinceLabel, profile?.email, t, user?.email]);
 
   const openParticipations = useCallback(() => {
     router.push("/wallet");
@@ -409,6 +369,29 @@ export function ProfileScreen() {
           />
         </ListGroup>
 
+        <ScreenSectionOverline
+          label={t("profile.section.account")}
+          style={styles.overlineSpaced}
+        />
+        <ListGroup>
+          <ProfileMenuRow
+            icon="delete-forever"
+            iconVariant="destructive"
+            title={
+              deleteMyAccountMutation.isPending
+                ? t("profile.screen.deletingAccount")
+                : t("profile.screen.deleteAccount")
+            }
+            onPress={handleDeleteAccount}
+            disabled={
+              signOutMutation.isPending ||
+              updateMutation.isPending ||
+              deleteMyAccountMutation.isPending
+            }
+            accessibilityLabel={t("profile.menu.deleteAccountA11y")}
+          />
+        </ListGroup>
+
         <Pressable
           onPress={handleLogout}
           disabled={
@@ -516,12 +499,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: theme.spacing.md,
     gap: theme.spacing.xs,
-  },
-  iconHit: {
-    minWidth: theme.layout.minTouchTarget,
-    minHeight: theme.layout.minTouchTarget,
-    alignItems: "center",
-    justifyContent: "center",
   },
   successBanner: {
     textAlign: "center",

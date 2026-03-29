@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { missionListKeys } from "../queries/missionListKeys";
 import {
   getAvailableMissionsPage,
   type PagedMissionRow,
 } from "../services/getAvailableMissionsPage";
-import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
 export type MissionUserStatus =
   | "available"
@@ -18,7 +18,7 @@ export type AvailableMission = PagedMissionRow & {
 };
 
 function mapRowToMission(row: PagedMissionRow): AvailableMission {
-  const completion = row.mission_completions[0];
+  const completion = row.mission_completions?.[0];
   let userStatus: MissionUserStatus = "available";
   if (completion) {
     if (completion.status === "approved") userStatus = "completed";
@@ -38,7 +38,9 @@ export function useTodoMissionsQuery() {
   const userId = user?.id ?? null;
 
   return useInfiniteQuery({
-    queryKey: userId ? missionListKeys.todo(userId) : ["missions", "list", "todo", "none"],
+    queryKey: userId
+      ? missionListKeys.todo(userId)
+      : ["missions", "list", "todo", "none"],
     queryFn: ({ pageParam }) =>
       getAvailableMissionsPage({
         userId: userId!,

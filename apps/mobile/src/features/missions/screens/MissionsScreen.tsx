@@ -229,7 +229,7 @@ export function MissionsScreen() {
             />
           )}
           keyExtractor={(item) =>
-            statusTab === "completed" && item.mission_completions[0]
+            statusTab === "completed" && item.mission_completions?.[0]
               ? item.mission_completions[0].id
               : item.id
           }

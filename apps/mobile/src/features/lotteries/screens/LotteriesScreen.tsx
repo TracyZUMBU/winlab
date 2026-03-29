@@ -18,6 +18,8 @@ import { TokenBalancePill } from "@/src/components/ui/TokenBalancePill";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
+import { trackEvent } from "@/src/lib/analytics/trackEvent";
+
 import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
 import { LotteryEndingSoonCard } from "../components/LotteryEndingSoonCard";
 import { LotteryFeaturedCard } from "../components/LotteryFeaturedCard";
@@ -32,15 +34,7 @@ export function LotteriesScreen() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryId>("all");
 
-  const {
-    data,
-    isLoading,
-    isError,
-    refetch,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useAvailableLotteriesQuery();
+  const { data, isLoading, isError, refetch } = useAvailableLotteriesQuery();
 
   const openDetail = (lotteryId: string) => {
     router.push(`/lotteries/${lotteryId}`);
@@ -48,6 +42,16 @@ export function LotteriesScreen() {
 
   const goToResults = () => {
     router.push("/lotteries/results");
+  };
+
+  const goToCatalog = (filter: "endingSoon" | "featured" | "giftCard") => {
+    trackEvent("lotteries_hub_see_all_section", { section: filter });
+    router.push(`/lotteries/all?filter=${filter}`);
+  };
+
+  const goToCatalogAll = () => {
+    trackEvent("lotteries_hub_catalog_cta");
+    router.push("/lotteries/all");
   };
 
   const lotteries = useMemo(() => data ?? [], [data]);
@@ -171,10 +175,7 @@ export function LotteriesScreen() {
             {t("lotteries.list.sections.endingSoon")}
           </Text>
           <Pressable
-            onPress={() => {
-              setQuery("");
-              setCategory("all");
-            }}
+            onPress={() => goToCatalog("endingSoon")}
             accessibilityRole="button"
           >
             <Text style={styles.sectionAction}>
@@ -193,9 +194,19 @@ export function LotteriesScreen() {
 
         {featured.length > 0 && (
           <>
-            <Text style={styles.sectionTitleSolo}>
-              {t("lotteries.list.sections.featuredPrizes")}
-            </Text>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>
+                {t("lotteries.list.sections.featuredPrizes")}
+              </Text>
+              <Pressable
+                onPress={() => goToCatalog("featured")}
+                accessibilityRole="button"
+              >
+                <Text style={styles.sectionAction}>
+                  {t("lotteries.list.seeAll")}
+                </Text>
+              </Pressable>
+            </View>
             <View style={styles.stack}>
               {featured.map((l) => (
                 <LotteryFeaturedCard
@@ -210,9 +221,19 @@ export function LotteriesScreen() {
 
         {giftCards.length > 0 && (
           <>
-            <Text style={styles.sectionTitleSolo}>
-              {t("lotteries.list.sections.giftCards")}
-            </Text>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>
+                {t("lotteries.list.sections.giftCards")}
+              </Text>
+              <Pressable
+                onPress={() => goToCatalog("giftCard")}
+                accessibilityRole="button"
+              >
+                <Text style={styles.sectionAction}>
+                  {t("lotteries.list.seeAll")}
+                </Text>
+              </Pressable>
+            </View>
             <View style={styles.grid2}>
               {giftCards.map((l, index) => (
                 <View key={l.id} style={styles.gridItem}>
@@ -227,25 +248,22 @@ export function LotteriesScreen() {
           </>
         )}
 
-        {hasNextPage ? (
-          <View style={styles.footer}>
-            <Pressable
-              onPress={() => void fetchNextPage()}
-              style={styles.loadMoreButton}
-              disabled={isFetchingNextPage}
-              accessibilityRole="button"
-            >
-              {isFetchingNextPage ? (
-                <ActivityIndicator
-                  size="small"
-                  color={theme.colors.accentSolid}
-                />
-              ) : (
-                <Text style={styles.loadMoreText}>{t("common.loadMore")}</Text>
-              )}
-            </Pressable>
-          </View>
-        ) : null}
+        <View style={styles.catalogCtaWrap}>
+          <Pressable
+            onPress={goToCatalogAll}
+            style={styles.catalogCta}
+            accessibilityRole="button"
+          >
+            <Text style={styles.catalogCtaText}>
+              {t("lotteries.catalog.cta.viewAll")}
+            </Text>
+            <MaterialIcons
+              name="chevron-right"
+              size={22}
+              color={theme.colors.onAccent}
+            />
+          </Pressable>
+        </View>
       </ScrollView>
     </Screen>
   );
@@ -460,10 +478,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
   },
-  sectionTitleSolo: {
-    color: theme.colors.text,
-    ...theme.typography.sectionTitle,
-  },
   grid2: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -504,20 +518,23 @@ const styles = StyleSheet.create({
     color: theme.colors.onAccent,
     fontWeight: "600",
   },
-  footer: {
-    paddingVertical: theme.spacing.md,
+  catalogCtaWrap: {
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.xl,
+  },
+  catalogCta: {
+    flexDirection: "row",
     alignItems: "center",
-  },
-  loadMoreButton: {
-    paddingVertical: theme.spacing.sm,
+    justifyContent: "center",
+    gap: theme.spacing.xs,
+    paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: theme.colors.borderSubtle,
-    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.accentSolid,
   },
-  loadMoreText: {
-    color: theme.colors.text,
-    fontWeight: "500",
+  catalogCtaText: {
+    color: theme.colors.onAccent,
+    fontSize: 16,
+    fontWeight: "800",
   },
 });

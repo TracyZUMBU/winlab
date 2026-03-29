@@ -218,7 +218,8 @@
   "lotteries": {
     "layout": {
       "title": "Loteries",
-      "detail": "Détail loterie"
+      "detail": "Détail loterie",
+      "catalog": "Toutes les loteries"
     },
     "time": {
       "inZero": "dans 0 min",
@@ -249,7 +250,35 @@
         "openLottery": "Ouvrir la loterie : {{title}}",
         "endedLottery": "Loterie terminée : {{title}}"
       },
-      "ended": "Terminé"
+      "ended": "Terminée"
+    },
+    "catalog": {
+      "card": {
+        "endsInCompact": "Fin {{time}}",
+        "badgeFeatured": "À LA UNE",
+        "badgeDefault": "EXPÉRIENCE",
+        "worthTokens": "{{count}} jetons",
+        "ctaEnter": "Participer pour {{count}} jetons"
+      },
+      "title": {
+        "all": "Toutes les loteries",
+        "endingSoon": "Se termine bientôt",
+        "featured": "Lots à la une",
+        "giftCard": "Cartes cadeaux"
+      },
+      "filters": {
+        "all": "Tout",
+        "endingSoon": "Bientôt fini",
+        "featured": "À la une",
+        "giftCard": "Cartes cadeaux"
+      },
+      "cta": {
+        "viewAll": "Toutes les loteries"
+      },
+      "emptyFiltered": "Aucune loterie ne correspond à votre recherche ou à ce filtre.",
+      "a11y": {
+        "back": "Retour"
+      }
     }
   },
   "wallet": {
@@ -426,7 +455,8 @@
     },
     "section": {
       "activityRewards": "Activité & récompenses",
-      "supportInfo": "Aide & infos"
+      "supportInfo": "Aide & infos",
+      "account": "Compte"
     },
     "menu": {
       "participations": "Mes participations",
@@ -441,10 +471,8 @@
       "supportMessage": "Notre équipe support vous répondra bientôt. Utilisez l’email associé à votre compte pour nous écrire.",
       "regulations": "Règlement",
       "regulationsA11y": "Voir le règlement",
-      "regulationsMessage": "Les conditions générales et le règlement des jeux seront disponibles ici prochainement."
-    },
-    "settings": {
-      "title": "Compte"
+      "regulationsMessage": "Les conditions générales et le règlement des jeux seront disponibles ici prochainement.",
+      "deleteAccountA11y": "Supprimer définitivement mon compte"
     },
     "hero": {
       "defaultDisplayName": "Membre Winlab",

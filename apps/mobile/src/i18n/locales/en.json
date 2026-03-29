@@ -181,7 +181,8 @@
   "lotteries": {
     "layout": {
       "title": "Lotteries",
-      "detail": "Lottery detail"
+      "detail": "Lottery detail",
+      "catalog": "All lotteries"
     },
     "time": {
       "inZero": "in 0m",
@@ -213,6 +214,34 @@
         "endedLottery": "Lottery ended: {{title}}"
       },
       "ended": "Ended"
+    },
+    "catalog": {
+      "card": {
+        "endsInCompact": "Ends {{time}}",
+        "badgeFeatured": "FEATURED",
+        "badgeDefault": "EXPERIENCE",
+        "worthTokens": "{{count}} tokens",
+        "ctaEnter": "Enter with {{count}} tokens"
+      },
+      "title": {
+        "all": "All lotteries",
+        "endingSoon": "Ending soon",
+        "featured": "Featured prizes",
+        "giftCard": "Gift cards"
+      },
+      "filters": {
+        "all": "All",
+        "endingSoon": "Ending soon",
+        "featured": "Featured",
+        "giftCard": "Gift cards"
+      },
+      "cta": {
+        "viewAll": "All lotteries"
+      },
+      "emptyFiltered": "No lotteries match your search or filter.",
+      "a11y": {
+        "back": "Back"
+      }
     }
   },
   "wallet": {
@@ -389,7 +418,8 @@
     },
     "section": {
       "activityRewards": "Activity & rewards",
-      "supportInfo": "Support & info"
+      "supportInfo": "Support & info",
+      "account": "Account"
     },
     "menu": {
       "participations": "My participations",
@@ -404,10 +434,8 @@
       "supportMessage": "Our support team will get back to you soon. Please reach out using the email on your account.",
       "regulations": "Regulations",
       "regulationsA11y": "View regulations",
-      "regulationsMessage": "Terms and sweepstakes rules will be available here soon."
-    },
-    "settings": {
-      "title": "Account"
+      "regulationsMessage": "Terms and sweepstakes rules will be available here soon.",
+      "deleteAccountA11y": "Permanently delete my account"
     },
     "hero": {
       "defaultDisplayName": "Winlab member",

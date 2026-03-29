@@ -43,6 +43,9 @@ export const colors = {
 
   // Borders & lines
   borderSubtle: "rgba(15, 23, 42, 0.06)",
+  /** Marketplace / card frames (maquette). */
+  borderCard: "rgba(15, 23, 42, 0.12)",
+  borderAccentMuted: "rgba(196, 130, 51, 0.2)",
 
   /** Flat success (icons, sparse use) */
   success: "#16A34A",

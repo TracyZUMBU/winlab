@@ -8,13 +8,14 @@ type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 
 export type ProfileMenuRowProps = {
   icon: MaterialIconName;
-  /** Maquette: accent wash icon tile vs neutral soft tile (support / legal). */
-  iconVariant: "accent" | "neutral";
+  /** Accent / neutral list rows, or destructive (e.g. delete account). */
+  iconVariant: "accent" | "neutral" | "destructive";
   title: string;
   subtitle?: string;
   onPress: () => void;
   showDivider?: boolean;
   accessibilityLabel?: string;
+  disabled?: boolean;
 };
 
 export function ProfileMenuRow({
@@ -25,24 +26,48 @@ export function ProfileMenuRow({
   onPress,
   showDivider,
   accessibilityLabel,
+  disabled,
 }: ProfileMenuRowProps) {
   const iconTileStyle =
-    iconVariant === "accent" ? styles.iconTileAccent : styles.iconTileNeutral;
+    iconVariant === "accent"
+      ? styles.iconTileAccent
+      : iconVariant === "neutral"
+        ? styles.iconTileNeutral
+        : styles.iconTileDestructive;
   const iconColor =
     iconVariant === "accent"
       ? theme.colors.accentSolid
-      : theme.colors.text;
+      : iconVariant === "neutral"
+        ? theme.colors.text
+        : theme.colors.dangerSolid;
+  const titleStyle =
+    iconVariant === "destructive" ? styles.titleDestructive : styles.title;
+  const subtitleStyle =
+    iconVariant === "destructive"
+      ? styles.subtitleDestructive
+      : styles.subtitle;
+  const chevronColor =
+    iconVariant === "destructive"
+      ? theme.colors.dangerSolid
+      : theme.colors.textMutedAccent;
 
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
+      accessibilityState={{ disabled: Boolean(disabled) }}
       accessibilityLabel={accessibilityLabel ?? title}
       style={({ pressed }) => [
         styles.row,
         subtitle ? styles.rowTall : null,
         showDivider && styles.rowDivider,
-        pressed && styles.rowPressed,
+        disabled && styles.rowDisabled,
+        !disabled &&
+          pressed &&
+          (iconVariant === "destructive"
+            ? styles.rowPressedDestructive
+            : styles.rowPressed),
       ]}
     >
       <View style={[styles.iconTile, iconTileStyle]}>
@@ -50,17 +75,13 @@ export function ProfileMenuRow({
       </View>
       {subtitle ? (
         <View style={styles.textBlock}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>{subtitle}</Text>
+          <Text style={titleStyle}>{title}</Text>
+          <Text style={subtitleStyle}>{subtitle}</Text>
         </View>
       ) : (
-        <Text style={[styles.title, styles.titleFlex]}>{title}</Text>
+        <Text style={[titleStyle, styles.titleFlex]}>{title}</Text>
       )}
-      <MaterialIcons
-        name="chevron-right"
-        size={22}
-        color={theme.colors.textMutedAccent}
-      />
+      <MaterialIcons name="chevron-right" size={22} color={chevronColor} />
     </Pressable>
   );
 }
@@ -84,6 +105,12 @@ const styles = StyleSheet.create({
   rowPressed: {
     backgroundColor: theme.colors.accentWash,
   },
+  rowPressedDestructive: {
+    backgroundColor: theme.colors.dangerMuted,
+  },
+  rowDisabled: {
+    opacity: 0.5,
+  },
   iconTile: {
     width: 40,
     height: 40,
@@ -97,6 +124,9 @@ const styles = StyleSheet.create({
   iconTileNeutral: {
     backgroundColor: theme.colors.surfaceSoft,
   },
+  iconTileDestructive: {
+    backgroundColor: theme.colors.dangerMuted,
+  },
   textBlock: {
     flex: 1,
     minWidth: 0,
@@ -108,6 +138,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: theme.colors.text,
   },
+  titleDestructive: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: theme.colors.dangerSolid,
+  },
   titleFlex: {
     flex: 1,
     minWidth: 0,
@@ -116,5 +151,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     color: theme.colors.textMutedAccent,
+  },
+  subtitleDestructive: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: theme.colors.textMuted,
   },
 });

@@ -4,6 +4,7 @@ import { queryClient } from "@/src/lib/query/queryClient";
 
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
+import { lotteryListKeys } from "../queries/lotteryListKeys";
 import { buyTicket, type BuyTicketParams } from "../services/buyTicketService";
 
 export function useBuyTicketMutation() {
@@ -17,7 +18,7 @@ export function useBuyTicketMutation() {
       if (!userId) return;
 
       queryClient.invalidateQueries({
-        queryKey: ["lotteries", "available", userId],
+        queryKey: lotteryListKeys.available(userId),
       });
       queryClient.invalidateQueries({
         queryKey: ["lotteries", "detail", variables.lotteryId, userId],
