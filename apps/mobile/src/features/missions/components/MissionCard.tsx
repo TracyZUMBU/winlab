@@ -11,7 +11,7 @@ import { Card } from "@/src/components/ui/Card";
 import type { Enums } from "@/src/lib/supabase.types";
 import { theme } from "@/src/theme";
 
-import type { AvailableMission } from "../hooks/useAvailableMissionsQuery";
+import type { AvailableMission } from "../hooks/useTodoMissionsQuery";
 import { getMissionThumbnailFallbackUri } from "../utils/missionThumbnailFallback";
 
 const DESCRIPTION_MAX_LENGTH = 80;
@@ -30,6 +30,8 @@ function userStatusToBadgeTone(
       return "success";
     case "pending":
       return "warning";
+    case "rejected":
+      return "accent";
     case "completed":
       return "neutral";
   }
@@ -40,12 +42,15 @@ function ctaTitleKey(
 ):
   | "missions.card.cta.start"
   | "missions.card.cta.pending"
-  | "missions.card.cta.completed" {
+  | "missions.card.cta.completed"
+  | "missions.card.cta.rejected" {
   switch (status) {
     case "pending":
       return "missions.card.cta.pending";
     case "completed":
       return "missions.card.cta.completed";
+    case "rejected":
+      return "missions.card.cta.rejected";
     default:
       return "missions.card.cta.start";
   }
@@ -54,9 +59,9 @@ function ctaTitleKey(
 function resolveCtaVariant(
   status: AvailableMission["userStatus"],
   missionType: Enums<"mission_type">,
-): "primary" | "soft" | "ghost" {
-  if (status === "completed") return "ghost";
-  if (status === "pending") return "soft";
+): "primary" | "soft" {
+  if (status === "completed" || status === "pending" || status === "rejected")
+    return "soft";
   return "primary";
 }
 
@@ -89,14 +94,7 @@ function ctaRightIcon(
     variant === "primary" ? theme.colors.onAccent : theme.colors.text;
   const size = 20;
 
-  switch (missionType) {
-    case "video":
-      return <MaterialIcons name="play-arrow" size={size} color={color} />;
-    case "follow":
-      return <MaterialIcons name="person-add" size={size} color={color} />;
-    default:
-      return <MaterialIcons name="arrow-forward" size={size} color={color} />;
-  }
+  return <MaterialIcons name="arrow-forward" size={size} color={color} />;
 }
 
 export type MissionCardProps = {
@@ -176,9 +174,9 @@ export function MissionCard({
         </View>
         <View style={styles.body}>
           <View style={styles.metaRow}>
-            <Badge tone="accent">
+            <Text style={styles.metaTokenReward}>
               {t("missions.card.tokenReward", { count: mission.token_reward })}
-            </Badge>
+            </Text>
             {durationForMeta ? (
               <>
                 <Text style={styles.metaDot}>·</Text>
@@ -261,9 +259,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.55,
   },
+  metaTokenReward: {
+    color: theme.colors.accentSolid,
+    fontSize: 11,
+    fontWeight: "600",
+    textTransform: "uppercase",
+  },
   duration: {
     ...theme.typography.caption,
-    color: theme.colors.textMutedAccent,
+    color: theme.colors.textMuted,
   },
   title: {
     color: theme.colors.text,

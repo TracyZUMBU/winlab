@@ -25,6 +25,7 @@ import { useWalletTransactionsQuery } from "../hooks/useWalletTransactionsQuery"
 import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
+import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
@@ -194,48 +195,14 @@ export function WalletScreen() {
           onEarnMore={onEarnMore}
         />
 
-        <View style={styles.segmentTrack}>
-          <Pressable
-            onPress={() => setSegment("history")}
-            style={[
-              styles.segmentItem,
-              segment === "history" && styles.segmentItemActive,
-            ]}
-            accessibilityRole="button"
-            accessibilityState={{ selected: segment === "history" }}
-          >
-            <Text
-              style={[
-                styles.segmentLabel,
-                segment === "history"
-                  ? styles.segmentLabelActive
-                  : styles.segmentLabelIdle,
-              ]}
-            >
-              {t("wallet.tab.history")}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setSegment("tickets")}
-            style={[
-              styles.segmentItem,
-              segment === "tickets" && styles.segmentItemActive,
-            ]}
-            accessibilityRole="button"
-            accessibilityState={{ selected: segment === "tickets" }}
-          >
-            <Text
-              style={[
-                styles.segmentLabel,
-                segment === "tickets"
-                  ? styles.segmentLabelActive
-                  : styles.segmentLabelIdle,
-              ]}
-            >
-              {t("wallet.tab.myTickets")}
-            </Text>
-          </Pressable>
-        </View>
+        <SegmentedControl
+          items={[
+            { value: "history", label: t("wallet.tab.history") },
+            { value: "tickets", label: t("wallet.tab.myTickets") },
+          ]}
+          value={segment}
+          onValueChange={setSegment}
+        />
 
         {segment === "history" ? (
           <View style={styles.section}>
@@ -323,38 +290,6 @@ const styles = StyleSheet.create({
     minHeight: theme.layout.minTouchTarget,
     alignItems: "center",
     justifyContent: "center",
-  },
-  segmentTrack: {
-    flexDirection: "row",
-    padding: 4,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceSoft,
-    gap: 4,
-  },
-  segmentItem: {
-    flex: 1,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.radius.sm,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  segmentItemActive: {
-    backgroundColor: theme.colors.surface,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  segmentLabel: {
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  segmentLabelActive: {
-    color: theme.colors.text,
-  },
-  segmentLabelIdle: {
-    color: theme.colors.textMuted,
   },
   section: {
     gap: theme.spacing.md,

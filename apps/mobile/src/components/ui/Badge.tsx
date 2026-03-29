@@ -34,24 +34,22 @@ const styles = StyleSheet.create({
   },
 });
 
-const toneStyles: Record<
-  BadgeTone,
-  { container: ViewStyle; text: TextStyle }
-> = {
-  accent: {
-    container: { backgroundColor: theme.colors.accentMuted },
-    text: { color: theme.colors.accentSolid },
-  },
-  success: {
-    container: { backgroundColor: theme.colors.semantic.successMuted },
-    text: { color: theme.colors.text },
-  },
-  warning: {
-    container: { backgroundColor: theme.colors.semantic.warningMuted },
-    text: { color: theme.colors.text },
-  },
-  neutral: {
-    container: { backgroundColor: theme.colors.semantic.neutralMuted },
-    text: { color: theme.colors.text },
-  },
-};
+const toneStyles: Record<BadgeTone, { container: ViewStyle; text: TextStyle }> =
+  {
+    accent: {
+      container: { backgroundColor: theme.colors.accentMuted },
+      text: { color: theme.colors.accentSolid },
+    },
+    success: {
+      container: { backgroundColor: theme.colors.semantic.successMuted },
+      text: { color: theme.colors.text },
+    },
+    warning: {
+      container: { backgroundColor: theme.colors.semantic.warningMuted },
+      text: { color: theme.colors.text },
+    },
+    neutral: {
+      container: { backgroundColor: theme.colors.semantic.neutralMuted },
+      text: { color: theme.colors.text },
+    },
+  };

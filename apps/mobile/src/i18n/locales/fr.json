@@ -104,12 +104,14 @@
       "status": {
         "available": "Disponible",
         "pending": "En attente",
-        "completed": "Complétée"
+        "completed": "Complétée",
+        "rejected": "Refusée"
       },
       "cta": {
         "start": "Commencer",
         "pending": "En attente de validation",
-        "completed": "Voir le détail"
+        "completed": "Voir le détail",
+        "rejected": "Réessayer"
       },
       "tokenReward": "+{{count}} jetons",
       "a11y": {
@@ -128,7 +130,14 @@
       "sectionSubtitle": "Complétez des tâches pour gagner des entrées",
       "infoBanner": "De nouvelles missions sont ajoutées chaque jour. Revenez demain pour plus de jetons !",
       "tokenBalance": "{{amount}} jetons",
-      "emptyFilter": "Aucune mission dans cette catégorie."
+      "emptyFilter": "Aucune mission dans cette catégorie.",
+      "emptyCompleted": "Vous n’avez pas encore de missions terminées.",
+      "sectionTitleCompleted": "Missions terminées",
+      "sectionSubtitleCompleted": "Toutes vos soumissions et leur statut",
+      "statusTab": {
+        "todo": "À faire",
+        "completed": "Complétées"
+      }
     },
     "durationHint": {
       "survey": "2 min",

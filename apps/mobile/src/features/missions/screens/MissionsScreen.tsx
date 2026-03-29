@@ -17,17 +17,23 @@ import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
+import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
 import { TokenBalancePill } from "@/src/components/ui/TokenBalancePill";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
 import { MissionCard } from "../components/MissionCard";
-import type { AvailableMission } from "../hooks/useAvailableMissionsQuery";
-import { useAvailableMissionsQuery } from "../hooks/useAvailableMissionsQuery";
+import { useCompletedMissionsQuery } from "../hooks/useCompletedMissionsQuery";
+import type { AvailableMission } from "../hooks/useTodoMissionsQuery";
+import { useTodoMissionsQuery } from "../hooks/useTodoMissionsQuery";
 
 type MissionFilterId = "all" | "survey" | "video" | "follow";
 
+type MissionStatusTabId = "todo" | "completed";
+
 const FILTER_ORDER: MissionFilterId[] = ["all", "survey", "video", "follow"];
+
+const STATUS_TAB_ORDER: MissionStatusTabId[] = ["todo", "completed"];
 
 function MissionsInfoBanner() {
   const { t } = useTranslation();
@@ -48,22 +54,20 @@ export function MissionsScreen() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<MissionFilterId>("all");
+  const [statusTab, setStatusTab] = useState<MissionStatusTabId>("todo");
 
-  const {
-    data: missions,
-    isLoading,
-    isError,
-    refetch,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useAvailableMissionsQuery();
+  const todoQuery = useTodoMissionsQuery();
+  const completedQuery = useCompletedMissionsQuery({
+    enabled: statusTab === "completed",
+  });
+
+  const activeQuery = statusTab === "todo" ? todoQuery : completedQuery;
 
   const filteredMissions = useMemo(() => {
-    if (!missions) return [];
-    if (filter === "all") return missions;
-    return missions.filter((m) => m.mission_type === filter);
-  }, [missions, filter]);
+    const list = activeQuery.data ?? [];
+    if (filter === "all") return list;
+    return list.filter((m) => m.mission_type === filter);
+  }, [activeQuery.data, filter]);
 
   const handleMissionPress = (mission: AvailableMission) => {
     router.push(`/missions/${mission.id}`);
@@ -80,7 +84,23 @@ export function MissionsScreen() {
     />
   );
 
-  if (isLoading) {
+  const sectionTitleKey =
+    statusTab === "todo"
+      ? "missions.list.sectionTitle"
+      : "missions.list.sectionTitleCompleted";
+
+  const sectionSubtitleKey =
+    statusTab === "todo"
+      ? "missions.list.sectionSubtitle"
+      : "missions.list.sectionSubtitleCompleted";
+
+  const listEmptyMessageKey = useMemo(() => {
+    if (filter !== "all") return "missions.list.emptyFilter";
+    if (statusTab === "completed") return "missions.list.emptyCompleted";
+    return "missions.screen.empty";
+  }, [filter, statusTab]);
+
+  if (statusTab === "todo" && todoQuery.isPending) {
     return (
       <Screen>
         {shellHeader}
@@ -92,7 +112,7 @@ export function MissionsScreen() {
     );
   }
 
-  if (isError) {
+  if (statusTab === "todo" && todoQuery.isError) {
     return (
       <Screen>
         {shellHeader}
@@ -100,19 +120,11 @@ export function MissionsScreen() {
           <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
           <Text style={styles.errorDetail}>{userFacingQueryLoadHint(t)}</Text>
           <View style={styles.retryWrap}>
-            <Button title={t("common.retry")} onPress={() => refetch()} />
+            <Button
+              title={t("common.retry")}
+              onPress={() => todoQuery.refetch()}
+            />
           </View>
-        </View>
-      </Screen>
-    );
-  }
-
-  if (!missions || missions.length === 0) {
-    return (
-      <Screen>
-        {shellHeader}
-        <View style={styles.centered}>
-          <Text style={styles.emptyText}>{t("missions.screen.empty")}</Text>
         </View>
       </Screen>
     );
@@ -151,58 +163,108 @@ export function MissionsScreen() {
         })}
       </ScrollView>
       <SectionHeader
-        title={t("missions.list.sectionTitle")}
-        subtitle={t("missions.list.sectionSubtitle")}
+        title={t(sectionTitleKey)}
+        subtitle={t(sectionSubtitleKey)}
+      />
+      <SegmentedControl
+        items={STATUS_TAB_ORDER.map((id) => ({
+          value: id,
+          label: t(`missions.list.statusTab.${id}`),
+        }))}
+        value={statusTab}
+        onValueChange={setStatusTab}
       />
     </View>
   );
 
+  const showCompletedBlocking =
+    statusTab === "completed" &&
+    (completedQuery.isPending || completedQuery.isError);
+
   return (
     <Screen style={styles.screen}>
       {shellHeader}
-      <FlatList
-        data={filteredMissions}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={listHeader}
-        ListEmptyComponent={
-          <View style={styles.filteredEmpty}>
-            <Text style={styles.emptyText}>
-              {t("missions.list.emptyFilter")}
-            </Text>
-          </View>
-        }
-        renderItem={({ item }) => (
-          <MissionCard mission={item} onPress={handleMissionPress} />
-        )}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: listBottomPadding },
-        ]}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListFooterComponent={
-          <View style={styles.footer}>
-            {filteredMissions.length > 0 ? <MissionsInfoBanner /> : null}
-            {hasNextPage ? (
-              <Pressable
-                onPress={() => fetchNextPage()}
-                style={styles.loadMoreButton}
-                disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={theme.colors.accentSolid}
-                  />
-                ) : (
-                  <Text style={styles.loadMoreText}>
-                    {t("missions.screen.loadMore")}
-                  </Text>
-                )}
-              </Pressable>
-            ) : null}
-          </View>
-        }
-      />
+      {showCompletedBlocking ? (
+        <View style={styles.listContent}>
+          {listHeader}
+          {completedQuery.isPending ? (
+            <View style={styles.tabBodyLoading}>
+              <ActivityIndicator
+                size="large"
+                color={theme.colors.accentSolid}
+              />
+              <Text style={styles.loadingText}>
+                {t("missions.screen.loading")}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.tabBodyLoading}>
+              <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
+              <Text style={styles.errorDetail}>
+                {userFacingQueryLoadHint(t)}
+              </Text>
+              <View style={styles.retryWrap}>
+                <Button
+                  title={t("common.retry")}
+                  onPress={() => completedQuery.refetch()}
+                />
+              </View>
+            </View>
+          )}
+        </View>
+      ) : (
+        <FlatList
+          data={filteredMissions}
+          ListHeaderComponent={listHeader}
+          ListEmptyComponent={
+            <View style={styles.filteredEmpty}>
+              <Text style={styles.emptyText}>{t(listEmptyMessageKey)}</Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <MissionCard
+              mission={item}
+              onPress={handleMissionPress}
+              showStatusBadge={statusTab === "completed"}
+            />
+          )}
+          keyExtractor={(item) =>
+            statusTab === "completed" && item.mission_completions[0]
+              ? item.mission_completions[0].id
+              : item.id
+          }
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: listBottomPadding },
+          ]}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ListFooterComponent={
+            <View style={styles.footer}>
+              {statusTab === "todo" && filteredMissions.length > 0 ? (
+                <MissionsInfoBanner />
+              ) : null}
+              {activeQuery.hasNextPage ? (
+                <Pressable
+                  onPress={() => activeQuery.fetchNextPage()}
+                  style={styles.loadMoreButton}
+                  disabled={activeQuery.isFetchingNextPage}
+                >
+                  {activeQuery.isFetchingNextPage ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.accentSolid}
+                    />
+                  ) : (
+                    <Text style={styles.loadMoreText}>
+                      {t("missions.screen.loadMore")}
+                    </Text>
+                  )}
+                </Pressable>
+              ) : null}
+            </View>
+          }
+        />
+      )}
     </Screen>
   );
 }
@@ -236,6 +298,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: theme.spacing.lg,
+  },
+  tabBodyLoading: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.lg,
+    minHeight: 200,
   },
   loadingText: {
     marginTop: theme.spacing.md,

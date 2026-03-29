@@ -37,53 +37,66 @@ export type GetAvailableMissionsPageResult = {
 
 const DEFAULT_PAGE_SIZE = 15;
 
+function parseBrandFromRpc(value: unknown): PagedMissionBrand | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const o = value as Record<string, unknown>;
+  if (typeof o.id !== "string" || typeof o.name !== "string") {
+    return null;
+  }
+  return {
+    id: o.id,
+    name: o.name,
+    logo_url: typeof o.logo_url === "string" ? o.logo_url : null,
+  };
+}
+
+function parseCompletionsFromRpc(value: unknown): PagedMissionCompletion[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item): item is PagedMissionCompletion =>
+      !!item &&
+      typeof item === "object" &&
+      typeof (item as PagedMissionCompletion).id === "string" &&
+      typeof (item as PagedMissionCompletion).status === "string" &&
+      typeof (item as PagedMissionCompletion).user_id === "string",
+  );
+}
+
 export async function getAvailableMissionsPage(
   params: GetAvailableMissionsPageParams,
 ): Promise<GetAvailableMissionsPageResult> {
-  const { userId, pageIndex, pageSize = DEFAULT_PAGE_SIZE } = params;
+  const { pageIndex, pageSize = DEFAULT_PAGE_SIZE } = params;
   const supabase = getSupabaseClient();
-  const now = new Date().toISOString();
 
   const from = pageIndex * pageSize;
   const to = from + pageSize - 1;
+  const limit = to - from + 1;
+  const offset = from;
 
-  const { data, error } = await supabase
-    .from("missions")
-    .select(
-      `
-      id,
-      title,
-      description,
-      mission_type,
-      token_reward,
-      ends_at,
-      image_url,
-      brand:brands!inner(id, name, logo_url),
-      mission_completions(id, status, user_id)
-    `,
-    )
-    .eq("status", "active")
-    .eq("brands.is_active", true)
-    .or(`starts_at.lte.${now},starts_at.is.null`)
-    .or(`ends_at.gte.${now},ends_at.is.null`)
-    .order("ends_at", { ascending: true, nullsFirst: false })
-    .order("id", { ascending: true })
-    .range(from, to);
+  const { data, error } = await supabase.rpc("get_todo_missions_page", {
+    p_limit: limit,
+    p_offset: offset,
+  });
 
   if (error) {
     throw error;
   }
 
-  const rows = (data ?? []) as (Omit<PagedMissionRow, "mission_completions"> & {
-    mission_completions: PagedMissionCompletion[];
-  })[];
+  const rows = data ?? [];
 
   return {
     missions: rows.map((row) => ({
-      ...row,
-      mission_completions: row.mission_completions.filter(
-        (c) => c.user_id === userId,
-      ),
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      mission_type: row.mission_type,
+      token_reward: row.token_reward,
+      ends_at: row.ends_at,
+      image_url: row.image_url,
+      brand: parseBrandFromRpc(row.brand),
+      mission_completions: parseCompletionsFromRpc(row.mission_completions),
     })),
   };
 }

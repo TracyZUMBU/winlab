@@ -67,12 +67,14 @@
       "status": {
         "available": "Available",
         "pending": "Pending",
-        "completed": "Completed"
+        "completed": "Completed",
+        "rejected": "Rejected"
       },
       "cta": {
         "start": "Start",
         "pending": "Awaiting review",
-        "completed": "View details"
+        "completed": "View details",
+        "rejected": "Try again"
       },
       "tokenReward": "+{{count}} tokens",
       "a11y": {
@@ -91,7 +93,14 @@
       "sectionSubtitle": "Complete tasks to earn tokens",
       "infoBanner": "New missions are added every day. Come back tomorrow for more tokens!",
       "tokenBalance": "{{amount}} tokens",
-      "emptyFilter": "No missions in this category."
+      "emptyFilter": "No missions in this category.",
+      "emptyCompleted": "You have no completed missions yet.",
+      "sectionTitleCompleted": "Completed missions",
+      "sectionSubtitleCompleted": "All submissions and their validation status",
+      "statusTab": {
+        "todo": "To do",
+        "completed": "Done"
+      }
     },
     "durationHint": {
       "survey": "2 min",

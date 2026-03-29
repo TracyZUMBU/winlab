@@ -915,6 +915,20 @@ export type Database = {
           success: boolean
         }[]
       }
+      get_todo_missions_page: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          id: string
+          title: string
+          description: string | null
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          token_reward: number
+          ends_at: string | null
+          image_url: string | null
+          brand: Json
+          mission_completions: Json
+        }[]
+      }
     }
     Enums: {
       lottery_status: "draft" | "active" | "closed" | "drawn" | "cancelled"

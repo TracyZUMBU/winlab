@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/src/lib/query/queryClient";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
+import { missionListKeys } from "../queries/missionListKeys";
 import {
   submitMissionCompletion,
   type SubmitMissionCompletionParams,
@@ -23,7 +24,7 @@ export function useSubmitMissionCompletionMutation() {
     ) => {
       if (!result.success) return;
 
-      queryClient.invalidateQueries({ queryKey: ["missions", "available"] });
+      queryClient.invalidateQueries({ queryKey: [...missionListKeys.all] });
       queryClient.invalidateQueries({
         queryKey: ["missions", variables.missionId],
       });
