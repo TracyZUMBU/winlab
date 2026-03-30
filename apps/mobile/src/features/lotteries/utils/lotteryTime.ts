@@ -9,7 +9,7 @@ export type TimeRemaining =
   | { kind: "ongoing" }
   | { kind: "expired" };
 
-function isTimeParts(
+export function isTimeParts(
   remaining: TimeRemaining,
 ): remaining is { days: number; hours: number; minutes: number } {
   return (

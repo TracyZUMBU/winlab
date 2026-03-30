@@ -4,6 +4,8 @@ import { queryClient } from "@/src/lib/query/queryClient";
 
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
+import { homeDashboardKeys } from "@/src/features/home/queries/homeDashboardKeys";
+
 import { lotteryListKeys } from "../queries/lotteryListKeys";
 import { buyTicket, type BuyTicketParams } from "../services/buyTicketService";
 
@@ -36,6 +38,9 @@ export function useBuyTicketMutation() {
       });
       queryClient.invalidateQueries({
         queryKey: ["wallet", "tickets", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: homeDashboardKeys.detail(userId),
       });
     },
   });

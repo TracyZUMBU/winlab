@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/src/lib/query/queryClient";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
+import { homeDashboardKeys } from "@/src/features/home/queries/homeDashboardKeys";
+
 import { missionListKeys } from "../queries/missionListKeys";
 import {
   submitMissionCompletion,
@@ -40,6 +42,9 @@ export function useSubmitMissionCompletionMutation() {
       });
       queryClient.invalidateQueries({
         queryKey: ["wallet", "transactions", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: homeDashboardKeys.detail(userId),
       });
     },
   });

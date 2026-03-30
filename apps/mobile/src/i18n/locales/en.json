@@ -29,7 +29,56 @@
     }
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "loading": "Loading home…",
+    "error": "Could not load home. Please try again.",
+    "greeting": {
+      "title": "Hey {{name}} 👋",
+      "subtitle": "Ready to hit the jackpot today?",
+      "anonymousName": "there"
+    },
+    "balance": {
+      "label": "Current balance",
+      "useTokens": "Use my tokens"
+    },
+    "lotteries": {
+      "sectionTitle": "Ongoing lotteries",
+      "seeAll": "See all",
+      "empty": "No open lotteries right now."
+    },
+    "lottery": {
+      "countdownPadded": "{{days}}d {{hours}}h {{minutes}}m",
+      "endingSoonBadge": "Ending soon",
+      "endsInLabel": "Ends in",
+      "ctaParticipate": "Enter"
+    },
+    "participations": {
+      "sectionTitle": "My entries",
+      "drawOn": "Draw on {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "chancePercent": "Odds: {{value}}%",
+      "chanceUnknown": "Odds: —",
+      "empty": "You have no active entries yet."
+    },
+    "missions": {
+      "sectionTitle": "Earn more tokens",
+      "seeAll": "See all missions",
+      "empty": "No missions to show right now.",
+      "availability": "Availability: {{used}}/{{max}}",
+      "subtitle": {
+        "referral": "Referral bonus"
+      }
+    },
+    "header": {
+      "a11y": {
+        "openProfile": "Open profile",
+        "notifications": "Notifications"
+      }
+    },
+    "quickLinks": {
+      "title": "Shortcuts"
+    }
   },
   "auth": {
     "genericError": "Something went wrong. Please try again.",
@@ -76,7 +125,7 @@
         "completed": "View details",
         "rejected": "Try again"
       },
-      "tokenReward": "+{{count}} tokens",
+      "tokenReward": "+{{count}}",
       "a11y": {
         "brandLogo": "{{brand}} logo",
         "missionIllustration": "Mission image for {{brand}}"

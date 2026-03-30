@@ -936,6 +936,10 @@ export type Database = {
           mission_completions: Json
         }[]
       }
+      get_user_home_dashboard: {
+        Args: never
+        Returns: Json
+      }
     }
     Enums: {
       lottery_status: "draft" | "active" | "closed" | "drawn" | "cancelled"

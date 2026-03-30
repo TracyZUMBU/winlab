@@ -29,7 +29,56 @@
     }
   },
   "home": {
-    "title": "Accueil"
+    "title": "Accueil",
+    "loading": "Chargement de l’accueil…",
+    "error": "Impossible de charger l’accueil. Réessayez.",
+    "greeting": {
+      "title": "Salut {{name}} 👋",
+      "subtitle": "Prêt à décrocher le gros lot aujourd’hui ?",
+      "anonymousName": "toi"
+    },
+    "balance": {
+      "label": "Solde actuel",
+      "useTokens": "Utiliser mes jetons"
+    },
+    "lotteries": {
+      "sectionTitle": "Loteries en cours",
+      "seeAll": "Tout voir",
+      "empty": "Aucune loterie ouverte pour le moment."
+    },
+    "lottery": {
+      "countdownPadded": "{{days}}j {{hours}}h {{minutes}}m",
+      "endingSoonBadge": "Bientôt terminé",
+      "endsInLabel": "Fin dans",
+      "ctaParticipate": "Participer"
+    },
+    "participations": {
+      "sectionTitle": "Mes participations",
+      "drawOn": "Tirage le {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "chancePercent": "Chance : {{value}} %",
+      "chanceUnknown": "Chance : —",
+      "empty": "Tu n’as pas encore de participation active."
+    },
+    "missions": {
+      "sectionTitle": "Gagner plus de jetons",
+      "seeAll": "Voir toutes les missions",
+      "empty": "Aucune mission à afficher pour l’instant.",
+      "availability": "Disponibilité : {{used}}/{{max}}",
+      "subtitle": {
+        "referral": "Bonus de parrainage"
+      }
+    },
+    "header": {
+      "a11y": {
+        "openProfile": "Ouvrir le profil",
+        "notifications": "Notifications"
+      }
+    },
+    "quickLinks": {
+      "title": "Raccourcis"
+    }
   },
   "emailScreen": {
     "title": "Entrez votre email",
@@ -113,7 +162,7 @@
         "completed": "Voir le détail",
         "rejected": "Réessayer"
       },
-      "tokenReward": "+{{count}} jetons",
+      "tokenReward": "+{{count}}",
       "a11y": {
         "brandLogo": "Logo {{brand}}",
         "missionIllustration": "Image de mission pour {{brand}}"

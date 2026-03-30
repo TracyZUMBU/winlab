@@ -32,6 +32,8 @@ export const colors = {
 
   // Text
   text: TEXT,
+  /** gray body/ subtitle / inactive UI: gray slightly pulled toward `accentSolid`. */
+  textGrayLight: "#9CA3AF",
   /** Neutral gray (errors, placeholders, non–accent-tinted hints). */
   textMuted: TEXT_MUTED,
   /** Body / subtitle / inactive UI: gray slightly pulled toward `accentSolid`. */
