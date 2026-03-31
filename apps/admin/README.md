@@ -6,15 +6,15 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 
 | Dossier | Rôle |
 |--------|------|
-| `app/` | `App` racine, `AdminLayout` (titre « Winlab Admin », zone contenu). |
-| `pages/` | Une composante par écran (placeholder **Lotteries** pour l’instant). |
+| `app/` | `App` (déclaration des routes), `AdminLayout` (titre, nav, `<Outlet />`). |
+| `pages/` | Écrans : liste loteries, détail loterie (`LotteryDetailPage` placeholder). |
 | `features/lotteries/` | Code métier loteries à faire grossir (sans mélanger avec les pages). |
 | `components/ui/` | Primitives UI réutilisables quand le besoin apparaît. |
 | `lib/` | Utilitaires / clients légers partagés (`supabase.ts` : client anon centralisé). |
 | `styles/` | Feuilles globales (ex. `global.css`). |
 | `types/` | Types TS partagés côté admin. |
 
-Pas de React Router ni TanStack Query pour l’instant : la page affichée est composée directement dans `App.tsx` ; on pourra extraire le routage plus tard.
+**React Router** (minimal) : `/` redirige vers `/lotteries`, détail sous `/lotteries/:lotteryId`. Pas de TanStack Query pour l’instant.
 
 ## Variables d’environnement (Supabase)
 
@@ -49,4 +49,4 @@ npm run admin:preview
 
 ## Suite possible
 
-Router, auth dédiée admin, requêtes loteries / RLS : quand le flux produit le demande.
+Auth dédiée admin, données détail loterie, filtres liste : quand le flux produit le demande.
