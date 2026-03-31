@@ -61,6 +61,128 @@ body {
   text-decoration: underline;
 }
 
+.admin-layout__session {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.admin-layout__logout {
+  padding: 0.35rem 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: #334155;
+  cursor: pointer;
+}
+
+.admin-layout__logout:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.admin-layout__logout:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: #f8fafc;
+}
+
+.auth-login__card {
+  width: 100%;
+  max-width: 22rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.06);
+}
+
+.auth-login__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.auth-login__subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.auth-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.auth-login__label {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.auth-login__input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.auth-login__input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.auth-login__error {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.85rem;
+}
+
+.auth-login__submit {
+  margin-top: 1rem;
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.auth-login__submit:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.auth-login__submit:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
 .admin-layout__main {
   flex: 1;
   padding: 1.25rem;
@@ -73,6 +195,58 @@ body {
   margin: 0 0 0.5rem;
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.lotteries-dev-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem 1.25rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 0;
+}
+
+.lotteries-dev-toolbar__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 12rem;
+}
+
+.lotteries-dev-toolbar__field:first-child {
+  flex: 1 1 14rem;
+  min-width: 10rem;
+}
+
+.lotteries-dev-toolbar__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.lotteries-dev-toolbar__input,
+.lotteries-dev-toolbar__select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: #fff;
+  color: #0f172a;
+}
+
+.lotteries-dev-toolbar__input:focus,
+.lotteries-dev-toolbar__select:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.lotteries-dev-toolbar__hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  color: #64748b;
 }
 
 .page-lotteries__muted {

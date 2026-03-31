@@ -6,15 +6,19 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 
 | Dossier | Rôle |
 |--------|------|
-| `app/` | `App` (déclaration des routes), `AdminLayout` (titre, nav, `<Outlet />`). |
-| `pages/` | Écrans : liste loteries, détail loterie (`LotteryDetailPage` placeholder). |
-| `features/lotteries/` | Code métier loteries à faire grossir (sans mélanger avec les pages). |
+| `app/` | `App` (routes sous garde auth), `AdminLayout` (titre, nav, déconnexion, `<Outlet />`). |
+| `pages/` | Écrans : liste loteries, détail loterie. |
+| `features/auth/` | Login, garde `AdminAuthGate`, `useCurrentUser`, contexte session admin. |
+| `features/lotteries/` | Lecture loteries (services, table dev). |
+| `lib/auth/` | `isAdminUser` + parsing allowlist emails. |
 | `components/ui/` | Primitives UI réutilisables quand le besoin apparaît. |
 | `lib/` | Utilitaires / clients légers partagés (`supabase.ts` : client anon centralisé). |
 | `styles/` | Feuilles globales (ex. `global.css`). |
 | `types/` | Types TS partagés côté admin. |
 
 **React Router** (minimal) : `/` redirige vers `/lotteries`, détail sous `/lotteries/:lotteryId`. Pas de TanStack Query pour l’instant.
+
+**Auth** : email + mot de passe via Supabase Auth ; accès réservé aux emails listés dans `VITE_ADMIN_EMAIL_ALLOWLIST` (virgules). Pas d’inscription depuis l’admin. Session persistée par défaut (localStorage).
 
 ## Variables d’environnement (Supabase)
 
@@ -25,6 +29,7 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 |----------|-------------|
 | `VITE_SUPABASE_URL` | URL du projet (Settings → API → Project URL). |
 | `VITE_SUPABASE_ANON_KEY` | Clé **anon** « public » (Settings → API → anon public). |
+| `VITE_ADMIN_EMAIL_ALLOWLIST` | Emails autorisés (séparés par des virgules, trim, casse ignorée). Vide = personne n’a accès. |
 
 **Ne pas** mettre la `service_role` ni d’autres secrets dans le front : uniquement ce que le dashboard expose comme clé anon compatible client.
 
@@ -47,6 +52,12 @@ npm run admin:build
 npm run admin:preview
 ```
 
+## Tester l’accès admin
+
+1. Créer un utilisateur email/mot de passe dans Supabase Auth (Dashboard ou app mobile), ou réutiliser un compte existant.
+2. Ajouter son email exact (ou équivalent après normalisation minuscules) dans `VITE_ADMIN_EMAIL_ALLOWLIST`.
+3. `npm run dev` → écran de connexion → après succès, liste loteries ; sinon message « Accès non autorisé ».
+
 ## Suite possible
 
-Auth dédiée admin, données détail loterie, filtres liste : quand le flux produit le demande.
+Rôles côté base, MFA, reset mot de passe : quand le flux produit le demande.
