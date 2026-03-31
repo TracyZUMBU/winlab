@@ -235,3 +235,106 @@ body {
   background: #f1f5f9;
   color: #64748b;
 }
+
+.admin-detail-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.admin-detail-section__title {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.admin-detail-dl {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.admin-detail-dl__row {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+@media (max-width: 40rem) {
+  .admin-detail-dl__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-detail-dl__row dt {
+  margin: 0;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.admin-detail-dl__row dd {
+  margin: 0;
+}
+
+.admin-detail-text {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.admin-detail-text--multiline {
+  white-space: pre-wrap;
+}
+
+.admin-detail-summary {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-detail-winners-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-detail-winners-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.admin-detail-winners-table th,
+.admin-detail-winners-table td {
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.admin-detail-winners-table th {
+  background: #f1f5f9;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-detail-winners-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-detail-winners-table__num {
+  font-variant-numeric: tabular-nums;
+  width: 4rem;
+}
+
+.admin-detail-winners-table__uuid {
+  display: inline-block;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  vertical-align: bottom;
+}
