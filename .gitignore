@@ -1,6 +1,9 @@
 # Monorepo root — dependencies often hoisted here
 node_modules/
 
+# Vite / front builds
+dist/
+
 # OS / editor noise
 .DS_Store
 

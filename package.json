@@ -1,0 +1,9 @@
+{
+  "name": "winlab",
+  "private": true,
+  "scripts": {
+    "admin:dev": "npm run dev --prefix apps/admin",
+    "admin:build": "npm run build --prefix apps/admin",
+    "admin:preview": "npm run preview --prefix apps/admin"
+  }
+}
