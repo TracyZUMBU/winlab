@@ -1,6 +1,6 @@
 /**
- * Vue admin des loteries (champs utiles pour listes / consultation).
- * `status` reflète l’enum Postgres `lottery_status` ; la valeur `unknown` couvre les données inattendues.
+ * Vue admin des loteries (aligné sur `admin_lotteries_overview` + champ `id` = lottery_id pour l’UI).
+ * `status` reflète l’enum Postgres `lottery_status` ; `unknown` couvre les valeurs inattendues.
  */
 
 export const LOTTERY_ADMIN_STATUSES = [
@@ -16,6 +16,7 @@ export type LotteryAdminKnownStatus = (typeof LOTTERY_ADMIN_STATUSES)[number];
 export type LotteryAdminStatus = LotteryAdminKnownStatus | "unknown";
 
 export type LotteryAdminListItem = {
+  /** Identifiant loterie (= `lottery_id` côté vue). */
   id: string;
   title: string;
   status: LotteryAdminStatus;
@@ -23,10 +24,13 @@ export type LotteryAdminListItem = {
   ends_at: string | null;
   draw_at: string;
   ticket_cost: number;
+  /** Nombre de places / gagnants prévus pour la loterie. */
   number_of_winners: number;
-  brand_id: string;
-  /** Nom de la marque liée ; `null` si jointure absente ou nom illisible. */
   brand_name: string | null;
+  /** Nombre de tickets en base pour cette loterie. */
+  tickets_count: number;
+  /** Nombre de lignes gagnants enregistrées. */
+  winners_count: number;
 };
 
 export type GetLotteriesResult = {

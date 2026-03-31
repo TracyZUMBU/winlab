@@ -8,8 +8,9 @@ import {
 
 const LOTTERY_STATUS_SET = new Set<string>(LOTTERY_ADMIN_STATUSES);
 
-type LotteryListDbRow = {
-  id: string;
+/** Ligne telle que renvoyée par la vue `admin_lotteries_overview` (PostgREST). */
+type AdminLotteriesOverviewRow = {
+  lottery_id: string;
   title: string;
   status: string;
   starts_at: string | null;
@@ -17,8 +18,9 @@ type LotteryListDbRow = {
   draw_at: string;
   ticket_cost: number;
   number_of_winners: number;
-  brand_id: string;
-  brand: { name: string } | { name: string }[] | null;
+  brand_name: string | null;
+  tickets_count: number | string | null;
+  winners_count: number | string | null;
 };
 
 function parseLotteryStatus(raw: unknown): LotteryAdminStatus {
@@ -28,23 +30,28 @@ function parseLotteryStatus(raw: unknown): LotteryAdminStatus {
   return "unknown";
 }
 
-function readBrandName(brand: LotteryListDbRow["brand"]): string | null {
-  if (brand == null) {
-    return null;
-  }
-  if (Array.isArray(brand)) {
-    const first = brand[0];
-    return typeof first?.name === "string" ? first.name : null;
-  }
-  return typeof brand.name === "string" ? brand.name : null;
-}
-
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.length > 0;
 }
 
-function mapRowToListItem(row: LotteryListDbRow): LotteryAdminListItem | null {
-  if (!isNonEmptyString(row.id)) {
+/** Normalise un entier non négatif (bigint / string possibles selon le client). */
+function toNonNegativeInt(value: unknown, fallback: number): number {
+  if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    return Math.trunc(value);
+  }
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isNaN(parsed) && parsed >= 0) {
+      return parsed;
+    }
+  }
+  return fallback;
+}
+
+function mapOverviewRowToListItem(
+  row: AdminLotteriesOverviewRow,
+): LotteryAdminListItem | null {
+  if (!isNonEmptyString(row.lottery_id)) {
     return null;
   }
   if (!isNonEmptyString(row.title)) {
@@ -53,16 +60,14 @@ function mapRowToListItem(row: LotteryListDbRow): LotteryAdminListItem | null {
   if (!isNonEmptyString(row.draw_at)) {
     return null;
   }
-  if (!isNonEmptyString(row.brand_id)) {
-    return null;
-  }
   if (typeof row.ticket_cost !== "number" || Number.isNaN(row.ticket_cost)) {
     return null;
   }
   if (
     typeof row.number_of_winners !== "number" ||
     Number.isNaN(row.number_of_winners) ||
-    !Number.isFinite(row.number_of_winners)
+    !Number.isFinite(row.number_of_winners) ||
+    row.number_of_winners < 0
   ) {
     return null;
   }
@@ -80,8 +85,15 @@ function mapRowToListItem(row: LotteryListDbRow): LotteryAdminListItem | null {
         ? row.ends_at
         : null;
 
+  const brand_name =
+    row.brand_name === null || row.brand_name === undefined
+      ? null
+      : typeof row.brand_name === "string"
+        ? row.brand_name
+        : null;
+
   return {
-    id: row.id,
+    id: row.lottery_id,
     title: row.title,
     status: parseLotteryStatus(row.status),
     starts_at,
@@ -89,23 +101,24 @@ function mapRowToListItem(row: LotteryListDbRow): LotteryAdminListItem | null {
     draw_at: row.draw_at,
     ticket_cost: row.ticket_cost,
     number_of_winners: row.number_of_winners,
-    brand_id: row.brand_id,
-    brand_name: readBrandName(row.brand),
+    brand_name,
+    tickets_count: toNonNegativeInt(row.tickets_count, 0),
+    winners_count: toNonNegativeInt(row.winners_count, 0),
   };
 }
 
 /**
- * Liste les loteries pour l’admin (lecture seule, clé anon + RLS).
- * Les lignes invalides sont ignorées plutôt que de faire échouer toute la liste.
+ * Liste les loteries via la vue `admin_lotteries_overview` (totaux tickets / gagnants, hors RLS table par table).
+ * Les lignes invalides sont ignorées ; erreur PostgREST : log console + propagation.
  */
 export async function getLotteries(): Promise<GetLotteriesResult> {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
-    .from("lotteries")
+    .from("admin_lotteries_overview")
     .select(
       `
-      id,
+      lottery_id,
       title,
       status,
       starts_at,
@@ -113,21 +126,23 @@ export async function getLotteries(): Promise<GetLotteriesResult> {
       draw_at,
       ticket_cost,
       number_of_winners,
-      brand_id,
-      brand:brands ( name )
+      brand_name,
+      tickets_count,
+      winners_count
     `,
     )
-    .order("created_at", { ascending: false });
+    .order("draw_at", { ascending: false });
 
   if (error) {
+    console.error("[getLotteries] admin_lotteries_overview", error.message, error);
     throw new Error(`getLotteries: ${error.message}`, { cause: error });
   }
 
-  const rows = (data ?? []) as LotteryListDbRow[];
+  const rows = (data ?? []) as AdminLotteriesOverviewRow[];
   const lotteries: LotteryAdminListItem[] = [];
 
   for (const raw of rows) {
-    const item = mapRowToListItem(raw);
+    const item = mapOverviewRowToListItem(raw);
     if (item) {
       lotteries.push(item);
     }

@@ -10,6 +10,27 @@ function formatTicketCost(value: number): string {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
 
+/** Comptages vue admin : null / indéfini → « — », 0 affiché explicitement, séparateurs fr-FR. */
+function formatCountForDev(value: number | null | undefined): string {
+  if (value == null || typeof value !== "number" || Number.isNaN(value)) {
+    return "—";
+  }
+  return new Intl.NumberFormat("fr-FR", {
+    maximumFractionDigits: 0,
+  }).format(Math.trunc(value));
+}
+
+function countCellClass(value: number | null | undefined): string {
+  const base = "lotteries-dev-table__num";
+  if (value == null || typeof value !== "number" || Number.isNaN(value)) {
+    return `${base} lotteries-dev-table__count-muted`;
+  }
+  if (Math.trunc(value) === 0) {
+    return `${base} lotteries-dev-table__count-zero`;
+  }
+  return base;
+}
+
 export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
   return (
     <div className="lotteries-dev-table-wrap">
@@ -23,7 +44,9 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
             <th scope="col">Fin</th>
             <th scope="col">Tirage</th>
             <th scope="col">Coût ticket</th>
-            <th scope="col">Gagnants</th>
+            <th scope="col">Tickets</th>
+            <th scope="col">Places</th>
+            <th scope="col">Tirés</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -51,8 +74,14 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
               <td className="lotteries-dev-table__num">
                 {formatTicketCost(row.ticket_cost)}
               </td>
+              <td className={countCellClass(row.tickets_count)}>
+                {formatCountForDev(row.tickets_count)}
+              </td>
               <td className="lotteries-dev-table__num">
                 {row.number_of_winners}
+              </td>
+              <td className={countCellClass(row.winners_count)}>
+                {formatCountForDev(row.winners_count)}
               </td>
               <td className="lotteries-dev-table__actions">
                 <Link

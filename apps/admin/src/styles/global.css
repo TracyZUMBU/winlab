@@ -138,6 +138,18 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.lotteries-dev-table__count-zero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #64748b;
+}
+
+.lotteries-dev-table__count-muted {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #94a3b8;
+}
+
 .lotteries-dev-table__actions {
   white-space: nowrap;
 }
