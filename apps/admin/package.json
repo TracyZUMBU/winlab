@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "migrate:all": "npm run migrate:local && npm run migrate:remote"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.0",
