@@ -199,7 +199,7 @@ export function ProfileScreen() {
   }, [deleteMyAccountMutation, i18n, router, signOutMutation, t]);
 
   const openParticipations = useCallback(() => {
-    router.push("/wallet");
+    router.push("/results");
   }, [router]);
 
   const openReferral = useCallback(() => {

@@ -88,6 +88,11 @@
       "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen."
     }
   },
+  "common": {
+    "a11y": {
+      "back": "Go back"
+    }
+  },
   "emailScreen": {
     "title": "Enter your email",
     "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
@@ -434,7 +439,8 @@
     },
     "userStatus": {
       "won": "Won",
-      "lost": "Lost"
+      "lost": "Lost",
+      "upcoming": "Draw upcoming"
     },
     "screen": {
       "loading": "Loading results...",
@@ -445,11 +451,20 @@
       "loading": "Loading...",
       "notFound": "Result not found.",
       "lotterySection": "Lottery",
+      "drawDate": "Draw date: {{date}}",
       "userSection": "Your entry",
+      "yourStatus": "Status",
+      "tickets": "Tickets",
+      "rank": "Rank",
       "winnersSection": "Winners",
+      "noWinnersYet": "Winners will be available soon.",
+      "you": "You",
       "winnerLine": "Rank {{position}} · {{pseudo}}"
     },
     "list": {
+      "drawDate": "Draw date: {{date}}",
+      "totalTickets": "Your tickets: {{count}}",
+      "loadMore": "Load more results",
       "winnerPosition": "Rank {{position}}"
     }
   },

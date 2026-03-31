@@ -21,10 +21,6 @@ export default function LotteriesLayout() {
         name="all"
         options={{ title: t("lotteries.layout.catalog") }}
       />
-      <Stack.Screen
-        name="results"
-        options={{ headerShown: false }}
-      />
     </Stack>
   );
 }

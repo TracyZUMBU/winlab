@@ -54,7 +54,7 @@ export function ProfileHeroHeader({
       </View>
 
       <Text style={styles.name}>{displayName}</Text>
-      <Text style={styles.handle}>{handleLabel}</Text>
+      {/* <Text style={styles.handle}>{handleLabel}</Text> */}
 
       <View style={styles.tokenPill}>
         <MaterialIcons

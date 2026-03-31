@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
 import { theme } from "@/src/theme";
@@ -49,6 +50,6 @@ const toneStyles: Record<BadgeTone, { container: ViewStyle; text: TextStyle }> =
     },
     neutral: {
       container: { backgroundColor: theme.colors.semantic.neutralMuted },
-      text: { color: theme.colors.text },
+      text: { color: theme.colors.textGrayLight },
     },
   };

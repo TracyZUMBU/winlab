@@ -7,7 +7,7 @@ import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 import { theme } from "@/src/theme";
 
-export default function AppTabsLayout() {
+export default function AppLayout() {
   const router = useRouter();
   const { status, sessionUserId, profile, hasSeenOnboarding } =
     useAppBootstrap(true);
@@ -98,6 +98,12 @@ export default function AppTabsLayout() {
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person" color={color} size={size} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="results"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

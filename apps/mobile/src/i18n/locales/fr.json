@@ -116,6 +116,11 @@
       "label": "ADRESSE EMAIL"
     }
   },
+  "common": {
+    "a11y": {
+      "back": "Retour"
+    }
+  },
   "appPlaceholder": {
     "title": "Bienvenue sur Winlab",
     "subtitle": "Cet écran est un placeholder pour l’app connectée.",
@@ -471,7 +476,8 @@
     },
     "userStatus": {
       "won": "Gagné",
-      "lost": "Perdu"
+      "lost": "Perdu",
+      "upcoming": "Tirage à venir"
     },
     "screen": {
       "loading": "Chargement des résultats...",
@@ -482,11 +488,20 @@
       "loading": "Chargement...",
       "notFound": "Résultat introuvable.",
       "lotterySection": "Loterie",
+      "drawDate": "Tirage : {{date}}",
       "userSection": "Votre participation",
+      "yourStatus": "Statut",
+      "tickets": "Tickets",
+      "rank": "Classement",
       "winnersSection": "Gagnants",
+      "noWinnersYet": "Les gagnants seront bientôt disponibles.",
+      "you": "Vous",
       "winnerLine": "Place {{position}} · {{pseudo}}"
     },
     "list": {
+      "drawDate": "Tirage : {{date}}",
+      "totalTickets": "Vos tickets : {{count}}",
+      "loadMore": "Charger plus de résultats",
       "winnerPosition": "Place {{position}}"
     }
   },

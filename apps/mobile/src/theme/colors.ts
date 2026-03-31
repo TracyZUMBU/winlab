@@ -20,6 +20,8 @@ export const colors = {
   background: "#F6F8F6",
   backgroundDark: "#020617",
 
+  backgroundHeader: "#FFFFFF",
+
   // Brand / accent (never hardcode mockup green in components)
   accent: "rgba(255, 140, 0, 0.9)",
   accentSolid: ACCENT_SOLID,

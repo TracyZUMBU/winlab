@@ -41,7 +41,7 @@ export function LotteriesScreen() {
   };
 
   const goToResults = () => {
-    router.push("/lotteries/results");
+    router.push("/results");
   };
 
   const goToCatalog = (filter: "endingSoon" | "featured" | "giftCard") => {
