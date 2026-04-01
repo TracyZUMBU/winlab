@@ -1,4 +1,6 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryCache, QueryClient } from "@tanstack/react-query";
+
+import { handleQueryCacheError } from "./queryCacheOnError";
 
 /**
  * Configuration globale du QueryClient.
@@ -12,5 +14,8 @@ const defaultOptions = {
 };
 
 export const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: handleQueryCacheError,
+  }),
   defaultOptions,
 });
