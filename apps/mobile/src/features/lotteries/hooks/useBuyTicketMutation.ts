@@ -4,6 +4,9 @@ import { queryClient } from "@/src/lib/query/queryClient";
 
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
+import { homeDashboardKeys } from "@/src/features/home/queries/homeDashboardKeys";
+
+import { lotteryListKeys } from "../queries/lotteryListKeys";
 import { buyTicket, type BuyTicketParams } from "../services/buyTicketService";
 
 export function useBuyTicketMutation() {
@@ -17,7 +20,7 @@ export function useBuyTicketMutation() {
       if (!userId) return;
 
       queryClient.invalidateQueries({
-        queryKey: ["lotteries", "available", userId],
+        queryKey: lotteryListKeys.available(userId),
       });
       queryClient.invalidateQueries({
         queryKey: ["lotteries", "detail", variables.lotteryId, userId],
@@ -35,6 +38,9 @@ export function useBuyTicketMutation() {
       });
       queryClient.invalidateQueries({
         queryKey: ["wallet", "tickets", userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: homeDashboardKeys.detail(userId),
       });
     },
   });

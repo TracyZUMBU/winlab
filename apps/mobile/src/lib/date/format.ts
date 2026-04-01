@@ -37,3 +37,5 @@ export function formatAbsoluteDateFr(iso: string): string {
   // équivalent "d MMM yyyy" en fr
   return format(parsed, "d MMM yyyy", { locale: fr });
 }
+
+// a function which transform a date 5d 5h into "5 days" (take off hours)

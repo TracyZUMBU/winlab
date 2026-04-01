@@ -8,6 +8,8 @@ alwaysApply: false
 
 These rules apply when creating or editing test files under `apps/**/tests/**`.
 
+**RPC** : toute **nouvelle** RPC Postgres doit être accompagnée d’un test d’intégration ici (voir aussi `supabase-rpc-functions.mdc`).
+
 ## Hard requirements (must always hold)
 
 - **Local-only target**: tests MUST hit Supabase **local** only. `process.env.SUPABASE_URL` must resolve to `http://127.0.0.1:54321` (or equivalent local host/port). NEVER use staging/prod/cloud URLs.

@@ -34,7 +34,9 @@ function formatDrawAtLabel(iso: string): string {
   }).format(d);
 }
 
-function mapRowToUi(row: ParticipatedDrawnLotteryRow): ParticipatedDrawnLotteryUi {
+function mapRowToUi(
+  row: ParticipatedDrawnLotteryRow,
+): ParticipatedDrawnLotteryUi {
   const won = row.user_winner_position != null;
   return {
     id: row.id,

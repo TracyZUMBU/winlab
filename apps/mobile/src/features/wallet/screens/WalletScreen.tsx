@@ -1,26 +1,51 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Alert,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button } from "@/src/components/ui/Button";
-import { Card } from "@/src/components/ui/Card";
-import { Screen } from "@/src/components/ui/Screen";
-import { theme } from "@/src/theme";
-
-import { formatAbsoluteDateFr } from "@/src/lib/date/format";
-import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
+import { WalletBalanceHero } from "../components/WalletBalanceHero";
+import { WalletTicketRow } from "../components/WalletTicketRow";
+import { WalletTransactionRow } from "../components/WalletTransactionRow";
 import { usePendingRewardsQuery } from "../hooks/usePendingRewardsQuery";
 import { usePurchasedTicketsQuery } from "../hooks/usePurchasedTicketsQuery";
 import { useWalletBalanceQuery } from "../hooks/useWalletBalanceQuery";
+import type { WalletTransactionUi } from "../hooks/useWalletTransactionsQuery";
 import { useWalletTransactionsQuery } from "../hooks/useWalletTransactionsQuery";
 
+import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { Button } from "@/src/components/ui/Button";
+import { Screen } from "@/src/components/ui/Screen";
+import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
+import { formatAbsoluteDateFr } from "@/src/lib/date/format";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
+import { theme } from "@/src/theme";
+
+type WalletSegmentId = "history" | "tickets";
+type ActivityFilterId = "all" | "credit" | "debit";
+
+function formatTokenNumber(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
+    value,
+  );
+}
+
 export function WalletScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+
+  const [segment, setSegment] = useState<WalletSegmentId>("history");
+  const [activityFilter, setActivityFilter] = useState<ActivityFilterId>("all");
 
   const balanceQuery = useWalletBalanceQuery();
   const pendingRewardsQuery = usePendingRewardsQuery();
@@ -39,9 +64,48 @@ export function WalletScreen() {
     transactionsQuery.error ??
     ticketsQuery.error;
 
+  const balanceDisplay = useMemo(() => {
+    const n = balanceQuery.data?.balance ?? 0;
+    return formatTokenNumber(n, i18n.language);
+  }, [balanceQuery.data?.balance, i18n.language]);
+
+  const pendingDisplay = useMemo(() => {
+    const n = pendingRewardsQuery.data?.pendingRewards ?? 0;
+    const formatted = formatTokenNumber(n, i18n.language);
+    return n > 0 ? `+${formatted}` : formatted;
+  }, [pendingRewardsQuery.data?.pendingRewards, i18n.language]);
+
+  const transactions = useMemo(
+    () => transactionsQuery.data ?? [],
+    [transactionsQuery.data],
+  );
+  const tickets = useMemo(() => ticketsQuery.data ?? [], [ticketsQuery.data]);
+
+  const filteredTransactions = useMemo(() => {
+    if (activityFilter === "all") return transactions;
+    return transactions.filter((tx) => tx.direction === activityFilter);
+  }, [transactions, activityFilter]);
+
+  const onCycleFilter = () => {
+    setActivityFilter((prev) =>
+      prev === "all" ? "credit" : prev === "credit" ? "debit" : "all",
+    );
+  };
+
+  const onWalletInfo = () => {
+    Alert.alert(t("wallet.info.title"), t("wallet.info.message"));
+  };
+
+  const onEarnMore = () => {
+    router.push("/missions");
+  };
+
+  const listBottomPadding =
+    theme.spacing.xl + Math.max(insets.bottom, theme.spacing.md);
+
   if (isLoading) {
     return (
-      <Screen>
+      <Screen edges={["top"]}>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
         </View>
@@ -51,7 +115,7 @@ export function WalletScreen() {
 
   if (error) {
     return (
-      <Screen>
+      <Screen edges={["top"]}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("wallet.screen.error")}</Text>
           <Text style={[styles.errorText, styles.errorHint]}>
@@ -73,87 +137,141 @@ export function WalletScreen() {
     );
   }
 
-  const balanceFormatted = balanceQuery.data?.balanceFormatted ?? "";
-  const pendingRewardsFormatted =
-    pendingRewardsQuery.data?.pendingRewardsFormatted ?? "";
-  const transactions = transactionsQuery.data ?? [];
-  const tickets = ticketsQuery.data ?? [];
-
   return (
-    <Screen>
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("wallet.balance")}</Text>
-          <Text style={styles.value}>{balanceFormatted}</Text>
-        </Card>
-
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("wallet.pendingRewards")}</Text>
-          <Text style={[styles.value, { color: theme.colors.accentSolid }]}>
-            {pendingRewardsFormatted}
-          </Text>
-        </Card>
-
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("wallet.transactions")}</Text>
-
-          {transactions.length === 0 ? (
-            <Text style={styles.emptyText}>{t("wallet.noTransactions")}</Text>
-          ) : null}
-
-          {transactions.map((tx, index) => (
-            <View
-              key={
-                tx.reference_id ??
-                `${tx.reference_type ?? "unknown"}-${tx.reference_id ?? ""}-${tx.created_at}-${index}`
-              }
-              style={styles.row}
-            >
-              <View style={styles.rowLeft}>
-                <Text style={styles.rowLabel}>{tx.label}</Text>
-                <Text style={styles.rowSubtitle}>{tx.subtitle}</Text>
-              </View>
-              <Text
-                style={[
-                  styles.rowAmount,
-                  tx.direction === "credit"
-                    ? { color: theme.colors.success }
-                    : { color: theme.colors.accentSolid },
-                ]}
+    <Screen edges={["top"]} style={styles.screen}>
+      <View style={styles.headerWrap}>
+        <AppHeaderFull
+          title={t("wallet.layout.title")}
+          titleAlign="center"
+          showBottomBorder={false}
+          leftSlot={
+            router.canGoBack() ? (
+              <Pressable
+                onPress={() => router.back()}
+                style={styles.iconHit}
+                accessibilityRole="button"
+                accessibilityLabel={t("wallet.a11y.back")}
               >
-                {tx.amountFormatted}
+                <MaterialIcons
+                  name="arrow-back-ios-new"
+                  size={20}
+                  color={theme.colors.text}
+                />
+              </Pressable>
+            ) : undefined
+          }
+          rightSlot={
+            <Pressable
+              onPress={onWalletInfo}
+              style={styles.iconHit}
+              accessibilityRole="button"
+              accessibilityLabel={t("wallet.a11y.info")}
+            >
+              <MaterialIcons
+                name="info-outline"
+                size={24}
+                color={theme.colors.text}
+              />
+            </Pressable>
+          }
+        />
+      </View>
+
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: listBottomPadding },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <WalletBalanceHero
+          totalBalanceLabel={t("wallet.hero.totalBalance")}
+          balanceDisplay={balanceDisplay}
+          tokensLabel={t("wallet.hero.tokens")}
+          pendingLabel={t("wallet.hero.pendingRewards")}
+          pendingDisplay={pendingDisplay}
+          earnMoreLabel={t("wallet.hero.earnMore")}
+          onEarnMore={onEarnMore}
+        />
+
+        <SegmentedControl
+          items={[
+            { value: "history", label: t("wallet.tab.history") },
+            { value: "tickets", label: t("wallet.tab.myTickets") },
+          ]}
+          value={segment}
+          onValueChange={setSegment}
+        />
+
+        {segment === "history" ? (
+          <View style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>
+                {t("wallet.recentActivity")}
               </Text>
-            </View>
-          ))}
-        </Card>
-
-        <Card style={styles.section}>
-          <Text style={styles.sectionTitle}>{t("wallet.tickets")}</Text>
-
-          {tickets.length === 0 ? (
-            <Text style={styles.emptyText}>{t("wallet.noTickets")}</Text>
-          ) : null}
-
-          {tickets.map((ticket) => (
-            <View key={ticket.id} style={styles.row}>
-              <View style={styles.rowLeft}>
-                <Text style={styles.rowLabel}>{ticket.lottery_title}</Text>
-                <Text style={styles.rowSubtitle}>
-                  {ticket.lottery_status_label}
+              <Pressable
+                onPress={onCycleFilter}
+                accessibilityRole="button"
+                accessibilityLabel={t("wallet.filter.a11y")}
+              >
+                <Text style={styles.filterAction}>
+                  {t("wallet.filter.action")}
                 </Text>
-              </View>
-              <Text style={styles.ticketDate}>
-                {formatAbsoluteDateFr(ticket.purchased_at)}
-              </Text>
+              </Pressable>
             </View>
-          ))}
-        </Card>
+
+            {filteredTransactions.length === 0 ? (
+              <Text style={styles.emptyText}>{t("wallet.noTransactions")}</Text>
+            ) : (
+              <View style={styles.listGap}>
+                {filteredTransactions.map((tx, index) => (
+                  <WalletTransactionRow
+                    key={rowKey(tx)}
+                    transaction={tx}
+                    dimmed={index >= 3}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        ) : (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, styles.ticketsSectionTitle]}>
+              {t("wallet.tickets")}
+            </Text>
+            {tickets.length === 0 ? (
+              <Text style={styles.emptyText}>{t("wallet.noTickets")}</Text>
+            ) : (
+              <View style={styles.listGap}>
+                {tickets.map((ticket, index) => (
+                  <WalletTicketRow
+                    key={ticket.id}
+                    ticket={ticket}
+                    dateLabel={formatAbsoluteDateFr(ticket.purchased_at)}
+                    dimmed={index >= 3}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
       </ScrollView>
     </Screen>
   );
 }
 
+function rowKey(tx: WalletTransactionUi): string {
+  return tx.id;
+}
+
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: theme.colors.background,
+  },
+  headerWrap: {
+    paddingHorizontal: theme.spacing.md,
+  },
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -164,63 +282,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: theme.spacing.lg,
-    paddingBottom: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.md,
     gap: theme.spacing.md,
   },
+  iconHit: {
+    minWidth: theme.layout.minTouchTarget,
+    minHeight: theme.layout.minTouchTarget,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   section: {
-    padding: theme.spacing.lg,
+    gap: theme.spacing.md,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: theme.colors.textMuted,
-    marginBottom: theme.spacing.sm,
-  },
-  value: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  row: {
+  sectionHeaderRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: theme.spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.borderSubtle,
-    marginTop: theme.spacing.sm,
   },
-  rowLeft: {
-    flex: 1,
-    paddingRight: theme.spacing.sm,
-  },
-  rowLabel: {
-    fontSize: 14,
-    fontWeight: "700",
+  sectionTitle: {
+    ...theme.typography.sectionTitle,
     color: theme.colors.text,
   },
-  rowSubtitle: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
-    marginTop: theme.spacing.xs / 2,
+  ticketsSectionTitle: {
+    marginBottom: -theme.spacing.xs,
   },
-  rowAmount: {
-    fontSize: 14,
-    fontWeight: "700",
+  filterAction: {
+    color: theme.colors.accentSolid,
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.4,
+    textTransform: "uppercase",
   },
-  ticketDate: {
-    fontSize: 12,
-    color: theme.colors.textMuted,
-    fontWeight: "600",
-    paddingLeft: theme.spacing.sm,
+  listGap: {
+    gap: theme.spacing.sm + 2,
   },
   emptyText: {
-    marginTop: theme.spacing.sm,
     fontSize: 14,
     color: theme.colors.textMuted,
     textAlign: "center",
-    paddingVertical: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
   },
   retryButton: {
     marginTop: theme.spacing.md,

@@ -1,24 +1,29 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { missionListKeys } from "../queries/missionListKeys";
 import {
   getAvailableMissionsPage,
   type PagedMissionRow,
 } from "../services/getAvailableMissionsPage";
-import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
-export type MissionUserStatus = "available" | "pending" | "completed";
+export type MissionUserStatus =
+  | "available"
+  | "pending"
+  | "completed"
+  | "rejected";
 
 export type AvailableMission = PagedMissionRow & {
   userStatus: MissionUserStatus;
 };
 
 function mapRowToMission(row: PagedMissionRow): AvailableMission {
-  const completion = row.mission_completions[0];
+  const completion = row.mission_completions?.[0];
   let userStatus: MissionUserStatus = "available";
   if (completion) {
     if (completion.status === "approved") userStatus = "completed";
-    else if (completion.status === "pending" || completion.status === "rejected")
-      userStatus = "pending";
+    else if (completion.status === "pending") userStatus = "pending";
+    else if (completion.status === "rejected") userStatus = "rejected";
   }
   return {
     ...row,
@@ -26,22 +31,25 @@ function mapRowToMission(row: PagedMissionRow): AvailableMission {
   };
 }
 
-const QUERY_KEY = ["missions", "available"] as const;
+const PAGE_SIZE = 15;
 
-export function useAvailableMissionsQuery() {
+export function useTodoMissionsQuery() {
   const { user } = useAuthSession();
   const userId = user?.id ?? null;
 
-  const query = useInfiniteQuery({
-    queryKey: [...QUERY_KEY, userId],
+  return useInfiniteQuery({
+    queryKey: userId
+      ? missionListKeys.todo(userId)
+      : ["missions", "list", "todo", "none"],
     queryFn: ({ pageParam }) =>
       getAvailableMissionsPage({
         userId: userId!,
         pageIndex: pageParam ?? 0,
+        pageSize: PAGE_SIZE,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.missions.length === 15 ? allPages.length : undefined,
+      lastPage.missions.length === PAGE_SIZE ? allPages.length : undefined,
     enabled: !!userId,
     refetchOnWindowFocus: true,
     select: (data) => {
@@ -49,6 +57,4 @@ export function useAvailableMissionsQuery() {
       return flat.map(mapRowToMission);
     },
   });
-
-  return query;
 }
