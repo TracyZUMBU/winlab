@@ -1,12 +1,13 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 import { theme } from "@/src/theme";
 
-export default function AppTabsLayout() {
+export default function AppLayout() {
   const router = useRouter();
   const { status, sessionUserId, profile, hasSeenOnboarding } =
     useAppBootstrap(true);
@@ -35,7 +36,7 @@ export default function AppTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: theme.colors.accentSolid,
-        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarInactiveTintColor: theme.colors.textMutedAccent,
         tabBarStyle: {
           borderTopColor: theme.colors.borderSubtle,
         },
@@ -72,13 +73,22 @@ export default function AppTabsLayout() {
         name="wallet"
         options={{
           title: "Wallet",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons
-              name="account-balance-wallet"
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            focused ? (
+              <View style={styles.walletTabIconFocused}>
+                <MaterialIcons
+                  name="account-balance-wallet"
+                  color={theme.colors.text}
+                  size={size}
+                />
+              </View>
+            ) : (
+              <MaterialIcons
+                name="account-balance-wallet"
+                color={color}
+                size={size}
+              />
+            ),
         }}
       />
       <Tabs.Screen
@@ -90,6 +100,26 @@ export default function AppTabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="results"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  walletTabIconFocused: {
+    marginTop: -12,
+    padding: theme.spacing.sm,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.accentSolid,
+    shadowColor: theme.colors.accentSolid,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+});

@@ -29,7 +29,56 @@
     }
   },
   "home": {
-    "title": "Accueil"
+    "title": "Accueil",
+    "loading": "Chargement de l’accueil…",
+    "error": "Impossible de charger l’accueil. Réessayez.",
+    "greeting": {
+      "title": "Salut {{name}} 👋",
+      "subtitle": "Prêt à décrocher le gros lot aujourd’hui ?",
+      "anonymousName": "toi"
+    },
+    "balance": {
+      "label": "Solde actuel",
+      "useTokens": "Utiliser mes jetons"
+    },
+    "lotteries": {
+      "sectionTitle": "Loteries en cours",
+      "seeAll": "Tout voir",
+      "empty": "Aucune loterie ouverte pour le moment."
+    },
+    "lottery": {
+      "countdownPadded": "{{days}}j {{hours}}h {{minutes}}m",
+      "endingSoonBadge": "Bientôt terminé",
+      "endsInLabel": "Fin dans",
+      "ctaParticipate": "Participer"
+    },
+    "participations": {
+      "sectionTitle": "Mes participations",
+      "drawOn": "Tirage le {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "chancePercent": "Chance : {{value}} %",
+      "chanceUnknown": "Chance : —",
+      "empty": "Tu n’as pas encore de participation active."
+    },
+    "missions": {
+      "sectionTitle": "Gagner plus de jetons",
+      "seeAll": "Voir toutes les missions",
+      "empty": "Aucune mission à afficher pour l’instant.",
+      "availability": "Disponibilité : {{used}}/{{max}}",
+      "subtitle": {
+        "referral": "Bonus de parrainage"
+      }
+    },
+    "header": {
+      "a11y": {
+        "openProfile": "Ouvrir le profil",
+        "notifications": "Notifications"
+      }
+    },
+    "quickLinks": {
+      "title": "Raccourcis"
+    }
   },
   "emailScreen": {
     "title": "Entrez votre email",
@@ -67,6 +116,11 @@
       "label": "ADRESSE EMAIL"
     }
   },
+  "common": {
+    "a11y": {
+      "back": "Retour"
+    }
+  },
   "appPlaceholder": {
     "title": "Bienvenue sur Winlab",
     "subtitle": "Cet écran est un placeholder pour l’app connectée.",
@@ -100,6 +154,98 @@
       "title": "Missions",
       "detail": "Détail mission"
     },
+    "card": {
+      "status": {
+        "available": "Disponible",
+        "pending": "En attente",
+        "completed": "Complétée",
+        "rejected": "Refusée"
+      },
+      "cta": {
+        "start": "Commencer",
+        "pending": "En attente de validation",
+        "completed": "Voir le détail",
+        "rejected": "Réessayer"
+      },
+      "tokenReward": "+{{count}}",
+      "a11y": {
+        "brandLogo": "Logo {{brand}}",
+        "missionIllustration": "Image de mission pour {{brand}}"
+      }
+    },
+    "list": {
+      "filter": {
+        "all": "Tout",
+        "survey": "Sondages",
+        "video": "Vidéos",
+        "follow": "Social"
+      },
+      "sectionTitle": "Missions disponibles",
+      "sectionSubtitle": "Complétez des tâches pour gagner des entrées",
+      "infoBanner": "De nouvelles missions sont ajoutées chaque jour. Revenez demain pour plus de jetons !",
+      "tokenBalance": "{{amount}} jetons",
+      "emptyFilter": "Aucune mission dans cette catégorie.",
+      "emptyCompleted": "Vous n’avez pas encore de missions terminées.",
+      "sectionTitleCompleted": "Missions terminées",
+      "sectionSubtitleCompleted": "Toutes vos soumissions et leur statut",
+      "statusTab": {
+        "todo": "À faire",
+        "completed": "Complétées"
+      }
+    },
+    "durationHint": {
+      "survey": "2 min",
+      "video": "30 sec",
+      "follow": "15 sec"
+    },
+    "detail": {
+      "screen": {
+        "loading": "Chargement de la mission…"
+      },
+      "typeLabel": {
+        "survey": "Sondage de consommation",
+        "video": "Vidéo de consommation",
+        "follow": "Tâche sociale",
+        "referral": "Parrainage",
+        "custom": "Mission"
+      },
+      "progress": {
+        "title": "Progression",
+        "percent": "{{percent}}%"
+      },
+      "meta": {
+        "tokenRewardTitle": "Récompense",
+        "tokenReward": "{{count}} jetons",
+        "estimatedTimeTitle": "Temps estimé"
+      },
+      "duration": {
+        "minutes": "{{minutes}} min",
+        "seconds": "{{seconds}} sec",
+        "unknown": "—"
+      },
+      "about": {
+        "title": "À propos de la mission",
+        "descriptionFallback": "Aucune description de mission n’est disponible."
+      },
+      "features": {
+        "anonymous": {
+          "title": "Réponses anonymes",
+          "description": "Vos données sont protégées et traitées uniquement à des fins statistiques."
+        },
+        "validationInstant": {
+          "title": "Validation instantanée",
+          "description": "Recevez vos jetons dès la fin du questionnaire."
+        },
+        "validationManual": {
+          "title": "Validation manuelle",
+          "description": "Recevez vos jetons après validation."
+        }
+      },
+      "cta": {
+        "launch": "Lancer la mission",
+        "launchPending": "Lancement…"
+      }
+    },
     "submission": {
       "errors": {
         "UNAUTHENTICATED": "Vous devez être connecté pour soumettre une mission.",
@@ -126,10 +272,97 @@
   "lotteries": {
     "layout": {
       "title": "Loteries",
-      "detail": "Détail loterie"
+      "detail": "Détail loterie",
+      "catalog": "Toutes les loteries"
+    },
+    "time": {
+      "inZero": "dans 0 min",
+      "inDays_one": "dans {{count}} jour",
+      "inDays_other": "dans {{count}} jours",
+      "inHoursMinutes": "dans {{hours}} h {{minutes}} min",
+      "tomorrow": "Demain",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "hoursMinutes": "{{hours}} h {{minutes}} min"
+    },
+    "list": {
+      "searchPlaceholder": "Rechercher un lot, une marque...",
+      "seeAll": "Voir tout",
+      "drawIn": "Tirage {{time}}",
+      "enter": "PARTICIPER",
+      "nextDraw": "Prochain tirage : {{time}}",
+      "tokensCta": "{{count}} jetons",
+      "categories": {
+        "all": "Tout"
+      },
+      "sections": {
+        "endingSoon": "Se termine bientôt",
+        "featuredPrizes": "Lots à la une",
+        "giftCards": "Cartes cadeaux"
+      },
+      "a11y": {
+        "openLottery": "Ouvrir la loterie : {{title}}",
+        "endedLottery": "Loterie terminée : {{title}}"
+      },
+      "ended": "Terminée"
+    },
+    "catalog": {
+      "card": {
+        "endsInCompact": "Fin {{time}}",
+        "badgeFeatured": "À LA UNE",
+        "badgeDefault": "EXPÉRIENCE",
+        "worthTokens": "{{count}} jetons",
+        "ctaEnter": "Participer pour {{count}} jetons"
+      },
+      "title": {
+        "all": "Toutes les loteries",
+        "endingSoon": "Se termine bientôt",
+        "featured": "Lots à la une",
+        "giftCard": "Cartes cadeaux"
+      },
+      "filters": {
+        "all": "Tout",
+        "endingSoon": "Bientôt fini",
+        "featured": "À la une",
+        "giftCard": "Cartes cadeaux"
+      },
+      "cta": {
+        "viewAll": "Toutes les loteries"
+      },
+      "emptyFiltered": "Aucune loterie ne correspond à votre recherche ou à ce filtre.",
+      "a11y": {
+        "back": "Retour"
+      }
     }
   },
   "wallet": {
+    "layout": {
+      "title": "Portefeuille"
+    },
+    "hero": {
+      "totalBalance": "Solde total",
+      "tokens": "Jetons",
+      "pendingRewards": "Récompenses en attente",
+      "earnMore": "Gagner plus"
+    },
+    "tab": {
+      "history": "Historique",
+      "myTickets": "Mes tickets"
+    },
+    "recentActivity": "Activité récente",
+    "filter": {
+      "action": "Filtrer",
+      "a11y": "Changer le filtre d’activité : tout, crédits ou débits"
+    },
+    "info": {
+      "title": "À propos du portefeuille",
+      "message": "Votre solde correspond aux jetons disponibles pour participer. Les récompenses en attente seront créditées une fois les actions validées."
+    },
+    "a11y": {
+      "back": "Retour",
+      "info": "Aide portefeuille",
+      "ticketRow": "{{title}}, {{status}}, {{date}}"
+    },
     "screen": {
       "error": "Impossible de charger le portefeuille. Réessayez."
     },
@@ -175,6 +408,34 @@
       "error": "Loterie introuvable ou indisponible.",
       "buyTicket": "Acheter un ticket",
       "buyingTicket": "Achat du ticket...",
+      "verifiedOffer": "Offre vérifiée",
+      "countdown": {
+        "title": "Tirage au sort dans :",
+        "daysLabel": "Jours",
+        "hoursLabel": "Heures",
+        "minutesLabel": "Min",
+        "secondsLabel": "Sec"
+      },
+      "tokensPerTicket": "{{count}} jetons / ticket",
+      "currentBalancePrefix": "Solde actuel :",
+      "currentBalanceSuffix": "jetons",
+      "gainMore": "Gagner plus",
+      "yourParticipation": "Votre participation",
+      "aboutTitle": "À propos de ce prix",
+      "featurePills": {
+        "certifiedDraw": "Tirage certifié",
+        "freeDelivery": "Livraison gratuite"
+      },
+      "footer": {
+        "totalPriceLabel": "Prix Total : {{count}} Jetons",
+        "eligible": "✓ Éligible",
+        "notEligible": "Non éligible",
+        "buyTicketLabel": "Acheter 1 ticket",
+        "buyingTicketLabel": "Achat de 1 ticket...",
+        "noteBeforeTerms": "En participant, vous acceptez nos",
+        "noteTermsLabel": "Conditions Générales",
+        "noteAfterTerms": "et confirmez avoir plus de 18 ans."
+      },
       "purchase": {
         "errors": {
           "generic": "Impossible d'acheter le ticket. Réessayez.",
@@ -192,12 +453,18 @@
   "date": {
     "today": "Aujourd'hui",
     "yesterday": "Hier",
-    "daysAgo": "{{days}} jours auparavant",
+    "daysAgo": "il y a {{days}} jours",
     "unknown": "Date inconnue"
   },
   "common": {
+    "back": "Retour",
+    "close": "Fermer",
     "retry": "Réessayer",
+    "share": "Partager",
     "loadMore": "Voir plus",
+    "a11y": {
+      "tokenBalance": "Solde de jetons : {{amount}}"
+    },
     "errors": {
       "loadHint": "Vérifiez votre connexion et réessayez."
     }
@@ -209,7 +476,8 @@
     },
     "userStatus": {
       "won": "Gagné",
-      "lost": "Perdu"
+      "lost": "Perdu",
+      "upcoming": "Tirage à venir"
     },
     "screen": {
       "loading": "Chargement des résultats...",
@@ -220,11 +488,20 @@
       "loading": "Chargement...",
       "notFound": "Résultat introuvable.",
       "lotterySection": "Loterie",
+      "drawDate": "Tirage : {{date}}",
       "userSection": "Votre participation",
+      "yourStatus": "Statut",
+      "tickets": "Tickets",
+      "rank": "Classement",
       "winnersSection": "Gagnants",
+      "noWinnersYet": "Les gagnants seront bientôt disponibles.",
+      "you": "Vous",
       "winnerLine": "Place {{position}} · {{pseudo}}"
     },
     "list": {
+      "drawDate": "Tirage : {{date}}",
+      "totalTickets": "Vos tickets : {{count}}",
+      "loadMore": "Charger plus de résultats",
       "winnerPosition": "Place {{position}}"
     }
   },
@@ -235,6 +512,42 @@
         "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
         "submitFailed": "Impossible de créer votre profil. Réessayez."
       }
+    },
+    "layout": {
+      "a11yBack": "Retour",
+      "a11ySettings": "Réglages du compte"
+    },
+    "section": {
+      "activityRewards": "Activité & récompenses",
+      "supportInfo": "Aide & infos",
+      "account": "Compte"
+    },
+    "menu": {
+      "participations": "Mes participations",
+      "participationsA11y": "Ouvrir mes participations",
+      "referral": "Parrainage",
+      "referralSubtitle": "Invitez des amis et gagnez des jetons",
+      "referralA11y": "Voir mon code de parrainage",
+      "referralAlertTitle": "Votre code de parrainage",
+      "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
+      "support": "Support",
+      "supportA11y": "Contacter le support",
+      "supportMessage": "Notre équipe support vous répondra bientôt. Utilisez l’email associé à votre compte pour nous écrire.",
+      "regulations": "Règlement",
+      "regulationsA11y": "Voir le règlement",
+      "regulationsMessage": "Les conditions générales et le règlement des jeux seront disponibles ici prochainement.",
+      "deleteAccountA11y": "Supprimer définitivement mon compte"
+    },
+    "hero": {
+      "defaultDisplayName": "Membre Winlab",
+      "handlePlaceholder": "@pseudo",
+      "a11yEdit": "Modifier le pseudo",
+      "balanceLoading": "…",
+      "tokensLine": "{{count}} {{tokens}}"
+    },
+    "footer": {
+      "versionLine": "{{appName}} version {{version}} (Build {{build}})",
+      "tagline": "Fait avec amour pour les heureux gagnants."
     },
     "screen": {
       "title": "Profil",

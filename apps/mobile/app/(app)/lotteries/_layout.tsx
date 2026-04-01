@@ -5,7 +5,7 @@ export default function LotteriesLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         title: "Lotteries",
       }}
     >
@@ -18,8 +18,8 @@ export default function LotteriesLayout() {
         options={{ title: t("lotteries.layout.detail") }}
       />
       <Stack.Screen
-        name="results"
-        options={{ headerShown: false }}
+        name="all"
+        options={{ title: t("lotteries.layout.catalog") }}
       />
     </Stack>
   );

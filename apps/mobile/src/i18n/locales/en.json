@@ -29,7 +29,56 @@
     }
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "loading": "Loading home…",
+    "error": "Could not load home. Please try again.",
+    "greeting": {
+      "title": "Hey {{name}} 👋",
+      "subtitle": "Ready to hit the jackpot today?",
+      "anonymousName": "there"
+    },
+    "balance": {
+      "label": "Current balance",
+      "useTokens": "Use my tokens"
+    },
+    "lotteries": {
+      "sectionTitle": "Ongoing lotteries",
+      "seeAll": "See all",
+      "empty": "No open lotteries right now."
+    },
+    "lottery": {
+      "countdownPadded": "{{days}}d {{hours}}h {{minutes}}m",
+      "endingSoonBadge": "Ending soon",
+      "endsInLabel": "Ends in",
+      "ctaParticipate": "Enter"
+    },
+    "participations": {
+      "sectionTitle": "My entries",
+      "drawOn": "Draw on {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "chancePercent": "Odds: {{value}}%",
+      "chanceUnknown": "Odds: —",
+      "empty": "You have no active entries yet."
+    },
+    "missions": {
+      "sectionTitle": "Earn more tokens",
+      "seeAll": "See all missions",
+      "empty": "No missions to show right now.",
+      "availability": "Availability: {{used}}/{{max}}",
+      "subtitle": {
+        "referral": "Referral bonus"
+      }
+    },
+    "header": {
+      "a11y": {
+        "openProfile": "Open profile",
+        "notifications": "Notifications"
+      }
+    },
+    "quickLinks": {
+      "title": "Shortcuts"
+    }
   },
   "auth": {
     "genericError": "Something went wrong. Please try again.",
@@ -37,6 +86,11 @@
     "invalidCode": "The code is invalid or has expired.",
     "otp": {
       "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen."
+    }
+  },
+  "common": {
+    "a11y": {
+      "back": "Go back"
     }
   },
   "emailScreen": {
@@ -62,6 +116,98 @@
     "layout": {
       "title": "Missions",
       "detail": "Mission detail"
+    },
+    "card": {
+      "status": {
+        "available": "Available",
+        "pending": "Pending",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      },
+      "cta": {
+        "start": "Start",
+        "pending": "Awaiting review",
+        "completed": "View details",
+        "rejected": "Try again"
+      },
+      "tokenReward": "+{{count}}",
+      "a11y": {
+        "brandLogo": "{{brand}} logo",
+        "missionIllustration": "Mission image for {{brand}}"
+      }
+    },
+    "list": {
+      "filter": {
+        "all": "All",
+        "survey": "Surveys",
+        "video": "Videos",
+        "follow": "Social"
+      },
+      "sectionTitle": "Available missions",
+      "sectionSubtitle": "Complete tasks to earn tokens",
+      "infoBanner": "New missions are added every day. Come back tomorrow for more tokens!",
+      "tokenBalance": "{{amount}} tokens",
+      "emptyFilter": "No missions in this category.",
+      "emptyCompleted": "You have no completed missions yet.",
+      "sectionTitleCompleted": "Completed missions",
+      "sectionSubtitleCompleted": "All submissions and their validation status",
+      "statusTab": {
+        "todo": "To do",
+        "completed": "Done"
+      }
+    },
+    "durationHint": {
+      "survey": "2 min",
+      "video": "30 sec",
+      "follow": "15 sec"
+    },
+    "detail": {
+      "screen": {
+        "loading": "Loading mission…"
+      },
+      "typeLabel": {
+        "survey": "Consumer survey",
+        "video": "Video",
+        "follow": "Social task",
+        "referral": "Referral",
+        "custom": "Mission"
+      },
+      "progress": {
+        "title": "Progress",
+        "percent": "{{percent}}%"
+      },
+      "meta": {
+        "tokenRewardTitle": "Reward",
+        "tokenReward": "{{count}} tokens",
+        "estimatedTimeTitle": "Estimated time"
+      },
+      "duration": {
+        "minutes": "{{minutes}} min",
+        "seconds": "{{seconds}} sec",
+        "unknown": "—"
+      },
+      "about": {
+        "title": "About the mission",
+        "descriptionFallback": "No mission description available."
+      },
+      "features": {
+        "anonymous": {
+          "title": "Anonymous responses",
+          "description": "Your data is protected and processed only for statistical purposes."
+        },
+        "validationInstant": {
+          "title": "Instant validation",
+          "description": "Receive your tokens right after the questionnaire ends."
+        },
+        "validationManual": {
+          "title": "Manual validation",
+          "description": "Receive your tokens after review."
+        }
+      },
+      "cta": {
+        "launch": "Launch mission",
+        "launchPending": "Launching…"
+      }
     },
     "submission": {
       "errors": {
@@ -89,10 +235,97 @@
   "lotteries": {
     "layout": {
       "title": "Lotteries",
-      "detail": "Lottery detail"
+      "detail": "Lottery detail",
+      "catalog": "All lotteries"
+    },
+    "time": {
+      "inZero": "in 0m",
+      "inDays_one": "in {{count}} day",
+      "inDays_other": "in {{count}} days",
+      "inHoursMinutes": "in {{hours}}h {{minutes}}m",
+      "tomorrow": "Tomorrow",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hoursMinutes": "{{hours}}h {{minutes}}m"
+    },
+    "list": {
+      "searchPlaceholder": "Search prizes, brands...",
+      "seeAll": "See all",
+      "drawIn": "Draw in {{time}}",
+      "enter": "ENTER",
+      "nextDraw": "Next draw: {{time}}",
+      "tokensCta": "{{count}} Tokens",
+      "categories": {
+        "all": "All"
+      },
+      "sections": {
+        "endingSoon": "Ending Soon",
+        "featuredPrizes": "Featured Prizes",
+        "giftCards": "Gift Cards"
+      },
+      "a11y": {
+        "openLottery": "Open lottery: {{title}}",
+        "endedLottery": "Lottery ended: {{title}}"
+      },
+      "ended": "Ended"
+    },
+    "catalog": {
+      "card": {
+        "endsInCompact": "Ends {{time}}",
+        "badgeFeatured": "FEATURED",
+        "badgeDefault": "EXPERIENCE",
+        "worthTokens": "{{count}} tokens",
+        "ctaEnter": "Enter with {{count}} tokens"
+      },
+      "title": {
+        "all": "All lotteries",
+        "endingSoon": "Ending soon",
+        "featured": "Featured prizes",
+        "giftCard": "Gift cards"
+      },
+      "filters": {
+        "all": "All",
+        "endingSoon": "Ending soon",
+        "featured": "Featured",
+        "giftCard": "Gift cards"
+      },
+      "cta": {
+        "viewAll": "All lotteries"
+      },
+      "emptyFiltered": "No lotteries match your search or filter.",
+      "a11y": {
+        "back": "Back"
+      }
     }
   },
   "wallet": {
+    "layout": {
+      "title": "Wallet"
+    },
+    "hero": {
+      "totalBalance": "Total balance",
+      "tokens": "Tokens",
+      "pendingRewards": "Pending rewards",
+      "earnMore": "Earn more"
+    },
+    "tab": {
+      "history": "History",
+      "myTickets": "My tickets"
+    },
+    "recentActivity": "Recent activity",
+    "filter": {
+      "action": "Filter",
+      "a11y": "Cycle activity filter: all, credits, or debits"
+    },
+    "info": {
+      "title": "About your wallet",
+      "message": "Your balance is the number of tokens you can spend. Pending rewards are tokens that will be added once the related actions are confirmed."
+    },
+    "a11y": {
+      "back": "Go back",
+      "info": "Wallet help",
+      "ticketRow": "{{title}}, {{status}}, {{date}}"
+    },
     "screen": {
       "error": "Could not load wallet data. Please try again."
     },
@@ -138,6 +371,34 @@
       "error": "Lottery not found or unavailable.",
       "buyTicket": "Buy ticket",
       "buyingTicket": "Buying ticket...",
+      "verifiedOffer": "Verified offer",
+      "countdown": {
+        "title": "Draw in:",
+        "daysLabel": "Days",
+        "hoursLabel": "Hours",
+        "minutesLabel": "Min",
+        "secondsLabel": "Sec"
+      },
+      "tokensPerTicket": "{{count}} tokens / ticket",
+      "currentBalancePrefix": "Current balance:",
+      "currentBalanceSuffix": "tokens",
+      "gainMore": "Gain more",
+      "yourParticipation": "Your participation",
+      "aboutTitle": "About this prize",
+      "featurePills": {
+        "certifiedDraw": "Certified draw",
+        "freeDelivery": "Free delivery"
+      },
+      "footer": {
+        "totalPriceLabel": "Total price: {{count}} tokens",
+        "eligible": "✓ Eligible",
+        "notEligible": "Not eligible",
+        "buyTicketLabel": "Buy 1 ticket",
+        "buyingTicketLabel": "Buying 1 ticket...",
+        "noteBeforeTerms": "By participating, you accept our",
+        "noteTermsLabel": "Terms and Conditions",
+        "noteAfterTerms": "and confirm you are over 18."
+      },
       "purchase": {
         "errors": {
           "generic": "Could not buy a ticket. Please try again.",
@@ -159,8 +420,14 @@
     "unknown": "Unknown date"
   },
   "common": {
+    "back": "Back",
+    "close": "Close",
     "retry": "Retry",
+    "share": "Share",
     "loadMore": "Load more",
+    "a11y": {
+      "tokenBalance": "Token balance: {{amount}}"
+    },
     "errors": {
       "loadHint": "Check your connection and try again."
     }
@@ -172,7 +439,8 @@
     },
     "userStatus": {
       "won": "Won",
-      "lost": "Lost"
+      "lost": "Lost",
+      "upcoming": "Draw upcoming"
     },
     "screen": {
       "loading": "Loading results...",
@@ -183,11 +451,20 @@
       "loading": "Loading...",
       "notFound": "Result not found.",
       "lotterySection": "Lottery",
+      "drawDate": "Draw date: {{date}}",
       "userSection": "Your entry",
+      "yourStatus": "Status",
+      "tickets": "Tickets",
+      "rank": "Rank",
       "winnersSection": "Winners",
+      "noWinnersYet": "Winners will be available soon.",
+      "you": "You",
       "winnerLine": "Rank {{position}} · {{pseudo}}"
     },
     "list": {
+      "drawDate": "Draw date: {{date}}",
+      "totalTickets": "Your tickets: {{count}}",
+      "loadMore": "Load more results",
       "winnerPosition": "Rank {{position}}"
     }
   },
@@ -198,6 +475,42 @@
         "emailUnavailable": "We could not read your email. Please sign in again.",
         "submitFailed": "We could not create your profile. Please try again."
       }
+    },
+    "layout": {
+      "a11yBack": "Go back",
+      "a11ySettings": "Account settings"
+    },
+    "section": {
+      "activityRewards": "Activity & rewards",
+      "supportInfo": "Support & info",
+      "account": "Account"
+    },
+    "menu": {
+      "participations": "My participations",
+      "participationsA11y": "Open my participations",
+      "referral": "Referral",
+      "referralSubtitle": "Invite friends and earn tokens",
+      "referralA11y": "View referral code",
+      "referralAlertTitle": "Your referral code",
+      "referralAlertHint": "Share this code so friends can join Winlab and unlock rewards together.",
+      "support": "Support",
+      "supportA11y": "Contact support",
+      "supportMessage": "Our support team will get back to you soon. Please reach out using the email on your account.",
+      "regulations": "Regulations",
+      "regulationsA11y": "View regulations",
+      "regulationsMessage": "Terms and sweepstakes rules will be available here soon.",
+      "deleteAccountA11y": "Permanently delete my account"
+    },
+    "hero": {
+      "defaultDisplayName": "Winlab member",
+      "handlePlaceholder": "@username",
+      "a11yEdit": "Edit username",
+      "balanceLoading": "…",
+      "tokensLine": "{{count}} {{tokens}}"
+    },
+    "footer": {
+      "versionLine": "{{appName}} version {{version}} (Build {{build}})",
+      "tagline": "Made with love for the lucky winners."
     },
     "screen": {
       "title": "Profile",

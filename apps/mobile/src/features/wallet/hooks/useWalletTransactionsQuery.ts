@@ -10,6 +10,7 @@ import {
 } from "../services/getWalletTransactions";
 
 export type WalletTransactionUi = {
+  id: string;
   amount: number;
   direction: WalletTransactionRow["direction"];
   transaction_type: WalletTransactionRow["transaction_type"];
@@ -19,7 +20,8 @@ export type WalletTransactionUi = {
 
   amountFormatted: string; // +XX or -XX
   label: string; // Mission completed, Lottery entry, ...
-  subtitle: string; // Completed • Today, Entry Fee • Yesterday, ...
+  /** Mission / lottery name • relative date when `context_title` is set; else generic prefix • date. */
+  subtitle: string;
 };
 
 function formatTokenAmount(amount: number): string {
@@ -84,12 +86,14 @@ function mapRowToUi(row: WalletTransactionRow): WalletTransactionUi {
   const label = mapTransactionTypeToLabel(row.transaction_type);
   const prefix = mapTransactionTypeToPrefix(row.transaction_type);
   const relative = formatRelativeDayLabel(row.created_at);
+  const context = row.context_title?.trim() ?? "";
+  const secondLine = context.length > 0 ? context : prefix;
 
   return {
     ...row,
     amountFormatted,
     label,
-    subtitle: `${prefix} • ${relative}`,
+    subtitle: `${secondLine} • ${relative}`,
   };
 }
 
@@ -99,7 +103,7 @@ export function useWalletTransactionsQuery() {
 
   return useQuery({
     queryKey: ["wallet", "transactions", userId],
-    queryFn: () => getWalletTransactions(userId!),
+    queryFn: () => getWalletTransactions(),
     enabled: !!userId,
     staleTime: 60 * 1000,
     select: (rows): WalletTransactionUi[] => rows.map(mapRowToUi),

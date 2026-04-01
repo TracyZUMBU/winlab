@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import i18n from "@/src/i18n";
 
+import { lotteryListKeys } from "../queries/lotteryListKeys";
 import type { AvailableLotteryRow } from "../services/getAvailableLotteriesPage";
 import {
   AVAILABLE_LOTTERIES_PAGE_SIZE,
@@ -15,7 +16,7 @@ export type AvailableLotteryUi = AvailableLotteryRow & {
   statusLabel: string;
   participantsLabel: string;
   ticketCostLabel: string;
-  timeRemainingLabel: string;
+  userTicketsLabel: string;
 };
 
 function mapLotteryStatusToLabel(status: LotteryStatus): string {
@@ -31,32 +32,6 @@ function mapLotteryStatusToLabel(status: LotteryStatus): string {
   }
 }
 
-function formatTimeRemaining(endsAt: string | null): string {
-  if (!endsAt) {
-    return i18n.t("lottery.time.ongoing");
-  }
-
-  const target = new Date(endsAt).getTime();
-  const now = Date.now();
-  const diffMs = target - now;
-
-  if (!Number.isFinite(diffMs) || diffMs <= 0) {
-    return i18n.t("lottery.time.zero");
-  }
-
-  const totalMinutes = Math.floor(diffMs / (1000 * 60));
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const remainingMinutesAfterDays = totalMinutes - days * 60 * 24;
-  const hours = Math.floor(remainingMinutesAfterDays / 60);
-  const minutes = remainingMinutesAfterDays - hours * 60;
-
-  if (days > 0) {
-    return i18n.t("lottery.time.daysHours", { days, hours });
-  }
-
-  return i18n.t("lottery.time.hoursMinutes", { hours, minutes });
-}
-
 function mapRowToUi(row: AvailableLotteryRow): AvailableLotteryUi {
   return {
     ...row,
@@ -65,7 +40,9 @@ function mapRowToUi(row: AvailableLotteryRow): AvailableLotteryUi {
       count: row.active_tickets_count,
     }),
     ticketCostLabel: i18n.t("lottery.tokens", { count: row.ticket_cost }),
-    timeRemainingLabel: formatTimeRemaining(row.ends_at),
+    userTicketsLabel: i18n.t("lottery.youHaveTickets", {
+      count: row.user_active_tickets_count,
+    }),
   };
 }
 
@@ -74,7 +51,7 @@ export function useAvailableLotteriesQuery() {
   const userId = user?.id ?? null;
 
   return useInfiniteQuery({
-    queryKey: ["lotteries", "available", userId],
+    queryKey: lotteryListKeys.available(userId),
     queryFn: ({ pageParam }) =>
       getAvailableLotteriesPage({ pageIndex: pageParam ?? 0 }),
     initialPageParam: 0,

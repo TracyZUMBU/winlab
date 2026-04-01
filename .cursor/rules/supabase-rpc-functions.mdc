@@ -1,5 +1,5 @@
 ---
-description: Postgres functions in migrations must be mirrored under supabase/schemas/functions
+description: Postgres/RPC mirroring under schemas/functions + mandatory integration test for new RPCs
 globs: supabase/migrations/**/*.sql,supabase/schemas/functions/**/*.sql
 alwaysApply: false
 ---
@@ -22,7 +22,18 @@ Dès qu’une **migration** sous `supabase/migrations/` définit ou modifie du S
 
 Les fonctions exposées en RPC suivent la **même règle** : définition canonique dans `supabase/schemas/functions/` + migration qui applique le changement.
 
+## Test d’intégration obligatoire (nouvelle RPC)
+
+Dès qu’une **nouvelle** fonction est exposée en RPC (appelable via `supabase.rpc(...)` / PostgREST) :
+
+1. **Ajouter** un fichier de test d’intégration Jest sous `apps/mobile/tests/integration/`, nommé comme les existants : `<nom_rpc_snake>.integration.test.ts` (ex. `get_user_active_ticket_counts_by_lottery.integration.test.ts` pour `get_user_active_ticket_counts_by_lottery`).
+2. Le test doit appeler la RPC avec un client authentifié ou les paramètres requis, puis **vérifier les effets de bord en base** (lectures admin) quand c’est pertinent, pas seulement la forme de la réponse.
+3. Respecter **à la lettre** les contraintes du fichier de règles `supabase-jest-integration-tests.mdc` (Supabase local uniquement, pas de mocks du client, factories pour les inserts, utilisateur par test, données uniques, pas de cleanup, etc.).
+
+Si la PR ne fait qu’**ajuster** une RPC existante (signature, logique) sans changer le contrat public : **mettre à jour** le fichier d’intégration existant ou en ajouter des cas plutôt que laisser la couverture dériver.
+
 ## Checklist (pour l’agent / la revue)
 
 - [ ] Nouvelle migration avec `CREATE [OR REPLACE] FUNCTION` → fichier ajouté ou mis à jour dans `supabase/schemas/functions/`.
 - [ ] Le corps SQL du schema file et de la migration correspondent (copier depuis le schema vers une **nouvelle** migration si tu modifies le comportement après coup).
+- [ ] **Nouvelle RPC** → fichier `apps/mobile/tests/integration/<rpc>.integration.test.ts` (ou extension des tests existants) conforme à `supabase-jest-integration-tests.mdc`.

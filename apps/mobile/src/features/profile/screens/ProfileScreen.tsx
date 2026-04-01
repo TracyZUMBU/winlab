@@ -1,47 +1,72 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
 import { Button } from "@/src/components/ui/Button";
+import { ListGroup } from "@/src/components/ui/ListGroup";
 import { Screen } from "@/src/components/ui/Screen";
+import { ScreenSectionOverline } from "@/src/components/ui/ScreenSectionOverline";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
 import { usernameSchema } from "@/src/features/auth/validators";
+import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
-import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
+import { ProfileHeroHeader } from "../components/ProfileHeroHeader";
+import { ProfileMenuRow } from "../components/ProfileMenuRow";
 import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
+import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
 
-function formatMemberSince(iso: string | null, locale: string): string {
-  if (!iso) {
-    return "";
-  }
-  const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) {
-    return "";
-  }
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(d);
+function formatTokenBalance(value: number, locale: string): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
+    value,
+  );
+}
+
+function appVersionLabel(t: (k: string, o?: Record<string, string>) => string) {
+  const version = Constants.expoConfig?.version ?? "—";
+  const build =
+    Constants.expoConfig?.ios?.buildNumber ??
+    (Constants.expoConfig?.android?.versionCode != null
+      ? String(Constants.expoConfig.android.versionCode)
+      : "—");
+  return t("profile.footer.versionLine", {
+    appName: t("app.name"),
+    version,
+    build,
+  });
 }
 
 export function ProfileScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user, status: authStatus } = useAuthSession();
   const userId = user?.id ?? null;
 
   const profileQuery = useMyProfileQuery();
+  const balanceQuery = useWalletBalanceQuery();
   const updateMutation = useUpdateMyProfileMutation();
   const deleteMyAccountMutation = useDeleteMyAccountMutation();
   const signOutMutation = useSignOutMutation();
@@ -53,12 +78,29 @@ export function ProfileScreen() {
 
   const profile = profileQuery.data;
 
-  const memberSinceLabel = useMemo(
-    () =>
-      formatMemberSince(profile?.created_at ?? null, i18n.language) ||
-      t("profile.screen.valueUnknown"),
-    [profile?.created_at, i18n.language, t],
-  );
+  const balanceLine = useMemo(() => {
+    if (balanceQuery.isLoading) {
+      return t("profile.hero.balanceLoading");
+    }
+    if (balanceQuery.isError) {
+      return t("profile.hero.tokensLine", {
+        count: 0,
+        tokens: t("wallet.hero.tokens"),
+      });
+    }
+    const n = balanceQuery.data?.balance ?? 0;
+    const formatted = formatTokenBalance(n, i18n.language);
+    return t("profile.hero.tokensLine", {
+      count: Number(formatted),
+      tokens: t("wallet.hero.tokens"),
+    });
+  }, [
+    balanceQuery.data?.balance,
+    balanceQuery.isError,
+    balanceQuery.isLoading,
+    i18n.language,
+    t,
+  ]);
 
   const startEditUsername = useCallback(() => {
     setUsernameError(null);
@@ -156,9 +198,36 @@ export function ProfileScreen() {
     );
   }, [deleteMyAccountMutation, i18n, router, signOutMutation, t]);
 
+  const openParticipations = useCallback(() => {
+    router.push("/results");
+  }, [router]);
+
+  const openReferral = useCallback(() => {
+    const code =
+      profile?.referral_code?.trim() || t("profile.screen.valueUnknown");
+    Alert.alert(
+      t("profile.menu.referralAlertTitle"),
+      `${code}\n\n${t("profile.menu.referralAlertHint")}`,
+    );
+  }, [profile?.referral_code, t]);
+
+  const openSupport = useCallback(() => {
+    Alert.alert(t("profile.menu.support"), t("profile.menu.supportMessage"));
+  }, [t]);
+
+  const openRegulations = useCallback(() => {
+    Alert.alert(
+      t("profile.menu.regulations"),
+      t("profile.menu.regulationsMessage"),
+    );
+  }, [t]);
+
+  const listBottomPadding =
+    theme.spacing.xl + Math.max(insets.bottom, theme.spacing.md);
+
   if (authStatus === "loading") {
     return (
-      <Screen>
+      <Screen edges={["top"]} style={styles.screenBg}>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
           <Text style={styles.loadingText}>{t("profile.screen.loading")}</Text>
@@ -169,10 +238,12 @@ export function ProfileScreen() {
 
   if (!userId) {
     return (
-      <Screen>
-        <View style={styles.body}>
-          <Text style={styles.title}>{t("profile.screen.title")}</Text>
-          <Text style={styles.muted}>{t("profile.screen.sessionRequired")}</Text>
+      <Screen edges={["top"]} style={styles.screenBg}>
+        <View style={styles.fallbackBody}>
+          <Text style={styles.fallbackTitle}>{t("profile.screen.title")}</Text>
+          <Text style={styles.muted}>
+            {t("profile.screen.sessionRequired")}
+          </Text>
         </View>
       </Screen>
     );
@@ -180,7 +251,7 @@ export function ProfileScreen() {
 
   if (profileQuery.isPending) {
     return (
-      <Screen>
+      <Screen edges={["top"]} style={styles.screenBg}>
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={theme.colors.accentSolid} />
           <Text style={styles.loadingText}>{t("profile.screen.loading")}</Text>
@@ -191,9 +262,9 @@ export function ProfileScreen() {
 
   if (profileQuery.isError) {
     return (
-      <Screen>
-        <View style={styles.body}>
-          <Text style={styles.title}>{t("profile.screen.title")}</Text>
+      <Screen edges={["top"]} style={styles.screenBg}>
+        <View style={styles.fallbackBody}>
+          <Text style={styles.fallbackTitle}>{t("profile.screen.title")}</Text>
           <Text style={styles.errorText}>{t("profile.screen.error")}</Text>
           <Button
             title={t("common.retry")}
@@ -207,141 +278,278 @@ export function ProfileScreen() {
 
   if (!profile) {
     return (
-      <Screen>
-        <View style={styles.body}>
-          <Text style={styles.title}>{t("profile.screen.title")}</Text>
+      <Screen edges={["top"]} style={styles.screenBg}>
+        <View style={styles.fallbackBody}>
+          <Text style={styles.fallbackTitle}>{t("profile.screen.title")}</Text>
           <Text style={styles.muted}>{t("profile.screen.notFound")}</Text>
         </View>
       </Screen>
     );
   }
 
-  const emailDisplay =
-    profile.email?.trim() || user?.email?.trim() || t("profile.screen.emailUnknown");
-  const referralDisplay =
-    profile.referral_code?.trim() || t("profile.screen.valueUnknown");
-  const usernameDisplay =
-    profile.username?.trim() || t("profile.screen.valueUnknown");
+  const usernameRaw = profile.username?.trim() ?? "";
+  const displayName = usernameRaw || t("profile.hero.defaultDisplayName");
+  const handleLabel = usernameRaw
+    ? `@${usernameRaw}`
+    : t("profile.hero.handlePlaceholder");
 
   return (
-    <Screen>
-      <View style={styles.body}>
-        <Text style={styles.title}>{t("profile.screen.title")}</Text>
+    <Screen edges={["top"]} style={styles.screenBg}>
+      <View style={styles.headerWrap}>
+        <AppHeaderFull
+          title={t("profile.screen.title")}
+          titleAlign="center"
+          showBottomBorder={false}
+        />
+      </View>
 
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: listBottomPadding },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         {showUpdateSuccess ? (
-          <Text style={styles.successText}>{t("profile.screen.updateSuccess")}</Text>
+          <Text style={styles.successBanner}>
+            {t("profile.screen.updateSuccess")}
+          </Text>
         ) : null}
 
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("profile.screen.usernameLabel")}</Text>
-          {isEditingUsername ? (
-            <>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder={t("profile.screen.usernamePlaceholder")}
-                placeholderTextColor={theme.colors.textMuted}
-                style={[styles.input, usernameError ? styles.inputError : undefined]}
-                value={draftUsername}
-                onChangeText={(text) => {
-                  setDraftUsername(text);
-                  setUsernameError(null);
-                }}
-              />
-              {usernameError ? (
-                <Text style={styles.errorTextSmall}>{usernameError}</Text>
-              ) : null}
-              <View style={styles.row}>
-                <Button
-                  title={
-                    updateMutation.isPending
-                      ? t("profile.screen.savingUsername")
-                      : t("profile.screen.saveUsername")
-                  }
-                  onPress={() => void handleSaveUsername()}
-                  disabled={updateMutation.isPending}
-                  variant="primary"
-                />
-                <Button
-                  title={t("profile.screen.cancelEdit")}
-                  onPress={cancelEditUsername}
-                  disabled={updateMutation.isPending}
-                  variant="ghost"
-                />
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.value}>{usernameDisplay}</Text>
-              <Button
-                title={t("profile.screen.editUsername")}
-                onPress={startEditUsername}
-                variant="ghost"
-              />
-            </>
-          )}
-        </View>
+        <ProfileHeroHeader
+          displayName={displayName}
+          handleLabel={handleLabel}
+          balanceLine={balanceLine}
+          onPressEdit={startEditUsername}
+          editA11yLabel={t("profile.hero.a11yEdit")}
+          avatarUri={profile.avatar_url}
+        />
 
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("profile.screen.emailLabel")}</Text>
-          <Text style={styles.value}>{emailDisplay}</Text>
-        </View>
+        <ScreenSectionOverline label={t("profile.section.activityRewards")} />
+        <ListGroup>
+          <ProfileMenuRow
+            icon="confirmation-number"
+            iconVariant="accent"
+            title={t("profile.menu.participations")}
+            onPress={openParticipations}
+            showDivider
+            accessibilityLabel={t("profile.menu.participationsA11y")}
+          />
+          <ProfileMenuRow
+            icon="group-add"
+            iconVariant="accent"
+            title={t("profile.menu.referral")}
+            subtitle={t("profile.menu.referralSubtitle")}
+            onPress={openReferral}
+            accessibilityLabel={t("profile.menu.referralA11y")}
+          />
+        </ListGroup>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("profile.screen.referralLabel")}</Text>
-          <Text style={styles.value}>{referralDisplay}</Text>
-        </View>
+        <ScreenSectionOverline
+          label={t("profile.section.supportInfo")}
+          style={styles.overlineSpaced}
+        />
+        <ListGroup>
+          <ProfileMenuRow
+            icon="help-center"
+            iconVariant="neutral"
+            title={t("profile.menu.support")}
+            onPress={openSupport}
+            showDivider
+            accessibilityLabel={t("profile.menu.supportA11y")}
+          />
+          <ProfileMenuRow
+            icon="policy"
+            iconVariant="neutral"
+            title={t("profile.menu.regulations")}
+            onPress={openRegulations}
+            accessibilityLabel={t("profile.menu.regulationsA11y")}
+          />
+        </ListGroup>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>{t("profile.screen.memberSinceLabel")}</Text>
-          <Text style={styles.value}>{memberSinceLabel}</Text>
-        </View>
+        <ScreenSectionOverline
+          label={t("profile.section.account")}
+          style={styles.overlineSpaced}
+        />
+        <ListGroup>
+          <ProfileMenuRow
+            icon="delete-forever"
+            iconVariant="destructive"
+            title={
+              deleteMyAccountMutation.isPending
+                ? t("profile.screen.deletingAccount")
+                : t("profile.screen.deleteAccount")
+            }
+            onPress={handleDeleteAccount}
+            disabled={
+              signOutMutation.isPending ||
+              updateMutation.isPending ||
+              deleteMyAccountMutation.isPending
+            }
+            accessibilityLabel={t("profile.menu.deleteAccountA11y")}
+          />
+        </ListGroup>
 
-        <Button
-          title={
-            signOutMutation.isPending
-              ? t("profile.screen.loggingOut")
-              : t("profile.screen.logout")
-          }
+        <Pressable
           onPress={handleLogout}
           disabled={
             signOutMutation.isPending ||
             updateMutation.isPending ||
             deleteMyAccountMutation.isPending
           }
-          variant="primary"
-        />
+          style={({ pressed }) => [
+            styles.logoutButton,
+            pressed && styles.logoutPressed,
+            signOutMutation.isPending && styles.logoutDisabled,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t("profile.screen.logout")}
+        >
+          <MaterialIcons
+            name="logout"
+            size={22}
+            color={theme.colors.dangerSolid}
+          />
+          <Text style={styles.logoutLabel}>
+            {signOutMutation.isPending
+              ? t("profile.screen.loggingOut")
+              : t("profile.screen.logout")}
+          </Text>
+        </Pressable>
 
-        <Button
-          title={
-            deleteMyAccountMutation.isPending
-              ? t("profile.screen.deletingAccount")
-              : t("profile.screen.deleteAccount")
-          }
-          onPress={handleDeleteAccount}
-          disabled={
-            signOutMutation.isPending ||
-            updateMutation.isPending ||
-            deleteMyAccountMutation.isPending
-          }
-          variant="ghost"
-          style={{
-            borderWidth: 1,
-            borderColor: "#DC2626",
-          }}
-          textStyle={{
-            color: "#DC2626",
-          }}
-        />
-      </View>
+        <View style={styles.footerMeta}>
+          <Text style={styles.versionText}>{appVersionLabel(t)}</Text>
+          <Text style={styles.tagline}>{t("profile.footer.tagline")}</Text>
+        </View>
+      </ScrollView>
+
+      <Modal
+        visible={isEditingUsername}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={cancelEditUsername}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalRoot}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>
+              {t("profile.screen.editUsername")}
+            </Text>
+            <Pressable
+              onPress={cancelEditUsername}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel={t("profile.screen.cancelEdit")}
+            >
+              <MaterialIcons name="close" size={24} color={theme.colors.text} />
+            </Pressable>
+          </View>
+          <View style={styles.modalBody}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={t("profile.screen.usernamePlaceholder")}
+              placeholderTextColor={theme.colors.textMuted}
+              style={[
+                styles.input,
+                usernameError ? styles.inputError : undefined,
+              ]}
+              value={draftUsername}
+              onChangeText={(text) => {
+                setDraftUsername(text);
+                setUsernameError(null);
+              }}
+            />
+            {usernameError ? (
+              <Text style={styles.errorTextSmall}>{usernameError}</Text>
+            ) : null}
+            <Button
+              title={
+                updateMutation.isPending
+                  ? t("profile.screen.savingUsername")
+                  : t("profile.screen.saveUsername")
+              }
+              onPress={() => void handleSaveUsername()}
+              disabled={updateMutation.isPending}
+              variant="primary"
+              fullWidth
+            />
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    padding: 16,
-    gap: 16,
+  screenBg: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  headerWrap: {
+    paddingHorizontal: theme.spacing.md,
+  },
+  scroll: {
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: theme.spacing.md,
+    gap: theme.spacing.xs,
+  },
+  successBanner: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600",
+    color: theme.colors.accentSolid,
+    marginBottom: theme.spacing.sm,
+  },
+  overlineSpaced: {
+    marginTop: theme.spacing.md,
+  },
+  logoutButton: {
+    marginTop: theme.spacing.lg + 4,
+    minHeight: 56,
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.dangerMuted,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing.sm,
+  },
+  logoutPressed: {
+    opacity: 0.92,
+  },
+  logoutDisabled: {
+    opacity: 0.55,
+  },
+  logoutLabel: {
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 0.4,
+    color: theme.colors.dangerSolid,
+  },
+  footerMeta: {
+    marginTop: theme.spacing.lg,
+    alignItems: "center",
+    gap: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  versionText: {
+    fontSize: 12,
+    color: theme.colors.textMutedAccent,
+    textAlign: "center",
+  },
+  tagline: {
+    fontSize: 10,
+    fontStyle: "italic",
+    color: theme.colors.textMutedAccent,
+    opacity: 0.72,
+    textAlign: "center",
+    lineHeight: 14,
   },
   centered: {
     flex: 1,
@@ -350,36 +558,51 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
   },
-  title: {
+  loadingText: {
+    fontSize: 15,
+    color: theme.colors.textMuted,
+  },
+  fallbackBody: {
+    padding: 16,
+    gap: 16,
+  },
+  fallbackTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: theme.colors.text,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: theme.colors.textMuted,
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 16,
     color: theme.colors.text,
   },
   muted: {
     fontSize: 15,
     color: theme.colors.textMuted,
   },
-  loadingText: {
+  errorText: {
     fontSize: 15,
-    color: theme.colors.textMuted,
+    color: theme.colors.dangerSolid,
   },
-  field: {
-    gap: 8,
+  modalRoot: {
+    flex: 1,
+    paddingTop: theme.spacing.lg,
+    backgroundColor: theme.colors.background,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
+  modalTitle: {
+    ...theme.typography.sectionTitle,
+    color: theme.colors.text,
+  },
+  modalBody: {
+    paddingHorizontal: theme.spacing.md,
+    gap: theme.spacing.md,
   },
   input: {
     borderWidth: 1,
     borderColor: theme.colors.borderSubtle,
-    borderRadius: 12,
+    borderRadius: theme.radius.md,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
@@ -387,24 +610,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   inputError: {
-    borderColor: "#DC2626",
-  },
-  errorText: {
-    fontSize: 15,
-    color: "#DC2626",
+    borderColor: theme.colors.dangerSolid,
   },
   errorTextSmall: {
     fontSize: 13,
-    color: "#DC2626",
-  },
-  successText: {
-    fontSize: 14,
-    color: theme.colors.accentSolid,
-  },
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    alignItems: "center",
+    color: theme.colors.dangerSolid,
   },
 });

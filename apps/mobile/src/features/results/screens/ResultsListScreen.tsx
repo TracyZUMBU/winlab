@@ -1,54 +1,22 @@
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
-  Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import { useTranslation } from "react-i18next";
 
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
+import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
-import type { ParticipatedDrawnLotteryUi } from "../hooks/useParticipatedDrawnLotteriesQuery";
+import { ResultsListItemCard } from "../components/ResultsListItemCard";
 import { useParticipatedDrawnLotteriesQuery } from "../hooks/useParticipatedDrawnLotteriesQuery";
-
-function ResultRow({
-  item,
-  onPress,
-}: {
-  item: ParticipatedDrawnLotteryUi;
-  onPress: (lotteryId: string) => void;
-}) {
-  const { t } = useTranslation();
-  const brandName = item.brand?.name ?? "";
-
-  return (
-    <Pressable style={styles.card} onPress={() => onPress(item.id)}>
-      {item.image_url ? (
-        <Image source={{ uri: item.image_url }} style={styles.image} />
-      ) : null}
-      <View style={styles.cardBody}>
-        <Text style={styles.title}>{item.title}</Text>
-        {brandName ? <Text style={styles.brand}>{brandName}</Text> : null}
-        <Text style={styles.meta}>{item.drawAtLabel}</Text>
-        <Text style={styles.meta}>{item.userResultStatusLabel}</Text>
-        <Text style={styles.meta}>
-          {t("lottery.youHaveTickets", { count: item.userTicketsCount })}
-        </Text>
-        {item.winnerPosition != null ? (
-          <Text style={styles.meta}>
-            {t("results.list.winnerPosition", { position: item.winnerPosition })}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
-  );
-}
 
 export function ResultsListScreen() {
   const router = useRouter();
@@ -64,7 +32,7 @@ export function ResultsListScreen() {
   } = useParticipatedDrawnLotteriesQuery();
 
   const openDetail = (lotteryId: string) => {
-    router.push(`/lotteries/results/${lotteryId}`);
+    router.push(`/results/${lotteryId}`);
   };
 
   if (isLoading) {
@@ -84,9 +52,9 @@ export function ResultsListScreen() {
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("results.screen.error")}</Text>
           <Text style={styles.helper}>{userFacingQueryLoadHint(t)}</Text>
-          <Pressable style={styles.retryButton} onPress={() => void refetch()}>
-            <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
-          </Pressable>
+          <View style={styles.retryWrap}>
+            <Button title={t("common.retry")} onPress={() => void refetch()} />
+          </View>
         </View>
       </Screen>
     );
@@ -103,33 +71,49 @@ export function ResultsListScreen() {
     );
   }
 
+  const totalTickets = rows.reduce((sum, r) => sum + r.userTicketsCount, 0);
+
   return (
-    <Screen>
+    <Screen style={styles.screen}>
       <FlatList
         data={rows}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         renderItem={({ item }) => (
-          <ResultRow item={item} onPress={openDetail} />
+          <ResultsListItemCard item={item} onPress={openDetail} />
         )}
+        ListHeaderComponent={
+          <View style={styles.listHeader}>
+            <View style={styles.ticketPill} accessibilityRole="text">
+              <MaterialIcons
+                name="confirmation-number"
+                size={16}
+                color={theme.colors.text}
+              />
+              <Text style={styles.ticketPillText}>
+                {t("results.list.totalTickets", { count: totalTickets })}
+              </Text>
+            </View>
+          </View>
+        }
         ListFooterComponent={
           hasNextPage ? (
             <View style={styles.footer}>
-              <Pressable
+              <Button
+                title={t("results.list.loadMore")}
                 onPress={() => void fetchNextPage()}
-                style={styles.loadMoreButton}
                 disabled={isFetchingNextPage}
-              >
-                {isFetchingNextPage ? (
-                  <ActivityIndicator
-                    size="small"
-                    color={theme.colors.accentSolid}
-                  />
-                ) : (
-                  <Text style={styles.loadMoreText}>{t("common.loadMore")}</Text>
-                )}
-              </Pressable>
+                variant="soft"
+                leftIcon={
+                  isFetchingNextPage ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.accentSolid}
+                    />
+                  ) : undefined
+                }
+              />
             </View>
           ) : null
         }
@@ -139,6 +123,10 @@ export function ResultsListScreen() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    backgroundColor: theme.colors.background,
+  },
+
   centered: {
     flex: 1,
     justifyContent: "center",
@@ -155,66 +143,48 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 15,
   },
-  retryButton: {
-    marginTop: theme.spacing.md,
-    backgroundColor: theme.colors.accentSolid,
-    borderRadius: theme.radius.md,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-  },
-  retryButtonText: {
-    color: "#fff",
-    fontWeight: "600",
+  retryWrap: {
+    marginTop: theme.spacing.lg,
+    alignSelf: "stretch",
   },
   list: {
-    padding: theme.spacing.md,
+    flexGrow: 1,
+    paddingHorizontal: theme.spacing.screenHorizontal,
+    paddingTop: theme.spacing.md,
     paddingBottom: theme.spacing.xl,
+  },
+  listHeader: {
+    paddingBottom: theme.spacing.md,
+  },
+  ticketPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    alignSelf: "flex-start",
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: theme.colors.borderSubtle,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  ticketPillText: {
+    color: theme.colors.text,
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.3,
+    textTransform: "uppercase",
   },
   separator: {
     height: theme.spacing.md,
   },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderColor: theme.colors.borderSubtle,
-    borderWidth: 1,
-    borderRadius: theme.radius.md,
-    overflow: "hidden",
-  },
-  image: {
-    width: "100%",
-    aspectRatio: 16 / 9,
-  },
-  cardBody: {
-    padding: theme.spacing.md,
-    gap: theme.spacing.xs,
-  },
-  title: {
-    color: theme.colors.text,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  brand: {
-    color: theme.colors.textMuted,
-    fontSize: 13,
-  },
-  meta: {
-    color: theme.colors.textMuted,
-    fontSize: 13,
-  },
   footer: {
     paddingVertical: theme.spacing.md,
     alignItems: "center",
-  },
-  loadMoreButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: theme.colors.borderSubtle,
-    backgroundColor: theme.colors.surface,
-  },
-  loadMoreText: {
-    color: theme.colors.text,
-    fontWeight: "500",
   },
 });

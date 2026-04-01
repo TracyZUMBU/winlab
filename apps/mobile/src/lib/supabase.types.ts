@@ -169,7 +169,9 @@ export type Database = {
           ends_at: string | null
           id: string
           image_url: string | null
+          is_featured: boolean
           number_of_winners: number
+          short_description: string | null
           slug: string | null
           starts_at: string | null
           status: Database["public"]["Enums"]["lottery_status"]
@@ -186,7 +188,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           number_of_winners?: number
+          short_description?: string | null
           slug?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["lottery_status"]
@@ -203,7 +207,9 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
+          is_featured?: boolean
           number_of_winners?: number
+          short_description?: string | null
           slug?: string | null
           starts_at?: string | null
           status?: Database["public"]["Enums"]["lottery_status"]
@@ -429,6 +435,7 @@ export type Database = {
           description: string | null
           ends_at: string | null
           id: string
+          image_url: string | null
           max_completions_per_user: number
           max_completions_total: number | null
           metadata: Json
@@ -446,6 +453,7 @@ export type Database = {
           description?: string | null
           ends_at?: string | null
           id?: string
+          image_url?: string | null
           max_completions_per_user?: number
           max_completions_total?: number | null
           metadata?: Json
@@ -463,6 +471,7 @@ export type Database = {
           description?: string | null
           ends_at?: string | null
           id?: string
+          image_url?: string | null
           max_completions_per_user?: number
           max_completions_total?: number | null
           metadata?: Json
@@ -486,6 +495,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string
           id: string
@@ -494,6 +504,7 @@ export type Database = {
           username: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email: string
           id: string
@@ -502,6 +513,7 @@ export type Database = {
           username: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string
           id?: string
@@ -872,6 +884,28 @@ export type Database = {
           active_tickets_count: number
         }[]
       }
+      get_user_active_ticket_counts_by_lottery: {
+        Args: { p_lottery_ids: string[] }
+        Returns: {
+          lottery_id: string
+          active_count: number
+        }[]
+      }
+      get_wallet_transactions_enriched: {
+        Args: never
+        Returns: {
+          id: string
+          amount: number
+          context_title: string | null
+          created_at: string
+          direction: Database["public"]["Enums"]["wallet_direction"]
+          reference_id: string | null
+          reference_type:
+            | Database["public"]["Enums"]["wallet_reference_type"]
+            | null
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+        }[]
+      }
       handle_referral_after_first_mission: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -887,6 +921,24 @@ export type Database = {
           error_code: string
           success: boolean
         }[]
+      }
+      get_todo_missions_page: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          id: string
+          title: string
+          description: string | null
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          token_reward: number
+          ends_at: string | null
+          image_url: string | null
+          brand: Json
+          mission_completions: Json
+        }[]
+      }
+      get_user_home_dashboard: {
+        Args: never
+        Returns: Json
       }
     }
     Enums: {
