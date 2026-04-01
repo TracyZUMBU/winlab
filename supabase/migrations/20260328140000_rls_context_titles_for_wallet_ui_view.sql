@@ -3,6 +3,7 @@
 -- for ticket purchases / mission rewards tied to those rows.
 -- These policies OR with existing ones so holders / participants can still read titles for their own ledger context.
 
+DROP POLICY IF EXISTS "Users can view lotteries they hold tickets for" ON public.lotteries;
 CREATE POLICY "Users can view lotteries they hold tickets for"
 ON public.lotteries
 FOR SELECT
@@ -16,6 +17,7 @@ USING (
   )
 );
 
+DROP POLICY IF EXISTS "Users can view missions they have a completion for" ON public.missions;
 CREATE POLICY "Users can view missions they have a completion for"
 ON public.missions
 FOR SELECT

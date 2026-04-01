@@ -57,7 +57,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
     });
 
     // Repeatable mission logic:
-    // - when approved_count < max_completions_per_user, mission must be included
+    // - when (pending + approved) count < max_completions_per_user, mission must be included
     await createMissionCompletion({
       mission_id: mission.id,
       user_id: user.userId,
@@ -115,7 +115,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       missions.some((m) => (m as { id?: string }).id === mission.id),
     ).toBe(true);
 
-    // Once the user reaches approved_count >= max_completions_per_user,
+    // Once (pending + approved) count >= max_completions_per_user,
     // the mission must be excluded from the "todo/preview" list.
     await createMissionCompletion({
       mission_id: mission.id,
@@ -137,5 +137,32 @@ describe("get_user_home_dashboard RPC (integration)", () => {
     expect(anonData).toBeNull();
     expect(anonError).toBeTruthy();
     expect(anonError?.message ?? "").toContain("UNAUTHENTICATED");
+  });
+
+  it("excludes mission preview when user has pending completion at per-user cap", async () => {
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-home-pending-${uniqueId}` });
+    const mission = await createMission({
+      brand_id: brand.id,
+      title: `Home pending cap ${uniqueId}`,
+      status: "active",
+      mission_type: "survey",
+      token_reward: 10,
+      max_completions_per_user: 1,
+    });
+    const user = await createAuthenticatedTestUser();
+    await createMissionCompletion({
+      mission_id: mission.id,
+      user_id: user.userId,
+      status: "pending",
+    });
+
+    const { data, error } = await user.client.rpc(RPC);
+    expect(error).toBeNull();
+    const payload = data as Record<string, unknown>;
+    const missions = payload.mission_previews as unknown[];
+    expect(
+      missions.some((m) => (m as { id?: string }).id === mission.id),
+    ).toBe(false);
   });
 });

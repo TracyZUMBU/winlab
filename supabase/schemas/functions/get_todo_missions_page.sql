@@ -1,4 +1,5 @@
--- Paginated "todo" missions: active window, excludes missions the user has already completed (approved).
+-- Paginated "todo" missions: active window, excludes missions where pending+approved reaches per-user cap
+-- (aligned with submit_mission_completion).
 -- SECURITY INVOKER: respects RLS on missions / brands / mission_completions.
 CREATE OR REPLACE FUNCTION public.get_todo_missions_page(
   p_limit integer,
@@ -67,14 +68,13 @@ BEGIN
   WHERE m.status = 'active'::public.mission_status
     AND (m.starts_at IS NULL OR m.starts_at <= now())
     AND (m.ends_at IS NULL OR m.ends_at >= now())
-    -- Repeatable missions:
-    -- exclude only when the user reached their per-user approved completion cap.
+    -- Repeatable missions / quota: pending + approved (same as submit_mission_completion).
     AND (
       SELECT COUNT(*)::int
       FROM public.mission_completions mca
       WHERE mca.mission_id = m.id
         AND mca.user_id = auth.uid()
-        AND mca.status = 'approved'::public.mission_completion_status
+        AND mca.status IN ('pending', 'approved')
     ) < COALESCE(m.max_completions_per_user, 1)
   ORDER BY m.ends_at ASC NULLS LAST, m.id ASC
   LIMIT p_limit

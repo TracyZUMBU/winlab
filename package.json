@@ -5,8 +5,8 @@
     "admin:dev": "npm run dev --prefix apps/admin",
     "admin:build": "npm run build --prefix apps/admin",
     "admin:preview": "npm run preview --prefix apps/admin",
-    "migrate:local": "supabase migration up --local --workdir .",
-    "migrate:remote": "supabase migration up --linked --workdir .",
+    "migrate:local": "supabase migration up --local --include-all --workdir .",
+    "migrate:remote": "supabase migration up --linked --include-all --workdir .",
     "migrate:all": "npm run migrate:local && npm run migrate:remote"
   }
 }
