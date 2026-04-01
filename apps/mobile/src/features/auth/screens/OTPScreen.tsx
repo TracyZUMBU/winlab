@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { getI18nMessageForCode } from '@/src/lib/i18n/errorCodeMessage';
 import { AuthScreenLayout } from '../components/AuthScreenLayout';
 import { redirectAfterAuthSession } from '../utils/redirectAfterAuthSession';
 import { otpSchema, type OtpFormValues } from '../validators';
@@ -20,7 +21,7 @@ import { AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
 const ACCENT = '#FF8C00';
 
 export const OTPScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string }>();
   const emailFromParams = typeof params.email === 'string' ? params.email : '';
@@ -58,7 +59,23 @@ export const OTPScreen: React.FC = () => {
     const result = await verifyEmailOtp({ email, token: values.code });
 
     if (!result.success) {
-      setServerError(t("auth.invalidCode"));
+      if (result.errorCode === "OTP_INVALID_LENGTH") {
+        setServerError(
+          t("auth.otp.errors.OTP_INVALID_LENGTH", {
+            length: OTP_CODE_LENGTH,
+          }),
+        );
+      } else {
+        setServerError(
+          getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "auth.otp.errors",
+            code: result.errorCode,
+            fallbackKey: "auth.otp.errors.generic",
+          }),
+        );
+      }
       return;
     }
 
@@ -90,17 +107,18 @@ export const OTPScreen: React.FC = () => {
     }
   };
 
+  const otpSubtitle = emailFromParams
+    ? t("auth.otp.screen.subtitleWithEmail", { email: emailFromParams })
+    : t("auth.otp.screen.subtitleNoEmail");
+
   return (
-    <AuthScreenLayout
-      title="Entrez le code"
-      subtitle={`Nous avons envoyé un code à ${emailFromParams || 'votre email'}.`}
-    >
+    <AuthScreenLayout title={t("schema.otp.title")} subtitle={otpSubtitle}>
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>CODE DE VÉRIFICATION</Text>
+        <Text style={styles.label}>{t("schema.otp.label")}</Text>
         <TextInput
           keyboardType="number-pad"
           maxLength={OTP_CODE_LENGTH}
-          placeholder="000000"
+          placeholder={t("auth.otp.screen.codePlaceholder")}
           placeholderTextColor="#94A3B8"
           style={[
             styles.input,
@@ -120,12 +138,16 @@ export const OTPScreen: React.FC = () => {
       {serverError ? <Text style={styles.serverError}>{serverError}</Text> : null}
 
       <View style={styles.resendRow}>
-        <Text style={styles.resendLabel}>Vous n’avez pas reçu le code ?</Text>
+        <Text style={styles.resendLabel}>
+          {t("auth.otp.screen.resendPrompt")}
+        </Text>
         <Pressable onPress={handleResend} disabled={resendLoading}>
           {resendLoading ? (
             <ActivityIndicator size="small" color={ACCENT} />
           ) : (
-            <Text style={styles.resendLink}>Renvoyer le code</Text>
+            <Text style={styles.resendLink}>
+              {t("auth.otp.screen.resendCta")}
+            </Text>
           )}
         </Pressable>
       </View>
@@ -143,7 +165,9 @@ export const OTPScreen: React.FC = () => {
           {isSubmitting ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.primaryButtonText}>Valider</Text>
+            <Text style={styles.primaryButtonText}>
+              {t("auth.otp.screen.submit")}
+            </Text>
           )}
         </Pressable>
       </View>

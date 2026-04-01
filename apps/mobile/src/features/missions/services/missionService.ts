@@ -1,3 +1,5 @@
+import type { ErrorKind } from "@/src/lib/errors/errorKinds";
+import { logger } from "@/src/lib/logger";
 import { monitoring } from "@/src/lib/monitoring";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
@@ -7,14 +9,22 @@ export type SubmitMissionCompletionParams = {
   proofData?: Json;
 };
 
-export type MissionSubmissionErrorCode =
+/** Stable codes returned by the RPC when `success: false` (business rules). */
+export type MissionSubmissionBusinessErrorCode =
   | "UNAUTHENTICATED"
   | "MISSION_NOT_FOUND"
   | "MISSION_NOT_ACTIVE"
   | "MISSION_NOT_STARTED"
   | "MISSION_EXPIRED"
   | "MISSION_USER_LIMIT_REACHED"
-  | "MISSION_TOTAL_LIMIT_REACHED"
+  | "MISSION_TOTAL_LIMIT_REACHED";
+
+/**
+ * All keys used under `missions.submission.errors` in i18n (business + generic fallbacks).
+ * Not returned by the service for `kind: "technical"` / `"unexpected"` (UI uses a generic key).
+ */
+export type MissionSubmissionErrorCode =
+  | MissionSubmissionBusinessErrorCode
   | "INVALID_SERVER_RESPONSE"
   | "UNKNOWN_ERROR";
 
@@ -25,7 +35,12 @@ export type SubmitMissionCompletionResult =
     }
   | {
       success: false;
-      errorCode: MissionSubmissionErrorCode;
+      kind: "business";
+      errorCode: MissionSubmissionBusinessErrorCode;
+    }
+  | {
+      success: false;
+      kind: Exclude<ErrorKind, "business">;
     };
 
 const SUBMIT_MISSION_COMPLETION_RPC = "submit_mission_completion";
@@ -36,7 +51,7 @@ type SubmitMissionCompletionRpcRow = {
   error_code: string | null;
 };
 
-const BUSINESS_ERROR_CODES = new Set<MissionSubmissionErrorCode>([
+const BUSINESS_ERROR_CODES = new Set<MissionSubmissionBusinessErrorCode>([
   "UNAUTHENTICATED",
   "MISSION_NOT_FOUND",
   "MISSION_NOT_ACTIVE",
@@ -58,40 +73,76 @@ export const submitMissionCompletion = async ({
   });
 
   if (error) {
-    monitoring.captureMessage({
-      name: "mission_completion_rpc_failed",
-      severity: "critical",
+    logger.warn("[missions] submit_mission_completion RPC failed", {
+      missionId,
+      error,
+    });
+    monitoring.captureException({
+      name: "submit_mission_completion_rpc_failed",
+      severity: "error",
       feature: "missions",
-      message: error.message ?? "submit_mission_completion RPC failed",
+      message: "submit_mission_completion RPC failed",
+      error,
       extra: { missionId },
     });
-    return {
-      success: false,
-      errorCode: "UNKNOWN_ERROR",
-    };
+    return { success: false, kind: "technical" };
   }
 
   if (!Array.isArray(data) || data.length !== 1) {
-    return {
-      success: false,
-      errorCode: "INVALID_SERVER_RESPONSE",
-    };
+    const err = new Error(
+      "submit_mission_completion invalid server response (expected 1 row)",
+    );
+    logger.warn("[missions] submit_mission_completion invalid server response", {
+      missionId,
+      dataType: typeof data,
+    });
+    monitoring.captureException({
+      name: "submit_mission_completion_invalid_server_response",
+      severity: "error",
+      feature: "missions",
+      message: err.message,
+      error: err,
+      extra: { missionId },
+    });
+    return { success: false, kind: "unexpected" };
   }
 
   const row = data[0] as SubmitMissionCompletionRpcRow | null | undefined;
   if (!row || typeof row.success !== "boolean") {
-    return {
-      success: false,
-      errorCode: "INVALID_SERVER_RESPONSE",
-    };
+    const err = new Error(
+      "submit_mission_completion invalid server response (missing fields)",
+    );
+    logger.warn("[missions] submit_mission_completion invalid server response", {
+      missionId,
+    });
+    monitoring.captureException({
+      name: "submit_mission_completion_invalid_server_response",
+      severity: "error",
+      feature: "missions",
+      message: err.message,
+      error: err,
+      extra: { missionId },
+    });
+    return { success: false, kind: "unexpected" };
   }
 
   if (row.success) {
-    if (!row.completion_id) {
-      return {
-        success: false,
-        errorCode: "INVALID_SERVER_RESPONSE",
-      };
+    if (typeof row.completion_id !== "string" || row.completion_id.length === 0) {
+      const err = new Error(
+        "submit_mission_completion invalid server response (missing completion_id)",
+      );
+      logger.warn("[missions] submit_mission_completion invalid server response", {
+        missionId,
+      });
+      monitoring.captureException({
+        name: "submit_mission_completion_invalid_server_response",
+        severity: "error",
+        feature: "missions",
+        message: err.message,
+        error: err,
+        extra: { missionId },
+      });
+      return { success: false, kind: "unexpected" };
     }
     return {
       success: true,
@@ -100,22 +151,42 @@ export const submitMissionCompletion = async ({
   }
 
   if (typeof row.error_code !== "string" || row.error_code.length === 0) {
-    return {
-      success: false,
-      errorCode: "INVALID_SERVER_RESPONSE",
-    };
+    const err = new Error(
+      "submit_mission_completion invalid server response (missing error_code)",
+    );
+    logger.warn("[missions] submit_mission_completion invalid server response", {
+      missionId,
+    });
+    monitoring.captureException({
+      name: "submit_mission_completion_invalid_server_response",
+      severity: "error",
+      feature: "missions",
+      message: err.message,
+      error: err,
+      extra: { missionId },
+    });
+    return { success: false, kind: "unexpected" };
   }
 
-  const code = row.error_code as MissionSubmissionErrorCode;
+  const code = row.error_code as MissionSubmissionBusinessErrorCode;
   if (!BUSINESS_ERROR_CODES.has(code)) {
-    return {
-      success: false,
-      errorCode: "UNKNOWN_ERROR",
-    };
+    const err = new Error(
+      `submit_mission_completion unknown business error_code: ${row.error_code}`,
+    );
+    logger.warn("[missions] submit_mission_completion unknown error_code", {
+      missionId,
+      errorCode: row.error_code,
+    });
+    monitoring.captureException({
+      name: "submit_mission_completion_unknown_error_code",
+      severity: "error",
+      feature: "missions",
+      message: err.message,
+      error: err,
+      extra: { missionId, errorCode: row.error_code },
+    });
+    return { success: false, kind: "unexpected" };
   }
 
-  return {
-    success: false,
-    errorCode: code,
-  };
+  return { success: false, kind: "business", errorCode: code };
 };

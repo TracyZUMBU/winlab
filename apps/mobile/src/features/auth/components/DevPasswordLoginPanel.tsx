@@ -13,7 +13,6 @@ import { useTranslation } from "react-i18next";
 import { signInWithEmailPassword } from "../services";
 import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
 import { devPasswordLoginSchema, emailSchema } from "../validators";
-import { AUTH_MESSAGES } from "../constants/authConstants";
 
 export type DevPasswordLoginPanelProps = {
   /** Valeur courante du champ email sur EmailScreen (même flux que l’OTP). */
@@ -46,7 +45,7 @@ export const DevPasswordLoginPanel: React.FC<DevPasswordLoginPanelProps> = ({
     const pwdParsed = devPasswordLoginSchema.safeParse({ password });
     if (!pwdParsed.success) {
       const msg = pwdParsed.error.flatten().fieldErrors.password?.[0];
-      setError(msg ?? AUTH_MESSAGES.genericError);
+      setError(msg ?? t("auth.genericError"));
       return;
     }
 
@@ -81,7 +80,7 @@ export const DevPasswordLoginPanel: React.FC<DevPasswordLoginPanelProps> = ({
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
-            placeholder="••••••••"
+            placeholder={t("emailScreen.dev.passwordPlaceholder")}
             placeholderTextColor="#61896f"
             secureTextEntry
             textContentType="password"

@@ -7,6 +7,9 @@ Portée :
 - `supabase/functions/**` (edge functions appelées par l’app)
 - (optionnel) `supabase/schemas/functions/**` pour les RPC Postgres (si retour structuré)
 
+**Plan de stabilisation (checklist pré-tests, phases suivantes)** : [roadmaps/error-handling-stabilization-roadmap.md](./roadmaps/error-handling-stabilization-roadmap.md).  
+Index des roadmaps / backlogs : [roadmaps/README.md](./roadmaps/README.md).
+
 ## Principes (non négociables)
 
 ### 1) Typologie d’erreurs
@@ -88,6 +91,24 @@ Rôle : TanStack Query (cache, invalidation, retry) + exposition simple aux écr
 Attendus :
 - Ne pas parse des messages d’erreur pour la logique métier.
 - Ne pas multiplier les logs : si le service log déjà, le hook ne re-log pas (sauf besoin exceptionnel et justifié).
+
+### TanStack Query — échecs de **lecture** (`useQuery`)
+
+Centralisé dans `apps/mobile/src/lib/query/queryCacheOnError.ts`, branché via `QueryCache` sur `queryClient` (`queryClient.ts`).
+
+- **Ne pas** ajouter `monitoring.*` dans les écrans sur `isError` pour les reads : un seul flux global évite le bruit et le double comptage.
+- **Nom d’événement** : `tanstack_query_load_failed` ; **`feature`** : premier segment de `queryKey` (`missions`, `lotteries`, `wallet`, `results`, `profile`, `home`, sinon `unknown`).
+- **`extra`** : `queryKey` JSON avec UUIDs remplacés par `[id]`, `postgrestCode` si présent (chaînes uniquement, conformément au type monitoring).
+
+**Filtrage (rien n’est envoyé dans ces cas) :**
+
+- Annulation TanStack : `CancelledError`.
+- **Réseau / offline** probable : message contient l’un des marqueurs configurés (ex. `Network request failed`, `Failed to fetch`, …).
+- **Métier / attendu** : code PostgREST `PGRST116` (aucune ligne pour un select « single row » — cas not-found habituel).
+
+**Throttle :** même combinaison `feature` + classe d’erreur (code PostgREST ou `error.name`) : au plus un rapport toutes les **90 s** par session d’app.
+
+**Les mutations** (`useMutation`) continuent d’être monitorées au **service** lorsque c’est déjà en place, pour éviter les doublons avec ce handler.
 
 ### Screens (`apps/mobile/src/features/**/screens`)
 

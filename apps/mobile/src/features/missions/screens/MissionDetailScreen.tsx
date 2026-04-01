@@ -18,6 +18,7 @@ import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { Screen } from "@/src/components/ui/Screen";
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
@@ -33,7 +34,7 @@ import { getMissionThumbnailFallbackUri } from "../utils/missionThumbnailFallbac
 type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
 
 export function MissionDetailScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
 
   const { missionId } = useLocalSearchParams<{ missionId: string }>();
@@ -65,10 +66,20 @@ export function MissionDetailScreen() {
       return;
     }
 
-    setSubmitError(
-      t(`missions.submission.errors.${result.errorCode}`) ||
-        t("missions.submission.errors.UNKNOWN_ERROR"),
-    );
+    if (result.kind === "business") {
+      setSubmitError(
+        getI18nMessageForCode({
+          t,
+          i18n,
+          baseKey: "missions.submission.errors",
+          code: result.errorCode,
+          fallbackKey: "missions.submission.errors.generic",
+        }),
+      );
+      return;
+    }
+
+    setSubmitError(t("missions.submission.errors.generic"));
   };
 
   const brandName = mission?.brand?.name ?? mission?.title ?? "";
@@ -181,7 +192,7 @@ export function MissionDetailScreen() {
             <Text style={styles.muted}>{userFacingQueryLoadHint(t)}</Text>
           ) : null}
           {missionId ? (
-            <Pressable style={styles.retry} onPress={() => refetch()}>
+            <Pressable style={styles.retry} onPress={() => void refetch()}>
               <Text style={styles.retryText}>{t("common.retry")}</Text>
             </Pressable>
           ) : null}
