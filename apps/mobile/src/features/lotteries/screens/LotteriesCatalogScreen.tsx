@@ -32,6 +32,7 @@ import {
   filterLotteriesBySearchQuery,
   parseLotteryCatalogScope,
 } from "../utils/lotteryCatalog";
+import { splitLotteriesIntoMasonryColumns } from "../utils/lotteryCatalogMasonryLayout";
 
 type CategoryId = "all" | string;
 
@@ -64,7 +65,8 @@ function UnderlineOptionStrip<T extends string>({
               style={[styles.uTabLabel, selected && styles.uTabLabelActive]}
               numberOfLines={1}
             >
-              {opt.label}
+              {opt.label.charAt(0).toUpperCase() +
+                opt.label.slice(1).toLowerCase()}
             </Text>
             <View
               style={[
@@ -134,14 +136,10 @@ export function LotteriesCatalogScreen() {
     return filterLotteriesBySearchQuery(byCategory, query);
   }, [lotteries, scope, category, query, nowMs]);
 
-  const { leftColumn, rightColumn } = useMemo(() => {
-    const left: typeof rows = [];
-    const right: typeof rows = [];
-    rows.forEach((item, i) => {
-      (i % 2 === 0 ? left : right).push(item);
-    });
-    return { leftColumn: left, rightColumn: right };
-  }, [rows]);
+  const { left: leftColumn, right: rightColumn } = useMemo(
+    () => splitLotteriesIntoMasonryColumns(rows),
+    [rows],
+  );
 
   const categoryOptions = useMemo(
     () =>
@@ -275,24 +273,22 @@ export function LotteriesCatalogScreen() {
           ) : (
             <View style={styles.masonry}>
               <View style={styles.masonryCol}>
-                {leftColumn.map((item, i) => (
+                {leftColumn.map(({ item, layout }) => (
                   <LotteryMarketplaceCard
                     key={item.id}
                     lottery={item}
+                    layout={layout}
                     onPress={openDetail}
-                    column="left"
-                    indexInColumn={i}
                   />
                 ))}
               </View>
-              <View style={styles.masonryCol}>
-                {rightColumn.map((item, i) => (
+              <View style={[styles.masonryCol, styles.masonryColRight]}>
+                {rightColumn.map(({ item, layout }) => (
                   <LotteryMarketplaceCard
                     key={item.id}
                     lottery={item}
+                    layout={layout}
                     onPress={openDetail}
-                    column="right"
-                    indexInColumn={i}
                   />
                 ))}
               </View>
@@ -403,6 +399,9 @@ const styles = StyleSheet.create({
   },
   masonryCol: {
     flex: 1,
+  },
+  masonryColRight: {
+    paddingTop: 12,
   },
   emptyWrap: {
     paddingVertical: theme.spacing.xl * 2,

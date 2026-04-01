@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -215,6 +216,18 @@ export function MissionsScreen() {
       ) : (
         <FlatList
           data={filteredMissions}
+          refreshControl={
+            <RefreshControl
+              refreshing={activeQuery.isRefetching}
+              onRefresh={() => {
+                if (statusTab === "todo") void todoQuery.refetch();
+                else void completedQuery.refetch();
+              }}
+              tintColor={theme.colors.accentSolid}
+              colors={[theme.colors.accentSolid]}
+              title={t("missions.list.pullToRefreshTitle")}
+            />
+          }
           ListHeaderComponent={listHeader}
           ListEmptyComponent={
             <View style={styles.filteredEmpty}>

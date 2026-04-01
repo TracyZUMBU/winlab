@@ -70,12 +70,6 @@
         "referral": "Referral bonus"
       }
     },
-    "header": {
-      "a11y": {
-        "openProfile": "Open profile",
-        "notifications": "Notifications"
-      }
-    },
     "quickLinks": {
       "title": "Shortcuts"
     }
@@ -177,7 +171,8 @@
       "statusTab": {
         "todo": "To do",
         "completed": "Done"
-      }
+      },
+      "pullToRefreshTitle": "Pull to refresh"
     },
     "durationHint": {
       "survey": "2 min",
@@ -444,12 +439,15 @@
     "unknown": "Unknown date"
   },
   "common": {
+    "loading": "Loading…",
     "back": "Back",
     "close": "Close",
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",
     "a11y": {
+      "openProfile": "Open profile",
+      "notifications": "Notifications",
       "tokenBalance": "Token balance: {{amount}}"
     },
     "errors": {

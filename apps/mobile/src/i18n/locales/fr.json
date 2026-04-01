@@ -70,12 +70,6 @@
         "referral": "Bonus de parrainage"
       }
     },
-    "header": {
-      "a11y": {
-        "openProfile": "Ouvrir le profil",
-        "notifications": "Notifications"
-      }
-    },
     "quickLinks": {
       "title": "Raccourcis"
     }
@@ -211,7 +205,8 @@
       "statusTab": {
         "todo": "À faire",
         "completed": "Complétées"
-      }
+      },
+      "pullToRefreshTitle": "Tirez pour actualiser"
     },
     "durationHint": {
       "survey": "2 min",
@@ -478,12 +473,15 @@
     "unknown": "Date inconnue"
   },
   "common": {
+    "loading": "Chargement…",
     "back": "Retour",
     "close": "Fermer",
     "retry": "Réessayer",
     "share": "Partager",
     "loadMore": "Voir plus",
     "a11y": {
+      "openProfile": "Ouvrir le profil",
+      "notifications": "Notifications",
       "tokenBalance": "Solde de jetons : {{amount}}"
     },
     "errors": {

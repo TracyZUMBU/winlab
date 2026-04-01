@@ -7,8 +7,7 @@ import { useNow } from "@/src/lib/date/useNow";
 import { theme } from "@/src/theme";
 
 import type { AvailableLotteryUi } from "../hooks/useAvailableLotteriesQuery";
-import type { MarketplaceMasonryColumn } from "../utils/marketplaceMasonry";
-import { marketplaceImageAspect } from "../utils/marketplaceMasonry";
+import type { LotteryCardLayout } from "../utils/lotteryCatalogMasonryLayout";
 import {
   formatEndingSoonTime,
   getTimeRemaining,
@@ -17,23 +16,21 @@ import {
 
 export type LotteryMarketplaceCardProps = {
   lottery: AvailableLotteryUi;
+  layout: LotteryCardLayout;
   onPress: (lotteryId: string) => void;
-  column: MarketplaceMasonryColumn;
-  indexInColumn: number;
 };
 
 export function LotteryMarketplaceCard({
   lottery,
+  layout,
   onPress,
-  column,
-  indexInColumn,
 }: LotteryMarketplaceCardProps) {
   const { t } = useTranslation();
   const nowMs = useNow({ intervalMs: 60_000 });
   const remaining = getTimeRemaining(lottery.ends_at, nowMs);
   const showEndBadge = lotteryEndsWithinOneDay(lottery.ends_at, nowMs);
   const countdownShort = formatEndingSoonTime(t, remaining);
-  const aspect = marketplaceImageAspect(column, indexInColumn);
+  const { imageAspectRatio, topOffset } = layout;
 
   const categoryLabel = (lottery.category ?? "")
     .replace(/-/g, " ")
@@ -49,7 +46,7 @@ export function LotteryMarketplaceCard({
 
   return (
     <Pressable
-      style={styles.root}
+      style={[styles.root, topOffset > 0 && { marginTop: topOffset }]}
       onPress={() => onPress(lottery.id)}
       accessibilityRole="button"
       accessibilityLabel={t("lotteries.list.a11y.openLottery", {
@@ -57,17 +54,17 @@ export function LotteryMarketplaceCard({
       })}
     >
       <View style={styles.mediaBlock}>
-        <View style={[styles.mediaRatio, { aspectRatio: aspect }]}>
-          {lottery.image_url ? (
-            <Image
-              source={{ uri: lottery.image_url }}
-              style={styles.media}
-              contentFit="cover"
-              transition={150}
-            />
-          ) : (
-            <View style={styles.mediaPlaceholder} />
-          )}
+        <View style={[styles.mediaRatio, { aspectRatio: imageAspectRatio }]}>
+          <Image
+            source={
+              lottery.image_url
+                ? { uri: lottery.image_url }
+                : require("../../../../assets/lottery-catalog-fallback.png")
+            }
+            style={styles.media}
+            contentFit={lottery.image_url ? "cover" : "contain"}
+            transition={150}
+          />
         </View>
         <View style={styles.categoryBadge} pointerEvents="none">
           <Text style={styles.categoryBadgeText} numberOfLines={1}>
@@ -151,9 +148,6 @@ const styles = StyleSheet.create({
   media: {
     width: "100%",
     height: "100%",
-  },
-  mediaPlaceholder: {
-    flex: 1,
     backgroundColor: theme.colors.surfaceSoft,
   },
   categoryBadge: {
