@@ -12,6 +12,7 @@ import {
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
@@ -19,7 +20,7 @@ import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 
 export function MissionDetailScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { missionId } = useLocalSearchParams<{ missionId: string }>();
   const {
     data: mission,
@@ -46,10 +47,20 @@ export function MissionDetailScreen() {
       return;
     }
 
-    setSubmitError(
-      t(`missions.submission.errors.${result.errorCode}`) ||
-        t("missions.submission.errors.UNKNOWN_ERROR"),
-    );
+    if (result.kind === "business") {
+      setSubmitError(
+        getI18nMessageForCode({
+          t,
+          i18n,
+          baseKey: "missions.submission.errors",
+          code: result.errorCode,
+          fallbackKey: "missions.submission.errors.generic",
+        }),
+      );
+      return;
+    }
+
+    setSubmitError(t("missions.submission.errors.generic"));
   };
 
   if (isLoading) {
@@ -76,7 +87,7 @@ export function MissionDetailScreen() {
             <Text style={styles.muted}>{userFacingQueryLoadHint(t)}</Text>
           ) : null}
           {missionId ? (
-            <Pressable style={styles.retry} onPress={() => refetch()}>
+            <Pressable style={styles.retry} onPress={() => void refetch()}>
               <Text style={styles.retryText}>{t("common.retry")}</Text>
             </Pressable>
           ) : null}

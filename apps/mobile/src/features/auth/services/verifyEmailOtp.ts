@@ -11,7 +11,7 @@ export const verifyEmailOtp = async ({
   if (token.length !== OTP_CODE_LENGTH) {
     return {
       success: false,
-      errorMessage: `Le code doit contenir ${OTP_CODE_LENGTH} chiffres.`,
+      errorCode: "OTP_INVALID_LENGTH",
     };
   }
 
@@ -24,9 +24,7 @@ export const verifyEmailOtp = async ({
   if (error || !data.session || !data.session.user) {
     return {
       success: false,
-      errorMessage:
-        error?.message ??
-        "Le code est invalide ou a expiré. Merci de réessayer.",
+      errorCode: "OTP_VERIFICATION_FAILED",
     };
   }
 

@@ -36,6 +36,12 @@
     "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
     "label": "ADRESSE EMAIL",
     "continue": "Continuer",
+    "emailPlaceholder": "nom@exemple.com",
+    "terms": {
+      "lead": "En continuant, vous acceptez les ",
+      "middle": " et la ",
+      "trail": " de Winlab."
+    },
     "dev": {
       "title": "Mode développement",
       "subtitle": "Connexion par mot de passe avec l’email saisi ci-dessus (ex. comptes seed). Absent des builds release.",
@@ -43,7 +49,8 @@
       "submit": "Connexion dev",
       "error": {
         "passwordRequired": "Le mot de passe est requis"
-      }
+      },
+      "passwordPlaceholder": "••••••••"
     },
     "secureAndEncryptedAuthentication": "Authentification sécurisée et chiffrée",
     "termsOfService": "Conditions d'utilisation",
@@ -59,7 +66,20 @@
     "emailSent": "Un code de connexion a été envoyé à votre adresse email.",
     "invalidCode": "Le code saisi est invalide ou expiré.",
     "otp": {
-      "emailMissingInFlow": "L’email est manquant. Recommencez depuis l’écran de connexion."
+      "emailMissingInFlow": "L’email est manquant. Recommencez depuis l’écran de connexion.",
+      "errors": {
+        "generic": "La vérification du code a échoué. Réessayez.",
+        "OTP_INVALID_LENGTH": "Le code doit contenir {{length}} chiffres.",
+        "OTP_VERIFICATION_FAILED": "Le code saisi est invalide ou expiré."
+      },
+      "screen": {
+        "subtitleWithEmail": "Nous avons envoyé un code à {{email}}.",
+        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse email.",
+        "codePlaceholder": "000000",
+        "resendPrompt": "Vous n’avez pas reçu le code ?",
+        "resendCta": "Renvoyer le code",
+        "submit": "Valider"
+      }
     },
     "email": {
       "title": "Entrez votre email",
@@ -102,6 +122,7 @@
     },
     "submission": {
       "errors": {
+        "generic": "Impossible de soumettre la mission. Réessayez.",
         "UNAUTHENTICATED": "Vous devez être connecté pour soumettre une mission.",
         "MISSION_NOT_FOUND": "Cette mission est introuvable.",
         "MISSION_NOT_ACTIVE": "Cette mission n’est pas disponible pour le moment.",
@@ -234,6 +255,13 @@
         "sessionExpired": "Votre session a expiré. Merci de vous reconnecter.",
         "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
         "submitFailed": "Impossible de créer votre profil. Réessayez."
+      },
+      "screen": {
+        "title": "Choisissez votre pseudo",
+        "subtitle": "Ce pseudo sera visible dans l’app Winlab.",
+        "label": "PSEUDO",
+        "placeholder": "Votre pseudo",
+        "submit": "Continuer"
       }
     },
     "screen": {

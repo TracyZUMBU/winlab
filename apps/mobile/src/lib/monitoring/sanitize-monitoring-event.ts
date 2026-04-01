@@ -197,7 +197,10 @@ export async function hashUserId(
     const subtle = globalThis.crypto?.subtle;
     if (subtle && typeof subtle.digest === "function") {
       const data = utf8Bytes(preimage);
-      const digest = await subtle.digest("SHA-256", data);
+      // Copy into a fresh Uint8Array so `.buffer` is a plain ArrayBuffer (TS BufferSource / no SharedArrayBuffer).
+      const copy = new Uint8Array(data.byteLength);
+      copy.set(data);
+      const digest = await subtle.digest("SHA-256", copy);
       return bytesToHex(new Uint8Array(digest));
     }
   } catch {

@@ -17,6 +17,7 @@ import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
 import { usernameSchema } from "@/src/features/auth/validators";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
@@ -195,9 +196,10 @@ export function ProfileScreen() {
         <View style={styles.body}>
           <Text style={styles.title}>{t("profile.screen.title")}</Text>
           <Text style={styles.errorText}>{t("profile.screen.error")}</Text>
+          <Text style={styles.muted}>{userFacingQueryLoadHint(t)}</Text>
           <Button
             title={t("common.retry")}
-            onPress={() => profileQuery.refetch()}
+            onPress={() => void profileQuery.refetch()}
             variant="primary"
           />
         </View>

@@ -19,6 +19,8 @@ export type VerifyOtpPayload = {
   token: string;
 };
 
+export type VerifyOtpErrorCode = "OTP_INVALID_LENGTH" | "OTP_VERIFICATION_FAILED";
+
 export type VerifyOtpResult =
   | {
       success: true;
@@ -26,6 +28,6 @@ export type VerifyOtpResult =
     }
   | {
       success: false;
-      errorMessage: string;
+      errorCode: VerifyOtpErrorCode;
     };
 

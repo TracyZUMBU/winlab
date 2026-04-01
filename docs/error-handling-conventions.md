@@ -7,6 +7,8 @@ Portée :
 - `supabase/functions/**` (edge functions appelées par l’app)
 - (optionnel) `supabase/schemas/functions/**` pour les RPC Postgres (si retour structuré)
 
+**Plan de stabilisation (checklist pré-tests, phases suivantes)** : [error-handling-stabilization-roadmap.md](./error-handling-stabilization-roadmap.md).
+
 ## Principes (non négociables)
 
 ### 1) Typologie d’erreurs

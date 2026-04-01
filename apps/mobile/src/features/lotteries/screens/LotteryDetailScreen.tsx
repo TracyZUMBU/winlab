@@ -11,9 +11,11 @@ import {
   View,
 } from "react-native";
 
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
@@ -21,6 +23,8 @@ import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
 
 export function LotteryDetailScreen() {
   const { t, i18n } = useTranslation();
+  const { user, status: authStatus } = useAuthSession();
+  const userId = user?.id ?? null;
   const params = useLocalSearchParams<{
     lotteryId?: string | string[];
   }>();
@@ -39,6 +43,39 @@ export function LotteryDetailScreen() {
     useLotteryDetailQuery(lotteryId);
   const { mutateAsync, isPending } = useBuyTicketMutation();
   const [buyError, setBuyError] = useState<string | null>(null);
+
+  if (!lotteryId) {
+    return (
+      <Screen>
+        <View style={styles.centered}>
+          <Text style={styles.errorText}>{t("lottery.detail.error")}</Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (authStatus === "loading") {
+    return (
+      <Screen>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={theme.colors.accentSolid} />
+          <Text style={styles.helper}>{t("lottery.detail.loading")}</Text>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (authStatus === "unauthenticated" || !userId) {
+    return (
+      <Screen>
+        <View style={styles.centered}>
+          <Text style={styles.errorText}>
+            {t("profile.screen.sessionRequired")}
+          </Text>
+        </View>
+      </Screen>
+    );
+  }
 
   const onBuyTicket = async () => {
     if (!lotteryId) return;
@@ -81,6 +118,7 @@ export function LotteryDetailScreen() {
       <Screen>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("lottery.detail.error")}</Text>
+          <Text style={styles.helper}>{userFacingQueryLoadHint(t)}</Text>
           <Pressable style={styles.retryButton} onPress={() => void refetch()}>
             <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>

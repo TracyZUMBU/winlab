@@ -36,7 +36,20 @@
     "emailSent": "A sign-in code was sent to your email address.",
     "invalidCode": "The code is invalid or has expired.",
     "otp": {
-      "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen."
+      "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen.",
+      "errors": {
+        "generic": "We could not verify the code. Please try again.",
+        "OTP_INVALID_LENGTH": "The code must be {{length}} digits.",
+        "OTP_VERIFICATION_FAILED": "The code is invalid or has expired."
+      },
+      "screen": {
+        "subtitleWithEmail": "We sent a code to {{email}}.",
+        "subtitleNoEmail": "We sent a code to your email address.",
+        "codePlaceholder": "000000",
+        "resendPrompt": "Didn’t receive the code?",
+        "resendCta": "Resend code",
+        "submit": "Verify"
+      }
     }
   },
   "emailScreen": {
@@ -44,6 +57,15 @@
     "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
     "label": "EMAIL ADDRESS",
     "continue": "Continue",
+    "emailPlaceholder": "name@example.com",
+    "terms": {
+      "lead": "By continuing, you agree to Winlab's ",
+      "middle": " and ",
+      "trail": "."
+    },
+    "secureAndEncryptedAuthentication": "Secure, encrypted sign-in",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
     "dev": {
       "title": "Development mode",
       "subtitle": "Password sign-in using the email above (e.g. seed accounts). Omitted from release builds.",
@@ -51,7 +73,8 @@
       "submit": "Dev sign-in",
       "error": {
         "passwordRequired": "Password is required"
-      }
+      },
+      "passwordPlaceholder": "••••••••"
     },
     "error": {
       "required": "Email is required",
@@ -65,6 +88,7 @@
     },
     "submission": {
       "errors": {
+        "generic": "Could not submit the mission. Please try again.",
         "UNAUTHENTICATED": "You need to be signed in to submit a mission.",
         "MISSION_NOT_FOUND": "This mission could not be found.",
         "MISSION_NOT_ACTIVE": "This mission is not available right now.",
@@ -197,6 +221,13 @@
         "sessionExpired": "Your session has expired. Please sign in again.",
         "emailUnavailable": "We could not read your email. Please sign in again.",
         "submitFailed": "We could not create your profile. Please try again."
+      },
+      "screen": {
+        "title": "Choose your username",
+        "subtitle": "This name will be visible in the Winlab app.",
+        "label": "USERNAME",
+        "placeholder": "Your username",
+        "submit": "Continue"
       }
     },
     "screen": {

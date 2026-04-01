@@ -15,7 +15,7 @@ import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { emailSchema, type EmailFormValues } from "../validators";
 import { sendEmailOtp } from "../services";
-import { AUTH_MESSAGES, AUTH_ROUTES } from "../constants/authConstants";
+import { AUTH_ROUTES } from "../constants/authConstants";
 import { useTranslation } from "react-i18next";
 import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
 
@@ -49,7 +49,7 @@ export const EmailScreen: React.FC = () => {
 
     try {
       await sendEmailOtp({ email: values.email });
-      setInfoMessage(AUTH_MESSAGES.emailSent);
+      setInfoMessage(t("auth.emailSent"));
 
       router.push({
         pathname: AUTH_ROUTES.otp,
@@ -114,7 +114,7 @@ export const EmailScreen: React.FC = () => {
                     autoCapitalize="none"
                     keyboardType="email-address"
                     textContentType="emailAddress"
-                    placeholder="name@example.com"
+                    placeholder={t("emailScreen.emailPlaceholder")}
                     placeholderTextColor="#61896f"
                     style={[
                       styles.input,
@@ -181,9 +181,15 @@ export const EmailScreen: React.FC = () => {
               </View>
 
               <Text style={styles.termsText}>
-                By continuing, you agree to Winlab&apos;s{" "}
-                <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
-                <Text style={styles.termsLink}>Privacy Policy</Text>.
+                <Text>{t("emailScreen.terms.lead")}</Text>
+                <Text style={styles.termsLink}>
+                  {t("emailScreen.termsOfService")}
+                </Text>
+                <Text>{t("emailScreen.terms.middle")}</Text>
+                <Text style={styles.termsLink}>
+                  {t("emailScreen.privacyPolicy")}
+                </Text>
+                <Text>{t("emailScreen.terms.trail")}</Text>
               </Text>
             </View>
           </ScrollView>

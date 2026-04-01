@@ -75,15 +75,17 @@ export const CreateProfileScreen: React.FC = () => {
 
   return (
     <AuthScreenLayout
-      title="Choisissez votre pseudo"
-      subtitle="Ce pseudo sera visible dans l'app Winlab."
+      title={t("profile.createProfile.screen.title")}
+      subtitle={t("profile.createProfile.screen.subtitle")}
     >
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>PSEUDO</Text>
+        <Text style={styles.label}>
+          {t("profile.createProfile.screen.label")}
+        </Text>
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
-          placeholder="Votre pseudo"
+          placeholder={t("profile.createProfile.screen.placeholder")}
           placeholderTextColor="#94A3B8"
           style={[
             styles.input,
@@ -117,7 +119,9 @@ export const CreateProfileScreen: React.FC = () => {
           {isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={styles.primaryButtonText}>Continuer</Text>
+            <Text style={styles.primaryButtonText}>
+              {t("profile.createProfile.screen.submit")}
+            </Text>
           )}
         </Pressable>
       </View>

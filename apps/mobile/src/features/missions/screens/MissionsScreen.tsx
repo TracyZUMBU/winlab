@@ -116,7 +116,7 @@ export function MissionsScreen() {
         <View style={styles.centered}>
           <Text style={styles.errorText}>{t("missions.screen.error")}</Text>
           <Text style={styles.errorDetail}>{userFacingQueryLoadHint(t)}</Text>
-          <Pressable style={styles.retryButton} onPress={() => refetch()}>
+          <Pressable style={styles.retryButton} onPress={() => void refetch()}>
             <Text style={styles.retryButtonText}>{t("common.retry")}</Text>
           </Pressable>
         </View>
