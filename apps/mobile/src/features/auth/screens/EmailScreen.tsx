@@ -18,12 +18,13 @@ import { sendEmailOtp } from "../services";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { useTranslation } from "react-i18next";
 import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 
 const ACCENT = "#FF8C00";
 
 export const EmailScreen: React.FC = () => {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
@@ -47,8 +48,9 @@ export const EmailScreen: React.FC = () => {
     setServerError(null);
     setInfoMessage(null);
 
-    try {
-      await sendEmailOtp({ email: values.email });
+    const result = await sendEmailOtp({ email: values.email });
+
+    if (result.success) {
       setInfoMessage(t("auth.emailSent"));
 
       router.push({
@@ -57,9 +59,18 @@ export const EmailScreen: React.FC = () => {
           email: values.email,
         },
       });
-    } catch {
-      setServerError(t("auth.genericError"));
+      return;
     }
+
+    setServerError(
+      getI18nMessageForCode({
+        t,
+        i18n,
+        baseKey: "auth.email.errors",
+        code: result.errorCode,
+        fallbackKey: "auth.email.errors.generic",
+      }),
+    );
   };
 
   return (

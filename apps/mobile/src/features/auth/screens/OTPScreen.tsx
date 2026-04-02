@@ -99,9 +99,19 @@ export const OTPScreen: React.FC = () => {
     setServerError(null);
     setResendLoading(true);
     try {
-      await sendEmailOtp({ email });
-    } catch {
-      setServerError(t("auth.genericError"));
+      const result = await sendEmailOtp({ email });
+
+      if (!result.success) {
+        setServerError(
+          getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "auth.email.errors",
+            code: result.errorCode,
+            fallbackKey: "auth.email.errors.generic",
+          }),
+        );
+      }
     } finally {
       setResendLoading(false);
     }

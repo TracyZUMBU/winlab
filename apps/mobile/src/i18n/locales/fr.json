@@ -127,12 +127,16 @@
     "email": {
       "title": "Entrez votre email",
       "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
-      "label": "ADRESSE EMAIL"
-    }
-  },
-  "common": {
-    "a11y": {
-      "back": "Retour"
+      "label": "ADRESSE EMAIL",
+      "errors": {
+        "generic": "Une erreur est survenue. Merci de réessayer.",
+        "EMAIL_SEND_RATE_LIMITED": "Trop de demandes. Réessayez dans quelques minutes.",
+        "CAPTCHA_FAILED": "Impossible d'envoyer le code. Réessayez (ou attendez quelques minutes).",
+        "EMAIL_INVALID": "Entrez une adresse email valide.",
+        "SIGNUP_DISABLED": "L’inscription est temporairement désactivée. Réessayez plus tard.",
+        "EMAIL_PROVIDER_DISABLED": "L’envoi d’email est temporairement indisponible. Réessayez plus tard.",
+        "EMAIL_NOT_AUTHORIZED": "Cette adresse email n’est pas autorisée."
+      }
     }
   },
   "appPlaceholder": {
@@ -480,6 +484,7 @@
     "share": "Partager",
     "loadMore": "Voir plus",
     "a11y": {
+      "back": "Retour",
       "openProfile": "Ouvrir le profil",
       "notifications": "Notifications",
       "tokenBalance": "Solde de jetons : {{amount}}"
