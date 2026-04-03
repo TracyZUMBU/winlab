@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -29,6 +28,7 @@ import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
+import { showInfoToast } from "@/src/shared/toast";
 
 type WalletSegmentId = "history" | "tickets";
 type ActivityFilterId = "all" | "credit" | "debit";
@@ -93,7 +93,10 @@ export function WalletScreen() {
   };
 
   const onWalletInfo = () => {
-    Alert.alert(t("wallet.info.title"), t("wallet.info.message"));
+    showInfoToast({
+      title: t("wallet.info.title"),
+      message: t("wallet.info.message"),
+    });
   };
 
   const onEarnMore = () => {

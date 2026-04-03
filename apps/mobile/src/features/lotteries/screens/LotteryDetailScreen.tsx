@@ -17,6 +17,7 @@ import { Screen } from "@/src/components/ui/Screen";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
+import { showSuccessToast } from "@/src/shared/toast";
 
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
 import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
@@ -82,6 +83,7 @@ export function LotteryDetailScreen() {
     setBuyError(null);
     const result = await mutateAsync({ lotteryId });
     if (result.success) {
+      showSuccessToast({ title: t("lottery.detail.purchase.success") });
       await refetch();
       return;
     }
