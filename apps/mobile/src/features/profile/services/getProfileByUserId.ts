@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import type { Profile } from "../types/profileTypes";
+import { profileFromRow } from "../types/profileMapper";
 import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 
 const PROFILES_TABLE = "profiles";
@@ -18,5 +19,5 @@ export async function getProfileByUserId(
     throw error;
   }
 
-  return data ?? null;
+  return data ? profileFromRow(data) : null;
 }

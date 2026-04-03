@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import type { CreateProfilePayload, Profile } from "../types/profileTypes";
+import { profileFromRow } from "../types/profileMapper";
 import {
   insertProfileWithReferralRetry,
   isProfileUsernameUniqueViolation,
@@ -43,6 +44,9 @@ export const createProfile = async ({
         });
       }
     }
-    return { data, error };
+    return {
+      data: data ? profileFromRow(data) : null,
+      error,
+    };
   });
 };

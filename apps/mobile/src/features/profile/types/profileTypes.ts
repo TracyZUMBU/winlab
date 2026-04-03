@@ -1,8 +1,13 @@
+import type { ProfileSex } from "./profileSex";
+
 export type Profile = {
   id: string;
   email: string | null;
   username: string | null;
   avatar_url: string | null;
+  /** Date civile `YYYY-MM-DD` (colonne Postgres `date`). */
+  birth_date: string | null;
+  sex: ProfileSex | null;
   created_at: string | null;
   referral_code: string | null;
 };
