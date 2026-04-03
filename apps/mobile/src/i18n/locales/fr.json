@@ -110,6 +110,7 @@
     "invalidCode": "Le code saisi est invalide ou expiré.",
     "otp": {
       "emailMissingInFlow": "L’email est manquant. Recommencez depuis l’écran de connexion.",
+      "resendSuccess": "Un nouveau code a été envoyé.",
       "errors": {
         "generic": "La vérification du code a échoué. Réessayez.",
         "OTP_INVALID_LENGTH": "Le code doit contenir {{length}} chiffres.",
@@ -143,7 +144,8 @@
     "title": "Bienvenue sur Winlab",
     "subtitle": "Cet écran est un placeholder pour l’app connectée.",
     "caption": "Cet écran est un placeholder pour l’app connectée.",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "logoutError": "Impossible de se déconnecter. Réessayez."
   },
   "schema": {
     "username": {
@@ -457,6 +459,7 @@
         "noteAfterTerms": "et confirmez avoir plus de 18 ans."
       },
       "purchase": {
+        "success": "Ticket acheté.",
         "errors": {
           "generic": "Impossible d'acheter le ticket. Réessayez.",
           "UNAUTHENTICATED": "Vous devez être connecté.",
@@ -531,10 +534,12 @@
   },
   "profile": {
     "createProfile": {
+      "successToast": "Profil créé.",
       "errors": {
         "sessionExpired": "Votre session a expiré. Merci de vous reconnecter.",
         "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
-        "submitFailed": "Impossible de créer votre profil. Réessayez."
+        "submitFailed": "Impossible de créer votre profil. Réessayez.",
+        "USERNAME_TAKEN": "Ce pseudo est déjà utilisé. Choisissez-en un autre."
       },
       "screen": {
         "title": "Choisissez votre pseudo",

@@ -257,6 +257,9 @@ SECURITY INVOKER
 SET search_path = public
 AS $$
 BEGIN
+  -- Unlike get_user_home_dashboard(), we do not RAISE when auth.uid() IS NULL: this RPC
+  -- returns a paginated row set; yielding zero rows keeps list UIs and pagination simple
+  -- (empty state) instead of an exception for missing or not-yet-established sessions.
   IF auth.uid() IS NULL THEN
     RETURN;
   END IF;

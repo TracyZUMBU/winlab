@@ -12,7 +12,11 @@ let lastDedupeAtMs = 0;
 
 const DEDUPE_WINDOW_MS = 2000;
 
-function dedupeKey(variant: ToastVariant, title: string, message?: string): string {
+function dedupeKey(
+  variant: ToastVariant,
+  title: string,
+  message?: string,
+): string {
   return `${variant}\0${title}\0${message ?? ""}`;
 }
 
@@ -33,6 +37,11 @@ export function showToast(input: ShowToastInput): void {
   const key = dedupeKey(input.type, input.title, input.message);
   if (shouldSkipDuplicate(key)) {
     return;
+  }
+
+  if (input.trackingEventName) {
+    // TODO: Integrate with your analytics service
+    // analytics.track(input.trackingEventName, { type: input.type });
   }
 
   const libType = WINLAB_TOAST_TYPES[input.type];

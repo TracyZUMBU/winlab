@@ -64,6 +64,7 @@ export const sendEmailOtp = async ({
         emailRedirectTo: undefined,
       },
     });
+    // TODO: delete it. After fix login problem
     if (error) {
       monitoring.captureException({
         name: "auth_send_email_otp_failed",

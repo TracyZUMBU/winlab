@@ -16,6 +16,7 @@ Légende des catégories : **success** | **error** | **info** | **warning** | **
 | `OTPScreen.tsx`             | Renvoyer le code            | Aucun succès explicite ; erreurs inline             | **info** (succès renvoi) | Feedback éphémère utile sans encombrer l’écran (implémenté en premier périmètre).                                              |
 | `OTPScreen.tsx`             | Erreur redirect / générique | Inline                                              | **no-toast**             | Déjà couvert inline.                                                                                                           |
 | `CreateProfileScreen.tsx`   | Erreurs session / submit    | Inline `serverError`                                | **no-toast**             | Inline suffisant.                                                                                                              |
+| `CreateProfileScreen.tsx`   | Succès création profil (submit) | Navigation `replace` vers `/home` ; pas de message succès | **no-toast**        | La transition d’écran suffit ; un toast risquerait d’être court-circuité ou redondant (même principe que navigation post-action ailleurs en auth). |
 | `DevPasswordLoginPanel.tsx` | Login dev                   | Inline `setError`                                   | **no-toast**             | Erreurs inline.                                                                                                                |
 | `AppPlaceholderScreen.tsx`  | Déconnexion                 | Pas de feedback erreur (`onError` vide)             | **error**                | Échec d’action utilisateur sans message (implémenté toast erreur).                                                             |
 
@@ -72,7 +73,7 @@ Légende des catégories : **success** | **error** | **info** | **warning** | **
 
 ## Synthèse
 
-- **Fort potentiel toast** : succès après achat ticket, succès création profil, succès mission, renvoi OTP, info wallet, échec logout sans feedback.
-- **Rester inline / écran** : erreurs de formulaire auth, erreurs achat/mission déjà affichées sous l’action, contenus longs (support, règlements, parrainage), chargements principaux.
+- **Fort potentiel toast** : succès après achat ticket, succès mission, renvoi OTP, info wallet, échec logout sans feedback.
+- **Rester inline / écran** : erreurs de formulaire auth, erreurs achat/mission déjà affichées sous l’action, contenus longs (support, règlements, parrainage), chargements principaux, **succès création profil** (navigation vers l’accueil uniquement — voir entrée **Succès création profil** pour `CreateProfileScreen.tsx` dans le tableau Auth).
 
 Ce document peut être complété au fil des nouvelles features (copier code parrainage, actions wallet secondaires, etc.).

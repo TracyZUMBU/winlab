@@ -1,6 +1,6 @@
--- Paginated "todo" missions: active window, excludes missions where pending+approved reaches per-user cap
--- (aligned with submit_mission_completion).
--- SECURITY INVOKER: respects RLS on missions / brands / mission_completions.
+-- Document intentional behavior when auth.uid() IS NULL (empty row set vs get_user_home_dashboard RAISE).
+-- Canonical: supabase/schemas/functions/get_todo_missions_page.sql
+
 CREATE OR REPLACE FUNCTION public.get_todo_missions_page(
   p_limit integer,
   p_offset integer
