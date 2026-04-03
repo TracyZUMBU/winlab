@@ -1,8 +1,13 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
+import { CreateProfileError } from "../types/profileTypes";
+
 /** Postgres unique constraint on profiles.referral_code */
 const PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT =
   "profiles_referral_code_unique";
+
+/** Unique index on profiles.username */
+const PROFILES_USERNAME_KEY = "profiles_username_key";
 
 /**
  * Race: two inserts can still collide after the trigger's NOT EXISTS check.
@@ -16,6 +21,18 @@ function isProfileReferralCodeUniqueViolation(error: PostgrestError): boolean {
     .filter(Boolean)
     .join(" ");
   return blob.includes(PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT);
+}
+
+export function isProfileUsernameUniqueViolation(
+  error: PostgrestError,
+): boolean {
+  if (error.code !== "23505") {
+    return false;
+  }
+  const blob = [error.message, error.details, error.hint]
+    .filter(Boolean)
+    .join(" ");
+  return blob.includes(PROFILES_USERNAME_KEY);
 }
 
 type InsertResult<T> = { data: T | null; error: PostgrestError | null };
@@ -43,6 +60,10 @@ export async function insertProfileWithReferralRetry<T>(
     if (error && isProfileReferralCodeUniqueViolation(error)) {
       lastError = error;
       continue;
+    }
+
+    if (error && isProfileUsernameUniqueViolation(error)) {
+      throw new CreateProfileError("USERNAME_TAKEN");
     }
 
     if (error) {

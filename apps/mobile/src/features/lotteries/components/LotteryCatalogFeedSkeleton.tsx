@@ -2,11 +2,20 @@ import { StyleSheet, View } from "react-native";
 
 import { theme } from "@/src/theme";
 
-import { marketplaceImageAspect } from "../utils/marketplaceMasonry";
+import {
+  LOTTERY_CATALOG_SKELETON_VARIANT_CYCLE,
+  LOTTERY_VARIANT_IMAGE_ASPECT_RATIO,
+} from "../utils/lotteryCatalogMasonryLayout";
 
-function SkeletonCard({ aspect }: { aspect: number }) {
+function SkeletonCard({
+  aspect,
+  topOffset,
+}: {
+  aspect: number;
+  topOffset: number;
+}) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, topOffset > 0 && { marginTop: topOffset }]}>
       <View style={[styles.media, { aspectRatio: aspect }]} />
       <View style={styles.body}>
         <View style={styles.titleLine} />
@@ -29,20 +38,29 @@ export function LotteryCatalogFeedSkeleton() {
     >
       <View style={styles.columns}>
         <View style={styles.col}>
-          {[0, 1, 2].map((i) => (
-            <SkeletonCard
-              key={`l-${i}`}
-              aspect={marketplaceImageAspect("left", i)}
-            />
-          ))}
+          {[0, 1, 2].map((i) => {
+            const variant = LOTTERY_CATALOG_SKELETON_VARIANT_CYCLE[i % 3];
+            return (
+              <SkeletonCard
+                key={`l-${i}`}
+                aspect={LOTTERY_VARIANT_IMAGE_ASPECT_RATIO[variant]}
+                topOffset={[0, 5, 10][i % 3]}
+              />
+            );
+          })}
         </View>
-        <View style={styles.col}>
-          {[0, 1, 2].map((i) => (
-            <SkeletonCard
-              key={`r-${i}`}
-              aspect={marketplaceImageAspect("right", i)}
-            />
-          ))}
+        <View style={[styles.col, styles.colRight]}>
+          {[0, 1, 2].map((i) => {
+            const variant =
+              LOTTERY_CATALOG_SKELETON_VARIANT_CYCLE[(i + 1) % 3];
+            return (
+              <SkeletonCard
+                key={`r-${i}`}
+                aspect={LOTTERY_VARIANT_IMAGE_ASPECT_RATIO[variant]}
+                topOffset={[5, 10, 0][i % 3]}
+              />
+            );
+          })}
         </View>
       </View>
     </View>
@@ -61,6 +79,9 @@ const styles = StyleSheet.create({
   },
   col: {
     flex: 1,
+  },
+  colRight: {
+    paddingTop: 12,
   },
   card: {
     borderRadius: theme.radius.lg,

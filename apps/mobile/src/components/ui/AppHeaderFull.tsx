@@ -60,8 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     minHeight: theme.layout.headerContentMinHeight,
-    paddingTop: theme.spacing.md,
-
+    paddingVertical: theme.spacing.sm,
     gap: theme.spacing.sm,
   },
   rootBordered: {

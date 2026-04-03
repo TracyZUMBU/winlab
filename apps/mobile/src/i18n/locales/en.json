@@ -70,12 +70,6 @@
         "referral": "Referral bonus"
       }
     },
-    "header": {
-      "a11y": {
-        "openProfile": "Open profile",
-        "notifications": "Notifications"
-      }
-    },
     "quickLinks": {
       "title": "Shortcuts"
     }
@@ -99,11 +93,17 @@
         "resendCta": "Resend code",
         "submit": "Verify"
       }
-    }
-  },
-  "common": {
-    "a11y": {
-      "back": "Go back"
+    },
+    "email": {
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "EMAIL_SEND_RATE_LIMITED": "Too many requests. Please try again in a few minutes.",
+        "CAPTCHA_FAILED": "We couldn't send the code. Please try again (or wait a few minutes).",
+        "EMAIL_INVALID": "Please enter a valid email address.",
+        "SIGNUP_DISABLED": "Sign-in is temporarily disabled. Please try again later.",
+        "EMAIL_PROVIDER_DISABLED": "Email sending is temporarily unavailable. Please try again later.",
+        "EMAIL_NOT_AUTHORIZED": "This email address is not allowed."
+      }
     }
   },
   "emailScreen": {
@@ -177,7 +177,8 @@
       "statusTab": {
         "todo": "To do",
         "completed": "Done"
-      }
+      },
+      "pullToRefreshTitle": "Pull to refresh"
     },
     "durationHint": {
       "survey": "2 min",
@@ -444,12 +445,16 @@
     "unknown": "Unknown date"
   },
   "common": {
+    "loading": "Loading…",
     "back": "Back",
     "close": "Close",
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",
     "a11y": {
+      "back": "Go back",
+      "openProfile": "Open profile",
+      "notifications": "Notifications",
       "tokenBalance": "Token balance: {{amount}}"
     },
     "errors": {

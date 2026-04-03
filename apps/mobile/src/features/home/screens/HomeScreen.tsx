@@ -11,13 +11,13 @@ import {
   View,
 } from "react-native";
 
+import { AppUserHeaderBar } from "@/src/components/ui/AppUserHeaderBar";
 import { Screen } from "@/src/components/ui/Screen";
 import { trackEvent } from "@/src/lib/analytics/trackEvent";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 
 import { HomeCurrentBalanceCard } from "../components/HomeCurrentBalanceCard";
-import { HomeHeaderBar } from "../components/HomeHeaderBar";
 import { HomeMissionTeaserRow } from "../components/HomeMissionTeaserRow";
 import { HomeOngoingLotteryCard } from "../components/HomeOngoingLotteryCard";
 import { HomeParticipationRow } from "../components/HomeParticipationRow";
@@ -26,8 +26,6 @@ import type {
   HomeDashboardMissionPreview,
   HomeDashboardParticipation,
 } from "../types/homeDashboard";
-import { initialsFromUsername } from "../utils/homeDisplayName";
-
 export function HomeScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -75,11 +73,6 @@ export function HomeScreen() {
       used: m.user_completions_used,
       max: m.max_completions_per_user,
     });
-  };
-
-  const onOpenProfile = () => {
-    trackEvent("home_open_profile");
-    router.push("/profile");
   };
 
   const onOpenWallet = () => {
@@ -140,14 +133,7 @@ export function HomeScreen() {
   return (
     <Screen edges={["top"]}>
       <View style={styles.mainColumn}>
-        <HomeHeaderBar
-          appName={t("app.name")}
-          avatarUri={data.profile.avatar_url}
-          displayInitials={initialsFromUsername(data.profile.username)}
-          balanceLabel={balanceFormatted}
-          onPressAvatar={onOpenProfile}
-          onPressNotifications={onOpenProfile}
-        />
+        <AppUserHeaderBar />
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}

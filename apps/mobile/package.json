@@ -11,9 +11,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "gen:types": "supabase gen types typescript --project-id lfmkzmgxopogmuyusdde --schema public > src/lib/supabase.types.ts && node ./scripts/gen-enums.js",
-    "test": "supabase migration up --local --workdir ../.. && jest",
-    "migrate:local": "supabase migration up --local --workdir ../..",
-    "migrate:remote": "supabase migration up --linked --workdir ../..",
+    "test": "supabase migration up --local --include-all --workdir ../.. && jest",
+    "migrate:local": "supabase migration up --local --include-all --workdir ../..",
+    "migrate:remote": "supabase migration up --linked --include-all --workdir ../..",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",
     "seed:staging:v1": "tsx scripts/seed-staging-v1.ts"
   },

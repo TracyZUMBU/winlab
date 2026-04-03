@@ -31,3 +31,21 @@ export type VerifyOtpResult =
       errorCode: VerifyOtpErrorCode;
     };
 
+export type SendEmailOtpErrorCode =
+  | "EMAIL_SEND_RATE_LIMITED"
+  | "CAPTCHA_FAILED"
+  | "EMAIL_INVALID"
+  | "SIGNUP_DISABLED"
+  | "EMAIL_PROVIDER_DISABLED"
+  | "EMAIL_NOT_AUTHORIZED"
+  | "UNKNOWN_ERROR";
+
+export type SendEmailOtpResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      errorCode: SendEmailOtpErrorCode;
+    };
+
