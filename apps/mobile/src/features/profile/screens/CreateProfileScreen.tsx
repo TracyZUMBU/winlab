@@ -13,7 +13,10 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -96,58 +99,76 @@ export const CreateProfileScreen: React.FC = () => {
       title={t("profile.createProfile.screen.title")}
       subtitle={t("profile.createProfile.screen.subtitle")}
     >
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>
-          {t("profile.createProfile.screen.label")}
-        </Text>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder={t("profile.createProfile.screen.placeholder")}
-          placeholderTextColor="#94A3B8"
-          style={[
-            styles.input,
-            errors.username ? styles.inputError : undefined,
-          ]}
-          value={usernameValue}
-          onChangeText={(text) => {
-            setValue("username", text, { shouldValidate: true });
-          }}
-          onBlur={usernameField.onBlur}
-        />
-        {errors.username?.message ? (
-          <Text style={styles.errorText}>{errors.username.message}</Text>
-        ) : null}
-      </View>
-
-      {serverError ? (
-        <Text style={styles.serverError}>{serverError}</Text>
-      ) : null}
-
-      <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.primaryButton,
-            pressed && styles.primaryButtonPressed,
-            isPending && styles.primaryButtonDisabled,
-          ]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isPending}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          {isPending ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryButtonText}>
-              {t("profile.createProfile.screen.submit")}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              {t("profile.createProfile.screen.label")}
             </Text>
-          )}
-        </Pressable>
-      </View>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder={t("profile.createProfile.screen.placeholder")}
+              placeholderTextColor="#94A3B8"
+              style={[
+                styles.input,
+                errors.username ? styles.inputError : undefined,
+              ]}
+              value={usernameValue}
+              onChangeText={(text) => {
+                setValue("username", text, { shouldValidate: true });
+              }}
+              onBlur={usernameField.onBlur}
+            />
+            {errors.username?.message ? (
+              <Text style={styles.errorText}>{errors.username.message}</Text>
+            ) : null}
+          </View>
+
+          {serverError ? (
+            <Text style={styles.serverError}>{serverError}</Text>
+          ) : null}
+
+          <View style={styles.footer}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                pressed && styles.primaryButtonPressed,
+                isPending && styles.primaryButtonDisabled,
+              ]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isPending}
+            >
+              {isPending ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {t("profile.createProfile.screen.submit")}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </AuthScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
   fieldContainer: {
     marginTop: 8,
   },
@@ -183,7 +204,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: "auto",
-    marginBottom: 24,
   },
   primaryButton: {
     borderRadius: 24,

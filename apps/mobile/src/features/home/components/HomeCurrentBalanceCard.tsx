@@ -24,7 +24,7 @@ export function HomeCurrentBalanceCard({
     <Card variant="outlined" style={styles.card}>
       <View style={styles.labelRow}>
         <MaterialCommunityIcons
-          name="wallet-outline"
+          name="wallet"
           size={18}
           color={theme.colors.textGrayLight}
         />

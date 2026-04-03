@@ -5,6 +5,7 @@ import { AppToastHost } from "@/src/shared/toast";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
@@ -27,9 +28,17 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }} />
-        <AppToastHost />
+        <View style={styles.root}>
+          <Stack screenOptions={{ headerShown: false }} />
+          <AppToastHost />
+        </View>
       </QueryClientProvider>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

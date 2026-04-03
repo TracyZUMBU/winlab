@@ -9,7 +9,8 @@ import { WINLAB_TOAST_TYPES } from "./toast.types";
 
 type ShellProps = ToastConfigParams<unknown> & {
   iconName: ComponentProps<typeof MaterialIcons>["name"];
-  backgroundColor: string;
+  /** Solid color for the left accent stripe (not a translucent fill). */
+  accentStripeColor: string;
   borderColor: string;
   titleColor: string;
   messageColor: string;
@@ -20,7 +21,7 @@ function WinlabToastShell({
   text2,
   onPress,
   iconName,
-  backgroundColor,
+  accentStripeColor,
   borderColor,
   titleColor,
   messageColor,
@@ -33,9 +34,9 @@ function WinlabToastShell({
       style={({ pressed }) => [
         styles.card,
         {
-          backgroundColor,
           borderColor,
-          opacity: pressed ? 0.94 : 1,
+          borderLeftColor: accentStripeColor,
+          opacity: pressed ? 0.92 : 1,
         },
       ]}
       accessibilityRole="alert"
@@ -61,6 +62,7 @@ function WinlabToastShell({
 }
 
 const styles = StyleSheet.create({
+  /** Opaque surface so content behind never shows through (muted semantic colors are too transparent). */
   card: {
     minHeight: 56,
     marginHorizontal: theme.spacing.md,
@@ -68,14 +70,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
+    borderLeftWidth: 4,
     flexDirection: "row",
     alignItems: "flex-start",
     gap: theme.spacing.sm,
-    shadowColor: theme.colors.shadow,
+    backgroundColor: theme.colors.surface,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
+    shadowOpacity: 0.12,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 12,
   },
   iconWrap: {
     marginTop: 2,
@@ -100,8 +104,8 @@ export const winlabToastConfig: ToastConfig = {
     <WinlabToastShell
       {...props}
       iconName="check-circle"
-      backgroundColor={theme.colors.semantic.successMuted}
-      borderColor="rgba(22, 163, 74, 0.35)"
+      accentStripeColor={theme.colors.success}
+      borderColor="rgba(22, 163, 74, 0.28)"
       titleColor={theme.colors.success}
       messageColor={theme.colors.text}
     />
@@ -110,8 +114,8 @@ export const winlabToastConfig: ToastConfig = {
     <WinlabToastShell
       {...props}
       iconName="error-outline"
-      backgroundColor={theme.colors.semantic.dangerMuted}
-      borderColor="rgba(220, 38, 38, 0.35)"
+      accentStripeColor={theme.colors.dangerSolid}
+      borderColor="rgba(220, 38, 38, 0.28)"
       titleColor={theme.colors.dangerSolid}
       messageColor={theme.colors.text}
     />
@@ -120,7 +124,7 @@ export const winlabToastConfig: ToastConfig = {
     <WinlabToastShell
       {...props}
       iconName="info-outline"
-      backgroundColor={theme.colors.semantic.neutralMuted}
+      accentStripeColor={theme.colors.accentSolid}
       borderColor={theme.colors.borderSubtle}
       titleColor={theme.colors.text}
       messageColor={theme.colors.textMuted}
@@ -130,8 +134,8 @@ export const winlabToastConfig: ToastConfig = {
     <WinlabToastShell
       {...props}
       iconName="warning-amber"
-      backgroundColor={theme.colors.semantic.warningMuted}
-      borderColor="rgba(245, 158, 11, 0.45)"
+      accentStripeColor="#D97706"
+      borderColor="rgba(245, 158, 11, 0.35)"
       titleColor="#B45309"
       messageColor={theme.colors.text}
     />

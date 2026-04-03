@@ -7,7 +7,10 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -128,68 +131,88 @@ export const OTPScreen: React.FC = () => {
 
   return (
     <AuthScreenLayout title={t("schema.otp.title")} subtitle={otpSubtitle}>
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>{t("schema.otp.label")}</Text>
-        <TextInput
-          keyboardType="number-pad"
-          maxLength={OTP_CODE_LENGTH}
-          placeholder={t("auth.otp.screen.codePlaceholder")}
-          placeholderTextColor="#94A3B8"
-          style={[styles.input, errors.code ? styles.inputError : undefined]}
-          value={codeValue}
-          onChangeText={(text) => {
-            setValue("code", text.replace(/\D/g, ""), { shouldValidate: true });
-          }}
-          onBlur={codeField.onBlur}
-        />
-        {errors.code?.message ? (
-          <Text style={styles.errorText}>{errors.code.message}</Text>
-        ) : null}
-      </View>
-
-      {serverError ? (
-        <Text style={styles.serverError}>{serverError}</Text>
-      ) : null}
-
-      <View style={styles.resendRow}>
-        <Text style={styles.resendLabel}>
-          {t("auth.otp.screen.resendPrompt")}
-        </Text>
-        <Pressable onPress={handleResend} disabled={resendLoading}>
-          {resendLoading ? (
-            <ActivityIndicator size="small" color={ACCENT} />
-          ) : (
-            <Text style={styles.resendLink}>
-              {t("auth.otp.screen.resendCta")}
-            </Text>
-          )}
-        </Pressable>
-      </View>
-
-      <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.primaryButton,
-            pressed && styles.primaryButtonPressed,
-            isSubmitting && styles.primaryButtonDisabled,
-          ]}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          {isSubmitting ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.primaryButtonText}>
-              {t("auth.otp.screen.submit")}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>{t("schema.otp.label")}</Text>
+            <TextInput
+              keyboardType="number-pad"
+              maxLength={OTP_CODE_LENGTH}
+              placeholder={t("auth.otp.screen.codePlaceholder")}
+              placeholderTextColor="#94A3B8"
+              style={[styles.input, errors.code ? styles.inputError : undefined]}
+              value={codeValue}
+              onChangeText={(text) => {
+                setValue("code", text.replace(/\D/g, ""), {
+                  shouldValidate: true,
+                });
+              }}
+              onBlur={codeField.onBlur}
+            />
+            {errors.code?.message ? (
+              <Text style={styles.errorText}>{errors.code.message}</Text>
+            ) : null}
+          </View>
+
+          {serverError ? (
+            <Text style={styles.serverError}>{serverError}</Text>
+          ) : null}
+
+          <View style={styles.resendRow}>
+            <Text style={styles.resendLabel}>
+              {t("auth.otp.screen.resendPrompt")}
             </Text>
-          )}
-        </Pressable>
-      </View>
+            <Pressable onPress={handleResend} disabled={resendLoading}>
+              {resendLoading ? (
+                <ActivityIndicator size="small" color={ACCENT} />
+              ) : (
+                <Text style={styles.resendLink}>
+                  {t("auth.otp.screen.resendCta")}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+
+          <View style={styles.footer}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.primaryButton,
+                pressed && styles.primaryButtonPressed,
+                isSubmitting && styles.primaryButtonDisabled,
+              ]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {t("auth.otp.screen.submit")}
+                </Text>
+              )}
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </AuthScreenLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
   fieldContainer: {
     marginTop: 8,
   },
@@ -242,7 +265,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     marginTop: "auto",
-    marginBottom: 24,
   },
   primaryButton: {
     borderRadius: 24,
