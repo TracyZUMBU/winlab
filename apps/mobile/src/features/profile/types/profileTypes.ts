@@ -13,6 +13,18 @@ export type CreateProfilePayload = {
   username: string;
 };
 
+export type CreateProfileErrorCode = "USERNAME_TAKEN";
+
+export class CreateProfileError extends Error {
+  readonly code: CreateProfileErrorCode;
+
+  constructor(code: CreateProfileErrorCode) {
+    super(code);
+    this.name = "CreateProfileError";
+    this.code = code;
+  }
+}
+
 export type UpdateMyProfileInput = {
   username: string;
 };

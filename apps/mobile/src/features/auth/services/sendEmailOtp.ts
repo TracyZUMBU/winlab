@@ -1,6 +1,10 @@
-import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { monitoring } from "@/src/lib/monitoring";
-import type { EmailOtpPayload, SendEmailOtpErrorCode, SendEmailOtpResult } from "../types";
+import { getSupabaseClient } from "@/src/lib/supabase/client";
+import type {
+  EmailOtpPayload,
+  SendEmailOtpErrorCode,
+  SendEmailOtpResult,
+} from "../types";
 
 function getSupabaseErrorCode(error: unknown): string | undefined {
   if (!error || typeof error !== "object") return undefined;
@@ -32,7 +36,9 @@ function mapSupabaseErrorCodeToAppErrorCode(
   }
 }
 
-function getMonitoringSeverity(errorCode: SendEmailOtpErrorCode): "warning" | "error" {
+function getMonitoringSeverity(
+  errorCode: SendEmailOtpErrorCode,
+): "warning" | "error" {
   switch (errorCode) {
     case "EMAIL_SEND_RATE_LIMITED":
     case "CAPTCHA_FAILED":
@@ -58,6 +64,15 @@ export const sendEmailOtp = async ({
         emailRedirectTo: undefined,
       },
     });
+    if (error) {
+      monitoring.captureException({
+        name: "auth_send_email_otp_failed",
+        severity: "error",
+        feature: "auth",
+        message: "Failed to send email OTP",
+        error,
+      });
+    }
 
     if (!error) return { success: true };
 

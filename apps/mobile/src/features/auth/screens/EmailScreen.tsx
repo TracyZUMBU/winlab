@@ -1,4 +1,10 @@
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -9,16 +15,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { emailSchema, type EmailFormValues } from "../validators";
-import { sendEmailOtp } from "../services";
-import { AUTH_ROUTES } from "../constants/authConstants";
-import { useTranslation } from "react-i18next";
 import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
-import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { AUTH_ROUTES } from "../constants/authConstants";
+import { sendEmailOtp } from "../services";
+import { emailSchema, type EmailFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
 
@@ -79,18 +79,6 @@ export const EmailScreen: React.FC = () => {
         <View style={styles.card}>
           {/* Top App Bar */}
           <View style={styles.topBar}>
-            <Pressable
-              onPress={() => router.back()}
-              style={styles.backButton}
-              hitSlop={8}
-            >
-              <MaterialIcons
-                name="arrow-back-ios-new"
-                size={24}
-                color="#111813"
-              />
-            </Pressable>
-
             <View style={styles.tokenWrapper}>
               <View style={styles.tokenBackground}>
                 <MaterialIcons name="token" size={22} color={ACCENT} />
@@ -172,9 +160,7 @@ export const EmailScreen: React.FC = () => {
                 </Pressable>
               </View>
 
-              {__DEV__ ? (
-                <DevPasswordLoginPanel email={emailValue} />
-              ) : null}
+              {__DEV__ ? <DevPasswordLoginPanel email={emailValue} /> : null}
             </View>
 
             {/* Footer */}
