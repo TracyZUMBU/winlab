@@ -80,6 +80,7 @@
     "invalidCode": "The code is invalid or has expired.",
     "otp": {
       "emailMissingInFlow": "Your email is missing. Please start again from the sign-in screen.",
+      "resendSuccess": "A new code was sent.",
       "errors": {
         "generic": "We could not verify the code. Please try again.",
         "OTP_INVALID_LENGTH": "The code must be {{length}} digits.",
@@ -105,6 +106,13 @@
         "EMAIL_NOT_AUTHORIZED": "This email address is not allowed."
       }
     }
+  },
+  "appPlaceholder": {
+    "title": "Welcome to Winlab",
+    "subtitle": "This screen is a placeholder for the signed-in app.",
+    "caption": "This screen is a placeholder for the signed-in app.",
+    "logout": "Sign out",
+    "logoutError": "Could not sign out. Please try again."
   },
   "emailScreen": {
     "title": "Enter your email",
@@ -425,6 +433,7 @@
         "noteAfterTerms": "and confirm you are over 18."
       },
       "purchase": {
+        "success": "Ticket purchased.",
         "errors": {
           "generic": "Could not buy a ticket. Please try again.",
           "UNAUTHENTICATED": "You need to be signed in.",
@@ -499,10 +508,12 @@
   },
   "profile": {
     "createProfile": {
+      "successToast": "Profile created.",
       "errors": {
         "sessionExpired": "Your session has expired. Please sign in again.",
         "emailUnavailable": "We could not read your email. Please sign in again.",
-        "submitFailed": "We could not create your profile. Please try again."
+        "submitFailed": "We could not create your profile. Please try again.",
+        "USERNAME_TAKEN": "This username is already taken. Please choose another one."
       },
       "screen": {
         "title": "Choose your username",

@@ -65,8 +65,8 @@ function UnderlineOptionStrip<T extends string>({
               style={[styles.uTabLabel, selected && styles.uTabLabelActive]}
               numberOfLines={1}
             >
-              {opt.label.charAt(0).toUpperCase() +
-                opt.label.slice(1).toLowerCase()}
+              {opt.label.charAt(0).toLocaleUpperCase() +
+                opt.label.slice(1).toLocaleLowerCase()}
             </Text>
             <View
               style={[

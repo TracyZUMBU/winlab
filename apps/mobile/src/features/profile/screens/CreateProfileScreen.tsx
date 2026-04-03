@@ -1,7 +1,16 @@
+import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
+import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import {
+  usernameSchema,
+  type UsernameFormValues,
+} from "@/src/features/auth/validators";
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -10,17 +19,13 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
-import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
-import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
-import { usernameSchema, type UsernameFormValues } from "@/src/features/auth/validators";
-import { useTranslation } from "react-i18next";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
+import { CreateProfileError } from "../types/profileTypes";
 
 const ACCENT = "#FF8C00";
 
 export const CreateProfileScreen: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { user, status } = useAuthSession();
   const createProfileMutation = useCreateProfileMutation();
@@ -63,9 +68,22 @@ export const CreateProfileScreen: React.FC = () => {
         email: user.email,
         username: values.username,
       });
+
       router.replace("/home");
-    } catch {
-      setServerError(t("profile.createProfile.errors.submitFailed"));
+    } catch (e) {
+      if (e instanceof CreateProfileError) {
+        setServerError(
+          getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "profile.createProfile.errors",
+            code: e.code,
+            fallbackKey: "profile.createProfile.errors.submitFailed",
+          }),
+        );
+      } else {
+        setServerError(t("profile.createProfile.errors.submitFailed"));
+      }
     }
   };
 

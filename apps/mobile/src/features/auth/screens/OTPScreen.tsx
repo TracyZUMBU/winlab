@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
+import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { showInfoToast } from "@/src/shared/toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
-  View,
-  TextInput,
+  ActivityIndicator,
+  Pressable,
   StyleSheet,
   Text,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useTranslation } from 'react-i18next';
-import { getI18nMessageForCode } from '@/src/lib/i18n/errorCodeMessage';
-import { AuthScreenLayout } from '../components/AuthScreenLayout';
-import { redirectAfterAuthSession } from '../utils/redirectAfterAuthSession';
-import { otpSchema, type OtpFormValues } from '../validators';
-import { sendEmailOtp, verifyEmailOtp } from '../services';
-import { showInfoToast } from '@/src/shared/toast';
-import { AUTH_ROUTES, OTP_CODE_LENGTH } from '../constants/authConstants';
+  TextInput,
+  View,
+} from "react-native";
+import { AuthScreenLayout } from "../components/AuthScreenLayout";
+import { AUTH_ROUTES, OTP_CODE_LENGTH } from "../constants/authConstants";
+import { sendEmailOtp, verifyEmailOtp } from "../services";
+import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
+import { otpSchema, type OtpFormValues } from "../validators";
 
-const ACCENT = '#FF8C00';
+const ACCENT = "#FF8C00";
 
 export const OTPScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string }>();
-  const emailFromParams = typeof params.email === 'string' ? params.email : '';
+  const emailFromParams = typeof params.email === "string" ? params.email : "";
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
@@ -39,13 +39,13 @@ export const OTPScreen: React.FC = () => {
   } = useForm<OtpFormValues>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
-      code: '',
+      code: "",
       email: emailFromParams,
     },
   });
 
-  const codeField = register('code');
-  const codeValue = watch('code');
+  const codeField = register("code");
+  const codeValue = watch("code");
 
   const onSubmit = async (values: OtpFormValues) => {
     setServerError(null);
@@ -115,6 +115,8 @@ export const OTPScreen: React.FC = () => {
       } else {
         showInfoToast({ title: t("auth.otp.resendSuccess") });
       }
+    } catch {
+      setServerError(t("auth.email.errors.generic"));
     } finally {
       setResendLoading(false);
     }
@@ -133,13 +135,10 @@ export const OTPScreen: React.FC = () => {
           maxLength={OTP_CODE_LENGTH}
           placeholder={t("auth.otp.screen.codePlaceholder")}
           placeholderTextColor="#94A3B8"
-          style={[
-            styles.input,
-            errors.code ? styles.inputError : undefined,
-          ]}
+          style={[styles.input, errors.code ? styles.inputError : undefined]}
           value={codeValue}
           onChangeText={(text) => {
-            setValue('code', text.replace(/\D/g, ''), { shouldValidate: true });
+            setValue("code", text.replace(/\D/g, ""), { shouldValidate: true });
           }}
           onBlur={codeField.onBlur}
         />
@@ -148,7 +147,9 @@ export const OTPScreen: React.FC = () => {
         ) : null}
       </View>
 
-      {serverError ? <Text style={styles.serverError}>{serverError}</Text> : null}
+      {serverError ? (
+        <Text style={styles.serverError}>{serverError}</Text>
+      ) : null}
 
       <View style={styles.resendRow}>
         <Text style={styles.resendLabel}>
@@ -195,59 +196,59 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     letterSpacing: 0.5,
-    fontWeight: '600',
-    color: '#64748B',
+    fontWeight: "600",
+    color: "#64748B",
     marginBottom: 8,
   },
   input: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: "#E2E8F0",
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: "center",
     letterSpacing: 4,
-    backgroundColor: '#FFFFFF',
-    color: '#020617',
+    backgroundColor: "#FFFFFF",
+    color: "#020617",
   },
   inputError: {
-    borderColor: '#DC2626',
+    borderColor: "#DC2626",
   },
   errorText: {
     marginTop: 6,
     fontSize: 13,
-    color: '#DC2626',
+    color: "#DC2626",
   },
   serverError: {
     marginTop: 12,
     fontSize: 14,
-    color: '#DC2626',
+    color: "#DC2626",
   },
   resendRow: {
     marginTop: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   resendLabel: {
     fontSize: 14,
-    color: '#64748B',
+    color: "#64748B",
   },
   resendLink: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: ACCENT,
   },
   footer: {
-    marginTop: 'auto',
+    marginTop: "auto",
     marginBottom: 24,
   },
   primaryButton: {
     borderRadius: 24,
     paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: ACCENT,
   },
   primaryButtonPressed: {
@@ -257,9 +258,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   primaryButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
-

@@ -32,6 +32,7 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withAsyncStorageLocalRepo",
       [
         "expo-splash-screen",
         {

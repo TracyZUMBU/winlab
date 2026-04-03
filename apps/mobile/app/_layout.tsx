@@ -1,9 +1,11 @@
 import "@/src/i18n";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 import { queryClient } from "@/src/lib/query/queryClient";
+import { AppToastHost } from "@/src/shared/toast";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useEffect } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const router = useRouter();
@@ -23,8 +25,11 @@ export default function RootLayout() {
   }, [pathname, redirectTo, router, status]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <Stack screenOptions={{ headerShown: false }} />
+        <AppToastHost />
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

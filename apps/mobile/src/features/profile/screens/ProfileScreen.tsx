@@ -29,6 +29,7 @@ import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation
 import { usernameSchema } from "@/src/features/auth/validators";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { showSuccessToast } from "@/src/shared/toast";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
@@ -75,7 +76,6 @@ export function ProfileScreen() {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [draftUsername, setDraftUsername] = useState("");
   const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [showUpdateSuccess, setShowUpdateSuccess] = useState(false);
 
   const profile = profileQuery.data;
 
@@ -105,7 +105,6 @@ export function ProfileScreen() {
 
   const startEditUsername = useCallback(() => {
     setUsernameError(null);
-    setShowUpdateSuccess(false);
     setDraftUsername(profile?.username?.trim() ?? "");
     setIsEditingUsername(true);
   }, [profile?.username]);
@@ -117,7 +116,6 @@ export function ProfileScreen() {
 
   const handleSaveUsername = useCallback(async () => {
     setUsernameError(null);
-    setShowUpdateSuccess(false);
 
     if (!userId) {
       return;
@@ -135,7 +133,7 @@ export function ProfileScreen() {
         username: parsed.data.username,
       });
       setIsEditingUsername(false);
-      setShowUpdateSuccess(true);
+      showSuccessToast({ title: t("profile.screen.updateSuccess") });
     } catch (error: unknown) {
       logger.error("Profile username update failed", error);
       setUsernameError(t("profile.screen.updateError"));
@@ -314,12 +312,6 @@ export function ProfileScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {showUpdateSuccess ? (
-          <Text style={styles.successBanner}>
-            {t("profile.screen.updateSuccess")}
-          </Text>
-        ) : null}
-
         <ProfileHeroHeader
           displayName={displayName}
           handleLabel={handleLabel}
@@ -501,13 +493,6 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: theme.spacing.md,
     gap: theme.spacing.xs,
-  },
-  successBanner: {
-    textAlign: "center",
-    fontSize: 14,
-    fontWeight: "600",
-    color: theme.colors.accentSolid,
-    marginBottom: theme.spacing.sm,
   },
   overlineSpaced: {
     marginTop: theme.spacing.md,

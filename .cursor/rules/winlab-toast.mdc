@@ -1,0 +1,21 @@
+---
+description: Toasts — couche interne obligatoire (mobile)
+globs: apps/mobile/**/*.tsx,apps/mobile/**/*.ts
+alwaysApply: false
+---
+
+# Toasts (React Native)
+
+## Règles
+
+1. **Toute notification toast** doit passer par la couche interne `@/src/shared/toast` (`toastService` / `showSuccessToast` / `showErrorToast` / etc.), pas par la librairie directement.
+2. **Aucun import** de `react-native-toast-message` dans les **features**, **screens**, **hooks métier** ou **composants UI** — sauf :
+   - `apps/mobile/src/shared/toast/**` (implémentation),
+   - `apps/mobile/src/shared/toast/AppToastHost.tsx` (hôte racine).
+3. **Ne pas** utiliser les toasts pour **remplacer** les erreurs **inline de formulaire** déjà affichées au même endroit.
+4. Préférer les messages **i18n** et les **codes métier stables** (`getI18nMessageForCode`, mapping par code) plutôt que du parsing de `error.message`.
+
+## Références
+
+- Audit et cas d’usage : `docs/mobile/toast-audit.md`
+- Règles produit + API : `docs/mobile/toast-guidelines.md`

@@ -23,9 +23,9 @@ function isProfileReferralCodeUniqueViolation(error: PostgrestError): boolean {
   return blob.includes(PROFILES_REFERRAL_CODE_UNIQUE_CONSTRAINT);
 }
 
-export function isProfileUsernameUniqueViolation(
-  error: PostgrestError,
-): boolean {
+// TODO: PostgrestError doesn't expose constraint name directly.
+// This text parsing is fragile; consider using an RPC with structured error codes.
+function isProfileUsernameUniqueViolation(error: PostgrestError): boolean {
   if (error.code !== "23505") {
     return false;
   }

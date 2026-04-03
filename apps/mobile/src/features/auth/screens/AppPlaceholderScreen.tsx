@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { showErrorToast } from "@/src/shared/toast";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { useAuthSession } from "../hooks/useAuthSession";
 import { useSignOutMutation } from "../hooks/useSignOutMutation";
@@ -27,7 +28,7 @@ export const AppPlaceholderScreen: React.FC = () => {
         router.replace(AUTH_ROUTES.email);
       },
       onError: () => {
-        // Show error feedback (e.g., toast or alert)
+        showErrorToast({ title: t("appPlaceholder.logoutError") });
       },
     });
   };

@@ -21,6 +21,7 @@ import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
+import { showSuccessToast } from "@/src/shared/toast";
 import { useTranslation } from "react-i18next";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
@@ -47,7 +48,6 @@ export function MissionDetailScreen() {
 
   const { mutateAsync, isPending } = useSubmitMissionCompletionMutation();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
 
   const [logoFailed, setLogoFailed] = useState(false);
   useEffect(() => setLogoFailed(false), [missionId, mission?.brand?.logo_url]);
@@ -56,12 +56,11 @@ export function MissionDetailScreen() {
     if (!missionId) return;
 
     setSubmitError(null);
-    setSubmitSuccess(null);
 
     const result = await mutateAsync({ missionId });
 
     if (result.success) {
-      setSubmitSuccess(t("missions.screen.submitMission"));
+      showSuccessToast({ title: t("missions.screen.submitMission") });
       await refetch();
       return;
     }
@@ -386,9 +385,6 @@ export function MissionDetailScreen() {
           {submitError ? (
             <Text style={styles.submitError}>{submitError}</Text>
           ) : null}
-          {submitSuccess ? (
-            <Text style={styles.submitSuccess}>{submitSuccess}</Text>
-          ) : null}
         </ScrollView>
 
         <View style={styles.bottomBar} pointerEvents="box-none">
@@ -578,12 +574,6 @@ const styles = StyleSheet.create({
   submitError: {
     marginTop: theme.spacing.lg,
     color: theme.colors.text,
-    textAlign: "center",
-    paddingHorizontal: theme.spacing.md,
-  },
-  submitSuccess: {
-    marginTop: theme.spacing.md,
-    color: theme.colors.success,
     textAlign: "center",
     paddingHorizontal: theme.spacing.md,
   },

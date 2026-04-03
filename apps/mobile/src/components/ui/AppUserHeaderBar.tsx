@@ -29,10 +29,10 @@ export function AppUserHeaderBar({
   const { data: wallet, isLoading: walletLoading } = useWalletBalanceQuery();
 
   const balanceLabel = useMemo(() => {
-    if (walletLoading && wallet == null) return "…";
-    if (wallet == null) return "0";
+    if (walletLoading && wallet == null) return t("common.loading_ellipsis");
+    if (wallet == null) return new Intl.NumberFormat(locale).format(0);
     return new Intl.NumberFormat(locale).format(wallet.balance);
-  }, [locale, wallet, walletLoading]);
+  }, [locale, t, wallet, walletLoading]);
 
   const avatarUri = profile?.avatar_url ?? null;
   const displayInitials = initialsFromUsername(profile?.username ?? null);
@@ -46,7 +46,7 @@ export function AppUserHeaderBar({
 
   const onOpenNotifications = () => {
     trackEvent("header_open_notifications");
-    router.push("/profile");
+    // TODO: implement notifications panel
   };
 
   return (
@@ -63,7 +63,9 @@ export function AppUserHeaderBar({
           >
             <View style={styles.avatar}>
               {profileLoading && !avatarUri ? (
-                <Text style={styles.avatarInitials}>…</Text>
+                <Text style={styles.avatarInitials}>
+                  {t("common.loading_ellipsis")}
+                </Text>
               ) : avatarUri ? (
                 <Image source={{ uri: avatarUri }} style={styles.avatarImg} />
               ) : (
