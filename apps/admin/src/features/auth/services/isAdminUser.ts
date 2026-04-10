@@ -15,8 +15,8 @@ export function parseAdminEmailAllowlist(): string[] {
     .filter((entry) => entry.length > 0);
 }
 
-/** Indique si l’utilisateur connecté est autorisé à utiliser l’admin (allowlist). */
-export function isAdminUser(user: User | null): boolean {
+/** Fallback de transition : allowlist côté client (la source de vérité est `profiles.is_admin` + RLS). */
+export function isAdminEmailAllowlist(user: User | null): boolean {
   const email = user?.email?.trim().toLowerCase();
   if (!email) {
     return false;

@@ -7,10 +7,8 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 | Dossier | Rôle |
 |--------|------|
 | `app/` | `App` (routes sous garde auth), `AdminLayout` (titre, nav, déconnexion, `<Outlet />`). |
-| `pages/` | Écrans : liste loteries, détail loterie. |
-| `features/auth/` | Login, garde `AdminAuthGate`, `useCurrentUser`, contexte session admin. |
-| `features/lotteries/` | Lecture loteries (services, table dev). |
-| `lib/auth/` | `isAdminUser` + parsing allowlist emails. |
+| `features/auth/` | Sous-dossiers : `components/` (`AdminAuthGate`), `context/`, `hooks/`, `pages/` (login, accès refusé), `services/` (allowlist, lecture `is_admin`). Point d’entrée `index.ts`. |
+| `features/lotteries/` | `pages/` (liste, détail), `components/`, `services/`, `types/`, `index.ts`. |
 | `components/ui/` | Primitives UI réutilisables quand le besoin apparaît. |
 | `lib/` | Utilitaires / clients légers partagés (`supabase.ts` : client anon centralisé). |
 | `styles/` | Feuilles globales (ex. `global.css`). |
@@ -18,7 +16,7 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 
 **React Router** (minimal) : `/` redirige vers `/lotteries`, détail sous `/lotteries/:lotteryId`. Pas de TanStack Query pour l’instant.
 
-**Auth** : email + mot de passe via Supabase Auth ; accès réservé aux emails listés dans `VITE_ADMIN_EMAIL_ALLOWLIST` (virgules). Pas d’inscription depuis l’admin. Session persistée par défaut (localStorage).
+**Auth** : email + mot de passe via Supabase Auth ; accès réservé aux comptes avec `profiles.is_admin = true` (voir SQL `supabase/scripts/promote_admin_by_email.sql`). Tant que la transition est en cours, une allowlist optionnelle `VITE_ADMIN_EMAIL_ALLOWLIST` (virgules) peut encore autoriser l’UI. Les vues `admin_*` sont filtrées côté base. Pas d’inscription depuis l’admin. Session persistée par défaut (localStorage).
 
 ## Variables d’environnement (Supabase)
 

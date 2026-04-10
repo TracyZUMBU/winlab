@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 import { createContext, type ReactNode, useContext } from "react";
 
-/** Utilisateur admin autorisé (rempli uniquement sous `AdminAuthGate` après allowlist). */
+/** Utilisateur admin autorisé (rempli uniquement sous `AdminAuthGate` après `is_admin` / allowlist). */
 export const AdminAuthContext = createContext<User | null>(null);
 
 export function AdminAuthProvider({

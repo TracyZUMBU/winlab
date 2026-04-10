@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  getLotteryAdminDetail,
-  type LotteryAdminDetail,
-} from "../features/lotteries";
-import { formatDateTimeForDev } from "../lib/formatDateTimeForDev";
-import { isSupabaseConfigured } from "../lib/supabase";
+import { formatDateTimeForDev } from "../../../lib/formatDateTimeForDev";
+import { isSupabaseConfigured } from "../../../lib/supabase";
+import { getLotteryAdminDetail } from "../services/getLotteryAdminDetail";
+import type { LotteryAdminDetail } from "../types/lotteryAdminDetail";
 
 function formatIntFr(n: number): string {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n);

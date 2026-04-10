@@ -1,6 +1,6 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
+import { getSupabaseClient, isSupabaseConfigured } from "../../../lib/supabase";
 
 const GENERIC_LOGIN_ERROR =
   "Identifiants incorrects ou compte indisponible. Réessayez.";

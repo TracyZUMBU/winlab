@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { LotteriesDevTable } from "../features/lotteries/components/LotteriesDevTable";
+import { isSupabaseConfigured } from "../../../lib/supabase";
+import { LotteriesDevTable } from "../components/LotteriesDevTable";
+import { getLotteries } from "../services/getLotteries";
 import {
-  getLotteries,
   LOTTERY_ADMIN_STATUSES,
   type LotteryAdminListItem,
   type LotteryAdminStatus,
-} from "../features/lotteries";
-import { isSupabaseConfigured } from "../lib/supabase";
+} from "../types/lotteryAdmin";
 
 const STATUS_FILTER_ALL = "all" as const;
 

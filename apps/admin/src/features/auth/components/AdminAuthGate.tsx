@@ -1,20 +1,21 @@
 import type { ReactNode } from "react";
-import { isAdminUser } from "../../lib/auth/isAdminUser";
-import { isSupabaseConfigured } from "../../lib/supabase";
-import { AdminAccessDeniedPage } from "./AdminAccessDeniedPage";
-import { AdminAuthProvider } from "./AdminAuthContext";
-import { LoginPage } from "./LoginPage";
-import { useCurrentUser } from "./useCurrentUser";
+import { isSupabaseConfigured } from "../../../lib/supabase";
+import { AdminAuthProvider } from "../context/AdminAuthContext";
+import { useAdminAuthorization } from "../hooks/useAdminAuthorization";
+import { useCurrentUser } from "../hooks/useCurrentUser";
+import { AdminAccessDeniedPage } from "../pages/AdminAccessDeniedPage";
+import { LoginPage } from "../pages/LoginPage";
 
 type AdminAuthGateProps = {
   children: ReactNode;
 };
 
 /**
- * Garde globale : config → session → allowlist → application.
+ * Garde globale : config → session → profil `is_admin` (+ allowlist de transition) → application.
  */
 export function AdminAuthGate({ children }: AdminAuthGateProps) {
   const authState = useCurrentUser();
+  const adminAuth = useAdminAuthorization(authState.status === "ready" ? authState.user : null);
 
   if (!isSupabaseConfigured) {
     return (
@@ -46,7 +47,19 @@ export function AdminAuthGate({ children }: AdminAuthGateProps) {
     return <LoginPage />;
   }
 
-  if (!isAdminUser(authState.user)) {
+  if (adminAuth.status === "loading" || adminAuth.status === "idle") {
+    return (
+      <div className="auth-login">
+        <div className="auth-login__card">
+          <p className="auth-login__subtitle" role="status">
+            Vérification des droits administrateur…
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!adminAuth.allowed) {
     return <AdminAccessDeniedPage user={authState.user} />;
   }
 

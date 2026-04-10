@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { getSupabaseClient, isSupabaseConfigured } from "../../lib/supabase";
+import { getSupabaseClient, isSupabaseConfigured } from "../../../lib/supabase";
 
 export type CurrentUserState =
   | { status: "loading" }

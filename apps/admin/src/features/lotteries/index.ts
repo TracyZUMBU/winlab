@@ -1,5 +1,6 @@
 /**
  * Loteries côté admin : types + services de lecture (pas de logique UI ici).
+ * Pages : `pages/` ; composants : `components/`.
  */
 
 export type {
@@ -15,3 +16,5 @@ export type {
 } from "./types/lotteryAdminDetail";
 export { getLotteries } from "./services/getLotteries";
 export { getLotteryAdminDetail } from "./services/getLotteryAdminDetail";
+export { LotteriesPage } from "./pages/LotteriesPage";
+export { LotteryDetailPage } from "./pages/LotteryDetailPage";

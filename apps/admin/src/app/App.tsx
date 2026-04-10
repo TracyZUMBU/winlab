@@ -1,10 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { AdminAuthGate } from "../features/auth/AdminAuthGate";
+import { AdminAuthGate } from "../features/auth";
+import { LotteriesPage, LotteryDetailPage } from "../features/lotteries";
 import { AdminLayout } from "./AdminLayout";
-import { LotteryDetailPage } from "../pages/LotteryDetailPage";
-import { LotteriesPage } from "../pages/LotteriesPage";
 
-/** Routes sous garde auth + allowlist ; `/` → liste, `/lotteries`, `/lotteries/:lotteryId`. */
+/** Routes sous garde auth + `profiles.is_admin` (allowlist optionnelle en secours). */
 export function App() {
   return (
     <AdminAuthGate>
