@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { ServiceFailureError } from "../../../lib/api/serviceFailureError";
 import { isSupabaseConfigured } from "../../../lib/supabase";
+import { lotteryServiceErrorMessage } from "../lotteryErrorMessages";
 import { adminLotteriesListOptions } from "../queries/admin-lotteries-list.query";
-import type { LotteryAdminListItem } from "../types/lotteryAdmin";
+import type { AdminLotteryListItem } from "../types/lotteryAdmin";
 
 export type LotteriesQueryState =
   | { kind: "loading" }
-  | { kind: "error"; message: string }
+  | { kind: "error"; message: string; errorCode: string }
   | { kind: "empty" }
-  | { kind: "ok"; lotteries: LotteryAdminListItem[] };
+  | { kind: "ok"; lotteries: AdminLotteryListItem[] };
 
 export function useLotteriesQuery(): LotteriesQueryState {
   const query = useQuery({
@@ -18,8 +20,8 @@ export function useLotteriesQuery(): LotteriesQueryState {
   if (!isSupabaseConfigured) {
     return {
       kind: "error",
-      message:
-        "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env (voir .env.example).",
+      errorCode: "CONFIGURATION",
+      message: lotteryServiceErrorMessage("CONFIGURATION"),
     };
   }
 
@@ -29,12 +31,21 @@ export function useLotteriesQuery(): LotteriesQueryState {
 
   if (query.isError) {
     const err = query.error;
-    const message =
-      err instanceof Error ? err.message : "Erreur inconnue au chargement.";
-    return { kind: "error", message };
+    if (err instanceof ServiceFailureError) {
+      return {
+        kind: "error",
+        errorCode: err.errorCode,
+        message: lotteryServiceErrorMessage(err.errorCode),
+      };
+    }
+    return {
+      kind: "error",
+      errorCode: "UNKNOWN",
+      message: lotteryServiceErrorMessage("UNKNOWN"),
+    };
   }
 
-  const lotteries = query.data?.lotteries ?? [];
+  const lotteries = query.data ?? [];
   if (lotteries.length === 0) {
     return { kind: "empty" };
   }

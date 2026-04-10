@@ -1,18 +1,18 @@
 import { getSupabaseClient } from "../../../lib/supabase";
+import type { ServiceResult } from "../../../lib/api/serviceResult";
+import { mapSupabaseToErrorCode } from "../../../lib/api/mapSupabaseToErrorCode";
 import {
   LOTTERY_ADMIN_STATUSES,
+  type AdminLotteryDetail,
+  type AdminLotteryWinner,
   type LotteryAdminStatus,
 } from "../types/lotteryAdmin";
-import type {
-  LotteryAdminDetail,
-  LotteryAdminWinnerEntry,
-} from "../types/lotteryAdminDetail";
 
 const RPC_ADMIN_GET_LOTTERY_DETAIL = "admin_get_lottery_detail";
 
 const STATUS_SET = new Set<string>(LOTTERY_ADMIN_STATUSES);
 
-type OverviewDetailRow = {
+type AdminLotteryDetailRpcRow = {
   lottery_id: string;
   title: string;
   description: string | null;
@@ -70,7 +70,7 @@ function toInt(value: unknown): number | null {
   return null;
 }
 
-function parseWinnersJson(raw: unknown): LotteryAdminWinnerEntry[] {
+function parseWinnersJson(raw: unknown): AdminLotteryWinner[] {
   if (raw == null) {
     return [];
   }
@@ -86,7 +86,7 @@ function parseWinnersJson(raw: unknown): LotteryAdminWinnerEntry[] {
     return [];
   }
 
-  const out: LotteryAdminWinnerEntry[] = [];
+  const out: AdminLotteryWinner[] = [];
   for (const item of arr) {
     if (!item || typeof item !== "object") {
       continue;
@@ -112,7 +112,7 @@ function parseWinnersJson(raw: unknown): LotteryAdminWinnerEntry[] {
   return out;
 }
 
-function mapRow(row: OverviewDetailRow): LotteryAdminDetail | null {
+function mapDetailRow(row: AdminLotteryDetailRpcRow): AdminLotteryDetail | null {
   if (!row.lottery_id || !row.title || !row.draw_at) {
     return null;
   }
@@ -144,33 +144,37 @@ function mapRow(row: OverviewDetailRow): LotteryAdminDetail | null {
 }
 
 /**
- * Détail d’une loterie via la RPC `admin_get_lottery_detail` (tickets + gagnants agrégés côté SQL).
- * `null` si aucune ligne (id inconnu). Accès refusé si l’appelant n’est pas admin (erreur levée).
+ * Détail d’une loterie via la RPC `admin_get_lottery_detail`.
+ * `data: null` si aucune ligne (id inconnu). Accès refusé → `success: false`, `errorCode` adapté.
  */
-export async function getLotteryAdminDetail(
+export async function getAdminLotteryDetail(
   lotteryId: string,
-): Promise<LotteryAdminDetail | null> {
+): Promise<ServiceResult<AdminLotteryDetail | null>> {
   const trimmed = lotteryId.trim();
   if (!trimmed) {
-    return null;
+    return { success: true, data: null };
   }
 
-  const supabase = getSupabaseClient();
+  try {
+    const supabase = getSupabaseClient();
 
-  const { data, error } = await supabase.rpc(RPC_ADMIN_GET_LOTTERY_DETAIL, {
-    p_lottery_id: trimmed,
-  });
+    const { data, error } = await supabase.rpc(RPC_ADMIN_GET_LOTTERY_DETAIL, {
+      p_lottery_id: trimmed,
+    });
 
-  if (error) {
-    console.error("[getLotteryAdminDetail] admin_get_lottery_detail", error.message, error);
-    throw new Error(`getLotteryAdminDetail: ${error.message}`, { cause: error });
+    if (error) {
+      return { success: false, errorCode: mapSupabaseToErrorCode(error) };
+    }
+
+    const rows = (Array.isArray(data) ? data : []) as AdminLotteryDetailRpcRow[];
+    const first = rows[0];
+    if (!first) {
+      return { success: true, data: null };
+    }
+
+    const mapped = mapDetailRow(first);
+    return { success: true, data: mapped };
+  } catch (e) {
+    return { success: false, errorCode: mapSupabaseToErrorCode(e) };
   }
-
-  const rows = (Array.isArray(data) ? data : []) as OverviewDetailRow[];
-  const first = rows[0];
-  if (!first) {
-    return null;
-  }
-
-  return mapRow(first);
 }

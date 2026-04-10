@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { ServiceFailureError } from "../../../lib/api/serviceFailureError";
 import { isSupabaseConfigured } from "../../../lib/supabase";
+import { lotteryServiceErrorMessage } from "../lotteryErrorMessages";
 import { adminLotteryDetailOptions } from "../queries/admin-lottery-detail.query";
-import type { LotteryAdminDetail } from "../types/lotteryAdminDetail";
+import type { AdminLotteryDetail } from "../types/lotteryAdmin";
 
 export type DetailState =
   | { kind: "loading" }
-  | { kind: "error"; message: string }
+  | { kind: "error"; message: string; errorCode: string }
   | { kind: "not_found" }
-  | { kind: "ok"; detail: LotteryAdminDetail };
+  | { kind: "ok"; detail: AdminLotteryDetail };
 
 export function useLotteryAdminDetail(lotteryId: string | undefined): DetailState {
   const id = lotteryId?.trim() ?? "";
@@ -20,8 +22,8 @@ export function useLotteryAdminDetail(lotteryId: string | undefined): DetailStat
   if (!isSupabaseConfigured) {
     return {
       kind: "error",
-      message:
-        "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env.",
+      errorCode: "CONFIGURATION",
+      message: lotteryServiceErrorMessage("CONFIGURATION"),
     };
   }
 
@@ -35,9 +37,18 @@ export function useLotteryAdminDetail(lotteryId: string | undefined): DetailStat
 
   if (query.isError) {
     const err = query.error;
-    const message =
-      err instanceof Error ? err.message : "Erreur inconnue au chargement.";
-    return { kind: "error", message };
+    if (err instanceof ServiceFailureError) {
+      return {
+        kind: "error",
+        errorCode: err.errorCode,
+        message: lotteryServiceErrorMessage(err.errorCode),
+      };
+    }
+    return {
+      kind: "error",
+      errorCode: "UNKNOWN",
+      message: lotteryServiceErrorMessage("UNKNOWN"),
+    };
   }
 
   const detail = query.data;

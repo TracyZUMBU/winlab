@@ -3,7 +3,7 @@ import { LotteriesDevTable } from "../components/LotteriesDevTable";
 import { useLotteriesQuery } from "../hooks/useLotteriesQuery";
 import {
   LOTTERY_ADMIN_STATUSES,
-  type LotteryAdminListItem,
+  type AdminLotteryListItem,
   type LotteryAdminStatus,
 } from "../types/lotteryAdmin";
 
@@ -23,11 +23,11 @@ function compareDrawAtIso(a: string, b: string): number {
 
 /** Filtres + tri locaux (dev), sans requête supplémentaire. */
 function applyLotteryListDevFilters(
-  lotteries: LotteryAdminListItem[],
+  lotteries: AdminLotteryListItem[],
   titleSearchQuery: string,
   statusFilter: StatusFilterValue,
   sortId: LotteryListDevSortId,
-): LotteryAdminListItem[] {
+): AdminLotteryListItem[] {
   const q = titleSearchQuery.trim().toLowerCase();
   let list = lotteries.filter((row) => {
     if (q && !row.title.toLowerCase().includes(q)) {
