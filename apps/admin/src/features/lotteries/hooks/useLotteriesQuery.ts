@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "../../../lib/supabase";
-import { getLotteries } from "../services/getLotteries";
+import { adminLotteriesListOptions } from "../queries/admin-lotteries-list.query";
 import type { LotteryAdminListItem } from "../types/lotteryAdmin";
 
 export type LotteriesQueryState =
@@ -9,7 +9,12 @@ export type LotteriesQueryState =
   | { kind: "empty" }
   | { kind: "ok"; lotteries: LotteryAdminListItem[] };
 
-function initialLotteriesQueryState(): LotteriesQueryState {
+export function useLotteriesQuery(): LotteriesQueryState {
+  const query = useQuery({
+    ...adminLotteriesListOptions(),
+    enabled: isSupabaseConfigured,
+  });
+
   if (!isSupabaseConfigured) {
     return {
       kind: "error",
@@ -17,44 +22,22 @@ function initialLotteriesQueryState(): LotteriesQueryState {
         "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env (voir .env.example).",
     };
   }
-  return { kind: "loading" };
-}
 
-export function useLotteriesQuery(): LotteriesQueryState {
-  const [state, setState] = useState<LotteriesQueryState>(initialLotteriesQueryState);
+  if (query.isPending) {
+    return { kind: "loading" };
+  }
 
-  useEffect(() => {
-    if (!isSupabaseConfigured) {
-      return;
-    }
+  if (query.isError) {
+    const err = query.error;
+    const message =
+      err instanceof Error ? err.message : "Erreur inconnue au chargement.";
+    return { kind: "error", message };
+  }
 
-    let cancelled = false;
+  const lotteries = query.data?.lotteries ?? [];
+  if (lotteries.length === 0) {
+    return { kind: "empty" };
+  }
 
-    void (async () => {
-      try {
-        const { lotteries } = await getLotteries();
-        if (cancelled) {
-          return;
-        }
-        if (lotteries.length === 0) {
-          setState({ kind: "empty" });
-        } else {
-          setState({ kind: "ok", lotteries });
-        }
-      } catch (err) {
-        if (cancelled) {
-          return;
-        }
-        const message =
-          err instanceof Error ? err.message : "Erreur inconnue au chargement.";
-        setState({ kind: "error", message });
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return state;
+  return { kind: "ok", lotteries };
 }

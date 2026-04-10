@@ -1,8 +1,10 @@
 import type { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
-import { isSupabaseConfigured } from "../../../lib/supabase";
-import { fetchSessionProfileIsAdmin } from "../services/fetchSessionProfileIsAdmin";
-import { isAdminEmailAllowlist } from "../services/isAdminUser";
+import { useQuery } from "@tanstack/react-query";
+
+import {
+  adminAuthorizationOptions,
+  computeAdminAllowed,
+} from "../queries/admin-authorization.query";
 
 export type AdminAuthorizationState =
   | { status: "idle" }
@@ -14,49 +16,27 @@ export type AdminAuthorizationState =
       profileIsAdmin: boolean | null;
     };
 
-function computeAllowed(user: User, profileIsAdmin: boolean | null): boolean {
-  if (profileIsAdmin === true) {
-    return true;
-  }
-  return isAdminEmailAllowlist(user);
-}
-
 /**
  * Après session résolue : charge `profiles.is_admin` puis combine avec l’allowlist (transition).
  */
 export function useAdminAuthorization(
   user: User | null,
 ): AdminAuthorizationState {
-  const [state, setState] = useState<AdminAuthorizationState>({
-    status: "idle",
-  });
+  const query = useQuery(adminAuthorizationOptions(user));
 
-  useEffect(() => {
-    if (!isSupabaseConfigured || !user) {
-      setState({ status: "idle" });
-      return;
-    }
+  if (!user) {
+    return { status: "idle" };
+  }
 
-    let cancelled = false;
-    setState({ status: "loading" });
+  if (query.isPending) {
+    return { status: "loading" };
+  }
 
-    void (async () => {
-      const result = await fetchSessionProfileIsAdmin(user.id);
-      if (cancelled) {
-        return;
-      }
-      const profileIsAdmin = result.ok ? result.profile.is_admin : null;
-      setState({
-        status: "ready",
-        allowed: computeAllowed(user, profileIsAdmin),
-        profileIsAdmin,
-      });
-    })();
+  const profileIsAdmin = query.data?.profileIsAdmin ?? null;
 
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.id]);
-
-  return state;
+  return {
+    status: "ready",
+    allowed: query.data?.allowed ?? computeAdminAllowed(user, null),
+    profileIsAdmin,
+  };
 }

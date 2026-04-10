@@ -1,6 +1,9 @@
 import type { User } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { getSupabaseClient, isSupabaseConfigured } from "../../../lib/supabase";
+import { authKeys } from "../queries/auth.keys";
+import { getAuthUserFromSession } from "../services/getAuthUserFromSession";
 
 export type CurrentUserState =
   | { status: "loading" }
@@ -9,37 +12,44 @@ export type CurrentUserState =
 /**
  * Session Supabase Auth (persistée par défaut en localStorage côté navigateur).
  * `loading` jusqu’à la première résolution de session.
+ * Le cache est synchronisé avec `onAuthStateChange` (connexion / déconnexion).
  */
 export function useCurrentUser(): CurrentUserState {
-  const [state, setState] = useState<CurrentUserState>({ status: "loading" });
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: authKeys.session(),
+    queryFn: getAuthUserFromSession,
+    enabled: isSupabaseConfigured,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  });
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      setState({ status: "ready", user: null });
       return;
     }
 
     const supabase = getSupabaseClient();
-
-    void supabase.auth
-      .getSession()
-      .then(({ data: { session } }) => {
-        setState({ status: "ready", user: session?.user ?? null });
-      })
-      .catch(() => {
-        setState({ status: "ready", user: null });
-      });
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState({ status: "ready", user: session?.user ?? null });
+      queryClient.setQueryData<User | null>(authKeys.session(), session?.user ?? null);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [queryClient]);
 
-  return state;
+  if (!isSupabaseConfigured) {
+    return { status: "ready", user: null };
+  }
+
+  if (query.isPending) {
+    return { status: "loading" };
+  }
+
+  return { status: "ready", user: query.data ?? null };
 }
