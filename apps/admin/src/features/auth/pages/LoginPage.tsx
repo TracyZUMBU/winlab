@@ -1,42 +1,18 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { getSupabaseClient, isSupabaseConfigured } from "../../../lib/supabase";
-
-const GENERIC_LOGIN_ERROR =
-  "Identifiants incorrects ou compte indisponible. Réessayez.";
+import { useSignIn } from "../hooks/useSignIn";
 
 /** Connexion email + mot de passe (pas d’inscription depuis l’admin). */
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { signIn, isSubmitting, errorMessage } = useSignIn();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErrorMessage(null);
-
-    if (!isSupabaseConfigured) {
-      setErrorMessage("Configuration Supabase manquante.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-      if (error) {
-        setErrorMessage(GENERIC_LOGIN_ERROR);
-        return;
-      }
+    const { success } = await signIn(email, password);
+    if (success) {
       setPassword("");
-    } catch {
-      setErrorMessage(GENERIC_LOGIN_ERROR);
-    } finally {
-      setIsSubmitting(false);
     }
   }
 

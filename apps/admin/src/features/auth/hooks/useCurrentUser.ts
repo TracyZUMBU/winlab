@@ -21,9 +21,14 @@ export function useCurrentUser(): CurrentUserState {
 
     const supabase = getSupabaseClient();
 
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      setState({ status: "ready", user: session?.user ?? null });
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setState({ status: "ready", user: session?.user ?? null });
+      })
+      .catch(() => {
+        setState({ status: "ready", user: null });
+      });
 
     const {
       data: { subscription },

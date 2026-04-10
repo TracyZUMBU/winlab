@@ -9,7 +9,7 @@ AS $$
 DECLARE
   jwt_role text := nullif(current_setting('request.jwt.claim.role', true), '');
   privileged boolean :=
-    jwt_role = 'service_role'
+    COALESCE(jwt_role = 'service_role', false)
     OR current_user IN ('postgres', 'supabase_admin');
 BEGIN
   IF tg_op = 'INSERT' THEN

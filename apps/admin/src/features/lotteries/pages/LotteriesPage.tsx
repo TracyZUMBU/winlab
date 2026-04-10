@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { isSupabaseConfigured } from "../../../lib/supabase";
+import { useMemo, useState } from "react";
 import { LotteriesDevTable } from "../components/LotteriesDevTable";
-import { getLotteries } from "../services/getLotteries";
+import { useLotteriesQuery } from "../hooks/useLotteriesQuery";
 import {
   LOTTERY_ADMIN_STATUSES,
   type LotteryAdminListItem,
@@ -13,23 +12,6 @@ const STATUS_FILTER_ALL = "all" as const;
 type StatusFilterValue = typeof STATUS_FILTER_ALL | LotteryAdminStatus;
 
 type LotteryListDevSortId = "draw_at_desc" | "draw_at_asc" | "title_asc";
-
-type LotteriesPageState =
-  | { kind: "loading" }
-  | { kind: "error"; message: string }
-  | { kind: "empty" }
-  | { kind: "ok"; lotteries: LotteryAdminListItem[] };
-
-function initialState(): LotteriesPageState {
-  if (!isSupabaseConfigured) {
-    return {
-      kind: "error",
-      message:
-        "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env (voir .env.example).",
-    };
-  }
-  return { kind: "loading" };
-}
 
 function compareDrawAtIso(a: string, b: string): number {
   const ta = Date.parse(a);
@@ -88,43 +70,10 @@ const STATUS_FILTER_OPTIONS: { value: StatusFilterValue; label: string }[] = [
 
 /** Liste des loteries pour l’admin (outil dev). */
 export function LotteriesPage() {
-  const [state, setState] = useState<LotteriesPageState>(initialState);
+  const state = useLotteriesQuery();
   const [titleSearchQuery, setTitleSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(STATUS_FILTER_ALL);
   const [sortId, setSortId] = useState<LotteryListDevSortId>("draw_at_desc");
-
-  useEffect(() => {
-    if (!isSupabaseConfigured) {
-      return;
-    }
-
-    let cancelled = false;
-
-    void (async () => {
-      try {
-        const { lotteries } = await getLotteries();
-        if (cancelled) {
-          return;
-        }
-        if (lotteries.length === 0) {
-          setState({ kind: "empty" });
-        } else {
-          setState({ kind: "ok", lotteries });
-        }
-      } catch (err) {
-        if (cancelled) {
-          return;
-        }
-        const message =
-          err instanceof Error ? err.message : "Erreur inconnue au chargement.";
-        setState({ kind: "error", message });
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const filteredLotteries = useMemo(() => {
     if (state.kind !== "ok") {

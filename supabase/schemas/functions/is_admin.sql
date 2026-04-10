@@ -20,6 +20,5 @@ ALTER FUNCTION public.is_admin(uuid) OWNER TO postgres;
 COMMENT ON FUNCTION public.is_admin(uuid) IS
   'Returns true when profiles.is_admin is true for the given user id (typically auth.uid()). Used by admin views and RLS.';
 
-GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO anon;
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO service_role;
