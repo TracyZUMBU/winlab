@@ -8,6 +8,8 @@ import type {
   LotteryAdminWinnerEntry,
 } from "../types/lotteryAdminDetail";
 
+const RPC_ADMIN_GET_LOTTERY_DETAIL = "admin_get_lottery_detail";
+
 const STATUS_SET = new Set<string>(LOTTERY_ADMIN_STATUSES);
 
 type OverviewDetailRow = {
@@ -142,8 +144,8 @@ function mapRow(row: OverviewDetailRow): LotteryAdminDetail | null {
 }
 
 /**
- * Détail d’une loterie via `admin_lottery_detail` (tickets + gagnants agrégés côté SQL).
- * `null` si aucune ligne (id inconnu ou ligne filtrée par RLS).
+ * Détail d’une loterie via la RPC `admin_get_lottery_detail` (tickets + gagnants agrégés côté SQL).
+ * `null` si aucune ligne (id inconnu). Accès refusé si l’appelant n’est pas admin (erreur levée).
  */
 export async function getLotteryAdminDetail(
   lotteryId: string,
@@ -155,40 +157,20 @@ export async function getLotteryAdminDetail(
 
   const supabase = getSupabaseClient();
 
-  const { data, error } = await supabase
-    .from("admin_lottery_detail")
-    .select(
-      `
-      lottery_id,
-      title,
-      description,
-      short_description,
-      status,
-      category,
-      slug,
-      is_featured,
-      ticket_cost,
-      number_of_winners,
-      starts_at,
-      ends_at,
-      draw_at,
-      brand_name,
-      tickets_count,
-      winners_count,
-      winners
-    `,
-    )
-    .eq("lottery_id", trimmed)
-    .maybeSingle();
+  const { data, error } = await supabase.rpc(RPC_ADMIN_GET_LOTTERY_DETAIL, {
+    p_lottery_id: trimmed,
+  });
 
   if (error) {
-    console.error("[getLotteryAdminDetail] admin_lottery_detail", error.message, error);
+    console.error("[getLotteryAdminDetail] admin_get_lottery_detail", error.message, error);
     throw new Error(`getLotteryAdminDetail: ${error.message}`, { cause: error });
   }
 
-  if (!data) {
+  const rows = (Array.isArray(data) ? data : []) as OverviewDetailRow[];
+  const first = rows[0];
+  if (!first) {
     return null;
   }
 
-  return mapRow(data as OverviewDetailRow);
+  return mapRow(first);
 }

@@ -1,5 +1,5 @@
 /**
- * Vue admin des loteries (aligné sur `admin_lotteries_overview` + champ `id` = lottery_id pour l’UI).
+ * Données admin liste (aligné sur la RPC `admin_get_lotteries` + champ `id` = lottery_id pour l’UI).
  * `status` reflète l’enum Postgres `lottery_status` ; `unknown` couvre les valeurs inattendues.
  */
 

@@ -6,9 +6,11 @@ import {
   type LotteryAdminStatus,
 } from "../types/lotteryAdmin";
 
+const RPC_ADMIN_GET_LOTTERIES = "admin_get_lotteries";
+
 const LOTTERY_STATUS_SET = new Set<string>(LOTTERY_ADMIN_STATUSES);
 
-/** Ligne telle que renvoyée par la vue `admin_lotteries_overview` (PostgREST). */
+/** Ligne telle que renvoyée par la RPC `admin_get_lotteries()` (PostgREST). */
 type AdminLotteriesOverviewRow = {
   lottery_id: string;
   title: string;
@@ -108,33 +110,16 @@ function mapOverviewRowToListItem(
 }
 
 /**
- * Liste les loteries via la vue `admin_lotteries_overview` (totaux tickets / gagnants, hors RLS table par table).
+ * Liste les loteries via la RPC `admin_get_lotteries()` (SECURITY DEFINER + garde admin en base).
  * Les lignes invalides sont ignorées ; erreur PostgREST : log console + propagation.
  */
 export async function getLotteries(): Promise<GetLotteriesResult> {
   const supabase = getSupabaseClient();
 
-  const { data, error } = await supabase
-    .from("admin_lotteries_overview")
-    .select(
-      `
-      lottery_id,
-      title,
-      status,
-      starts_at,
-      ends_at,
-      draw_at,
-      ticket_cost,
-      number_of_winners,
-      brand_name,
-      tickets_count,
-      winners_count
-    `,
-    )
-    .order("draw_at", { ascending: false });
+  const { data, error } = await supabase.rpc(RPC_ADMIN_GET_LOTTERIES);
 
   if (error) {
-    console.error("[getLotteries] admin_lotteries_overview", error.message, error);
+    console.error("[getLotteries] admin_get_lotteries", error.message, error);
     throw new Error(`getLotteries: ${error.message}`, { cause: error });
   }
 
