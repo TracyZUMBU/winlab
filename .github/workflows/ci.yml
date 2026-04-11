@@ -1,0 +1,61 @@
+# Étape 1 — qualité applicative (lint / typecheck / tests unitaires / build).
+# Pas de déploiement. Les tests d’intégration (Supabase + migrations) restent hors
+# de ce workflow — voir `npm run test:integration` dans chaque app.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: |
+          npm run lint --if-present -w admin
+          npm run lint --if-present -w mobile
+          npm run lint --if-present -w @winlab/monitoring
+          npm run lint --if-present -w @winlab/supabase-test-utils
+
+      - name: Typecheck
+        run: |
+          npm run typecheck --if-present -w admin
+          npm run typecheck --if-present -w mobile
+          npm run typecheck --if-present -w @winlab/monitoring
+          npm run typecheck --if-present -w @winlab/supabase-test-utils
+
+      - name: Unit tests (Jest)
+        run: |
+          npm run test --if-present -w admin
+          npm run test --if-present -w mobile
+
+      - name: Build
+        run: |
+          npm run build --if-present -w admin
+          npm run build --if-present -w mobile
+          npm run build --if-present -w @winlab/monitoring
+          npm run build --if-present -w @winlab/supabase-test-utils

@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+echo "Running pre-push checks (lint + typecheck, workspaces)..."
+
+npm run lint --if-present -w admin
+npm run lint --if-present -w mobile
+npm run lint --if-present -w @winlab/monitoring
+npm run lint --if-present -w @winlab/supabase-test-utils
+
+npm run typecheck --if-present -w admin
+npm run typecheck --if-present -w mobile
+npm run typecheck --if-present -w @winlab/monitoring
+npm run typecheck --if-present -w @winlab/supabase-test-utils

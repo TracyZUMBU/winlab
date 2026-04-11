@@ -10,7 +10,8 @@
     "migrate:local": "supabase migration up --local --include-all --workdir ../..",
     "migrate:remote": "supabase migration up --linked --include-all --workdir ../..",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",
-    "test": "supabase migration up --local --include-all --workdir ../.. && jest",
+    "test": "npm run test:unit",
+    "test:unit": "jest --selectProjects unit",
     "test:integration": "jest --selectProjects integration"
   },
   "dependencies": {
