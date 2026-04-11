@@ -1,6 +1,6 @@
-import { getSupabaseClient } from "../../../lib/supabase";
-import type { ServiceResult } from "../../../lib/api/serviceResult";
 import { mapSupabaseToErrorCode } from "../../../lib/api/mapSupabaseToErrorCode";
+import type { ServiceResult } from "../../../lib/api/serviceResult";
+import { getSupabaseClient } from "../../../lib/supabase";
 import {
   MISSION_ADMIN_STATUSES,
   MISSION_ADMIN_TYPES,
@@ -71,7 +71,9 @@ function toNonNegativeInt(value: unknown, fallback: number): number {
   return fallback;
 }
 
-function buildFilterRpcArgs(filters: AdminMissionsListFilters): Record<string, unknown> {
+function buildFilterRpcArgs(
+  filters: AdminMissionsListFilters,
+): Record<string, unknown> {
   const args: Record<string, unknown> = {};
   const q =
     filters.titleSearch != null ? String(filters.titleSearch).trim() : "";
@@ -91,7 +93,9 @@ function buildFilterRpcArgs(filters: AdminMissionsListFilters): Record<string, u
   return args;
 }
 
-function mapRpcRowToListItem(row: AdminMissionsRpcRow): AdminMissionListItem | null {
+function mapRpcRowToListItem(
+  row: AdminMissionsRpcRow,
+): AdminMissionListItem | null {
   if (!isNonEmptyString(row.mission_id)) {
     return null;
   }
@@ -101,7 +105,10 @@ function mapRpcRowToListItem(row: AdminMissionsRpcRow): AdminMissionListItem | n
   if (!isNonEmptyString(row.brand_id)) {
     return null;
   }
-  if (typeof row.token_reward !== "number" || Number.isNaN(row.token_reward)) {
+  if (
+    typeof row.token_reward !== "number" ||
+    !Number.isFinite(row.token_reward)
+  ) {
     return null;
   }
 

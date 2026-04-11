@@ -18,6 +18,10 @@ export function LotteryDetailContent({
   hideTitleWhenOk = false,
   headingId,
 }: LotteryDetailContentProps) {
+  const generalSectionId = `${headingId}-general`;
+  const ticketsSectionId = `${headingId}-tickets`;
+  const winnersSectionId = `${headingId}-winners`;
+
   return (
     <>
       {state.kind === "loading" && (
@@ -47,8 +51,8 @@ export function LotteryDetailContent({
             </h2>
           ) : null}
 
-          <section className="admin-detail-section" aria-labelledby="detail-general">
-            <h3 id="detail-general" className="admin-detail-section__title">
+          <section className="admin-detail-section" aria-labelledby={generalSectionId}>
+            <h3 id={generalSectionId} className="admin-detail-section__title">
               Informations générales
             </h3>
             <dl className="admin-detail-dl">
@@ -117,8 +121,8 @@ export function LotteryDetailContent({
             )}
           </section>
 
-          <section className="admin-detail-section" aria-labelledby="detail-tickets">
-            <h3 id="detail-tickets" className="admin-detail-section__title">
+          <section className="admin-detail-section" aria-labelledby={ticketsSectionId}>
+            <h3 id={ticketsSectionId} className="admin-detail-section__title">
               Tickets
             </h3>
             <p className="admin-detail-summary">
@@ -134,8 +138,8 @@ export function LotteryDetailContent({
             </p>
           </section>
 
-          <section className="admin-detail-section" aria-labelledby="detail-winners">
-            <h3 id="detail-winners" className="admin-detail-section__title">
+          <section className="admin-detail-section" aria-labelledby={winnersSectionId}>
+            <h3 id={winnersSectionId} className="admin-detail-section__title">
               Gagnants
             </h3>
             {state.detail.winners.length === 0 ? (

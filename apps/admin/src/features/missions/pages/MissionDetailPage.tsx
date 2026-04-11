@@ -9,8 +9,11 @@ export function MissionDetailPage() {
   const state = useMissionAdminDetail(missionId);
 
   return (
-    <section className="page-mission-detail" aria-labelledby="mission-detail-heading">
-      <p className="page-lottery-detail__back">
+    <section
+      className="page-mission-detail"
+      aria-labelledby="mission-detail-heading"
+    >
+      <p className="page-mission-detail__back">
         <Link to="/missions">← Retour aux missions</Link>
       </p>
 

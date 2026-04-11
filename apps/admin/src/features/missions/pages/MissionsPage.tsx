@@ -18,10 +18,10 @@ import {
 } from "../types/missionAdmin";
 
 const STATUS_FILTER_ALL = "all" as const;
-type StatusFilterValue = typeof STATUS_FILTER_ALL | MissionAdminKnownStatus | "unknown";
+type StatusFilterValue = typeof STATUS_FILTER_ALL | MissionAdminKnownStatus;
 
 const TYPE_FILTER_ALL = "all" as const;
-type TypeFilterValue = typeof TYPE_FILTER_ALL | MissionAdminKnownType | "unknown";
+type TypeFilterValue = typeof TYPE_FILTER_ALL | MissionAdminKnownType;
 
 const DEFAULT_PAGE_SIZE = 20;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -44,31 +44,23 @@ const SORT_LABELS: Record<MissionAdminListSortId, string> = {
 const STATUS_FILTER_OPTIONS: { value: StatusFilterValue; label: string }[] = [
   { value: STATUS_FILTER_ALL, label: "Tous les statuts" },
   ...MISSION_ADMIN_STATUSES.map((s) => ({ value: s, label: s })),
-  { value: "unknown", label: "unknown" },
 ];
 
 const TYPE_FILTER_OPTIONS: { value: TypeFilterValue; label: string }[] = [
   { value: TYPE_FILTER_ALL, label: "Tous les types" },
   ...MISSION_ADMIN_TYPES.map((t) => ({ value: t, label: t })),
-  { value: "unknown", label: "unknown" },
 ];
 
 function statusToQueryStatus(
   v: StatusFilterValue,
 ): AdminMissionsListQueryInput["status"] {
-  if (v === STATUS_FILTER_ALL || v === "unknown") {
-    return STATUS_FILTER_ALL;
-  }
-  return v;
+  return v === STATUS_FILTER_ALL ? STATUS_FILTER_ALL : v;
 }
 
 function typeToQueryType(
   v: TypeFilterValue,
 ): AdminMissionsListQueryInput["missionType"] {
-  if (v === TYPE_FILTER_ALL || v === "unknown") {
-    return TYPE_FILTER_ALL;
-  }
-  return v;
+  return v === TYPE_FILTER_ALL ? TYPE_FILTER_ALL : v;
 }
 
 export function MissionsPage() {

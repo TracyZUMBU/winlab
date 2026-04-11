@@ -2,6 +2,7 @@
 -- Canonical definitions; keep in sync with the migration that applies them.
 
 -- Shared filter semantics (must stay aligned between list + count):
+-- - Same row set: missions INNER JOIN brands (as in admin_get_missions)
 -- - p_title_search: NULL or '' => no filter; else ILIKE '%trimmed%'
 -- - p_brand_id / p_status / p_mission_type: NULL => no filter
 
@@ -119,7 +120,7 @@ COMMENT ON FUNCTION public.admin_get_missions(
   public.mission_type,
   text
 ) IS
-  'Backoffice: paginated mission list with completion counts. Filters must match admin_get_missions_count. Caller must be profiles.is_admin.';
+  'Backoffice: paginated mission list with completion counts. Filters must match admin_get_missions_count. Caller must be public.is_admin.';
 
 CREATE OR REPLACE FUNCTION public.admin_get_missions_count(
   p_title_search text DEFAULT NULL,
@@ -146,6 +147,8 @@ BEGIN
   SELECT COUNT(*)::bigint
   INTO v_count
   FROM public.missions m
+  INNER JOIN public.brands b
+    ON b.id = m.brand_id
   WHERE (v_title IS NULL OR m.title ILIKE ('%' || v_title || '%'))
     AND (p_brand_id IS NULL OR m.brand_id = p_brand_id)
     AND (p_status IS NULL OR m.status = p_status)
@@ -168,7 +171,7 @@ COMMENT ON FUNCTION public.admin_get_missions_count(
   public.mission_status,
   public.mission_type
 ) IS
-  'Backoffice: total rows for admin_get_missions with the same filter params (no pagination). Caller must be profiles.is_admin.';
+  'Backoffice: total rows for admin_get_missions with the same filter params (no pagination), including INNER JOIN brands as the list RPC. Caller must be profiles.is_admin.';
 
 CREATE OR REPLACE FUNCTION public.admin_get_mission_detail(p_mission_id uuid)
 RETURNS TABLE (
