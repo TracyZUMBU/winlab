@@ -1,4 +1,4 @@
-import type { Database } from "@/src/lib/supabase.types";
+import type { Database } from "./databaseTypes";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL!;

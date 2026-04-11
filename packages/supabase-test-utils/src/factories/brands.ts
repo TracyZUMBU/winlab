@@ -1,6 +1,6 @@
-import type { Database } from "@/src/lib/supabase.types";
-import { createTestId } from "@/tests/utils/testIds";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import type { Database } from "../databaseTypes";
+import { createTestId } from "../testIds";
+import { getSupabaseAdminClient } from "../supabaseTestClient";
 
 type BrandInsert = Database["public"]["Tables"]["brands"]["Insert"];
 type BrandRow = Database["public"]["Tables"]["brands"]["Row"];

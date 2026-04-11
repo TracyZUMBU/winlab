@@ -1,6 +1,6 @@
-import type { Database } from "@/src/lib/supabase.types";
-import { createTestId } from "@/tests/utils/testIds";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import type { Database } from "../databaseTypes";
+import { createTestId } from "../testIds";
+import { getSupabaseAdminClient } from "../supabaseTestClient";
 
 type LotteryInsert = Database["public"]["Tables"]["lotteries"]["Insert"];
 type LotteryRow = Database["public"]["Tables"]["lotteries"]["Row"];
@@ -17,7 +17,6 @@ export const createLottery = async (
   const uniqueId = createTestId("lottery");
   const now = Date.now();
 
-  // Defaults chosen to always satisfy `lotteries_dates_are_valid`.
   const payload: LotteryInsert = {
     brand_id: overrides.brand_id,
     title: `Lottery test ${uniqueId}`,

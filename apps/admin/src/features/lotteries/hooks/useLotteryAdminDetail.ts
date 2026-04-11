@@ -16,10 +16,10 @@ export function useLotteryAdminDetail(lotteryId: string | undefined): DetailStat
 
   const query = useQuery({
     ...adminLotteryDetailOptions(id),
-    enabled: isSupabaseConfigured && id.length > 0,
+    enabled: isSupabaseConfigured() && id.length > 0,
   });
 
-  if (!isSupabaseConfigured) {
+  if (!isSupabaseConfigured()) {
     return {
       kind: "error",
       errorCode: "CONFIGURATION",

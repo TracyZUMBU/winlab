@@ -17,7 +17,7 @@ export function AdminAuthGate({ children }: AdminAuthGateProps) {
   const authState = useCurrentUser();
   const adminAuth = useAdminAuthorization(authState.status === "ready" ? authState.user : null);
 
-  if (!isSupabaseConfigured) {
+  if (!isSupabaseConfigured()) {
     return (
       <div className="auth-login">
         <div className="auth-login__card">

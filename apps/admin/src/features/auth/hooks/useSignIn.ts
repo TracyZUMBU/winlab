@@ -13,7 +13,7 @@ export function useSignIn() {
   const signIn = useCallback(async (email: string, password: string) => {
     setErrorMessage(null);
 
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       setErrorMessage(CONFIG_ERROR);
       return { success: false as const };
     }

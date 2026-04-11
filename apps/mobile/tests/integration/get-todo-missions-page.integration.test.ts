@@ -1,7 +1,9 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createMission } from "../factories/missions";
-import { createMissionCompletion } from "../factories/mission_completion";
+import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createMission,
+  createMissionCompletion,
+} from "@winlab/supabase-test-utils";
 
 const RPC = "get_todo_missions_page";
 

@@ -14,10 +14,10 @@ export type LotteriesQueryState =
 export function useLotteriesQuery(): LotteriesQueryState {
   const query = useQuery({
     ...adminLotteriesListOptions(),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseConfigured(),
   });
 
-  if (!isSupabaseConfigured) {
+  if (!isSupabaseConfigured()) {
     return {
       kind: "error",
       errorCode: "CONFIGURATION",

@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "migrate:all": "npm run migrate:local && npm run migrate:remote"
+    "migrate:local": "supabase migration up --local --include-all --workdir ../..",
+    "migrate:remote": "supabase migration up --linked --include-all --workdir ../..",
+    "migrate:all": "npm run migrate:local && npm run migrate:remote",
+    "test": "supabase migration up --local --include-all --workdir ../.. && jest",
+    "test:integration": "jest --selectProjects integration"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.0",
@@ -17,9 +21,13 @@
     "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
+    "@winlab/supabase-test-utils": "*",
+    "@types/jest": "^29.5.14",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
     "typescript": "~5.9.2",
     "vite": "^6.0.3"
   }

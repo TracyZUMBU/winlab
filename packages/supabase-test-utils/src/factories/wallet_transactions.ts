@@ -1,5 +1,5 @@
-import type { Database } from "@/src/lib/supabase.types";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import type { Database } from "../databaseTypes";
+import { getSupabaseAdminClient } from "../supabaseTestClient";
 
 type WalletTransactionInsert =
   Database["public"]["Tables"]["wallet_transactions"]["Insert"];

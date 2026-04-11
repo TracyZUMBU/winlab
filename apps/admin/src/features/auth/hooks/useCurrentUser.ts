@@ -20,14 +20,14 @@ export function useCurrentUser(): CurrentUserState {
   const query = useQuery({
     queryKey: authKeys.session(),
     queryFn: getAuthUserFromSession,
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseConfigured(),
     staleTime: Infinity,
     gcTime: Infinity,
     retry: false,
   });
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured()) {
       return;
     }
 
@@ -43,7 +43,7 @@ export function useCurrentUser(): CurrentUserState {
     };
   }, [queryClient]);
 
-  if (!isSupabaseConfigured) {
+  if (!isSupabaseConfigured()) {
     return { status: "ready", user: null };
   }
 

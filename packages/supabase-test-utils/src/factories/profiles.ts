@@ -1,4 +1,4 @@
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import { getSupabaseAdminClient } from "../supabaseTestClient";
 
 /**
  * Met à jour `profiles.is_admin` (service role uniquement côté DB — trigger aligné).
@@ -9,13 +9,20 @@ export async function setProfileIsAdmin(
   isAdmin: boolean,
 ): Promise<void> {
   const admin = getSupabaseAdminClient();
-  const { error } = await admin
+  const { data, error } = await admin
     .from("profiles")
-    // Colonne présente en base ; les types générés peuvent être en retard.
-    .update({ is_admin: isAdmin } as Record<string, unknown>)
-    .eq("id", userId);
+    .update({ is_admin: isAdmin } as never)
+    .eq("id", userId)
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     throw error;
+  }
+
+  if (!data) {
+    throw new Error(
+      `setProfileIsAdmin: no profile row was updated for userId=${userId} (missing profile or id mismatch)`,
+    );
   }
 }

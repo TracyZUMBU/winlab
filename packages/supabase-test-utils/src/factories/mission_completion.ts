@@ -1,5 +1,5 @@
-import { Database } from "@/src/lib/supabase.types";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import type { Database } from "../databaseTypes";
+import { getSupabaseAdminClient } from "../supabaseTestClient";
 
 type MissionCompletionInsert =
   Database["public"]["Tables"]["mission_completions"]["Insert"];

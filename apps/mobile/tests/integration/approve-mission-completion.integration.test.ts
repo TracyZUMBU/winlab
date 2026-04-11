@@ -1,9 +1,11 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createMissionCompletion } from "../factories/mission_completion";
-import { createMission } from "../factories/missions";
-import { createWalletTransaction } from "../factories/wallet_transactions";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createMission,
+  createMissionCompletion,
+  createWalletTransaction,
+  getSupabaseAdminClient,
+} from "@winlab/supabase-test-utils";
 
 // tests/integration/approve-mission-completion.integration.test.ts
 const APPROVE_MISSION_COMPLETION_RPC = "approve_mission_completion";
