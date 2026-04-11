@@ -1,0 +1,27 @@
+---
+description: Postgres storage RLS — case-insensitive filename / extension checks
+globs: supabase/**/*.sql
+alwaysApply: false
+---
+
+# Supabase storage RLS and regex on object names
+
+When `CREATE POLICY` on `storage.objects` validates `storage.filename(name)` (or similar) against allowed file extensions or patterns:
+
+1. **Do not use** the case-sensitive regex match operator `~` for extension lists unless the product explicitly requires case-sensitive extensions.
+2. **Prefer** `~*` (case-insensitive) so clients on mobile/desktop that produce `.JPG`, `.PNG`, etc. are not rejected while `.jpg` works.
+3. **Keep** intentional exact matches (e.g. legacy `storage.filename(name) = 'avatar'`) as written; only the regex branch should be case-insensitive unless you normalize with `lower(...) ~ '...'` consistently.
+
+Bad:
+
+```sql
+storage.filename(name) ~ '^avatar\.(jpg|jpeg|png)$'
+```
+
+Good (same pattern, all policies aligned: INSERT `WITH CHECK`, UPDATE `USING` / `WITH CHECK`, DELETE `USING`):
+
+```sql
+storage.filename(name) ~* '^avatar\.(jpg|jpeg|png)$'
+```
+
+After changing one policy on the same bucket/path, **update every policy** (insert, update, delete) so behavior stays consistent across operations.

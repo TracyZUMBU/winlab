@@ -46,6 +46,9 @@ export function mapSupabaseToErrorCode(error: unknown): string {
   if (msg.includes("WINLAB_INVALID_LOTTERY_ID")) {
     return "INVALID_LOTTERY_ID";
   }
+  if (msg.includes("WINLAB_INVALID_MISSION_ID")) {
+    return "INVALID_MISSION_ID";
+  }
 
   if (isLikelyNetworkError(error)) {
     return "NETWORK";

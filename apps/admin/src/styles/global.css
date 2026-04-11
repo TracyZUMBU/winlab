@@ -297,6 +297,64 @@ body {
   border-bottom: none;
 }
 
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ended td {
+  background: #f8fafc;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ended td:first-child {
+  box-shadow: inset 3px 0 0 0 #94a3b8;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ending-soon td {
+  background: #fffbeb;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ending-soon td:first-child {
+  box-shadow: inset 3px 0 0 0 #f59e0b;
+}
+
+.lotteries-dev-table__end-cell {
+  vertical-align: middle;
+}
+
+.lotteries-dev-table__end-cell-stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.lotteries-dev-table__end-cell--ended .lotteries-dev-table__end-date {
+  color: #64748b;
+}
+
+.lotteries-dev-table__end-cell--ending-soon .lotteries-dev-table__end-date {
+  font-weight: 600;
+  color: #92400e;
+}
+
+.lotteries-dev-table__end-chip {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lotteries-dev-table__end-chip--ended {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.lotteries-dev-table__end-chip--soon {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
 .lotteries-dev-table__title {
   font-weight: 500;
   max-width: 14rem;
@@ -511,4 +569,233 @@ body {
   white-space: nowrap;
   font-size: 0.75rem;
   vertical-align: bottom;
+}
+
+/* Panneau détail loterie (slide depuis la droite) */
+.lottery-detail-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.lottery-detail-panel__backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgb(15 23 42 / 0.4);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.lottery-detail-panel__backdrop:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.lottery-detail-panel__sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(42rem, 100vw);
+  max-width: 100%;
+  background: #fff;
+  box-shadow: -8px 0 32px rgb(15 23 42 / 0.12);
+  pointer-events: auto;
+  animation: lottery-detail-panel-slide-in 0.22s ease-out;
+}
+
+@keyframes lottery-detail-panel-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.lottery-detail-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.lottery-detail-panel__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+}
+
+.lottery-detail-panel__close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -0.25rem -0.25rem -0.25rem 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.lottery-detail-panel__close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.lottery-detail-panel__close:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.lottery-detail-panel__body {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 1.25rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.page-missions__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.missions-toolbar__field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: #b91c1c;
+  line-height: 1.35;
+}
+
+.missions-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.missions-pagination__btn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: #334155;
+  cursor: pointer;
+}
+
+.missions-pagination__btn:hover:not(:disabled) {
+  background: #f1f5f9;
+}
+
+.missions-pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mission-type,
+.mission-status,
+.mission-validation {
+  display: inline-block;
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mission-status--draft {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.mission-status--active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mission-status--paused {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mission-status--archived {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mission-status--unknown {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mission-type--survey {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.mission-type--video {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.mission-type--follow {
+  background: #cffafe;
+  color: #0e7490;
+}
+
+.mission-type--referral {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.mission-type--custom {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.mission-type--unknown {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mission-validation--automatic {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.mission-validation--manual {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.mission-validation--unknown {
+  background: #f1f5f9;
+  color: #64748b;
 }

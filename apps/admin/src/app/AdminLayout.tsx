@@ -32,6 +32,9 @@ export function AdminLayout() {
             <Link to="/lotteries" className="admin-layout__nav-link">
               Lotteries
             </Link>
+            <Link to="/missions" className="admin-layout__nav-link">
+              Missions
+            </Link>
             {sessionEmail && (
               <span className="admin-layout__session" title={sessionEmail}>
                 {sessionEmail}

@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { LotteriesDevTable } from "../components/LotteriesDevTable";
+import { LotteryDetailPanel } from "../components/LotteryDetailPanel";
 import { useLotteriesQuery } from "../hooks/useLotteriesQuery";
 import {
   LOTTERY_ADMIN_STATUSES,
@@ -69,11 +71,22 @@ const STATUS_FILTER_OPTIONS: { value: StatusFilterValue; label: string }[] = [
 ];
 
 /** Liste des loteries pour l’admin (outil dev). */
+const DETAIL_QUERY_KEY = "detail";
+
 export function LotteriesPage() {
   const state = useLotteriesQuery();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [titleSearchQuery, setTitleSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(STATUS_FILTER_ALL);
   const [sortId, setSortId] = useState<LotteryListDevSortId>("draw_at_desc");
+
+  const detailLotteryId = searchParams.get(DETAIL_QUERY_KEY)?.trim() ?? "";
+
+  const closeDetailPanel = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.delete(DETAIL_QUERY_KEY);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const filteredLotteries = useMemo(() => {
     if (state.kind !== "ok") {
@@ -89,6 +102,10 @@ export function LotteriesPage() {
 
   return (
     <section className="page-lotteries" aria-labelledby="lotteries-heading">
+      {detailLotteryId ? (
+        <LotteryDetailPanel lotteryId={detailLotteryId} onClose={closeDetailPanel} />
+      ) : null}
+
       <h2 id="lotteries-heading" className="page-lotteries__heading">
         Lotteries
       </h2>

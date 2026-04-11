@@ -18,7 +18,7 @@ $$;
 ALTER FUNCTION public.is_admin(uuid) OWNER TO postgres;
 
 COMMENT ON FUNCTION public.is_admin(uuid) IS
-  'Returns true when profiles.is_admin is true for the given user id (typically auth.uid()). Used by admin_get_lotteries / admin_get_lottery_detail and RLS.';
+  'Returns true when profiles.is_admin is true for the given user id (typically auth.uid()). Used by admin read RPCs (lotteries, missions) and RLS.';
 
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO service_role;

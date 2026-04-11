@@ -4,8 +4,7 @@
  * Génère le fichier `supabase/database.enums.ts` à partir de la migration
  * `supabase/migrations/20260318085739_initial_remote_schema.sql`.
  *
- * Ce script est pensé pour être appelé depuis le dossier `apps/mobile`,
- * par exemple via le script npm `gen:types`.
+ * Appelé depuis la racine du monorepo via le script npm racine `gen:types`.
  */
 
 const fs = require("fs");
