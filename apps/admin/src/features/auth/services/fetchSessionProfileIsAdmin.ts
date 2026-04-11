@@ -1,3 +1,4 @@
+import { monitoring } from "../../../lib/monitoring";
 import { getSupabaseClient } from "../../../lib/supabase";
 
 export type SessionProfileAdminFields = {
@@ -21,6 +22,14 @@ export async function fetchSessionProfileIsAdmin(
     .maybeSingle();
 
   if (error) {
+    monitoring.captureException({
+      name: "admin_profile_fetch_failed",
+      severity: "error",
+      feature: "auth",
+      message: "Supabase error while loading profile for admin authorization",
+      error,
+      userId,
+    });
     return { ok: false, errorCode: "profile_fetch_failed" };
   }
   if (!data) {

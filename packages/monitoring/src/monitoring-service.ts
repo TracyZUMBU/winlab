@@ -1,5 +1,3 @@
-import { logger } from "@/src/lib/logger";
-
 import type {
   MonitoringError,
   MonitoringEvent,
@@ -29,6 +27,11 @@ export type MonitoringServiceOptions = {
   environment: string;
   service: string;
   providers: MonitoringProvider[];
+  /**
+   * Called when a provider’s `capture` rejects (Slack down, etc.).
+   * Defaults to `console.warn`.
+   */
+  onProviderDispatchFailure?: (payload: { reason: string }) => void;
 };
 
 function ensureNonEmptyString(value: unknown): string {
@@ -40,18 +43,23 @@ export class MonitoringService {
   private readonly environment: string;
   private readonly service: string;
   private readonly providers: MonitoringProvider[];
+  private readonly onProviderDispatchFailure: (
+    payload: { reason: string },
+  ) => void;
 
   constructor(options: MonitoringServiceOptions) {
     this.environment = options.environment;
     this.service = options.service;
     this.providers = options.providers;
+    this.onProviderDispatchFailure =
+      options.onProviderDispatchFailure ??
+      ((payload) => {
+        console.warn("[monitoring] Provider dispatch failed", payload.reason);
+      });
   }
 
   private async dispatch(event: MonitoringEvent): Promise<void> {
     if (this.providers.length === 0) return;
-
-    // TODO: enforce monitoring retention policy at the storage layer
-    // (e.g. Slack edge function persistence, Sentry configuration, etc.).
 
     // Never break the business flow because of monitoring.
     const sanitizedEvent = await sanitizeMonitoringEvent(event);
@@ -63,9 +71,7 @@ export class MonitoringService {
       if (result.status !== "rejected") continue;
 
       const message = ensureNonEmptyString(result.reason);
-      logger.warn("[monitoring] Provider dispatch failed", {
-        error: message,
-      });
+      this.onProviderDispatchFailure({ reason: message });
     }
   }
 
@@ -85,7 +91,6 @@ export class MonitoringService {
       extra: input.extra,
     };
 
-    // Best-effort: we never report the failure back to the business.
     void this.dispatch(event).catch(() => {});
   }
 
@@ -114,7 +119,6 @@ export class MonitoringService {
       },
     };
 
-    // Best-effort: we never report the failure back to the business.
     void this.dispatch(event).catch(() => {});
   }
 }

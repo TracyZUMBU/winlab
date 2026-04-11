@@ -28,6 +28,7 @@ Utiliser le **kebab-case** pour le nom de fichier.
 
 ## Index
 
-| Document | Sujet |
-|----------|--------|
+| Document                                                                             | Sujet                                                                     |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
 | [error-handling-stabilization-roadmap.md](./error-handling-stabilization-roadmap.md) | Stabilisation gestion d’erreurs (mobile, conventions, monitoring queries) |
+| [admin-hardening-roadmap.md](./admin-hardening-roadmap.md)                           | Durcissement technique admin (monitoring, query, logger)                  |

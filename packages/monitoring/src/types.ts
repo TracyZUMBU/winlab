@@ -25,7 +25,7 @@ export type MonitoringEventBase = {
   timestamp: number;
   /** Populated by MonitoringService */
   environment: string;
-  /** Populated by MonitoringService */
+  /** Populated by MonitoringService — use stable app ids e.g. winlab-mobile, winlab-admin */
   service: string;
 
   /** Optional context */
@@ -35,7 +35,7 @@ export type MonitoringEventBase = {
    *
    * IMPORTANT:
    * - Never pass raw personal data (emails, phone numbers, names, etc.).
-   * - This value must be hashed/pseudonymized before events are emitted.
+   * - This value is hashed/pseudonymized before events are emitted.
    */
   userId?: string;
   requestId?: string;
