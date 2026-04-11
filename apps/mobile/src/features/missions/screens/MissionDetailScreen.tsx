@@ -20,8 +20,8 @@ import { Screen } from "@/src/components/ui/Screen";
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
-import { theme } from "@/src/theme";
 import { showSuccessToast } from "@/src/shared/toast";
+import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
@@ -225,16 +225,29 @@ export function MissionDetailScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.hero} pointerEvents="none">
-            <LinearGradient
-              colors={[
-                theme.colors.accentWash,
-                theme.colors.surfaceSoft,
-                theme.colors.backgroundDark,
-              ]}
-              style={StyleSheet.absoluteFill}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            />
+            {mission.image_url ? (
+              <Image
+                source={{ uri: mission.image_url }}
+                style={styles.heroImage}
+                contentFit="cover"
+                transition={200}
+                cachePolicy="memory-disk"
+                accessibilityLabel={t("missions.detail.hero.image", {
+                  brand: brandName,
+                })}
+              />
+            ) : (
+              <LinearGradient
+                colors={[
+                  theme.colors.accentWash,
+                  theme.colors.surfaceSoft,
+                  theme.colors.backgroundDark,
+                ]}
+                style={StyleSheet.absoluteFill}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              />
+            )}
           </View>
 
           <View style={styles.brandBlock}>
@@ -445,6 +458,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceSoft,
     overflow: "hidden",
     marginHorizontal: -theme.spacing.screenHorizontal,
+  },
+  heroImage: {
+    width: "100%",
+    height: "100%",
   },
 
   brandBlock: {

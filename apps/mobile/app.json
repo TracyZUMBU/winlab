@@ -13,7 +13,8 @@
       "bundleIdentifier": "com.winlab.app",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSPhotoLibraryUsageDescription": "Winlab accède à vos photos pour définir votre photo de profil."
       }
     },
     "android": {
@@ -37,6 +38,12 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Winlab accède à vos photos pour définir votre photo de profil."
+        }
+      ],
       "./plugins/withAsyncStorageLocalRepo",
       [
         "expo-splash-screen",

@@ -1,6 +1,12 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 
-import type { Profile, UpdateMyProfileInput } from "../types/profileTypes";
+import {
+  CreateProfileError,
+  type Profile,
+  type UpdateMyProfileInput,
+} from "../types/profileTypes";
+import { profileFromRow } from "../types/profileMapper";
+import { isProfileUsernameUniqueViolation } from "./insertProfileWithReferralRetry";
 import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 
 const PROFILES_TABLE = "profiles";
@@ -25,14 +31,21 @@ export async function updateMyProfile(
 
   const { data, error } = await supabase
     .from(PROFILES_TABLE)
-    .update({ username: input.username })
+    .update({
+      username: input.username,
+      birth_date: input.birth_date,
+      sex: input.sex,
+    })
     .eq("id", user.id)
     .select(PROFILE_MVP_COLUMNS)
     .single();
 
   if (error) {
+    if (isProfileUsernameUniqueViolation(error)) {
+      throw new CreateProfileError("USERNAME_TAKEN");
+    }
     throw error;
   }
 
-  return data;
+  return profileFromRow(data);
 }

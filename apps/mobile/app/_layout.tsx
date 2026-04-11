@@ -6,6 +6,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
@@ -26,14 +27,16 @@ export default function RootLayout() {
   }, [pathname, redirectTo, router, status]);
 
   return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <View style={styles.root}>
-          <Stack screenOptions={{ headerShown: false }} />
-          <AppToastHost />
-        </View>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <View style={styles.root}>
+            <Stack screenOptions={{ headerShown: false }} />
+            <AppToastHost />
+          </View>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

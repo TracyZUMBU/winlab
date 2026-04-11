@@ -31,6 +31,12 @@ export default function AppLayout() {
     return null;
   }
 
+  // Ne pas monter les écrans d’onglets tant que la garde n’a pas validé session + profil
+  // (sinon un tab peut planter avant le `router.replace`, et l’erreur remonte de façon opaque).
+  if (!sessionUserId || !profile) {
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{

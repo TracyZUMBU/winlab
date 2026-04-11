@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import type { CreateProfilePayload, Profile } from "../types/profileTypes";
+import { profileFromRow } from "../types/profileMapper";
 import {
   insertProfileWithReferralRetry,
   isProfileUsernameUniqueViolation,
@@ -12,6 +13,8 @@ export const createProfile = async ({
   userId,
   email,
   username,
+  birth_date,
+  sex,
 }: CreateProfilePayload): Promise<Profile> => {
   const supabase = getSupabaseClient();
 
@@ -22,6 +25,8 @@ export const createProfile = async ({
         id: userId,
         email,
         username,
+        birth_date,
+        sex,
       })
       .select("*")
       .single();
@@ -43,6 +48,9 @@ export const createProfile = async ({
         });
       }
     }
-    return { data, error };
+    return {
+      data: data ? profileFromRow(data) : null,
+      error,
+    };
   });
 };

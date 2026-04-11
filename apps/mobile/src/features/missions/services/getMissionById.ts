@@ -18,6 +18,7 @@ type MissionRow = {
   ends_at: string | null;
   metadata: Json | null;
   validation_mode: MissionValidationMode;
+  image_url: string | null;
   brand: MissionBrand;
 };
 
@@ -36,6 +37,7 @@ export async function getMissionById(missionId: string): Promise<MissionRow> {
       ends_at,
       metadata,
       validation_mode,
+      image_url,
       brand:brands!inner(id, name, logo_url)
     `,
     )

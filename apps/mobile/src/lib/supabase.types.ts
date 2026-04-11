@@ -180,7 +180,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          brand_id: string
+          brand_id?: string
           category?: string | null
           created_at?: string
           description?: string | null
@@ -260,6 +260,20 @@ export type Database = {
             foreignKeyName: "lottery_tickets_lottery_id_fkey"
             columns: ["lottery_id"]
             isOneToOne: false
+            referencedRelation: "admin_lotteries_overview"
+            referencedColumns: ["lottery_id"]
+          },
+          {
+            foreignKeyName: "lottery_tickets_lottery_id_fkey"
+            columns: ["lottery_id"]
+            isOneToOne: false
+            referencedRelation: "admin_lottery_detail"
+            referencedColumns: ["lottery_id"]
+          },
+          {
+            foreignKeyName: "lottery_tickets_lottery_id_fkey"
+            columns: ["lottery_id"]
+            isOneToOne: false
             referencedRelation: "lotteries"
             referencedColumns: ["id"]
           },
@@ -312,6 +326,20 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "lottery_winners_lottery_id_fkey"
+            columns: ["lottery_id"]
+            isOneToOne: false
+            referencedRelation: "admin_lotteries_overview"
+            referencedColumns: ["lottery_id"]
+          },
+          {
+            foreignKeyName: "lottery_winners_lottery_id_fkey"
+            columns: ["lottery_id"]
+            isOneToOne: false
+            referencedRelation: "admin_lottery_detail"
+            referencedColumns: ["lottery_id"]
+          },
           {
             foreignKeyName: "lottery_winners_lottery_id_fkey"
             columns: ["lottery_id"]
@@ -496,28 +524,34 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_date: string | null
           created_at: string | null
           email: string
           id: string
           referral_code: string | null
+          sex: string | null
           updated_at: string | null
           username: string
         }
         Insert: {
           avatar_url?: string | null
+          birth_date?: string | null
           created_at?: string | null
           email: string
           id: string
           referral_code?: string | null
+          sex?: string | null
           updated_at?: string | null
           username: string
         }
         Update: {
           avatar_url?: string | null
+          birth_date?: string | null
           created_at?: string | null
           email?: string
           id?: string
           referral_code?: string | null
+          sex?: string | null
           updated_at?: string | null
           username?: string
         }
@@ -829,6 +863,44 @@ export type Database = {
       }
     }
     Views: {
+      admin_lotteries_overview: {
+        Row: {
+          brand_name: string | null
+          draw_at: string | null
+          ends_at: string | null
+          lottery_id: string | null
+          number_of_winners: number | null
+          starts_at: string | null
+          status: Database["public"]["Enums"]["lottery_status"] | null
+          ticket_cost: number | null
+          tickets_count: number | null
+          title: string | null
+          winners_count: number | null
+        }
+        Relationships: []
+      }
+      admin_lottery_detail: {
+        Row: {
+          brand_name: string | null
+          category: string | null
+          description: string | null
+          draw_at: string | null
+          ends_at: string | null
+          is_featured: boolean | null
+          lottery_id: string | null
+          number_of_winners: number | null
+          short_description: string | null
+          slug: string | null
+          starts_at: string | null
+          status: Database["public"]["Enums"]["lottery_status"] | null
+          ticket_cost: number | null
+          tickets_count: number | null
+          title: string | null
+          winners: Json | null
+          winners_count: number | null
+        }
+        Relationships: []
+      }
       grocery_list_merged: {
         Row: {
           ingredient_id: string | null
@@ -876,33 +948,57 @@ export type Database = {
           success: boolean
         }[]
       }
-      buy_ticket: { Args: { p_lottery_id: string }; Returns: string }
+      buy_ticket: {
+        Args: { p_lottery_id: string }
+        Returns: {
+          error_code: string
+          success: boolean
+          ticket_id: string
+        }[]
+      }
+      generate_profile_referral_code: {
+        Args: { code_length?: number }
+        Returns: string
+      }
       get_lottery_active_ticket_counts: {
         Args: { p_lottery_ids: string[] }
         Returns: {
-          lottery_id: string
           active_tickets_count: number
+          lottery_id: string
+        }[]
+      }
+      get_todo_missions_page: {
+        Args: { p_limit: number; p_offset: number }
+        Returns: {
+          brand: Json
+          description: string
+          ends_at: string
+          id: string
+          image_url: string
+          mission_completions: Json
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          title: string
+          token_reward: number
         }[]
       }
       get_user_active_ticket_counts_by_lottery: {
         Args: { p_lottery_ids: string[] }
         Returns: {
-          lottery_id: string
           active_count: number
+          lottery_id: string
         }[]
       }
+      get_user_home_dashboard: { Args: never; Returns: Json }
       get_wallet_transactions_enriched: {
         Args: never
         Returns: {
-          id: string
           amount: number
-          context_title: string | null
+          context_title: string
           created_at: string
           direction: Database["public"]["Enums"]["wallet_direction"]
-          reference_id: string | null
-          reference_type:
-            | Database["public"]["Enums"]["wallet_reference_type"]
-            | null
+          id: string
+          reference_id: string
+          reference_type: Database["public"]["Enums"]["wallet_reference_type"]
           transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
         }[]
       }
@@ -914,6 +1010,7 @@ export type Database = {
         Args: { p_week_id: string }
         Returns: undefined
       }
+      run_lottery: { Args: { p_lottery_id: string }; Returns: string[] }
       submit_mission_completion: {
         Args: { p_mission_id: string; p_proof_data?: Json }
         Returns: {
@@ -922,29 +1019,11 @@ export type Database = {
           success: boolean
         }[]
       }
-      get_todo_missions_page: {
-        Args: { p_limit: number; p_offset: number }
-        Returns: {
-          id: string
-          title: string
-          description: string | null
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          token_reward: number
-          ends_at: string | null
-          image_url: string | null
-          brand: Json
-          mission_completions: Json
-        }[]
-      }
-      get_user_home_dashboard: {
-        Args: never
-        Returns: Json
-      }
     }
     Enums: {
       lottery_status: "draft" | "active" | "closed" | "drawn" | "cancelled"
       lottery_ticket_status: "active" | "cancelled"
-      meal_type: "breakfast" | "lunch" | "dinner"
+      meal_type: "breakfast" | "lunch" | "dinner" | "snack"
       mission_completion_status: "pending" | "approved" | "rejected"
       mission_status: "draft" | "active" | "paused" | "archived"
       mission_type: "survey" | "video" | "follow" | "referral" | "custom"
@@ -1093,7 +1172,7 @@ export const Constants = {
     Enums: {
       lottery_status: ["draft", "active", "closed", "drawn", "cancelled"],
       lottery_ticket_status: ["active", "cancelled"],
-      meal_type: ["breakfast", "lunch", "dinner"],
+      meal_type: ["breakfast", "lunch", "dinner", "snack"],
       mission_completion_status: ["pending", "approved", "rejected"],
       mission_status: ["draft", "active", "paused", "archived"],
       mission_type: ["survey", "video", "follow", "referral", "custom"],
