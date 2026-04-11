@@ -25,7 +25,7 @@ function isProfileReferralCodeUniqueViolation(error: PostgrestError): boolean {
 
 // TODO: PostgrestError doesn't expose constraint name directly.
 // This text parsing is fragile; consider using an RPC with structured error codes.
-function isProfileUsernameUniqueViolation(error: PostgrestError): boolean {
+export function isProfileUsernameUniqueViolation(error: PostgrestError): boolean {
   if (error.code !== "23505") {
     return false;
   }

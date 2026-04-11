@@ -43,10 +43,10 @@ jobs:
 
       - name: Typecheck
         run: |
-          npm run typecheck --if-present -w admin
-          npm run typecheck --if-present -w mobile
-          npm run typecheck --if-present -w @winlab/monitoring
-          npm run typecheck --if-present -w @winlab/supabase-test-utils
+          npm run typecheck -w admin
+          npm run typecheck -w mobile
+          npm run typecheck -w @winlab/monitoring
+          npm run typecheck -w @winlab/supabase-test-utils
 
       - name: Unit tests (Jest)
         run: |
