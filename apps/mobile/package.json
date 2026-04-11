@@ -3,7 +3,6 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "postinstall": "patch-package",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
@@ -11,7 +10,9 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "gen:types": "supabase gen types typescript --project-id lfmkzmgxopogmuyusdde --schema public > src/lib/supabase.types.ts && node ./scripts/gen-enums.js",
-    "test": "supabase migration up --local --include-all --workdir ../.. && jest",
+    "test": "npm run test:unit",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration",
     "migrate:local": "supabase migration up --local --include-all --workdir ../..",
     "migrate:remote": "supabase migration up --linked --include-all --workdir ../..",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",

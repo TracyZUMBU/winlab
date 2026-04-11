@@ -1,13 +1,21 @@
 {
   "name": "winlab",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
+    "prepare": "husky",
     "admin:dev": "npm run dev --prefix apps/admin",
     "admin:build": "npm run build --prefix apps/admin",
     "admin:preview": "npm run preview --prefix apps/admin",
     "migrate:local": "supabase migration up --local --include-all --workdir .",
     "migrate:remote": "supabase migration up --linked --include-all --workdir .",
-    "migrate:all": "npm run migrate:local && npm run migrate:remote"
+    "migrate:all": "npm run migrate:local && npm run migrate:remote",
+    "supabase:test:prepare": "supabase start --workdir . && supabase db reset --workdir ."
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
   }
 }

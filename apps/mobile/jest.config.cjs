@@ -6,7 +6,7 @@ module.exports = {
       preset: "ts-jest",
       testEnvironment: "node",
       roots: ["<rootDir>/src"],
-      testMatch: ["**/*.test.ts", "**/*.test.tsx"],
+      testMatch: ["**/*.unit.test.ts", "**/*.unit.test.tsx"],
       moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
       moduleNameMapper: {
         "^@/(.*)$": "<rootDir>/$1",
