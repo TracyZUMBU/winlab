@@ -1,11 +1,15 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format, isValid, parse } from "date-fns";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -26,19 +30,32 @@ import { ScreenSectionOverline } from "@/src/components/ui/ScreenSectionOverline
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
-import { usernameSchema } from "@/src/features/auth/validators";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
-import { showSuccessToast } from "@/src/shared/toast";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { logger } from "@/src/lib/logger";
+import { showSuccessToast } from "@/src/shared/toast";
 import { theme } from "@/src/theme";
 
+import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
 import { ProfileHeroHeader } from "../components/ProfileHeroHeader";
 import { ProfileMenuRow } from "../components/ProfileMenuRow";
 import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
 import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
+import { useUploadAvatarMutation } from "../hooks/useUploadAvatarMutation";
+import { resolveAvatarDisplayUri } from "../services/avatarStorage";
+import {
+  AvatarUploadError,
+  getUploadErrorDiagnosticText,
+} from "../services/uploadMyAvatar";
+import type { ProfileSex } from "../types/profileSex";
+import { CreateProfileError } from "../types/profileTypes";
+import {
+  editProfileFormSchema,
+  editProfileSexFieldOrder,
+  type EditProfileFormValues,
+} from "../validators/editProfileFormSchema";
 
 function formatTokenBalance(value: number, locale: string): string {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(
@@ -60,6 +77,26 @@ function appVersionLabel(t: (k: string, o?: Record<string, string>) => string) {
   });
 }
 
+function sexTranslationKey(value: ProfileSex): string {
+  return `profile.createProfile.screen.sex.${value}`;
+}
+
+/** Affichage localisé : FR = JJ-MM-AAAA, sinon JJ/MM/AAAA. La valeur formulaire reste `YYYY-MM-DD`. */
+function formatBirthDateForDisplay(
+  isoYyyyMmDd: string | undefined,
+  language: string,
+): string {
+  if (!isoYyyyMmDd?.trim()) {
+    return "";
+  }
+  const d = parse(isoYyyyMmDd, "yyyy-MM-dd", new Date());
+  if (!isValid(d)) {
+    return "";
+  }
+  const pattern = language.startsWith("fr") ? "dd-MM-yyyy" : "dd/MM/yyyy";
+  return format(d, pattern);
+}
+
 export function ProfileScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -70,12 +107,35 @@ export function ProfileScreen() {
   const profileQuery = useMyProfileQuery();
   const balanceQuery = useWalletBalanceQuery();
   const updateMutation = useUpdateMyProfileMutation();
+  const uploadAvatarMutation = useUploadAvatarMutation();
   const deleteMyAccountMutation = useDeleteMyAccountMutation();
   const signOutMutation = useSignOutMutation();
 
-  const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [draftUsername, setDraftUsername] = useState("");
-  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+
+  const editForm = useForm<EditProfileFormValues>({
+    resolver: zodResolver(editProfileFormSchema),
+    defaultValues: {
+      username: "",
+      birth_date: "",
+      sex: undefined,
+    },
+  });
+
+  const {
+    register,
+    setValue,
+    watch,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = editForm;
+
+  const usernameField = register("username");
+  const usernameValue = watch("username");
+  const birthDateValue = watch("birth_date");
+  const selectedSex = watch("sex");
 
   const profile = profileQuery.data;
 
@@ -103,42 +163,68 @@ export function ProfileScreen() {
     t,
   ]);
 
-  const startEditUsername = useCallback(() => {
-    setUsernameError(null);
-    setDraftUsername(profile?.username?.trim() ?? "");
-    setIsEditingUsername(true);
-  }, [profile?.username]);
+  const birthDateDisplay = formatBirthDateForDisplay(
+    birthDateValue,
+    i18n.language,
+  );
 
-  const cancelEditUsername = useCallback(() => {
-    setUsernameError(null);
-    setIsEditingUsername(false);
+  const startEditProfile = useCallback(() => {
+    if (!profile) return;
+    reset({
+      username: profile.username?.trim() ?? "",
+      birth_date: profile.birth_date ?? "",
+      sex: profile.sex ?? undefined,
+    });
+    setBirthSheetOpen(false);
+    setIsEditingProfile(true);
+  }, [profile, reset]);
+
+  const cancelEditProfile = useCallback(() => {
+    setBirthSheetOpen(false);
+    setIsEditingProfile(false);
   }, []);
 
-  const handleSaveUsername = useCallback(async () => {
-    setUsernameError(null);
+  const openBirthDatePicker = useCallback(() => {
+    Keyboard.dismiss();
+    setBirthSheetOpen(true);
+  }, []);
 
-    if (!userId) {
-      return;
-    }
+  const onSubmitEditProfile = useCallback(
+    async (values: EditProfileFormValues) => {
+      if (!userId || values.sex === undefined) {
+        return;
+      }
 
-    const parsed = usernameSchema.safeParse({ username: draftUsername });
-    if (!parsed.success) {
-      const first = parsed.error.flatten().fieldErrors.username?.[0];
-      setUsernameError(first ?? null);
-      return;
-    }
-
-    try {
-      await updateMutation.mutateAsync({
-        username: parsed.data.username,
-      });
-      setIsEditingUsername(false);
-      showSuccessToast({ title: t("profile.screen.updateSuccess") });
-    } catch (error: unknown) {
-      logger.error("Profile username update failed", error);
-      setUsernameError(t("profile.screen.updateError"));
-    }
-  }, [draftUsername, t, updateMutation, userId]);
+      try {
+        await updateMutation.mutateAsync({
+          username: values.username,
+          birth_date: values.birth_date,
+          sex: values.sex,
+        });
+        setIsEditingProfile(false);
+        setBirthSheetOpen(false);
+        showSuccessToast({ title: t("profile.screen.updateSuccess") });
+      } catch (error: unknown) {
+        if (
+          error instanceof CreateProfileError &&
+          error.code === "USERNAME_TAKEN"
+        ) {
+          const message = getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "profile.createProfile.errors",
+            code: error.code,
+            fallbackKey: "profile.screen.updateError",
+          });
+          editForm.setError("username", { message });
+          return;
+        }
+        logger.error("Profile update failed", error);
+        Alert.alert(t("profile.screen.title"), t("profile.screen.updateError"));
+      }
+    },
+    [editForm, i18n, t, updateMutation, userId],
+  );
 
   const handleLogout = useCallback(() => {
     signOutMutation.mutate(undefined, {
@@ -220,6 +306,145 @@ export function ProfileScreen() {
       t("profile.menu.regulationsMessage"),
     );
   }, [t]);
+
+  const handleChangeAvatar = useCallback(async () => {
+    if (!userId || uploadAvatarMutation.isPending) {
+      return;
+    }
+
+    let pickFromLibrary: typeof import("../utils/pickProfileAvatarFromLibrary").pickProfileAvatarFromLibrary;
+    try {
+      const mod = await import("../utils/pickProfileAvatarFromLibrary");
+      type PickFn = typeof import("../utils/pickProfileAvatarFromLibrary").pickProfileAvatarFromLibrary;
+      let resolved: PickFn | undefined;
+      if (typeof mod.pickProfileAvatarFromLibrary === "function") {
+        resolved = mod.pickProfileAvatarFromLibrary;
+      } else if (typeof mod.default === "function") {
+        resolved = mod.default as PickFn;
+      } else if (
+        mod.default !== null &&
+        typeof mod.default === "object" &&
+        "pickProfileAvatarFromLibrary" in mod.default
+      ) {
+        const nested = (
+          mod.default as unknown as {
+            pickProfileAvatarFromLibrary: unknown;
+          }
+        ).pickProfileAvatarFromLibrary;
+        if (typeof nested === "function") {
+          resolved = nested as PickFn;
+        }
+      }
+      if (typeof resolved !== "function") {
+        logger.error(
+          "pickProfileAvatarFromLibrary missing after dynamic import",
+          undefined,
+          {
+            modKeys: Object.keys(mod as object),
+            developerHint:
+              "Dynamic import did not expose pickProfileAvatarFromLibrary or default export. Rebuild the native app (npx expo run:ios | npx expo run:android). Ensure expo-image-picker is in app.json plugins.",
+          },
+        );
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.nativeModuleMissing"),
+        );
+        return;
+      }
+      pickFromLibrary = resolved;
+    } catch (error: unknown) {
+      logger.error("expo-image-picker native module unavailable", error, {
+        developerHint:
+          "expo-image-picker chunk failed to load. Rebuild native client; verify iOS Info.plist photo usage and Android permissions from expo-image-picker plugin.",
+      });
+      Alert.alert(
+        t("profile.screen.title"),
+        t("profile.avatar.nativeModuleMissing"),
+      );
+      return;
+    }
+
+    try {
+      const outcome = await pickFromLibrary();
+      if (outcome.status === "permission_denied") {
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.permissionDenied"),
+        );
+        return;
+      }
+      if (outcome.status === "cancelled") {
+        return;
+      }
+
+      await uploadAvatarMutation.mutateAsync({
+        localUri: outcome.uri,
+        mimeType: outcome.mimeType,
+      });
+      showSuccessToast({ title: t("profile.avatar.success") });
+    } catch (error: unknown) {
+      const diagnosticMsg = getUploadErrorDiagnosticText(error);
+      if (
+        diagnosticMsg.includes("ExponentImagePicker") ||
+        diagnosticMsg.includes("native module")
+      ) {
+        logger.error(
+          "Avatar: image picker native error (user shown generic message)",
+          error instanceof Error ? error : undefined,
+          {
+            message: diagnosticMsg,
+            developerHint:
+              "Rebuild development build with expo-image-picker (npx expo run:ios | npx expo run:android).",
+          },
+        );
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.nativeModuleMissing"),
+        );
+        return;
+      }
+      if (
+        error instanceof AvatarUploadError &&
+        error.code === "INVALID_IMAGE_TYPE"
+      ) {
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.invalidImage"),
+        );
+        return;
+      }
+      if (diagnosticMsg.includes("Bucket not found")) {
+        logger.error("Avatar upload failed: storage bucket missing", error, {
+          developerHint:
+            "Supabase Storage bucket `avatars` is missing on this project. Apply repo migrations (e.g. supabase db push / migration up --linked) or create the bucket in the Storage dashboard.",
+        });
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.storageBucketMissing"),
+        );
+        return;
+      }
+      if (
+        diagnosticMsg.includes("row-level security") ||
+        diagnosticMsg.includes("violates row-level security")
+      ) {
+        logger.error("Avatar upload failed: storage RLS denied", error, {
+          developerHint:
+            "storage.objects policies for bucket `avatars` rejected the upload. Apply latest Supabase migrations from this repo (storage RLS / folder+filename rules).",
+        });
+        Alert.alert(
+          t("profile.screen.title"),
+          t("profile.avatar.storageRlsDenied"),
+        );
+        return;
+      }
+      logger.error("Avatar upload failed", error);
+      Alert.alert(
+        t("profile.screen.title"),
+        t("profile.avatar.uploadFailed"),
+      );
+    }
+  }, [t, uploadAvatarMutation, userId]);
 
   const listBottomPadding =
     theme.spacing.xl + Math.max(insets.bottom, theme.spacing.md);
@@ -316,9 +541,14 @@ export function ProfileScreen() {
           displayName={displayName}
           handleLabel={handleLabel}
           balanceLine={balanceLine}
-          onPressEdit={startEditUsername}
+          onPressEdit={startEditProfile}
           editA11yLabel={t("profile.hero.a11yEdit")}
-          avatarUri={profile.avatar_url}
+          onPressChangeAvatar={handleChangeAvatar}
+          changeAvatarA11yLabel={t("profile.hero.changeAvatarA11y")}
+          avatarUri={resolveAvatarDisplayUri(
+            profile.avatar_url,
+            profile.updated_at,
+          )}
         />
 
         <ScreenSectionOverline label={t("profile.section.activityRewards")} />
@@ -380,6 +610,7 @@ export function ProfileScreen() {
             disabled={
               signOutMutation.isPending ||
               updateMutation.isPending ||
+              uploadAvatarMutation.isPending ||
               deleteMyAccountMutation.isPending
             }
             accessibilityLabel={t("profile.menu.deleteAccountA11y")}
@@ -391,6 +622,7 @@ export function ProfileScreen() {
           disabled={
             signOutMutation.isPending ||
             updateMutation.isPending ||
+            uploadAvatarMutation.isPending ||
             deleteMyAccountMutation.isPending
           }
           style={({ pressed }) => [
@@ -420,21 +652,22 @@ export function ProfileScreen() {
       </ScrollView>
 
       <Modal
-        visible={isEditingUsername}
+        visible={isEditingProfile}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={cancelEditUsername}
+        onRequestClose={cancelEditProfile}
       >
+        <View style={styles.modalHost}>
         <KeyboardAvoidingView
           style={styles.modalRoot}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
-              {t("profile.screen.editUsername")}
+              {t("profile.screen.editProfile")}
             </Text>
             <Pressable
-              onPress={cancelEditUsername}
+              onPress={cancelEditProfile}
               hitSlop={12}
               accessibilityRole="button"
               accessibilityLabel={t("profile.screen.cancelEdit")}
@@ -442,38 +675,139 @@ export function ProfileScreen() {
               <MaterialIcons name="close" size={24} color={theme.colors.text} />
             </Pressable>
           </View>
-          <View style={styles.modalBody}>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder={t("profile.screen.usernamePlaceholder")}
-              placeholderTextColor={theme.colors.textMuted}
-              style={[
-                styles.input,
-                usernameError ? styles.inputError : undefined,
-              ]}
-              value={draftUsername}
-              onChangeText={(text) => {
-                setDraftUsername(text);
-                setUsernameError(null);
-              }}
-            />
-            {usernameError ? (
-              <Text style={styles.errorTextSmall}>{usernameError}</Text>
-            ) : null}
+          <ScrollView
+            style={styles.modalScroll}
+            contentContainerStyle={styles.modalScrollContent}
+            keyboardShouldPersistTaps="always"
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>
+                {t("profile.createProfile.screen.label")}
+              </Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder={t("profile.screen.usernamePlaceholder")}
+                placeholderTextColor={theme.colors.textMuted}
+                style={[
+                  styles.input,
+                  errors.username ? styles.inputError : undefined,
+                ]}
+                value={usernameValue}
+                onChangeText={(text) => {
+                  setValue("username", text, { shouldValidate: true });
+                }}
+                onBlur={usernameField.onBlur}
+              />
+              {errors.username?.message ? (
+                <Text style={styles.errorTextSmall}>
+                  {errors.username.message}
+                </Text>
+              ) : null}
+            </View>
+
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>
+                {t("profile.createProfile.screen.birthDateLabel")}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t(
+                  "profile.createProfile.screen.birthDatePickerA11y",
+                )}
+                onPress={openBirthDatePicker}
+                style={({ pressed }) => [
+                  styles.input,
+                  styles.dateFieldButton,
+                  errors.birth_date ? styles.inputError : undefined,
+                  pressed && styles.dateFieldPressed,
+                ]}
+              >
+                <Text
+                  style={
+                    birthDateDisplay
+                      ? styles.dateFieldText
+                      : styles.dateFieldPlaceholder
+                  }
+                >
+                  {birthDateDisplay ||
+                    t("profile.createProfile.screen.birthDatePlaceholder")}
+                </Text>
+              </Pressable>
+              {errors.birth_date?.message ? (
+                <Text style={styles.errorTextSmall}>
+                  {errors.birth_date.message}
+                </Text>
+              ) : null}
+            </View>
+
+            <View style={styles.fieldBlock}>
+              <Text style={styles.fieldLabel}>
+                {t("profile.createProfile.screen.sexLabel")}
+              </Text>
+              <View style={styles.sexOptions} accessibilityRole="radiogroup">
+                {editProfileSexFieldOrder.map((value) => {
+                  const selected = selectedSex === value;
+                  return (
+                    <Pressable
+                      key={value}
+                      accessibilityRole="radio"
+                      accessibilityState={{ selected }}
+                      style={({ pressed }) => [
+                        styles.sexOption,
+                        selected && styles.sexOptionSelected,
+                        pressed && styles.sexOptionPressed,
+                      ]}
+                      onPress={() =>
+                        setValue("sex", value, {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
+                      }
+                    >
+                      <Text
+                        style={[
+                          styles.sexOptionLabel,
+                          selected && styles.sexOptionLabelSelected,
+                        ]}
+                      >
+                        {t(sexTranslationKey(value))}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {errors.sex?.message ? (
+                <Text style={styles.errorTextSmall}>{errors.sex.message}</Text>
+              ) : null}
+            </View>
+
             <Button
               title={
                 updateMutation.isPending
-                  ? t("profile.screen.savingUsername")
-                  : t("profile.screen.saveUsername")
+                  ? t("profile.screen.savingProfile")
+                  : t("profile.screen.saveProfile")
               }
-              onPress={() => void handleSaveUsername()}
-              disabled={updateMutation.isPending}
+              onPress={() => void handleSubmit(onSubmitEditProfile)()}
+              disabled={
+                updateMutation.isPending || uploadAvatarMutation.isPending
+              }
               variant="primary"
               fullWidth
             />
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
+        <BirthDatePickerSheet
+          visible={birthSheetOpen}
+          onClose={() => setBirthSheetOpen(false)}
+          onConfirm={(iso) => {
+            setValue("birth_date", iso, { shouldValidate: true });
+          }}
+          initialIso={birthDateValue || undefined}
+          language={i18n.language}
+        />
+        </View>
       </Modal>
     </Screen>
   );
@@ -566,6 +900,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: theme.colors.dangerSolid,
   },
+  modalHost: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
   modalRoot: {
     flex: 1,
     paddingTop: theme.spacing.lg,
@@ -585,6 +923,67 @@ const styles = StyleSheet.create({
   modalBody: {
     paddingHorizontal: theme.spacing.md,
     gap: theme.spacing.md,
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalScrollContent: {
+    paddingHorizontal: theme.spacing.md,
+    paddingBottom: theme.spacing.xl,
+    gap: theme.spacing.md,
+  },
+  fieldBlock: {
+    gap: theme.spacing.xs,
+  },
+  fieldLabel: {
+    fontSize: 12,
+    letterSpacing: 0.5,
+    fontWeight: "600",
+    color: theme.colors.textMuted,
+  },
+  fieldHint: {
+    fontSize: 12,
+    color: theme.colors.textGrayLight,
+  },
+  dateFieldButton: {
+    justifyContent: "center",
+  },
+  dateFieldPressed: {
+    opacity: 0.92,
+  },
+  dateFieldText: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  dateFieldPlaceholder: {
+    fontSize: 16,
+    color: theme.colors.textMuted,
+  },
+  sexOptions: {
+    gap: theme.spacing.sm,
+  },
+  sexOption: {
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.borderSubtle,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+  },
+  sexOptionSelected: {
+    borderColor: theme.colors.accentSolid,
+    backgroundColor: theme.colors.accentWash,
+  },
+  sexOptionPressed: {
+    opacity: 0.92,
+  },
+  sexOptionLabel: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  sexOptionLabelSelected: {
+    fontWeight: "600",
+    color: theme.colors.text,
   },
   input: {
     borderWidth: 1,

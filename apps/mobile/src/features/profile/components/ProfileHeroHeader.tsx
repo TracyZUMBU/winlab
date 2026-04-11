@@ -10,6 +10,8 @@ export type ProfileHeroHeaderProps = {
   balanceLine: string;
   onPressEdit: () => void;
   editA11yLabel: string;
+  onPressChangeAvatar: () => void;
+  changeAvatarA11yLabel: string;
   avatarUri: string | null;
 };
 
@@ -29,6 +31,8 @@ export function ProfileHeroHeader({
   balanceLine,
   onPressEdit,
   editA11yLabel,
+  onPressChangeAvatar,
+  changeAvatarA11yLabel,
   avatarUri,
 }: ProfileHeroHeaderProps) {
   const initials = initialsFromName(displayName);
@@ -36,13 +40,26 @@ export function ProfileHeroHeader({
   return (
     <View style={styles.wrap}>
       <View style={styles.avatarWrap}>
-        <View style={styles.avatar}>
+        <Pressable
+          onPress={onPressChangeAvatar}
+          accessibilityRole="button"
+          accessibilityLabel={changeAvatarA11yLabel}
+          style={({ pressed }) => [
+            styles.avatar,
+            pressed && styles.avatarPressed,
+          ]}
+        >
           {avatarUri ? (
-            <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+            <Image
+              key={avatarUri}
+              cachePolicy="none"
+              source={{ uri: avatarUri }}
+              style={styles.avatarImage}
+            />
           ) : (
             <Text style={styles.avatarInitials}>{initials}</Text>
           )}
-        </View>
+        </Pressable>
         <Pressable
           onPress={onPressEdit}
           style={styles.editFab}
@@ -92,11 +109,15 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceSoft,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
     shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,
     elevation: 4,
+  },
+  avatarPressed: {
+    opacity: 0.92,
   },
   avatarImage: {
     width: AVATAR,

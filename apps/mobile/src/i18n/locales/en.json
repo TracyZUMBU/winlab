@@ -143,6 +143,40 @@
       "email": "Email is invalid"
     }
   },
+  "schema": {
+    "username": {
+      "title": "Choose your username",
+      "subtitle": "This name will be visible in the Winlab app.",
+      "label": "USERNAME",
+      "error": {
+        "required": "Username is required",
+        "min": "Username must be at least 3 characters",
+        "max": "Username must be at most 24 characters"
+      }
+    },
+    "otp": {
+      "title": "Enter your verification code",
+      "subtitle": "We sent a verification code to your email address.",
+      "label": "VERIFICATION CODE",
+      "error": {
+        "required": "Verification code is required",
+        "min": "Verification code must be at least {{length}} characters",
+        "max": "Verification code must be at most {{length}} characters"
+      }
+    },
+    "createProfile": {
+      "birthDate": {
+        "required": "Select your date of birth",
+        "format": "Invalid date",
+        "invalid": "Invalid date",
+        "future": "Date cannot be in the future"
+      },
+      "sex": {
+        "required": "Please select an option",
+        "invalid": "Unrecognized value"
+      }
+    }
+  },
   "missions": {
     "layout": {
       "title": "Missions",
@@ -507,6 +541,15 @@
     }
   },
   "profile": {
+    "avatar": {
+      "success": "Profile photo updated.",
+      "permissionDenied": "Allow photo library access to change your profile picture.",
+      "invalidImage": "Choose a JPEG, PNG, or WebP image.",
+      "uploadFailed": "Could not upload the image. Please try again.",
+      "storageBucketMissing": "Unable to upload your photo right now. Please try again later.",
+      "storageRlsDenied": "Unable to upload your photo right now. Please try again later.",
+      "nativeModuleMissing": "Unable to choose a photo right now. Please try again later."
+    },
     "createProfile": {
       "successToast": "Profile created.",
       "errors": {
@@ -516,10 +559,27 @@
         "USERNAME_TAKEN": "This username is already taken. Please choose another one."
       },
       "screen": {
-        "title": "Choose your username",
-        "subtitle": "This name will be visible in the Winlab app.",
+        "title": "Create your profile",
+        "subtitle": "Please complete the following information to finish signing up.",
         "label": "USERNAME",
         "placeholder": "Your username",
+        "birthDateLabel": "DATE OF BIRTH",
+        "birthDatePlaceholder": "Tap to choose a date",
+        "birthDateHint": "Display: day / month / year (DD/MM/YYYY)",
+        "birthDatePickerDone": "Done",
+        "birthDatePickerCancel": "Cancel",
+        "birthDatePickerConfirm": "Confirm",
+        "birthDateColumnDay": "Day",
+        "birthDateColumnMonth": "Month",
+        "birthDateColumnYear": "Year",
+        "birthDatePickerA11y": "Open date of birth picker",
+        "sexLabel": "BIOLOGICAL SEX",
+        "sex": {
+          "female": "Female",
+          "male": "Male",
+          "other": "Other",
+          "prefer_not_to_say": "Prefer not to say"
+        },
         "submit": "Continue"
       }
     },
@@ -551,7 +611,8 @@
     "hero": {
       "defaultDisplayName": "Winlab member",
       "handlePlaceholder": "@username",
-      "a11yEdit": "Edit username",
+      "a11yEdit": "Edit profile",
+      "changeAvatarA11y": "Change profile photo",
       "balanceLoading": "…",
       "tokensLine": "{{count}} {{tokens}}"
     },
@@ -573,8 +634,11 @@
       "valueUnknown": "—",
       "usernamePlaceholder": "Your username",
       "editUsername": "Edit username",
+      "editProfile": "Edit profile",
       "saveUsername": "Save",
+      "saveProfile": "Save",
       "savingUsername": "Saving...",
+      "savingProfile": "Saving...",
       "cancelEdit": "Cancel",
       "updateSuccess": "Profile updated.",
       "logout": "Log out",

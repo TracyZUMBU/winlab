@@ -151,9 +151,7 @@ export const CreateProfileScreen: React.FC = () => {
         <KeyboardAvoidingView
           style={styles.keyboardAvoid}
           behavior={Platform.OS === "ios" ? "padding" : undefined}
-          keyboardVerticalOffset={
-            Platform.OS === "ios" ? insets.top + 120 : 0
-          }
+          keyboardVerticalOffset={Platform.OS === "ios" ? insets.top + 120 : 0}
         >
           <ScrollView
             keyboardShouldPersistTaps="always"
@@ -215,9 +213,6 @@ export const CreateProfileScreen: React.FC = () => {
                     t("profile.createProfile.screen.birthDatePlaceholder")}
                 </Text>
               </Pressable>
-              <Text style={styles.fieldHint}>
-                {t("profile.createProfile.screen.birthDateHint")}
-              </Text>
               {errors.birth_date?.message ? (
                 <Text style={styles.errorText}>
                   {errors.birth_date.message}

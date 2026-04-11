@@ -167,6 +167,18 @@
         "min": "Le code de vérification doit contenir au moins {{length}} caractères",
         "max": "Le code de vérification doit contenir au maximum {{length}} caractères"
       }
+    },
+    "createProfile": {
+      "birthDate": {
+        "required": "Sélectionnez votre date de naissance",
+        "format": "Date invalide (attendu côté affichage : JJ-MM-AAAA)",
+        "invalid": "Date invalide",
+        "future": "La date ne peut pas être dans le futur"
+      },
+      "sex": {
+        "required": "Veuillez indiquer une option",
+        "invalid": "Valeur non reconnue"
+      }
     }
   },
   "missions": {
@@ -533,6 +545,15 @@
     }
   },
   "profile": {
+    "avatar": {
+      "success": "Photo de profil mise à jour.",
+      "permissionDenied": "Autorisez l’accès à la photothèque pour changer votre photo.",
+      "invalidImage": "Choisissez une image JPEG, PNG ou WebP.",
+      "uploadFailed": "Envoi de l’image impossible. Réessayez.",
+      "storageBucketMissing": "Impossible d’envoyer la photo pour le moment. Réessayez plus tard.",
+      "storageRlsDenied": "Impossible d’envoyer la photo pour le moment. Réessayez plus tard.",
+      "nativeModuleMissing": "Impossible d’ouvrir la galerie pour le moment. Réessayez plus tard."
+    },
     "createProfile": {
       "successToast": "Profil créé.",
       "errors": {
@@ -542,10 +563,27 @@
         "USERNAME_TAKEN": "Ce pseudo est déjà utilisé. Choisissez-en un autre."
       },
       "screen": {
-        "title": "Choisissez votre pseudo",
-        "subtitle": "Ce pseudo sera visible dans l’app Winlab.",
+        "title": "Créez votre profil",
+        "subtitle": "Veuillez compléter les informations suivantes pour finaliser votre inscription.",
         "label": "PSEUDO",
         "placeholder": "Votre pseudo",
+        "birthDateLabel": "DATE DE NAISSANCE",
+        "birthDatePlaceholder": "Appuyez pour choisir une date",
+        "birthDateHint": "Affichage : jour-mois-année (JJ-MM-AAAA)",
+        "birthDatePickerDone": "OK",
+        "birthDatePickerCancel": "Annuler",
+        "birthDatePickerConfirm": "Valider",
+        "birthDateColumnDay": "Jour",
+        "birthDateColumnMonth": "Mois",
+        "birthDateColumnYear": "Année",
+        "birthDatePickerA11y": "Ouvrir le sélecteur de date de naissance",
+        "sexLabel": "SEXE",
+        "sex": {
+          "female": "Femme",
+          "male": "Homme",
+          "other": "Autre",
+          "prefer_not_to_say": "Préfère ne pas répondre"
+        },
         "submit": "Continuer"
       }
     },
@@ -577,7 +615,8 @@
     "hero": {
       "defaultDisplayName": "Membre Winlab",
       "handlePlaceholder": "@pseudo",
-      "a11yEdit": "Modifier le pseudo",
+      "a11yEdit": "Modifier le profil",
+      "changeAvatarA11y": "Changer la photo de profil",
       "balanceLoading": "…",
       "tokensLine": "{{count}} {{tokens}}"
     },
@@ -599,8 +638,11 @@
       "valueUnknown": "—",
       "usernamePlaceholder": "Votre pseudo",
       "editUsername": "Modifier le pseudo",
+      "editProfile": "Modifier le profil",
       "saveUsername": "Enregistrer",
+      "saveProfile": "Enregistrer",
       "savingUsername": "Enregistrement...",
+      "savingProfile": "Enregistrement...",
       "cancelEdit": "Annuler",
       "updateSuccess": "Profil mis à jour.",
       "logout": "Se déconnecter",

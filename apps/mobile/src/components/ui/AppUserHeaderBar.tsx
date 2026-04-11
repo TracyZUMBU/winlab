@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useMyProfileQuery } from "@/src/features/profile/hooks/useMyProfileQuery";
+import { resolveAvatarDisplayUri } from "@/src/features/profile/services/avatarStorage";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { trackEvent } from "@/src/lib/analytics/trackEvent";
 import { initialsFromUsername } from "@/src/lib/display/initialsFromUsername";
@@ -34,7 +35,14 @@ export function AppUserHeaderBar({
     return new Intl.NumberFormat(locale).format(wallet.balance);
   }, [locale, t, wallet, walletLoading]);
 
-  const avatarUri = profile?.avatar_url ?? null;
+  const avatarUri = useMemo(
+    () =>
+      resolveAvatarDisplayUri(
+        profile?.avatar_url,
+        profile?.updated_at ?? null,
+      ),
+    [profile?.avatar_url, profile?.updated_at],
+  );
   const displayInitials = initialsFromUsername(profile?.username ?? null);
   const a11yBalanceAmount =
     walletLoading && wallet == null ? t("common.loading") : balanceLabel;
@@ -67,7 +75,12 @@ export function AppUserHeaderBar({
                   {t("common.loading_ellipsis")}
                 </Text>
               ) : avatarUri ? (
-                <Image source={{ uri: avatarUri }} style={styles.avatarImg} />
+                <Image
+                  key={avatarUri}
+                  cachePolicy="none"
+                  source={{ uri: avatarUri }}
+                  style={styles.avatarImg}
+                />
               ) : (
                 <Text style={styles.avatarInitials}>{displayInitials}</Text>
               )}

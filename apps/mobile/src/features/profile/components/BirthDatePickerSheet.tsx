@@ -1,4 +1,3 @@
-import { enGB, fr } from "date-fns/locale";
 import {
   format,
   isValid,
@@ -6,7 +5,14 @@ import {
   startOfDay,
   subYears,
 } from "date-fns";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -35,21 +41,34 @@ function defaultYmd(): { y: number; m: number; d: number } {
   };
 }
 
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n));
+}
+
 function parseInitial(
   initialIso: string | undefined,
+  minYear: number,
+  maxYear: number,
 ): { y: number; m: number; d: number } {
   if (!initialIso?.trim()) {
-    return defaultYmd();
+    const base = defaultYmd();
+    const y = clamp(base.y, minYear, maxYear);
+    const dim = daysInMonth(y, base.m);
+    return { y, m: base.m, d: clamp(base.d, 1, dim) };
   }
   const p = parse(initialIso, "yyyy-MM-dd", new Date());
   if (!isValid(p)) {
-    return defaultYmd();
+    const base = defaultYmd();
+    const y = clamp(base.y, minYear, maxYear);
+    const dim = daysInMonth(y, base.m);
+    return { y, m: base.m, d: clamp(base.d, 1, dim) };
   }
-  return {
-    y: p.getFullYear(),
-    m: p.getMonth() + 1,
-    d: p.getDate(),
-  };
+  let y = clamp(p.getFullYear(), minYear, maxYear);
+  let m = clamp(p.getMonth() + 1, 1, 12);
+  let d = p.getDate();
+  const dim = daysInMonth(y, m);
+  d = clamp(d, 1, dim);
+  return { y, m, d };
 }
 
 export type BirthDatePickerSheetProps = {
@@ -70,25 +89,22 @@ export function BirthDatePickerSheet({
 }: BirthDatePickerSheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const locale = language.startsWith("fr") ? fr : enGB;
+  void language;
 
-  const [y, setY] = useState(() => parseInitial(initialIso).y);
-  const [m, setM] = useState(() => parseInitial(initialIso).m);
-  const [d, setD] = useState(() => parseInitial(initialIso).d);
+  /** Fixed at mount so `handleConfirm` / effects do not see a new Date reference every render. */
+  const { today, maxYear } = useMemo(() => {
+    const t = startOfDay(new Date());
+    return { today: t, maxYear: t.getFullYear() - 12 };
+  }, []);
+  const minYear = 1900;
 
-  const today = startOfDay(new Date());
-  const maxYear = today.getFullYear();
-  const minYear = maxYear - 120;
+  const [y, setY] = useState(() => parseInitial(initialIso, minYear, maxYear).y);
+  const [m, setM] = useState(() => parseInitial(initialIso, minYear, maxYear).m);
+  const [d, setD] = useState(() => parseInitial(initialIso, minYear, maxYear).d);
 
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    const next = parseInitial(initialIso);
-    setY(next.y);
-    setM(next.m);
-    setD(next.d);
-  }, [visible, initialIso]);
+  const dayListRef = useRef<FlatList<number>>(null);
+  const monthListRef = useRef<FlatList<{ value: number; label: string }>>(null);
+  const yearListRef = useRef<FlatList<number>>(null);
 
   const maxDay = useMemo(() => daysInMonth(y, m), [y, m]);
 
@@ -107,16 +123,14 @@ export function BirthDatePickerSheet({
     [maxYear, minYear],
   );
 
+  /** Mois affichés en chiffres 1–12 (sélecteur explicite). */
   const months = useMemo(
     () =>
-      Array.from({ length: 12 }, (_, i) => {
-        const monthIndex = i;
-        const label = format(new Date(2000, monthIndex, 1), "LLLL", {
-          locale,
-        });
-        return { value: monthIndex + 1, label };
-      }),
-    [locale],
+      Array.from({ length: 12 }, (_, i) => ({
+        value: i + 1,
+        label: String(i + 1),
+      })),
+    [],
   );
 
   const days = useMemo(
@@ -130,10 +144,52 @@ export function BirthDatePickerSheet({
       onClose();
       return;
     }
-    const capped = candidate > today ? today : candidate;
+    const lastAllowed = startOfDay(subYears(today, 12));
+    const capped =
+      candidate > lastAllowed ? lastAllowed : candidate;
     onConfirm(format(capped, "yyyy-MM-dd"));
     onClose();
   }, [d, m, onClose, onConfirm, today, y]);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: ROW_H,
+      offset: ROW_H * index,
+      index,
+    }),
+    [],
+  );
+
+  /** À l’ouverture : applique la date initiale et centre les listes sur jour / mois / année sélectionnés. */
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const next = parseInitial(initialIso, minYear, maxYear);
+    setY(next.y);
+    setM(next.m);
+    setD(next.d);
+
+    const dim = daysInMonth(next.y, next.m);
+    const safeD = clamp(next.d, 1, dim);
+    const di = safeD - 1;
+    const mi = next.m - 1;
+    const yi = Math.max(0, years.indexOf(next.y));
+
+    const id = requestAnimationFrame(() => {
+      dayListRef.current?.scrollToIndex({
+        index: di,
+        viewPosition: 0.45,
+      });
+      monthListRef.current?.scrollToIndex({
+        index: mi,
+        viewPosition: 0.45,
+      });
+      yearListRef.current?.scrollToIndex({
+        index: yi,
+        viewPosition: 0.45,
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [visible, initialIso, minYear, maxYear, years]);
 
   const renderYearItem = useCallback(
     ({ item }: { item: number }) => {
@@ -220,11 +276,19 @@ export function BirthDatePickerSheet({
                   {t("profile.createProfile.screen.birthDateColumnDay")}
                 </Text>
                 <FlatList
+                  ref={dayListRef}
                   data={days}
                   keyExtractor={(item) => `d-${item}`}
                   renderItem={renderDayItem}
                   style={styles.list}
                   showsVerticalScrollIndicator={false}
+                  getItemLayout={getItemLayout}
+                  onScrollToIndexFailed={({ index }) => {
+                    dayListRef.current?.scrollToOffset({
+                      offset: ROW_H * index,
+                      animated: false,
+                    });
+                  }}
                 />
               </View>
               <View style={styles.column}>
@@ -232,11 +296,19 @@ export function BirthDatePickerSheet({
                   {t("profile.createProfile.screen.birthDateColumnMonth")}
                 </Text>
                 <FlatList
+                  ref={monthListRef}
                   data={months}
                   keyExtractor={(item) => `m-${item.value}`}
                   renderItem={renderMonthItem}
                   style={styles.list}
                   showsVerticalScrollIndicator={false}
+                  getItemLayout={getItemLayout}
+                  onScrollToIndexFailed={({ index }) => {
+                    monthListRef.current?.scrollToOffset({
+                      offset: ROW_H * index,
+                      animated: false,
+                    });
+                  }}
                 />
               </View>
               <View style={styles.column}>
@@ -244,11 +316,19 @@ export function BirthDatePickerSheet({
                   {t("profile.createProfile.screen.birthDateColumnYear")}
                 </Text>
                 <FlatList
+                  ref={yearListRef}
                   data={years}
                   keyExtractor={(item) => `y-${item}`}
                   renderItem={renderYearItem}
                   style={styles.list}
                   showsVerticalScrollIndicator={false}
+                  getItemLayout={getItemLayout}
+                  onScrollToIndexFailed={({ index }) => {
+                    yearListRef.current?.scrollToOffset({
+                      offset: ROW_H * index,
+                      animated: false,
+                    });
+                  }}
                 />
               </View>
             </View>

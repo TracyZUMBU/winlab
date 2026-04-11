@@ -213,9 +213,7 @@ export function MissionDetailScreen() {
   const brandLogoLabel = t("missions.card.a11y.missionIllustration", {
     brand: brandName || t("app.name"),
   });
-  const image = mission.image_url ? { uri: mission.image_url } : null;
-  console.log("image", image?.uri);
-  console.log("mission.image_url", logoSourceUri);
+
   return (
     <Screen>
       {shellHeader}
