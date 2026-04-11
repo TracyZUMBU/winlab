@@ -13,6 +13,7 @@
     "migrate:local": "supabase migration up --local --include-all --workdir .",
     "migrate:remote": "supabase migration up --linked --include-all --workdir .",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",
+    "gen:types": "supabase gen types typescript --workdir . --project-id lfmkzmgxopogmuyusdde --schema public > apps/mobile/src/lib/supabase.types.ts && node apps/mobile/scripts/gen-enums.js",
     "supabase:test:prepare": "supabase start --workdir . && supabase db reset --workdir ."
   },
   "devDependencies": {
