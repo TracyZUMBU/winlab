@@ -1,7 +1,6 @@
-import type { ReactNode } from "react";
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
 
-import { theme } from "@/src/theme";
+import { theme } from "../../theme";
 
 export type BadgeTone = "accent" | "success" | "warning" | "neutral";
 

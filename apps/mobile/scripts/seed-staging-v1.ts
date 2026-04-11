@@ -1,4 +1,4 @@
-import {
+import type {
   LotteryStatus,
   MissionStatus,
   MissionType,
@@ -6,6 +6,10 @@ import {
   ReferralStatus,
   WalletReferenceType,
   WalletTransactionType,
+} from "@/src/lib/supabase/database.enums";
+import {
+  WalletReferenceTypeValues,
+  WalletTransactionTypeValues,
 } from "@/src/lib/supabase/database.enums";
 import { createClient } from "@supabase/supabase-js";
 import "dotenv/config";
@@ -577,8 +581,8 @@ const walletTransactions: WalletTransactionSeed[] = [
     userKey: "power_user" as SeedUserKey,
     amount: 10,
     direction: "debit" as WalletDirection,
-    transaction_type: WalletTransactionType.ticket_purchase,
-    reference_type: WalletReferenceType.lottery_ticket,
+    transaction_type: WalletTransactionTypeValues.ticket_purchase,
+    reference_type: WalletReferenceTypeValues.lottery_ticket,
     reference_key: "l1",
     description: "Achat ticket L1",
     created_at: `2026-03-${16 + index}T12:00:00Z`,
@@ -588,8 +592,8 @@ const walletTransactions: WalletTransactionSeed[] = [
     userKey: "power_user" as SeedUserKey,
     amount: 25,
     direction: "debit" as WalletDirection,
-    transaction_type: WalletTransactionType.ticket_purchase,
-    reference_type: WalletReferenceType.lottery_ticket,
+    transaction_type: WalletTransactionTypeValues.ticket_purchase,
+    reference_type: WalletReferenceTypeValues.lottery_ticket,
     reference_key: "l3",
     description: "Achat ticket L3",
     created_at: `2026-03-${16 + index}T13:00:00Z`,
@@ -599,8 +603,8 @@ const walletTransactions: WalletTransactionSeed[] = [
     userKey: "power_user" as SeedUserKey,
     amount: 12,
     direction: "debit" as WalletDirection,
-    transaction_type: WalletTransactionType.ticket_purchase,
-    reference_type: WalletReferenceType.lottery_ticket,
+    transaction_type: WalletTransactionTypeValues.ticket_purchase,
+    reference_type: WalletReferenceTypeValues.lottery_ticket,
     reference_key: "l4",
     description: "Achat ticket L4",
     created_at: `2026-03-07T1${index}:00:00Z`,
@@ -622,8 +626,8 @@ const walletTransactions: WalletTransactionSeed[] = [
     userKey: "winner_user" as SeedUserKey,
     amount: 12,
     direction: "debit" as WalletDirection,
-    transaction_type: WalletTransactionType.ticket_purchase,
-    reference_type: WalletReferenceType.lottery_ticket,
+    transaction_type: WalletTransactionTypeValues.ticket_purchase,
+    reference_type: WalletReferenceTypeValues.lottery_ticket,
     reference_key: "l4",
     description: "Achat ticket L4",
     created_at: `2026-03-07T0${index + 8}:00:00Z`,
@@ -633,8 +637,8 @@ const walletTransactions: WalletTransactionSeed[] = [
     userKey: "winner_user" as SeedUserKey,
     amount: 18,
     direction: "debit" as WalletDirection,
-    transaction_type: WalletTransactionType.ticket_purchase,
-    reference_type: WalletReferenceType.lottery_ticket,
+    transaction_type: WalletTransactionTypeValues.ticket_purchase,
+    reference_type: WalletReferenceTypeValues.lottery_ticket,
     reference_key: "l5",
     description: "Achat ticket L5",
     created_at: `2026-03-12T1${index}:00:00Z`,
