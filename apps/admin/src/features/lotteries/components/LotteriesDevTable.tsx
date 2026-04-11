@@ -153,7 +153,10 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
               </td>
               <td className="lotteries-dev-table__actions">
                 <Link
-                  to={`/lotteries/${row.lottery_id}`}
+                  to={{
+                    pathname: "/lotteries",
+                    search: `?detail=${encodeURIComponent(row.lottery_id)}`,
+                  }}
                   className="lotteries-dev-table__detail-link"
                 >
                   Voir le détail
