@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import { useState } from "react";
-import { useAdminAuthUser } from "../features/auth/AdminAuthContext";
+import { useAdminAuthUser } from "../features/auth";
 import { getSupabaseClient } from "../lib/supabase";
 
 /** En-tête, navigation minimale, déconnexion, zone de contenu (`<Outlet />`). */

@@ -1,12 +1,12 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createLottery } from "../factories/lotteries";
-import { createLotteryTickets } from "../factories/lottery_tickets";
-import { createLotteryWinner } from "../factories/lottery_winners";
 import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createLottery,
+  createLotteryTickets,
+  createLotteryWinner,
   getSupabaseAdminClient,
   getSupabaseAnonClient,
-} from "../utils/supabaseTestClient";
+} from "@winlab/supabase-test-utils";
 
 // Note: `run_lottery` may not yet be present in generated `supabase.types.ts`
 // until `supabase gen types` is re-run, so we cast to `any` to keep tests compiling.

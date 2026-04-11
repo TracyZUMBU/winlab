@@ -1,8 +1,10 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createLottery } from "../factories/lotteries";
-import { createWalletTransaction } from "../factories/wallet_transactions";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createLottery,
+  createWalletTransaction,
+  getSupabaseAdminClient,
+} from "@winlab/supabase-test-utils";
 
 const BUY_TICKET_RPC = "buy_ticket";
 

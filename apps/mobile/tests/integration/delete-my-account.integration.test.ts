@@ -1,7 +1,9 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "child_process";
 import path from "path";
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import {
+  createAuthenticatedTestUser,
+  getSupabaseAdminClient,
+} from "@winlab/supabase-test-utils";
 
 const functionsUrl = `${process.env.SUPABASE_URL}/functions/v1`;
 

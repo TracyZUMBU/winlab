@@ -1,8 +1,10 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createLottery } from "../factories/lotteries";
-import { createLotteryTickets } from "../factories/lottery_tickets";
-import { getSupabaseAnonClient } from "../utils/supabaseTestClient";
+import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createLottery,
+  createLotteryTickets,
+  getSupabaseAnonClient,
+} from "@winlab/supabase-test-utils";
 
 const GET_LOTTERY_ACTIVE_TICKET_COUNTS_RPC = "get_lottery_active_ticket_counts";
 

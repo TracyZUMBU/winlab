@@ -1,9 +1,11 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createMissionCompletion } from "../factories/mission_completion";
-import { createMission } from "../factories/missions";
-import { createReferral } from "../factories/referrals";
-import { getSupabaseAdminClient } from "../utils/supabaseTestClient";
+import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createMission,
+  createMissionCompletion,
+  createReferral,
+  getSupabaseAdminClient,
+} from "@winlab/supabase-test-utils";
 
 const APPROVE_MISSION_COMPLETION_RPC = "approve_mission_completion";
 const HANDLE_REFERRAL_AFTER_FIRST_MISSION_RPC =

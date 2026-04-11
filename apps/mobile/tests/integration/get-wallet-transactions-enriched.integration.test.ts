@@ -1,13 +1,13 @@
-import { createAuthenticatedTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createLottery } from "../factories/lotteries";
-import { createMissionCompletion } from "../factories/mission_completion";
-import { createMission } from "../factories/missions";
-import { createWalletTransaction } from "../factories/wallet_transactions";
 import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createLottery,
+  createMission,
+  createMissionCompletion,
+  createWalletTransaction,
   getSupabaseAdminClient,
   getSupabaseAnonClient,
-} from "../utils/supabaseTestClient";
+} from "@winlab/supabase-test-utils";
 
 const RPC = "get_wallet_transactions_enriched";
 const BUY_TICKET_RPC = "buy_ticket";

@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { formatDateTimeForDev } from "../../../lib/formatDateTimeForDev";
-import type { LotteryAdminListItem } from "../types/lotteryAdmin";
+import type { AdminLotteryListItem } from "../types/lotteryAdmin";
 
 type LotteriesDevTableProps = {
-  rows: LotteryAdminListItem[];
+  rows: AdminLotteryListItem[];
 };
 
 function formatTicketCost(value: number): string {
@@ -52,7 +52,7 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id}>
+            <tr key={row.lottery_id}>
               <td className="lotteries-dev-table__title">{row.title}</td>
               <td>{row.brand_name ?? "—"}</td>
               <td>
@@ -85,7 +85,7 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
               </td>
               <td className="lotteries-dev-table__actions">
                 <Link
-                  to={`/lotteries/${row.id}`}
+                  to={`/lotteries/${row.lottery_id}`}
                   className="lotteries-dev-table__detail-link"
                 >
                   Voir le détail

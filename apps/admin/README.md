@@ -7,18 +7,16 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 | Dossier | Rôle |
 |--------|------|
 | `app/` | `App` (routes sous garde auth), `AdminLayout` (titre, nav, déconnexion, `<Outlet />`). |
-| `pages/` | Écrans : liste loteries, détail loterie. |
-| `features/auth/` | Login, garde `AdminAuthGate`, `useCurrentUser`, contexte session admin. |
-| `features/lotteries/` | Lecture loteries (services, table dev). |
-| `lib/auth/` | `isAdminUser` + parsing allowlist emails. |
+| `features/auth/` | `components/` (`AdminAuthGate`), `context/`, `hooks/`, `queries/`, `pages/` (login, accès refusé), `services/` (lecture `profiles.is_admin`). Point d’entrée `index.ts`. |
+| `features/lotteries/` | `pages/`, `components/`, `services/` (appels RPC `admin_get_*`), `queries/`, `types/`, `index.ts`. |
 | `components/ui/` | Primitives UI réutilisables quand le besoin apparaît. |
-| `lib/` | Utilitaires / clients légers partagés (`supabase.ts` : client anon centralisé). |
+| `lib/` | Client Supabase, React Query, utilitaires. |
 | `styles/` | Feuilles globales (ex. `global.css`). |
 | `types/` | Types TS partagés côté admin. |
 
-**React Router** (minimal) : `/` redirige vers `/lotteries`, détail sous `/lotteries/:lotteryId`. Pas de TanStack Query pour l’instant.
+**React Router** : `/` redirige vers `/lotteries`, détail sous `/lotteries/:lotteryId`.
 
-**Auth** : email + mot de passe via Supabase Auth ; accès réservé aux emails listés dans `VITE_ADMIN_EMAIL_ALLOWLIST` (virgules). Pas d’inscription depuis l’admin. Session persistée par défaut (localStorage).
+**Auth** : email + mot de passe via Supabase Auth. **Accès au backoffice** : uniquement si `profiles.is_admin = true` pour l’utilisateur connecté (lu via le client anon, RLS sur `profiles`). **Données loteries** : lectures via les RPC `admin_get_lotteries` et `admin_get_lottery_detail` (garde admin en base, pas les vues SQL legacy). Promouvoir un compte : `supabase/scripts/promote_admin_by_email.sql`. Pas d’inscription depuis l’admin. Session persistée par défaut (localStorage).
 
 ## Variables d’environnement (Supabase)
 
@@ -29,11 +27,8 @@ Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript
 |----------|-------------|
 | `VITE_SUPABASE_URL` | URL du projet (Settings → API → Project URL). |
 | `VITE_SUPABASE_ANON_KEY` | Clé **anon** « public » (Settings → API → anon public). |
-| `VITE_ADMIN_EMAIL_ALLOWLIST` | Emails autorisés (séparés par des virgules, trim, casse ignorée). Vide = personne n’a accès. |
 
-**Ne pas** mettre la `service_role` ni d’autres secrets dans le front : uniquement ce que le dashboard expose comme clé anon compatible client.
-
-Usage dans le code : par exemple `import { getSupabaseClient, isSupabaseConfigured } from "../lib/supabase"` (ajuster le chemin relatif selon le fichier).
+**Ne pas** mettre la `service_role` ni d’autres secrets dans le front.
 
 ## Commandes
 
@@ -55,9 +50,9 @@ npm run admin:preview
 ## Tester l’accès admin
 
 1. Créer un utilisateur email/mot de passe dans Supabase Auth (Dashboard ou app mobile), ou réutiliser un compte existant.
-2. Ajouter son email exact (ou équivalent après normalisation minuscules) dans `VITE_ADMIN_EMAIL_ALLOWLIST`.
-3. `npm run dev` → écran de connexion → après succès, liste loteries ; sinon message « Accès non autorisé ».
+2. Lui donner le droit admin : exécuter `supabase/scripts/promote_admin_by_email.sql` (ou `UPDATE public.profiles SET is_admin = true WHERE …` avec une session postgres / service_role conforme aux triggers).
+3. `npm run dev` → connexion → si `is_admin` est vrai, liste et détail loteries via RPC ; sinon écran « Accès non autorisé ».
 
 ## Suite possible
 
-Rôles côté base, MFA, reset mot de passe : quand le flux produit le demande.
+MFA, reset mot de passe : quand le flux produit le demande.
