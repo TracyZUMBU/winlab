@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const { withProjectBuildGradle } = require("@expo/config-plugins");
 
@@ -22,6 +23,11 @@ function withAsyncStorageLocalRepo(config) {
     );
     localRepoAbs = path.join(path.dirname(pkg), "android", "local_repo");
   } catch {
+    return config;
+  }
+
+  /** Expo SDK 54 pins async-storage v2.x — no `local_repo` (v3+ only). */
+  if (!fs.existsSync(localRepoAbs)) {
     return config;
   }
 
