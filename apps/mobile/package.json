@@ -17,7 +17,13 @@
     "migrate:local": "supabase migration up --local --include-all --workdir ../..",
     "migrate:remote": "supabase migration up --linked --include-all --workdir ../..",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",
-    "seed:staging:v1": "tsx scripts/seed-staging-v1.ts"
+    "seed:staging:v1": "tsx scripts/seed-staging-v1.ts",
+    "bump:release": "node ./scripts/bump-release.js",
+    "build:apk": "eas build --platform android --profile preview",
+    "build:ios-preview": "eas build --platform ios --profile preview",
+    "build:ios-production": "eas build --platform ios --profile production",
+    "submit:ios": "eas submit --platform ios --profile production",
+    "update:preview": "eas update --channel preview"
   },
   "dependencies": {
     "@winlab/monitoring": "*",
@@ -67,6 +73,7 @@
     "@types/jest": "^29.5.14",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
+    "eas-cli": "^16.28.0",
     "eslint-config-expo": "~10.0.0",
     "jest": "^29.7.0",
     "patch-package": "^8.0.1",
