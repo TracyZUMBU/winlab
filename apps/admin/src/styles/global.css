@@ -297,6 +297,64 @@ body {
   border-bottom: none;
 }
 
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ended td {
+  background: #f8fafc;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ended td:first-child {
+  box-shadow: inset 3px 0 0 0 #94a3b8;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ending-soon td {
+  background: #fffbeb;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--ending-soon td:first-child {
+  box-shadow: inset 3px 0 0 0 #f59e0b;
+}
+
+.lotteries-dev-table__end-cell {
+  vertical-align: middle;
+}
+
+.lotteries-dev-table__end-cell-stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.lotteries-dev-table__end-cell--ended .lotteries-dev-table__end-date {
+  color: #64748b;
+}
+
+.lotteries-dev-table__end-cell--ending-soon .lotteries-dev-table__end-date {
+  font-weight: 600;
+  color: #92400e;
+}
+
+.lotteries-dev-table__end-chip {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lotteries-dev-table__end-chip--ended {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.lotteries-dev-table__end-chip--soon {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
 .lotteries-dev-table__title {
   font-weight: 500;
   max-width: 14rem;

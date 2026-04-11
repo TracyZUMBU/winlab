@@ -6,6 +6,32 @@ type LotteriesDevTableProps = {
   rows: AdminLotteryListItem[];
 };
 
+/** Fenêtre « bientôt » : 48 h à partir de maintenant (même référence que les dates affichées). */
+const ENDING_SOON_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+
+export type LotteryEndHighlight = "none" | "ended" | "ending_soon";
+
+/** Compare `ends_at` au moment courant ; `ended` prime sur `ending_soon`. */
+export function getLotteryEndHighlight(
+  endsAt: string | null,
+  nowMs: number = Date.now(),
+): LotteryEndHighlight {
+  if (endsAt == null || endsAt === "") {
+    return "none";
+  }
+  const end = new Date(endsAt).getTime();
+  if (Number.isNaN(end)) {
+    return "none";
+  }
+  if (end < nowMs) {
+    return "ended";
+  }
+  if (end <= nowMs + ENDING_SOON_WINDOW_MS) {
+    return "ending_soon";
+  }
+  return "none";
+}
+
 function formatTicketCost(value: number): string {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
@@ -51,8 +77,20 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.lottery_id}>
+          {rows.map((row) => {
+            const endHighlight = getLotteryEndHighlight(row.ends_at);
+            const rowMod =
+              endHighlight === "ended"
+                ? "lotteries-dev-table__row--ended"
+                : endHighlight === "ending_soon"
+                  ? "lotteries-dev-table__row--ending-soon"
+                  : "";
+
+            return (
+            <tr
+              key={row.lottery_id}
+              className={rowMod ? rowMod : undefined}
+            >
               <td className="lotteries-dev-table__title">{row.title}</td>
               <td>{row.brand_name ?? "—"}</td>
               <td>
@@ -65,8 +103,38 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
               <td className="lotteries-dev-table__mono">
                 {formatDateTimeForDev(row.starts_at)}
               </td>
-              <td className="lotteries-dev-table__mono">
-                {formatDateTimeForDev(row.ends_at)}
+              <td
+                className={[
+                  "lotteries-dev-table__mono",
+                  "lotteries-dev-table__end-cell",
+                  endHighlight !== "none"
+                    ? `lotteries-dev-table__end-cell--${endHighlight}`
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <div className="lotteries-dev-table__end-cell-stack">
+                  <span className="lotteries-dev-table__end-date">
+                    {formatDateTimeForDev(row.ends_at)}
+                  </span>
+                  {endHighlight === "ended" ? (
+                    <span
+                      className="lotteries-dev-table__end-chip lotteries-dev-table__end-chip--ended"
+                      title="Date de fin dépassée"
+                    >
+                      Terminée
+                    </span>
+                  ) : null}
+                  {endHighlight === "ending_soon" ? (
+                    <span
+                      className="lotteries-dev-table__end-chip lotteries-dev-table__end-chip--soon"
+                      title="Se termine dans les 48 prochaines heures"
+                    >
+                      ≤ 2 jours
+                    </span>
+                  ) : null}
+                </div>
               </td>
               <td className="lotteries-dev-table__mono">
                 {formatDateTimeForDev(row.draw_at)}
@@ -92,7 +160,8 @@ export function LotteriesDevTable({ rows }: LotteriesDevTableProps) {
                 </Link>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>
