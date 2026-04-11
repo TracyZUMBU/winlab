@@ -3,15 +3,15 @@ import i18n from "@/src/i18n";
 import { format, isValid, parse, startOfDay } from "date-fns";
 import { z } from "zod";
 
-import { ProfileSex } from "../types/profileSex";
+import { PROFILE_SEX, type ProfileSex } from "../types/profileSex";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const profileSexZodEnum = z.enum([
-  ProfileSex.female,
-  ProfileSex.male,
-  ProfileSex.other,
-  ProfileSex.prefer_not_to_say,
+  PROFILE_SEX.female,
+  PROFILE_SEX.male,
+  PROFILE_SEX.other,
+  PROFILE_SEX.prefer_not_to_say,
 ]);
 
 const createProfileFormBaseSchema = usernameSchema.extend({
@@ -54,8 +54,8 @@ export type CreateProfileFormValues = z.infer<typeof createProfileFormBaseSchema
 
 /** Ordre d’affichage des options sexe (inscription). */
 export const CREATE_PROFILE_SEX_FIELD_ORDER: readonly ProfileSex[] = [
-  ProfileSex.female,
-  ProfileSex.male,
-  ProfileSex.other,
-  ProfileSex.prefer_not_to_say,
+  PROFILE_SEX.female,
+  PROFILE_SEX.male,
+  PROFILE_SEX.other,
+  PROFILE_SEX.prefer_not_to_say,
 ] as const;
