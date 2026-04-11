@@ -8,17 +8,11 @@ alter table "public"."weekly_meals" alter column meal_type type "public"."meal_t
 
 drop type "public"."meal_type__old_version_to_be_dropped";
 
-alter table "public"."lotteries" add column "is_featured" boolean not null default false;
-
-alter table "public"."lotteries" add column "short_description" text;
+-- is_featured + lotteries_is_featured_true_idx : 20260326160000_lotteries_is_featured.sql
+-- short_description : 20260326162000_lotteries_short_description.sql
+-- missions.image_url, profiles.avatar_url : 20260329140000_missions_image_url_profiles_avatar_url.sql
 
 alter table "public"."lotteries" alter column "brand_id" set default '654aa4ef-9cef-442f-94e2-398a5774ab62'::uuid;
-
-alter table "public"."missions" add column "image_url" text;
-
-alter table "public"."profiles" add column "avatar_url" text;
-
-CREATE INDEX lotteries_is_featured_true_idx ON public.lotteries USING btree (is_featured) WHERE (is_featured = true);
 
 set check_function_bodies = off;
 
@@ -405,15 +399,4 @@ END;
 $function$
 ;
 
-
-  create policy "Users can view missions they have a completion for"
-  on "public"."missions"
-  as permissive
-  for select
-  to authenticated
-using ((EXISTS ( SELECT 1
-   FROM public.mission_completions mc
-  WHERE ((mc.mission_id = missions.id) AND (mc.user_id = auth.uid())))));
-
-
-
+-- Policy "Users can view missions they have a completion for" : déjà créée dans 20260329150000_get_todo_missions_page_and_missions_completion_rls.sql
