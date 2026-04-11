@@ -11,7 +11,7 @@ type AdminAuthGateProps = {
 };
 
 /**
- * Garde globale : config → session → profil `is_admin` (+ allowlist de transition) → application.
+ * Garde globale : config → session → profil `is_admin` → application.
  */
 export function AdminAuthGate({ children }: AdminAuthGateProps) {
   const authState = useCurrentUser();

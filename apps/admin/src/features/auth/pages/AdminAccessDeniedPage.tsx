@@ -6,7 +6,7 @@ type AdminAccessDeniedPageProps = {
   user: User;
 };
 
-/** Compte valide mais sans droit admin (ni `profiles.is_admin`, ni allowlist de transition). */
+/** Compte valide mais `profiles.is_admin` est faux ou indisponible. */
 export function AdminAccessDeniedPage({ user }: AdminAccessDeniedPageProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
 

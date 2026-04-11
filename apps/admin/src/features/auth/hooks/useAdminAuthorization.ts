@@ -17,7 +17,7 @@ export type AdminAuthorizationState =
     };
 
 /**
- * Après session résolue : charge `profiles.is_admin` puis combine avec l’allowlist (transition).
+ * Après session résolue : charge `profiles.is_admin` (seule source pour l’accès UI, alignée sur les RPC admin).
  */
 export function useAdminAuthorization(
   user: User | null,
@@ -36,7 +36,7 @@ export function useAdminAuthorization(
 
   return {
     status: "ready",
-    allowed: query.data?.allowed ?? computeAdminAllowed(user, null),
+    allowed: query.data?.allowed ?? computeAdminAllowed(profileIsAdmin),
     profileIsAdmin,
   };
 }

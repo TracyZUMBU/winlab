@@ -6,7 +6,7 @@ function formatIntFr(n: number): string {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n);
 }
 
-/** Détail loterie (lecture vue `admin_lottery_detail`). */
+/** Détail loterie (RPC `admin_get_lottery_detail`). */
 export function LotteryDetailPage() {
   const { lotteryId } = useParams<{ lotteryId: string }>();
   const state = useLotteryAdminDetail(lotteryId);

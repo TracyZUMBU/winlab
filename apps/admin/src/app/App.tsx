@@ -3,7 +3,7 @@ import { AdminAuthGate } from "../features/auth";
 import { LotteriesPage, LotteryDetailPage } from "../features/lotteries";
 import { AdminLayout } from "./AdminLayout";
 
-/** Routes sous garde auth + `profiles.is_admin` (allowlist optionnelle en secours). */
+/** Routes sous garde auth + `profiles.is_admin`. */
 export function App() {
   return (
     <AdminAuthGate>

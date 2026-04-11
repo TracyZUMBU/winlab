@@ -1,4 +1,4 @@
--- Helper for admin checks (RLS policies, admin views). SECURITY INVOKER: respects RLS on profiles.
+-- Helper for admin checks (RPC guards, RLS on profiles). SECURITY INVOKER: respects RLS on profiles.
 -- Canonical definition; keep in sync with the migration that applies it.
 
 CREATE OR REPLACE FUNCTION public.is_admin(user_id uuid)
@@ -18,7 +18,7 @@ $$;
 ALTER FUNCTION public.is_admin(uuid) OWNER TO postgres;
 
 COMMENT ON FUNCTION public.is_admin(uuid) IS
-  'Returns true when profiles.is_admin is true for the given user id (typically auth.uid()). Used by admin views and RLS.';
+  'Returns true when profiles.is_admin is true for the given user id (typically auth.uid()). Used by admin_get_lotteries / admin_get_lottery_detail and RLS.';
 
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_admin(uuid) TO service_role;

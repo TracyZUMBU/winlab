@@ -2,14 +2,11 @@ import type { User } from "@supabase/supabase-js";
 import { queryOptions } from "@tanstack/react-query";
 
 import { fetchSessionProfileIsAdmin } from "../services/fetchSessionProfileIsAdmin";
-import { isAdminEmailAllowlist } from "../services/isAdminUser";
 import { authKeys } from "./auth.keys";
 
-export function computeAdminAllowed(user: User, profileIsAdmin: boolean | null): boolean {
-  if (profileIsAdmin === true) {
-    return true;
-  }
-  return isAdminEmailAllowlist(user);
+/** Accès UI admin : uniquement si le profil a `is_admin = true` (aligné sur les RPC côté DB). */
+export function computeAdminAllowed(profileIsAdmin: boolean | null): boolean {
+  return profileIsAdmin === true;
 }
 
 export type AdminAuthorizationPayload = {
@@ -21,7 +18,7 @@ async function fetchAdminAuthorization(user: User): Promise<AdminAuthorizationPa
   const result = await fetchSessionProfileIsAdmin(user.id);
   const profileIsAdmin = result.ok ? result.profile.is_admin : null;
   return {
-    allowed: computeAdminAllowed(user, profileIsAdmin),
+    allowed: computeAdminAllowed(profileIsAdmin),
     profileIsAdmin,
   };
 }

@@ -1,4 +1,5 @@
 -- Admin read RPCs for Winlab backoffice (SECURITY DEFINER + explicit admin guard).
+-- Legacy SQL views admin_lotteries_overview / admin_lottery_detail were dropped (migration drop_legacy_admin_views).
 -- Canonical definitions; keep in sync with the migration that applies them.
 
 CREATE OR REPLACE FUNCTION public.admin_get_lotteries()
