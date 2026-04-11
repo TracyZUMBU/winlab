@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Génère le fichier `supabase/database.enums.ts` à partir de la migration
+ * Génère `apps/mobile/src/lib/supabase/database.enums.ts` à partir de la migration
  * `supabase/migrations/20260318085739_initial_remote_schema.sql`.
  *
  * Ce script est pensé pour être appelé depuis le dossier `apps/mobile`,
@@ -11,14 +11,22 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.resolve(__dirname, "..", "..", "..");
+const REPO_ROOT = path.resolve(__dirname, "..", "..", "..");
 const MIGRATION_FILE = path.join(
-  ROOT,
+  REPO_ROOT,
   "supabase",
   "migrations",
   "20260318085739_initial_remote_schema.sql",
 );
-const OUTPUT_FILE = path.join(ROOT, "supabase", "database.enums.ts");
+/** Sortie réelle consommée par l’app mobile (le commentaire historique mentionnait `supabase/` à la racine). */
+const OUTPUT_FILE = path.join(
+  __dirname,
+  "..",
+  "src",
+  "lib",
+  "supabase",
+  "database.enums.ts",
+);
 
 /**
  * Parse les blocs `CREATE TYPE "public"."xxx" AS ENUM ('a', 'b', ...)`
@@ -80,7 +88,9 @@ function generateTs(enums) {
   );
 
   for (const e of enums) {
-    const constName = toPascalCase(e.name);
+    const typeName = toPascalCase(e.name);
+    /** Suffixe `Values` : évite no-redeclare (const + type ne partagent pas le même identifiant). */
+    const constName = `${typeName}Values`;
 
     lines.push(`/** ${e.name} */`);
     lines.push(`export const ${constName} = {`);
@@ -92,7 +102,7 @@ function generateTs(enums) {
     });
     lines.push(
       "} as const;",
-      `export type ${constName} = (typeof ${constName})[keyof typeof ${constName}];`,
+      `export type ${typeName} = (typeof ${constName})[keyof typeof ${constName}];`,
       "",
     );
   }
@@ -100,9 +110,10 @@ function generateTs(enums) {
   lines.push("/** Regroupe toutes les constantes (itération, tests, etc.) */");
   lines.push("export const DatabaseEnums = {");
   enums.forEach((e, idx) => {
-    const constName = toPascalCase(e.name);
+    const typeName = toPascalCase(e.name);
+    const constName = `${typeName}Values`;
     const comma = idx === enums.length - 1 ? "" : ",";
-    lines.push(`  ${constName}${comma}`);
+    lines.push(`  ${typeName}: ${constName}${comma}`);
   });
   lines.push("} as const;", "");
 
