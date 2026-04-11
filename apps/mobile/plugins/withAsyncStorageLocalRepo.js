@@ -1,3 +1,4 @@
+const path = require("path");
 const { withProjectBuildGradle } = require("@expo/config-plugins");
 
 /**
@@ -5,25 +6,58 @@ const { withProjectBuildGradle } = require("@expo/config-plugins");
  * its shared-storage artifact used on Android. Some build environments don't
  * pick it up automatically, so we explicitly add it to the Android Gradle
  * repositories list.
+ *
+ * In npm workspaces, the package usually lives at the repo root
+ * `node_modules`, not `apps/<app>/node_modules`. Resolve the real path with
+ * `require.resolve` so Gradle always points at the correct `local_repo`.
  */
 function withAsyncStorageLocalRepo(config) {
+  const projectRoot = path.join(__dirname, "..");
+
+  let localRepoAbs;
+  try {
+    const pkg = require.resolve(
+      "@react-native-async-storage/async-storage/package.json",
+      { paths: [projectRoot] },
+    );
+    localRepoAbs = path.join(path.dirname(pkg), "android", "local_repo");
+  } catch {
+    return config;
+  }
+
+  const filePathForUri = localRepoAbs.replace(/\\/g, "/");
+  const gradleUri = `file://${filePathForUri}`;
+  const repositoryLine = `maven { url uri("${gradleUri}") }`;
+
   return withProjectBuildGradle(config, (modConfig) => {
-    const contents = modConfig.modResults.contents;
-    const localRepoPathFragment =
-      "async-storage/android/local_repo";
+    let contents = modConfig.modResults.contents;
 
-    const repositoryLine =
-      'maven { url "${rootDir}/../node_modules/@react-native-async-storage/async-storage/android/local_repo" }';
+    // Remove legacy line that assumed `../node_modules` from `android/` (wrong when hoisted).
+    contents = contents
+      .split("\n")
+      .filter(
+        (line) =>
+          !line.includes(
+            "${rootDir}/../node_modules/@react-native-async-storage/async-storage/android/local_repo",
+          ),
+      )
+      .join("\n");
 
-    // We want this in `allprojects.repositories` (dependency resolution), not
-    // in `buildscript.repositories` (Gradle plugin classpath).
-    const allProjectsIndex = contents.indexOf("allprojects {");
-    if (allProjectsIndex === -1) {
+    if (contents.includes(repositoryLine)) {
+      modConfig.modResults.contents = contents;
       return modConfig;
     }
 
-    // If it's already present inside the allprojects block, do nothing.
+    const localRepoPathFragment = "async-storage/android/local_repo";
+
+    const allProjectsIndex = contents.indexOf("allprojects {");
+    if (allProjectsIndex === -1) {
+      modConfig.modResults.contents = contents;
+      return modConfig;
+    }
+
     if (contents.indexOf(localRepoPathFragment, allProjectsIndex) !== -1) {
+      modConfig.modResults.contents = contents;
       return modConfig;
     }
 
@@ -32,10 +66,10 @@ function withAsyncStorageLocalRepo(config) {
       allProjectsIndex,
     );
     if (mavenCentralIndex === -1) {
+      modConfig.modResults.contents = contents;
       return modConfig;
     }
 
-    // Determine indentation for the line containing `mavenCentral()`.
     const lineStartIndex =
       contents.lastIndexOf("\n", mavenCentralIndex) + 1;
     const indent = contents.slice(lineStartIndex, mavenCentralIndex).match(
@@ -55,4 +89,3 @@ function withAsyncStorageLocalRepo(config) {
 }
 
 module.exports = withAsyncStorageLocalRepo;
-

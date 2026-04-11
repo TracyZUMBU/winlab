@@ -5,6 +5,10 @@
     "apps/*",
     "packages/*"
   ],
+  "dependencies": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
   "scripts": {
     "prepare": "husky",
     "admin:dev": "npm run dev --prefix apps/admin",
@@ -18,5 +22,9 @@
   },
   "devDependencies": {
     "husky": "^9.1.7"
+  },
+  "overrides": {
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   }
 }
