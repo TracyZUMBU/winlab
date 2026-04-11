@@ -1,13 +1,14 @@
 // tests/integration/submit-mission-completion.integration.test.ts
-import { createAuthenticatedTestUser, createTestUser } from "../factories/auth";
-import { createBrand } from "../factories/brands";
-import { createMissionCompletion } from "../factories/mission_completion";
-import { createMission } from "../factories/missions";
-import { createWalletTransaction } from "../factories/wallet_transactions";
 import {
+  createAuthenticatedTestUser,
+  createBrand,
+  createMission,
+  createMissionCompletion,
+  createTestUser,
+  createWalletTransaction,
   getSupabaseAdminClient,
   getSupabaseAnonClient,
-} from "../utils/supabaseTestClient";
+} from "@winlab/supabase-test-utils";
 
 const SUBMIT_MISSION_COMPLETION_RPC = "submit_mission_completion";
 

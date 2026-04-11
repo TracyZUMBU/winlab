@@ -1,6 +1,7 @@
 {
   "name": "winlab",
   "private": true,
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "admin:dev": "npm run dev --prefix apps/admin",
     "admin:build": "npm run build --prefix apps/admin",
