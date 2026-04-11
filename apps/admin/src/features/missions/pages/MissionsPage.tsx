@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { ServiceFailureError } from "../../../lib/api/serviceFailureError";
 import { isSupabaseConfigured } from "../../../lib/supabase";
+import { MissionDetailPanel } from "../components/MissionDetailPanel";
 import { MissionsListTable } from "../components/MissionsListTable";
 import { useAdminMissionsListQuery } from "../hooks/useAdminMissionsListQuery";
 import { missionServiceErrorMessage } from "../missionErrorMessages";
@@ -63,7 +65,10 @@ function typeToQueryType(
   return v === TYPE_FILTER_ALL ? TYPE_FILTER_ALL : v;
 }
 
+const DETAIL_QUERY_KEY = "detail";
+
 export function MissionsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [titleSearch, setTitleSearch] = useState("");
   const [brandId, setBrandId] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(STATUS_FILTER_ALL);
@@ -92,6 +97,14 @@ export function MissionsPage() {
 
   const listState = useAdminMissionsListQuery(listInput);
 
+  const detailMissionId = searchParams.get(DETAIL_QUERY_KEY)?.trim() ?? "";
+
+  const closeDetailPanel = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.delete(DETAIL_QUERY_KEY);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const total = listState.kind === "ok" ? listState.data.total : 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -112,6 +125,10 @@ export function MissionsPage() {
 
   return (
     <section className="page-missions" aria-labelledby="missions-heading">
+      {detailMissionId ? (
+        <MissionDetailPanel missionId={detailMissionId} onClose={closeDetailPanel} />
+      ) : null}
+
       <h2 id="missions-heading" className="page-missions__heading">
         Missions
       </h2>

@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminAuthGate } from "../features/auth";
 import { LotteriesPage, LotteryDetailFromRouteRedirect } from "../features/lotteries";
-import { MissionDetailPage, MissionsPage } from "../features/missions";
+import { MissionDetailFromRouteRedirect, MissionsPage } from "../features/missions";
 import { AdminLayout } from "./AdminLayout";
 
 /** Routes sous garde auth + `profiles.is_admin`. */
@@ -17,7 +17,10 @@ export function App() {
             element={<LotteryDetailFromRouteRedirect />}
           />
           <Route path="missions" element={<MissionsPage />} />
-          <Route path="missions/:missionId" element={<MissionDetailPage />} />
+          <Route
+            path="missions/:missionId"
+            element={<MissionDetailFromRouteRedirect />}
+          />
         </Route>
       </Routes>
     </AdminAuthGate>

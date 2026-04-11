@@ -7,11 +7,17 @@ function formatIntFr(n: number): string {
 
 type MissionDetailContentProps = {
   state: MissionDetailState;
+  /** Pour le panneau : le titre est affiché dans la barre du panel. */
+  hideTitleWhenOk?: boolean;
   headingId: string;
 };
 
-/** Corps du détail mission (RPC `admin_get_mission_detail`). */
-export function MissionDetailContent({ state, headingId }: MissionDetailContentProps) {
+/** Corps du détail mission (RPC `admin_get_mission_detail`) — page ou panneau. */
+export function MissionDetailContent({
+  state,
+  hideTitleWhenOk = false,
+  headingId,
+}: MissionDetailContentProps) {
   return (
     <>
       {state.kind === "loading" && (
@@ -34,9 +40,11 @@ export function MissionDetailContent({ state, headingId }: MissionDetailContentP
 
       {state.kind === "ok" && (
         <>
-          <h2 id={headingId} className="page-missions__heading">
-            {state.detail.title}
-          </h2>
+          {!hideTitleWhenOk ? (
+            <h2 id={headingId} className="page-missions__heading">
+              {state.detail.title}
+            </h2>
+          ) : null}
 
           <section className="admin-detail-section" aria-labelledby="mission-detail-general">
             <h3 id="mission-detail-general" className="admin-detail-section__title">

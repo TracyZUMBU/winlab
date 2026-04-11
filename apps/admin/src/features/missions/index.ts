@@ -1,6 +1,6 @@
 /**
- * Missions côté admin : types + services de lecture (pas de logique UI ici).
- * Pages : à brancher en étape 4+.
+ * Missions côté admin : types, services, liste (`MissionsPage`) + panneau détail (`?detail=`).
+ * `MissionDetailPage` : page pleine optionnelle (non montée sur la route par défaut, comme `LotteryDetailPage`).
  */
 
 export type {
@@ -31,3 +31,5 @@ export { getActiveBrandsForMissionFilters } from "./services/getActiveBrandsForM
 export { missionServiceErrorMessage } from "./missionErrorMessages";
 export { MissionsPage } from "./pages/MissionsPage";
 export { MissionDetailPage } from "./pages/MissionDetailPage";
+export { MissionDetailFromRouteRedirect } from "./pages/MissionDetailFromRouteRedirect";
+export { MissionDetailPanel } from "./components/MissionDetailPanel";
