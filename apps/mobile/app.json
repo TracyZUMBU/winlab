@@ -2,7 +2,7 @@
   "expo": {
     "name": "Winlab",
     "slug": "mobile",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mobile",
@@ -11,14 +11,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.winlab.app",
-      "buildNumber": "1",
+      "buildNumber": "3",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Winlab accède à vos photos pour définir votre photo de profil."
       }
     },
     "android": {
-      "versionCode": 1,
+      "versionCode": 4,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -34,7 +34,10 @@
       "favicon": "./assets/images/favicon.png"
     },
     "autolinking": {
-      "searchPaths": ["../../node_modules", "./node_modules"]
+      "searchPaths": [
+        "../../node_modules",
+        "./node_modules"
+      ]
     },
     "plugins": [
       "expo-router",

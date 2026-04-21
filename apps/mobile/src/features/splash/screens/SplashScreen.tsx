@@ -1,3 +1,4 @@
+import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -10,6 +11,7 @@ const SPLASH_DELAY_MS = 1800;
 
 export function SplashScreen() {
   const { t } = useTranslation();
+  const appVersion = Constants.expoConfig?.version ?? "—";
   const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export function SplashScreen() {
               />
             </View>
             <Text style={styles.metaText}>
-              {t("splash.version", { version: "1.0.0" })}
+              {t("splash.version", { version: appVersion })}
             </Text>
           </View>
         </View>

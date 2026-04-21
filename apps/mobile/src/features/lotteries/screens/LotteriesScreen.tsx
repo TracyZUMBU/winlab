@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
 
@@ -28,13 +29,28 @@ import { useAvailableLotteriesQuery } from "../hooks/useAvailableLotteriesQuery"
 
 type CategoryId = "all" | string;
 
+const HUB_SECTION_MAX_CARDS = 8;
+
 export function LotteriesScreen() {
   const router = useRouter();
+  const { width: windowWidth } = useWindowDimensions();
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<CategoryId>("all");
 
-  const { data, isLoading, isError, refetch } = useAvailableLotteriesQuery();
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useAvailableLotteriesQuery();
+  console.warn(
+    "data =>",
+    data?.map((l) => l.category === "gift-card"),
+  );
 
   const openDetail = (lotteryId: string) => {
     router.push(`/lotteries/${lotteryId}`);
@@ -55,6 +71,46 @@ export function LotteriesScreen() {
   };
 
   const lotteries = useMemo(() => data ?? [], [data]);
+
+  const hubListNeedsMorePages = useMemo(() => {
+    if (category !== "all" || query.trim() !== "") return false;
+    const nonGift = lotteries.filter((l) => l.category !== "gift-card");
+    const endingCount = nonGift.filter((l) => !l.is_featured).length;
+    const giftCount = lotteries.filter(
+      (l) => l.category === "gift-card",
+    ).length;
+    return (
+      endingCount < HUB_SECTION_MAX_CARDS || giftCount < HUB_SECTION_MAX_CARDS
+    );
+  }, [lotteries, category, query]);
+
+  /**
+   * La 1ʳᵉ page est triée avec `is_featured` en premier : peu de lignes non-featured.
+   * On charge les pages suivantes tant que le hub a besoin d’au plus 8 cartes par section.
+   */
+  useEffect(() => {
+    if (
+      !hubListNeedsMorePages ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      isLoading
+    ) {
+      return;
+    }
+    void fetchNextPage();
+  }, [
+    hubListNeedsMorePages,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    fetchNextPage,
+  ]);
+
+  /** Même largeur utile qu’avec l’ancienne grille 2 colonnes (`gridItem` 50 % − gouttière). */
+  const hubCarouselItemWidth = useMemo(() => {
+    const contentWidth = windowWidth - 2 * theme.spacing.screenHorizontal;
+    return (contentWidth - theme.spacing.sm) / 2;
+  }, [windowWidth]);
 
   const categories = useMemo(() => {
     const unique = new Set<string>();
@@ -86,11 +142,13 @@ export function LotteriesScreen() {
 
   const giftCards = filtered
     .filter((l) => l.category === "gift-card")
-    .slice(0, 2);
+    .slice(0, HUB_SECTION_MAX_CARDS);
 
   const nonGiftCards = filtered.filter((l) => l.category !== "gift-card");
   const featured = nonGiftCards.filter((l) => l.is_featured).slice(0, 2);
-  const endingSoon = nonGiftCards.filter((l) => !l.is_featured).slice(0, 2);
+  const endingSoon = nonGiftCards
+    .filter((l) => !l.is_featured)
+    .slice(0, HUB_SECTION_MAX_CARDS);
 
   if (isLoading) {
     return (
@@ -184,13 +242,20 @@ export function LotteriesScreen() {
           </Pressable>
         </View>
 
-        <View style={styles.grid2}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.carousel}
+        >
           {endingSoon.map((l) => (
-            <View key={l.id} style={styles.gridItem}>
+            <View
+              key={l.id}
+              style={[styles.carouselItem, { width: hubCarouselItemWidth }]}
+            >
               <LotteryEndingSoonCard lottery={l} onPress={openDetail} />
             </View>
           ))}
-        </View>
+        </ScrollView>
 
         {featured.length > 0 && (
           <>
@@ -234,9 +299,16 @@ export function LotteriesScreen() {
                 </Text>
               </Pressable>
             </View>
-            <View style={styles.grid2}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.carousel}
+            >
               {giftCards.map((l, index) => (
-                <View key={l.id} style={styles.gridItem}>
+                <View
+                  key={l.id}
+                  style={[styles.carouselItem, { width: hubCarouselItemWidth }]}
+                >
                   <LotteryGiftCardTile
                     lottery={l}
                     onPress={openDetail}
@@ -244,7 +316,7 @@ export function LotteriesScreen() {
                   />
                 </View>
               ))}
-            </View>
+            </ScrollView>
           </>
         )}
 
@@ -478,15 +550,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
   },
-  grid2: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginHorizontal: -theme.spacing.sm / 2,
-    rowGap: theme.spacing.md,
+  carousel: {
+    gap: theme.spacing.md,
+    paddingBottom: theme.spacing.xs,
   },
-  gridItem: {
-    width: "50%",
-    paddingHorizontal: theme.spacing.sm / 2,
+  carouselItem: {
+    flexShrink: 0,
   },
   stack: {
     gap: theme.spacing.md,
