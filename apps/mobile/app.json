@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.winlab.app",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Winlab accède à vos photos pour définir votre photo de profil."
@@ -34,10 +34,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "autolinking": {
-      "searchPaths": [
-        "../../node_modules",
-        "./node_modules"
-      ]
+      "searchPaths": ["../../node_modules", "./node_modules"]
     },
     "plugins": [
       "expo-router",
@@ -76,6 +73,11 @@
     },
     "updates": {
       "url": "https://u.expo.dev/fc84219c-0345-48ad-97d9-404735942120"
+    },
+    "build": {
+      "production": {
+        "autoIncrement": "versionCode"
+      }
     }
   }
 }

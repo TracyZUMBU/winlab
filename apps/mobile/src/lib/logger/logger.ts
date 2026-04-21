@@ -57,6 +57,9 @@ function createConsoleTransport(): LoggerTransport {
     warn: (message, metadata) => {
       console.warn(...buildArgs(message, metadata));
     },
+    debug: (message, metadata) => {
+      console.debug(...buildArgs(message, metadata));
+    },
     error: (message, normalizedError, metadata) => {
       console.error(...buildErrorArgs(message, normalizedError, metadata));
     },
@@ -78,6 +81,11 @@ export function createLogger(transports: LoggerTransport[]): Logger {
     warn(message, metadata) {
       for (const transport of transports) {
         transport.warn(message, metadata);
+      }
+    },
+    debug(message, metadata) {
+      for (const transport of transports) {
+        transport.debug(message, metadata);
       }
     },
     error(message, error, metadata) {

@@ -315,7 +315,8 @@ export function ProfileScreen() {
     let pickFromLibrary: typeof import("../utils/pickProfileAvatarFromLibrary").pickProfileAvatarFromLibrary;
     try {
       const mod = await import("../utils/pickProfileAvatarFromLibrary");
-      type PickFn = typeof import("../utils/pickProfileAvatarFromLibrary").pickProfileAvatarFromLibrary;
+      type PickFn =
+        typeof import("../utils/pickProfileAvatarFromLibrary").pickProfileAvatarFromLibrary;
       let resolved: PickFn | undefined;
       if (typeof mod.pickProfileAvatarFromLibrary === "function") {
         resolved = mod.pickProfileAvatarFromLibrary;
@@ -439,10 +440,7 @@ export function ProfileScreen() {
         return;
       }
       logger.error("Avatar upload failed", error);
-      Alert.alert(
-        t("profile.screen.title"),
-        t("profile.avatar.uploadFailed"),
-      );
+      Alert.alert(t("profile.screen.title"), t("profile.avatar.uploadFailed"));
     }
   }, [t, uploadAvatarMutation, userId]);
 
@@ -514,9 +512,7 @@ export function ProfileScreen() {
 
   const usernameRaw = profile.username?.trim() ?? "";
   const displayName = usernameRaw || t("profile.hero.defaultDisplayName");
-  const handleLabel = usernameRaw
-    ? `@${usernameRaw}`
-    : t("profile.hero.handlePlaceholder");
+  const handleLabel = profile.email ?? "";
 
   return (
     <Screen edges={["top"]} style={styles.screenBg}>
@@ -658,155 +654,161 @@ export function ProfileScreen() {
         onRequestClose={cancelEditProfile}
       >
         <View style={styles.modalHost}>
-        <KeyboardAvoidingView
-          style={styles.modalRoot}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>
-              {t("profile.screen.editProfile")}
-            </Text>
-            <Pressable
-              onPress={cancelEditProfile}
-              hitSlop={12}
-              accessibilityRole="button"
-              accessibilityLabel={t("profile.screen.cancelEdit")}
-            >
-              <MaterialIcons name="close" size={24} color={theme.colors.text} />
-            </Pressable>
-          </View>
-          <ScrollView
-            style={styles.modalScroll}
-            contentContainerStyle={styles.modalScrollContent}
-            keyboardShouldPersistTaps="always"
-            showsVerticalScrollIndicator={false}
+          <KeyboardAvoidingView
+            style={styles.modalRoot}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>
-                {t("profile.createProfile.screen.label")}
-              </Text>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                placeholder={t("profile.screen.usernamePlaceholder")}
-                placeholderTextColor={theme.colors.textMuted}
-                style={[
-                  styles.input,
-                  errors.username ? styles.inputError : undefined,
-                ]}
-                value={usernameValue}
-                onChangeText={(text) => {
-                  setValue("username", text, { shouldValidate: true });
-                }}
-                onBlur={usernameField.onBlur}
-              />
-              {errors.username?.message ? (
-                <Text style={styles.errorTextSmall}>
-                  {errors.username.message}
-                </Text>
-              ) : null}
-            </View>
-
-            <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>
-                {t("profile.createProfile.screen.birthDateLabel")}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {t("profile.screen.editProfile")}
               </Text>
               <Pressable
+                onPress={cancelEditProfile}
+                hitSlop={12}
                 accessibilityRole="button"
-                accessibilityLabel={t(
-                  "profile.createProfile.screen.birthDatePickerA11y",
-                )}
-                onPress={openBirthDatePicker}
-                style={({ pressed }) => [
-                  styles.input,
-                  styles.dateFieldButton,
-                  errors.birth_date ? styles.inputError : undefined,
-                  pressed && styles.dateFieldPressed,
-                ]}
+                accessibilityLabel={t("profile.screen.cancelEdit")}
               >
-                <Text
-                  style={
-                    birthDateDisplay
-                      ? styles.dateFieldText
-                      : styles.dateFieldPlaceholder
-                  }
-                >
-                  {birthDateDisplay ||
-                    t("profile.createProfile.screen.birthDatePlaceholder")}
-                </Text>
+                <MaterialIcons
+                  name="close"
+                  size={24}
+                  color={theme.colors.text}
+                />
               </Pressable>
-              {errors.birth_date?.message ? (
-                <Text style={styles.errorTextSmall}>
-                  {errors.birth_date.message}
+            </View>
+            <ScrollView
+              style={styles.modalScroll}
+              contentContainerStyle={styles.modalScrollContent}
+              keyboardShouldPersistTaps="always"
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("profile.createProfile.screen.label")}
                 </Text>
-              ) : null}
-            </View>
-
-            <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>
-                {t("profile.createProfile.screen.sexLabel")}
-              </Text>
-              <View style={styles.sexOptions} accessibilityRole="radiogroup">
-                {editProfileSexFieldOrder.map((value) => {
-                  const selected = selectedSex === value;
-                  return (
-                    <Pressable
-                      key={value}
-                      accessibilityRole="radio"
-                      accessibilityState={{ selected }}
-                      style={({ pressed }) => [
-                        styles.sexOption,
-                        selected && styles.sexOptionSelected,
-                        pressed && styles.sexOptionPressed,
-                      ]}
-                      onPress={() =>
-                        setValue("sex", value, {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }
-                    >
-                      <Text
-                        style={[
-                          styles.sexOptionLabel,
-                          selected && styles.sexOptionLabelSelected,
-                        ]}
-                      >
-                        {t(sexTranslationKey(value))}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                <TextInput
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder={t("profile.screen.usernamePlaceholder")}
+                  placeholderTextColor={theme.colors.textMuted}
+                  style={[
+                    styles.input,
+                    errors.username ? styles.inputError : undefined,
+                  ]}
+                  value={usernameValue}
+                  onChangeText={(text) => {
+                    setValue("username", text, { shouldValidate: true });
+                  }}
+                  onBlur={usernameField.onBlur}
+                />
+                {errors.username?.message ? (
+                  <Text style={styles.errorTextSmall}>
+                    {errors.username.message}
+                  </Text>
+                ) : null}
               </View>
-              {errors.sex?.message ? (
-                <Text style={styles.errorTextSmall}>{errors.sex.message}</Text>
-              ) : null}
-            </View>
 
-            <Button
-              title={
-                updateMutation.isPending
-                  ? t("profile.screen.savingProfile")
-                  : t("profile.screen.saveProfile")
-              }
-              onPress={() => void handleSubmit(onSubmitEditProfile)()}
-              disabled={
-                updateMutation.isPending || uploadAvatarMutation.isPending
-              }
-              variant="primary"
-              fullWidth
-            />
-          </ScrollView>
-        </KeyboardAvoidingView>
-        <BirthDatePickerSheet
-          visible={birthSheetOpen}
-          onClose={() => setBirthSheetOpen(false)}
-          onConfirm={(iso) => {
-            setValue("birth_date", iso, { shouldValidate: true });
-          }}
-          initialIso={birthDateValue || undefined}
-          language={i18n.language}
-        />
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("profile.createProfile.screen.birthDateLabel")}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    "profile.createProfile.screen.birthDatePickerA11y",
+                  )}
+                  onPress={openBirthDatePicker}
+                  style={({ pressed }) => [
+                    styles.input,
+                    styles.dateFieldButton,
+                    errors.birth_date ? styles.inputError : undefined,
+                    pressed && styles.dateFieldPressed,
+                  ]}
+                >
+                  <Text
+                    style={
+                      birthDateDisplay
+                        ? styles.dateFieldText
+                        : styles.dateFieldPlaceholder
+                    }
+                  >
+                    {birthDateDisplay ||
+                      t("profile.createProfile.screen.birthDatePlaceholder")}
+                  </Text>
+                </Pressable>
+                {errors.birth_date?.message ? (
+                  <Text style={styles.errorTextSmall}>
+                    {errors.birth_date.message}
+                  </Text>
+                ) : null}
+              </View>
+
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("profile.createProfile.screen.sexLabel")}
+                </Text>
+                <View style={styles.sexOptions} accessibilityRole="radiogroup">
+                  {editProfileSexFieldOrder.map((value) => {
+                    const selected = selectedSex === value;
+                    return (
+                      <Pressable
+                        key={value}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected }}
+                        style={({ pressed }) => [
+                          styles.sexOption,
+                          selected && styles.sexOptionSelected,
+                          pressed && styles.sexOptionPressed,
+                        ]}
+                        onPress={() =>
+                          setValue("sex", value, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          })
+                        }
+                      >
+                        <Text
+                          style={[
+                            styles.sexOptionLabel,
+                            selected && styles.sexOptionLabelSelected,
+                          ]}
+                        >
+                          {t(sexTranslationKey(value))}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {errors.sex?.message ? (
+                  <Text style={styles.errorTextSmall}>
+                    {errors.sex.message}
+                  </Text>
+                ) : null}
+              </View>
+
+              <Button
+                title={
+                  updateMutation.isPending
+                    ? t("profile.screen.savingProfile")
+                    : t("profile.screen.saveProfile")
+                }
+                onPress={() => void handleSubmit(onSubmitEditProfile)()}
+                disabled={
+                  updateMutation.isPending || uploadAvatarMutation.isPending
+                }
+                variant="primary"
+                fullWidth
+              />
+            </ScrollView>
+          </KeyboardAvoidingView>
+          <BirthDatePickerSheet
+            visible={birthSheetOpen}
+            onClose={() => setBirthSheetOpen(false)}
+            onConfirm={(iso) => {
+              setValue("birth_date", iso, { shouldValidate: true });
+            }}
+            initialIso={birthDateValue || undefined}
+            language={i18n.language}
+          />
         </View>
       </Modal>
     </Screen>

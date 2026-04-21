@@ -10,6 +10,7 @@ export interface Logger {
   log(message: string, metadata?: LogMetadata): void;
   info(message: string, metadata?: LogMetadata): void;
   warn(message: string, metadata?: LogMetadata): void;
+  debug(message: string, metadata?: LogMetadata): void;
   /**
    ‡* @param error - accepts `unknown` to force normalization within the logger
    * @param metadata - additional information (optional)
@@ -21,6 +22,7 @@ export interface LoggerTransport {
   log: (message: string, metadata?: LogMetadata) => void;
   info: (message: string, metadata?: LogMetadata) => void;
   warn: (message: string, metadata?: LogMetadata) => void;
+  debug: (message: string, metadata?: LogMetadata) => void;
   error: (
     message: string,
     normalizedError?: NormalizedError,

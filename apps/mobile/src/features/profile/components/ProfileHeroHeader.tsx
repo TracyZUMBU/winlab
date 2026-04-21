@@ -1,8 +1,8 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { Image } from "expo-image";
 import { theme } from "@/src/theme";
+import { Image } from "expo-image";
 
 export type ProfileHeroHeaderProps = {
   displayName: string;
@@ -71,7 +71,7 @@ export function ProfileHeroHeader({
       </View>
 
       <Text style={styles.name}>{displayName}</Text>
-      {/* <Text style={styles.handle}>{handleLabel}</Text> */}
+      <Text style={styles.handle}>{handleLabel}</Text>
 
       <View style={styles.tokenPill}>
         <MaterialIcons
