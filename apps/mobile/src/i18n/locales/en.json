@@ -236,7 +236,8 @@
         "video": "Video",
         "follow": "Social task",
         "referral": "Referral",
-        "custom": "Mission"
+        "custom": "Mission",
+        "daily_login": "Daily login"
       },
       "progress": {
         "title": "Progress",
@@ -288,6 +289,9 @@
         "INVALID_SERVER_RESPONSE": "Invalid server response. Please try again.",
         "UNKNOWN_ERROR": "Something went wrong. Please try again."
       }
+    },
+    "dailyLogin": {
+      "toastReward": "🎁 +{{count}} tokens for your daily login!"
     },
     "screen": {
       "submitMission": "Mission submitted.",

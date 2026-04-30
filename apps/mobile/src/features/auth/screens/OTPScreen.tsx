@@ -147,7 +147,10 @@ export const OTPScreen: React.FC = () => {
               maxLength={OTP_CODE_LENGTH}
               placeholder={t("auth.otp.screen.codePlaceholder")}
               placeholderTextColor="#94A3B8"
-              style={[styles.input, errors.code ? styles.inputError : undefined]}
+              style={[
+                styles.input,
+                errors.code ? styles.inputError : undefined,
+              ]}
               value={codeValue}
               onChangeText={(text) => {
                 setValue("code", text.replace(/\D/g, ""), {

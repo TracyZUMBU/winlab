@@ -8,6 +8,26 @@ import {
 const RPC = "get_todo_missions_page";
 
 describe("get_todo_missions_page RPC (integration)", () => {
+  it("excludes daily_login missions from the user-facing todo list", async () => {
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-todo-daily-${uniqueId}` });
+    const mission = await createMission({
+      brand_id: brand.id,
+      status: "active",
+      mission_type: "daily_login",
+      token_reward: 10,
+    });
+    const user = await createAuthenticatedTestUser();
+
+    const { data, error } = await user.client.rpc(RPC, {
+      p_limit: 100,
+      p_offset: 0,
+    });
+
+    expect(error).toBeNull();
+    expect((data ?? []).some((m) => m.id === mission.id)).toBe(false);
+  });
+
   it("includes repeatable mission when approved_count < max_completions_per_user", async () => {
     const uniqueId = `${Date.now()}-${Math.random()}`;
     const brand = await createBrand({ name: `brand-todo-${uniqueId}` });
@@ -18,6 +38,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      ends_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
     });
 
     const user = await createAuthenticatedTestUser();
@@ -29,7 +50,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
     });
 
     const { data, error } = await user.client.rpc(RPC, {
-      p_limit: 10,
+      p_limit: 100,
       p_offset: 0,
     });
 

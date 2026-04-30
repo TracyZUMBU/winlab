@@ -464,7 +464,7 @@ export type Database = {
           ends_at: string | null
           id: string
           image_url: string | null
-          max_completions_per_user: number
+          max_completions_per_user: number | null
           max_completions_total: number | null
           metadata: Json
           mission_type: Database["public"]["Enums"]["mission_type"]
@@ -482,7 +482,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          max_completions_per_user?: number
+          max_completions_per_user?: number | null
           max_completions_total?: number | null
           metadata?: Json
           mission_type: Database["public"]["Enums"]["mission_type"]
@@ -500,7 +500,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          max_completions_per_user?: number
+          max_completions_per_user?: number | null
           max_completions_total?: number | null
           metadata?: Json
           mission_type?: Database["public"]["Enums"]["mission_type"]
@@ -1026,7 +1026,13 @@ export type Database = {
       meal_type: "breakfast" | "lunch" | "dinner" | "snack"
       mission_completion_status: "pending" | "approved" | "rejected"
       mission_status: "draft" | "active" | "paused" | "archived"
-      mission_type: "survey" | "video" | "follow" | "referral" | "custom"
+      mission_type:
+        | "survey"
+        | "video"
+        | "follow"
+        | "referral"
+        | "custom"
+        | "daily_login"
       mission_validation_mode: "automatic" | "manual"
       referral_status: "pending" | "qualified" | "rewarded" | "cancelled"
       unit_type: "weight" | "volume" | "count"
@@ -1175,7 +1181,14 @@ export const Constants = {
       meal_type: ["breakfast", "lunch", "dinner", "snack"],
       mission_completion_status: ["pending", "approved", "rejected"],
       mission_status: ["draft", "active", "paused", "archived"],
-      mission_type: ["survey", "video", "follow", "referral", "custom"],
+      mission_type: [
+        "survey",
+        "video",
+        "follow",
+        "referral",
+        "custom",
+        "daily_login",
+      ],
       mission_validation_mode: ["automatic", "manual"],
       referral_status: ["pending", "qualified", "rewarded", "cancelled"],
       unit_type: ["weight", "volume", "count"],

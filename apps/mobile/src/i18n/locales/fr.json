@@ -118,7 +118,7 @@
       },
       "screen": {
         "subtitleWithEmail": "Nous avons envoyé un code à {{email}}.",
-        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse email.",
+        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse email : {{email}}.",
         "codePlaceholder": "000000",
         "resendPrompt": "Vous n’avez pas reçu le code ?",
         "resendCta": "Renvoyer le code",
@@ -240,7 +240,8 @@
         "video": "Vidéo de consommation",
         "follow": "Tâche sociale",
         "referral": "Parrainage",
-        "custom": "Mission"
+        "custom": "Mission",
+        "daily_login": "Connexion quotidienne"
       },
       "progress": {
         "title": "Progression",
@@ -292,6 +293,9 @@
         "INVALID_SERVER_RESPONSE": "Réponse invalide du serveur. Merci de réessayer.",
         "UNKNOWN_ERROR": "Une erreur est survenue. Merci de réessayer."
       }
+    },
+    "dailyLogin": {
+      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !"
     },
     "screen": {
       "submitMission": "Mission soumise.",

@@ -56,6 +56,8 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      // Keep this mission near top of the preview list (ORDER BY ends_at ASC, id ASC).
+      ends_at: new Date(Date.now() + 60 * 1000).toISOString(),
     });
 
     // Repeatable mission logic:
@@ -139,6 +141,29 @@ describe("get_user_home_dashboard RPC (integration)", () => {
     expect(anonData).toBeNull();
     expect(anonError).toBeTruthy();
     expect(anonError?.message ?? "").toContain("UNAUTHENTICATED");
+  });
+
+  it("excludes daily_login mission from mission_previews", async () => {
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-home-daily-${uniqueId}` });
+    const dailyMission = await createMission({
+      brand_id: brand.id,
+      title: `Home daily mission ${uniqueId}`,
+      status: "active",
+      mission_type: "daily_login",
+      token_reward: 10,
+      ends_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    });
+    const user = await createAuthenticatedTestUser();
+
+    const { data, error } = await user.client.rpc(RPC);
+    expect(error).toBeNull();
+    const payload = data as Record<string, unknown>;
+    const missions = payload.mission_previews as unknown[];
+    expect(Array.isArray(missions)).toBe(true);
+    expect(
+      missions.some((m) => (m as { id?: string }).id === dailyMission.id),
+    ).toBe(false);
   });
 
   it("excludes mission preview when user has pending completion at per-user cap", async () => {

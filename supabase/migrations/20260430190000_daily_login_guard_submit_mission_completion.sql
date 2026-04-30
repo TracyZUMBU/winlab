@@ -87,36 +87,6 @@ begin
     end if;
   end if;
 
-  -- Serialize limit checks + insert against TOCTOU races (key space distinct from daily_login lock salt 0).
-  if v_mission.max_completions_per_user is not null then
-    perform pg_advisory_xact_lock(
-      hashtextextended(
-        concat_ws(
-          ':',
-          'submit_mission_completion',
-          'per_user',
-          p_mission_id::text,
-          v_user_id::text
-        ),
-        1
-      )
-    );
-  end if;
-
-  if v_mission.max_completions_total is not null then
-    perform pg_advisory_xact_lock(
-      hashtextextended(
-        concat_ws(
-          ':',
-          'submit_mission_completion',
-          'total',
-          p_mission_id::text
-        ),
-        2
-      )
-    );
-  end if;
-
   -- check if mission completion limit reached for this user
   select count(*)
   into v_existing_count
@@ -177,4 +147,3 @@ ALTER FUNCTION public.submit_mission_completion(uuid, jsonb) OWNER TO postgres;
 REVOKE ALL ON FUNCTION public.submit_mission_completion(uuid, jsonb) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.submit_mission_completion(uuid, jsonb) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.submit_mission_completion(uuid, jsonb) TO service_role;
-

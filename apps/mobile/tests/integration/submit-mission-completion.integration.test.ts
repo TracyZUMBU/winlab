@@ -42,6 +42,130 @@ const expectRpcBusinessError = (data: unknown, errorCode: string) => {
 
 describe("submit_mission_completion RPC (integration)", () => {
   describe("when submitting a mission completion", () => {
+    describe("daily_login", () => {
+      it("obtient les points sur la 1ere connexion de la journee", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const admin = getSupabaseAdminClient();
+        const brand = await createBrand();
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "daily_login",
+          token_reward: 10,
+        });
+
+        const { data, error } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+        expect(error).toBeNull();
+        const completionId = expectRpcSuccess(data);
+
+        const { data: completion, error: completionError } = await admin
+          .from("mission_completions")
+          .select("*")
+          .eq("id", completionId)
+          .single();
+
+        expect(completionError).toBeNull();
+        expect(completion?.status).toBe("approved");
+        expect(completion?.reward_transaction_id).toBeTruthy();
+
+        const { data: walletTransactions, error: walletError } = await admin
+          .from("wallet_transactions")
+          .select("*")
+          .eq("user_id", testUser.userId)
+          .eq("transaction_type", "mission_reward");
+
+        expect(walletError).toBeNull();
+        expect(walletTransactions).toHaveLength(1);
+        expect(walletTransactions?.[0]?.amount).toBe(10);
+      });
+
+      it("refuse l'obtention si deja connecte aujourd'hui", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const brand = await createBrand();
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "daily_login",
+          token_reward: 10,
+        });
+
+        const { data: firstData, error: firstError } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+        expect(firstError).toBeNull();
+        expectRpcSuccess(firstData);
+
+        const { data: secondData, error: secondError } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+
+        expect(secondError).toBeNull();
+        expectRpcBusinessError(secondData, "MISSION_USER_LIMIT_REACHED");
+      });
+
+      it("autorise l'obtention si la derniere completion date d'hier", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const admin = getSupabaseAdminClient();
+        const brand = await createBrand();
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "daily_login",
+          token_reward: 10,
+        });
+
+        const yesterdayIso = new Date(
+          Date.now() - 24 * 60 * 60 * 1000,
+        ).toISOString();
+
+        await createMissionCompletion({
+          mission_id: mission.id,
+          user_id: testUser.userId,
+          status: "approved",
+          completed_at: yesterdayIso,
+        });
+
+        const { data, error } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+        expect(error).toBeNull();
+        const completionId = expectRpcSuccess(data);
+
+        const { data: walletTransactions, error: walletError } = await admin
+          .from("wallet_transactions")
+          .select("*")
+          .eq("user_id", testUser.userId)
+          .eq("transaction_type", "mission_reward");
+
+        expect(walletError).toBeNull();
+        expect(walletTransactions).toHaveLength(1);
+        expect(walletTransactions?.some((tx) => tx.reference_id === completionId)).toBe(
+          true,
+        );
+      });
+    });
+
     it("soumet une mission automatique et crédite le wallet", async () => {
       const testUser = await createAuthenticatedTestUser();
       const admin = getSupabaseAdminClient();
@@ -52,6 +176,7 @@ describe("submit_mission_completion RPC (integration)", () => {
         validation_mode: "automatic",
         mission_type: "survey",
         token_reward: 20,
+        max_completions_per_user: 1,
       });
 
       const { data, error } = await testUser.client.rpc(
@@ -299,6 +424,7 @@ describe("submit_mission_completion RPC (integration)", () => {
         validation_mode: "automatic",
         mission_type: "survey",
         token_reward: 20,
+        max_completions_per_user: 1,
       });
 
       const { data: completionId1, error: err1 } = await testUser.client.rpc(

@@ -62,6 +62,8 @@ export function getMissionTypeLabelI18nKey(missionType: MissionType): string {
       return "missions.detail.typeLabel.referral";
     case "custom":
       return "missions.detail.typeLabel.custom";
+    case "daily_login":
+      return "missions.detail.typeLabel.daily_login";
   }
 }
 

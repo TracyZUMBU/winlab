@@ -1,3 +1,6 @@
+-- Serialize max_completions_per_user / max_completions_total checks and insert (pg_advisory_xact_lock)
+-- to prevent TOCTOU races; distinct key space from daily_login advisory lock (salt 0).
+
 DROP FUNCTION IF EXISTS public.submit_mission_completion(uuid, jsonb);
 
 CREATE FUNCTION public.submit_mission_completion(
@@ -177,4 +180,3 @@ ALTER FUNCTION public.submit_mission_completion(uuid, jsonb) OWNER TO postgres;
 REVOKE ALL ON FUNCTION public.submit_mission_completion(uuid, jsonb) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.submit_mission_completion(uuid, jsonb) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.submit_mission_completion(uuid, jsonb) TO service_role;
-

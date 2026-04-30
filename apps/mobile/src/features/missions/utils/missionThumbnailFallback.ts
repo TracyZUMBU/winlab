@@ -36,12 +36,20 @@ const CUSTOM = [
   `https://images.unsplash.com/photo-1557682250-33a709fee222?${UNSPLASH}`,
 ] as const;
 
+/** Daily check-in: calm desk / routine imagery aligned with app canvas. */
+const DAILY_LOGIN = [
+  `https://images.unsplash.com/photo-1506784984367-0b86606f8e21?${UNSPLASH}`,
+  `https://images.unsplash.com/photo-1434030216411-0b793f4b4173?${UNSPLASH}`,
+  `https://images.unsplash.com/photo-1517694712202-3dd8430e106c?${UNSPLASH}`,
+] as const;
+
 const POOLS: Record<Enums<"mission_type">, readonly string[]> = {
   survey: SURVEY,
   video: VIDEO,
   follow: FOLLOW,
   referral: REFERRAL,
   custom: CUSTOM,
+  daily_login: DAILY_LOGIN,
 };
 
 function hashMissionId(id: string): number {
