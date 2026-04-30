@@ -512,7 +512,7 @@ export function ProfileScreen() {
 
   const usernameRaw = profile.username?.trim() ?? "";
   const displayName = usernameRaw || t("profile.hero.defaultDisplayName");
-  const handleLabel = profile.email ?? "";
+  const emailLabel = profile.email ?? "";
 
   return (
     <Screen edges={["top"]} style={styles.screenBg}>
@@ -535,7 +535,7 @@ export function ProfileScreen() {
       >
         <ProfileHeroHeader
           displayName={displayName}
-          handleLabel={handleLabel}
+          emailLabel={emailLabel}
           balanceLine={balanceLine}
           onPressEdit={startEditProfile}
           editA11yLabel={t("profile.hero.a11yEdit")}

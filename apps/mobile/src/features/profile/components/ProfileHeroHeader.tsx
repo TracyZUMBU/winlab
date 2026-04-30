@@ -6,7 +6,7 @@ import { Image } from "expo-image";
 
 export type ProfileHeroHeaderProps = {
   displayName: string;
-  handleLabel: string;
+  emailLabel: string;
   balanceLine: string;
   onPressEdit: () => void;
   editA11yLabel: string;
@@ -27,7 +27,7 @@ function initialsFromName(name: string): string {
 
 export function ProfileHeroHeader({
   displayName,
-  handleLabel,
+  emailLabel,
   balanceLine,
   onPressEdit,
   editA11yLabel,
@@ -71,7 +71,7 @@ export function ProfileHeroHeader({
       </View>
 
       <Text style={styles.name}>{displayName}</Text>
-      <Text style={styles.handle}>{handleLabel}</Text>
+      <Text style={styles.email}>{emailLabel}</Text>
 
       <View style={styles.tokenPill}>
         <MaterialIcons
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     textAlign: "center",
   },
-  handle: {
+  email: {
     fontSize: 16,
     fontWeight: "500",
     color: theme.colors.textMutedAccent,
