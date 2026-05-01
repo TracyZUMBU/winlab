@@ -2,6 +2,9 @@
   "app": {
     "name": "Winlab"
   },
+  "bootstrap": {
+    "loadFailed": "Could not start the app. Please try again."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initializing",
@@ -307,7 +310,9 @@
       }
     },
     "dailyLogin": {
-      "toastReward": "🎁 +{{count}} tokens for your daily login!"
+      "toastReward": "🎁 +{{count}} tokens for your daily login!",
+      "modalTitle": "Daily login bonus",
+      "modalMessage": "🎁 +{{count}} tokens for your daily login!"
     },
     "screen": {
       "submitMission": "Mission submitted.",
@@ -511,6 +516,7 @@
     "loading": "Loading…",
     "back": "Back",
     "close": "Close",
+    "ok": "OK",
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",

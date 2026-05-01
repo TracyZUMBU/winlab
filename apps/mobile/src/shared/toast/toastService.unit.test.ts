@@ -34,6 +34,7 @@ describe("toastService", () => {
         text1: "OK",
         text2: "Done",
         position: "top",
+        autoHide: true,
       }),
     );
   });
@@ -44,6 +45,16 @@ describe("toastService", () => {
       expect.objectContaining({
         type: WINLAB_TOAST_TYPES.success,
         text1: "Saved",
+        autoHide: true,
+      }),
+    );
+  });
+
+  it("showSuccessToast can disable auto-hide", () => {
+    showSuccessToast({ title: "Stay", autoHide: false });
+    expect(Toast.show).toHaveBeenCalledWith(
+      expect.objectContaining({
+        autoHide: false,
       }),
     );
   });

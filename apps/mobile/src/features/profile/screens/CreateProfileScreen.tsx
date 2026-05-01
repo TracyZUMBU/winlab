@@ -1,6 +1,7 @@
 import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
+import { invalidateAppBootstrapCache } from "@/src/lib/bootstrap/sharedAppBootstrap";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
@@ -120,6 +121,7 @@ export const CreateProfileScreen: React.FC = () => {
         sex: values.sex,
       });
 
+      invalidateAppBootstrapCache();
       router.replace("/home");
     } catch (e) {
       if (e instanceof CreateProfileError) {

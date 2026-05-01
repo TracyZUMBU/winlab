@@ -54,19 +54,20 @@ export function showToast(input: ShowToastInput): void {
     text2: input.message,
     position: "top",
     visibilityTime,
-    autoHide: true,
+    autoHide: input.autoHide !== false,
   });
 }
 
 export function showSuccessToast(
   input: Omit<ShowToastInput, "type"> & { title: string },
 ): void {
-  const { title, message, durationMs, trackingEventName } = input;
+  const { title, message, durationMs, autoHide, trackingEventName } = input;
   showToast({
     type: "success",
     title,
     message,
     durationMs,
+    autoHide,
     trackingEventName,
   });
 }
@@ -74,12 +75,13 @@ export function showSuccessToast(
 export function showErrorToast(
   input: Omit<ShowToastInput, "type"> & { title: string },
 ): void {
-  const { title, message, durationMs, trackingEventName } = input;
+  const { title, message, durationMs, autoHide, trackingEventName } = input;
   showToast({
     type: "error",
     title,
     message,
     durationMs,
+    autoHide,
     trackingEventName,
   });
 }
@@ -87,12 +89,13 @@ export function showErrorToast(
 export function showInfoToast(
   input: Omit<ShowToastInput, "type"> & { title: string },
 ): void {
-  const { title, message, durationMs, trackingEventName } = input;
+  const { title, message, durationMs, autoHide, trackingEventName } = input;
   showToast({
     type: "info",
     title,
     message,
     durationMs,
+    autoHide,
     trackingEventName,
   });
 }
@@ -100,12 +103,13 @@ export function showInfoToast(
 export function showWarningToast(
   input: Omit<ShowToastInput, "type"> & { title: string },
 ): void {
-  const { title, message, durationMs, trackingEventName } = input;
+  const { title, message, durationMs, autoHide, trackingEventName } = input;
   showToast({
     type: "warning",
     title,
     message,
     durationMs,
+    autoHide,
     trackingEventName,
   });
 }

@@ -2,6 +2,9 @@
   "app": {
     "name": "Winlab"
   },
+  "bootstrap": {
+    "loadFailed": "Impossible de démarrer l’application. Réessayez."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initialisation",
@@ -311,7 +314,9 @@
       }
     },
     "dailyLogin": {
-      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !"
+      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !",
+      "modalTitle": "Bonus connexion",
+      "modalMessage": "🎁 +{{count}} jetons pour ta connexion du jour !"
     },
     "screen": {
       "submitMission": "Mission soumise.",
@@ -515,6 +520,7 @@
     "loading": "Chargement…",
     "back": "Retour",
     "close": "Fermer",
+    "ok": "OK",
     "retry": "Réessayer",
     "share": "Partager",
     "loadMore": "Voir plus",
