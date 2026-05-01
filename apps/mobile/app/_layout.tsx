@@ -33,6 +33,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (status !== "ready") return;
     if (!dailyLoginMissionResult) return;
+
     if (dailyLoginMissionResult.alreadyCompleted) return;
     if (dailyToastShownRef.current) return;
 

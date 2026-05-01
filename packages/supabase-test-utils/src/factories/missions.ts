@@ -21,7 +21,7 @@ export const createMission = async (
     brand_id: overrides.brand_id,
     title: `Mission test ${uniqueId}`,
     description: `Mission de test ${uniqueId}`,
-    mission_type: "survey",
+    mission_type: missionType,
     validation_mode: "automatic",
     token_reward: 20,
     status: "active",

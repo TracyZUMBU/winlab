@@ -9,6 +9,8 @@ import {
   DAILY_LOGIN_MISSION_ID,
   DAILY_LOGIN_TOKEN_REWARD,
 } from "../constants";
+import { clearDailyLoginLocalCache } from "../services/clearDailyLoginLocalCache";
+import { hasDailyLoginCompletionForCurrentUtcDay } from "../services/hasDailyLoginCompletionForCurrentUtcDay";
 import {
   submitMissionCompletion,
   type SubmitMissionCompletionParams,
@@ -24,34 +26,34 @@ export type DailyLoginMissionResult =
       tokensEarned: number;
     };
 
-function formatLocalDate(date: Date = new Date()): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+/** UTC calendar day (YYYY-MM-DD), aligned with submit_mission_completion daily_login guard. */
+function formatUtcCalendarDate(date: Date = new Date()): string {
+  return date.toISOString().slice(0, 10);
 }
 
-async function writeLastCompletedDate(value: string): Promise<void> {
+async function writeLastCompletedUtcDay(value: string): Promise<void> {
   try {
     await AsyncStorage.setItem(DAILY_LOGIN_LAST_COMPLETED_DATE_KEY, value);
-  } catch (error) {
+  } catch {
     // UX optimization only: no crash if local persistence fails.
-    logger.debug("[missions] Failed to persist daily login completion date", {
-      error,
-    });
   }
 }
 
 export async function triggerDailyLoginMission(): Promise<DailyLoginMissionResult> {
-  const today = formatLocalDate();
+  const todayUtc = formatUtcCalendarDate();
 
   try {
-    const lastCompletedDate = await AsyncStorage.getItem(
-      DAILY_LOGIN_LAST_COMPLETED_DATE_KEY,
+    const serverDay = await hasDailyLoginCompletionForCurrentUtcDay(
+      DAILY_LOGIN_MISSION_ID,
     );
 
-    if (lastCompletedDate === today) {
-      return { alreadyCompleted: true };
+    if (serverDay.ok) {
+      if (serverDay.hasCompletion) {
+        await writeLastCompletedUtcDay(todayUtc);
+        return { alreadyCompleted: true };
+      }
+
+      await clearDailyLoginLocalCache();
     }
 
     const payload: SubmitMissionCompletionParams = {
@@ -62,20 +64,13 @@ export async function triggerDailyLoginMission(): Promise<DailyLoginMissionResul
       await submitMissionCompletion(payload);
 
     if (result.success) {
-      await writeLastCompletedDate(today);
+      await writeLastCompletedUtcDay(todayUtc);
       return {
         alreadyCompleted: false,
         tokensEarned: DAILY_LOGIN_TOKEN_REWARD,
       };
     }
 
-    // Retry on technical/unexpected failures by not marking local completion.
-    // Only business failures are considered definitive for the day.
-    if (result.kind !== "business") {
-      return { alreadyCompleted: true };
-    }
-
-    await writeLastCompletedDate(today);
     return { alreadyCompleted: true };
   } catch (error) {
     logger.warn("[missions] daily_login mission trigger failed", { error });

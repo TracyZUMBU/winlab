@@ -118,7 +118,7 @@
       },
       "screen": {
         "subtitleWithEmail": "Nous avons envoyé un code à {{email}}.",
-        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse email : {{email}}.",
+        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse e-mail.",
         "codePlaceholder": "000000",
         "resendPrompt": "Vous n’avez pas reçu le code ?",
         "resendCta": "Renvoyer le code",

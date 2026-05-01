@@ -56,8 +56,7 @@ export const MissionTypeValues = {
   "video": "video",
   "follow": "follow",
   "referral": "referral",
-  "custom": "custom",
-  "daily_login": "daily_login"
+  "custom": "custom"
 } as const;
 export type MissionType = (typeof MissionTypeValues)[keyof typeof MissionTypeValues];
 

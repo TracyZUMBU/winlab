@@ -1,6 +1,8 @@
-DROP FUNCTION IF EXISTS public.submit_mission_completion(uuid, jsonb);
+-- daily_login: do not apply max_completions_per_user / max_completions_total lifetime counts.
+-- Those quotas count all pending/approved rows (any day) and returned MISSION_USER_LIMIT_REACHED
+-- while has_daily_login_completion_for_current_utc_day correctly saw no completion for today UTC.
 
-CREATE FUNCTION public.submit_mission_completion(
+CREATE OR REPLACE FUNCTION public.submit_mission_completion(
   p_mission_id uuid,
   p_proof_data jsonb DEFAULT '{}'::jsonb
 )

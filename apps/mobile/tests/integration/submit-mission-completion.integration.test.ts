@@ -88,6 +88,41 @@ describe("submit_mission_completion RPC (integration)", () => {
         expect(walletTransactions?.[0]?.amount).toBe(10);
       });
 
+      it("accepte aujourd'hui malgre max_completions_per_user=1 si la seule completion anterieure est sur un autre jour UTC", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const brand = await createBrand();
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "daily_login",
+          token_reward: 10,
+          max_completions_per_user: 1,
+        });
+
+        const past = new Date();
+        past.setUTCDate(past.getUTCDate() - 5);
+
+        await createMissionCompletion({
+          mission_id: mission.id,
+          user_id: testUser.userId,
+          status: "approved",
+          completed_at: past.toISOString(),
+          proof_data: {},
+        });
+
+        const { data, error } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+
+        expect(error).toBeNull();
+        expectRpcSuccess(data);
+      });
+
       it("refuse l'obtention si deja connecte aujourd'hui", async () => {
         const testUser = await createAuthenticatedTestUser();
         const brand = await createBrand();

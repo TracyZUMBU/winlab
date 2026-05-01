@@ -1,3 +1,4 @@
+import { clearDailyLoginLocalCache } from "@/src/features/missions/services/clearDailyLoginLocalCache";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 
 export const signOut = async () => {
@@ -6,4 +7,5 @@ export const signOut = async () => {
   if (error) {
     throw error;
   }
+  await clearDailyLoginLocalCache();
 };
