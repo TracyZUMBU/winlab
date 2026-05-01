@@ -282,11 +282,12 @@
       "survey": {
         "title": "Questionnaire",
         "questionCount": "Question {{count}}",
+        "textAnswerPlaceholder": "Ta réponse…",
         "textPlaceholder": "Saisis ta réponse",
         "next": "Question suivante",
         "submit": "Soumettre le questionnaire",
         "previous": "Question précédente",
-        "readyToSubmit": "Terminé. {{count}} réponses sont prêtes à être envoyées.",
+        "readyToSubmit": "Vous avez répondu à toutes les questions. Vous pouvez maintenant soumettre votre questionnaire.",
         "errors": {
           "missingAnswer": "Réponds à la question avant de continuer."
         }

@@ -278,11 +278,12 @@
       "survey": {
         "title": "Survey",
         "questionCount": "Question {{count}}",
+        "textAnswerPlaceholder": "Your answer…",
         "textPlaceholder": "Type your answer",
         "next": "Next",
         "submit": "Submit survey",
         "previous": "Previous question",
-        "readyToSubmit": "All done. {{count}} answers are ready to submit.",
+        "readyToSubmit": "You have answered all questions. You can now submit your survey.",
         "errors": {
           "missingAnswer": "Please answer before continuing."
         }

@@ -19,7 +19,7 @@ insert into public.missions (
 )
 values (
   -- Replace with an existing brand id
-  '00000000-0000-0000-0000-000000000000'::uuid,
+  '654aa4ef-9cef-442f-94e2-398a5774ab62'::uuid,
 
   'Survey mission demo',
   'Mission de test survey avec 3 types de questions.',
@@ -35,50 +35,50 @@ values (
   jsonb_build_object(
     'survey',
     jsonb_build_object(
-      'startQuestionId', 'q_text_1',
+      'startQuestionId', 'q_text_2',
       'questions', jsonb_build_array(
         -- 1) text
         jsonb_build_object(
-          'id', 'q_text_1',
-          'label', 'Que penses-tu de cette marque ?',
+          'id', 'q_text_2',
+          'label', 'Que penses-tu de la mission ?',
           'type', 'text',
-          'nextQuestionId', 'q_single_1'
+          'nextQuestionId', 'q_single_2'
         ),
 
         -- 2) single_choice (branching per option)
         jsonb_build_object(
-          'id', 'q_single_1',
-          'label', 'Quelle categorie preferes-tu ?',
+          'id', 'q_single_2',
+          'label', 'Quelle qualite preferes-tu dans une mission ?',
           'type', 'single_choice',
           'options', jsonb_build_array(
             jsonb_build_object(
-              'id', 'opt_sport',
-              'label', 'Sport',
-              'nextQuestionId', 'q_multi_1'
+              'id', 'opt_easy',
+              'label', 'Facile',
+              'nextQuestionId', 'q_multi_2'
             ),
             jsonb_build_object(
-              'id', 'opt_lifestyle',
-              'label', 'Lifestyle',
-              'nextQuestionId', 'q_multi_1'
+              'id', 'opt_fun',
+              'label', 'Amusante',
+              'nextQuestionId', 'q_multi_2'
             ),
             jsonb_build_object(
               'id', 'opt_tech',
               'label', 'Tech',
-              'nextQuestionId', 'q_multi_1'
+              'nextQuestionId', 'q_multi_2'
             )
           )
         ),
 
         -- 3) multi_choice
         jsonb_build_object(
-          'id', 'q_multi_1',
-          'label', 'Quels canaux utilises-tu le plus ?',
+          'id', 'q_multi_2',
+          'label', 'Quels types de missions preferes-tu ?',
           'type', 'multi_choice',
           'options', jsonb_build_array(
-            jsonb_build_object('id', 'opt_instagram', 'label', 'Instagram'),
-            jsonb_build_object('id', 'opt_tiktok', 'label', 'TikTok'),
-            jsonb_build_object('id', 'opt_youtube', 'label', 'YouTube'),
-            jsonb_build_object('id', 'opt_x', 'label', 'X')
+            jsonb_build_object('id', 'opt_survey', 'label', 'Sondage'),
+            jsonb_build_object('id', 'opt_video', 'label', 'Video'),
+            jsonb_build_object('id', 'opt_follow', 'label', 'Social'),
+            jsonb_build_object('id', 'opt_referral', 'label', 'Parrainage')
           ),
           'nextQuestionId', null
         )

@@ -1,12 +1,14 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, View } from "react-native";
 
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { theme } from "@/src/theme";
-import type { MissionSurveyAnswerStep } from "../types";
-import type { SurveyPendingAnswer } from "../survey/useSurveyMissionForm";
 import type { SurveyQuestion } from "../survey/surveyDefinition";
+import type { SurveyPendingAnswer } from "../survey/useSurveyMissionForm";
+import type { MissionSurveyAnswerStep } from "../types";
+import { SurveyQuestionFreeText } from "./survey/SurveyQuestionFreeText";
+import { SurveyQuestionMultiChoice } from "./survey/SurveyQuestionMultiChoice";
+import { SurveyQuestionSingleChoice } from "./survey/SurveyQuestionSingleChoice";
 
 type Props = {
   hasValidSurvey: boolean;
@@ -33,82 +35,62 @@ export function SurveyMissionSection({
           {t("missions.submission.errors.SURVEY_CONFIG_INVALID")}
         </Text>
       ) : currentQuestion ? (
-        <View style={styles.surveyQuestionCard}>
-          <Text style={styles.surveyQuestionCount}>
-            {t("missions.detail.survey.questionCount", {
-              count: answers.length + 1,
-            })}
-          </Text>
-          <Text style={styles.surveyQuestionLabel}>{currentQuestion.label}</Text>
-
+        <>
           {currentQuestion.type === "text" ? (
-            <TextInput
+            <SurveyQuestionFreeText
+              questionIndex={answers.length + 1}
+              label={currentQuestion.label}
               value={pendingAnswer.type === "text" ? pendingAnswer.value : ""}
-              onChangeText={(value) => setPendingAnswer({ type: "text", value })}
-              style={styles.surveyTextInput}
-              placeholder={t("missions.detail.survey.textPlaceholder")}
-              placeholderTextColor={theme.colors.textMutedAccent}
-              multiline
+              onChangeText={(value) =>
+                setPendingAnswer({ type: "text", value })
+              }
             />
           ) : null}
 
-          {currentQuestion.type === "single_choice"
-            ? currentQuestion.options.map((option) => {
-                const selected =
-                  pendingAnswer.type === "single_choice" &&
-                  pendingAnswer.value === option.id;
-                return (
-                  <Pressable
-                    key={option.id}
-                    style={styles.surveyOptionRow}
-                    onPress={() =>
-                      setPendingAnswer({ type: "single_choice", value: option.id })
-                    }
-                  >
-                    <MaterialIcons
-                      name={selected ? "radio-button-checked" : "radio-button-unchecked"}
-                      size={20}
-                      color={theme.colors.accentSolid}
-                    />
-                    <Text style={styles.surveyOptionLabel}>{option.label}</Text>
-                  </Pressable>
-                );
-              })
-            : null}
+          {currentQuestion.type === "single_choice" ? (
+            <SurveyQuestionSingleChoice
+              questionIndex={answers.length + 1}
+              label={currentQuestion.label}
+              options={currentQuestion.options}
+              selectedOptionId={
+                pendingAnswer.type === "single_choice"
+                  ? pendingAnswer.value
+                  : null
+              }
+              onSelectOption={(optionId) =>
+                setPendingAnswer({ type: "single_choice", value: optionId })
+              }
+            />
+          ) : null}
 
-          {currentQuestion.type === "multi_choice"
-            ? currentQuestion.options.map((option) => {
+          {currentQuestion.type === "multi_choice" ? (
+            <SurveyQuestionMultiChoice
+              questionIndex={answers.length + 1}
+              label={currentQuestion.label}
+              options={currentQuestion.options}
+              selectedIds={
+                pendingAnswer.type === "multi_choice" ? pendingAnswer.value : []
+              }
+              onToggleOption={(optionId) => {
                 const selectedIds =
-                  pendingAnswer.type === "multi_choice" ? pendingAnswer.value : [];
-                const isSelected = selectedIds.includes(option.id);
-                return (
-                  <Pressable
-                    key={option.id}
-                    style={styles.surveyOptionRow}
-                    onPress={() =>
-                      setPendingAnswer({
-                        type: "multi_choice",
-                        value: isSelected
-                          ? selectedIds.filter((id) => id !== option.id)
-                          : [...selectedIds, option.id],
-                      })
-                    }
-                  >
-                    <MaterialIcons
-                      name={isSelected ? "check-box" : "check-box-outline-blank"}
-                      size={20}
-                      color={theme.colors.accentSolid}
-                    />
-                    <Text style={styles.surveyOptionLabel}>{option.label}</Text>
-                  </Pressable>
-                );
-              })
-            : null}
-        </View>
+                  pendingAnswer.type === "multi_choice"
+                    ? pendingAnswer.value
+                    : [];
+                const isSelected = selectedIds.includes(optionId);
+                setPendingAnswer({
+                  type: "multi_choice",
+                  value: isSelected
+                    ? selectedIds.filter((id) => id !== optionId)
+                    : [...selectedIds, optionId],
+                });
+              }}
+            />
+          ) : null}
+        </>
       ) : (
-        <View style={styles.surveyQuestionCard}>
+        <View style={styles.surveyCompleteCard}>
           <Text style={styles.surveyCompleteText}>
-            {t("missions.detail.survey.readyToSubmit", { count: answers.length })}
+            {t("missions.detail.survey.readyToSubmit")}
           </Text>
         </View>
       )}
@@ -126,44 +108,16 @@ const styles = StyleSheet.create({
   surveySection: {
     marginTop: theme.spacing.xl,
   },
-  surveyQuestionCard: {
+  surveyCompleteCard: {
     marginTop: theme.spacing.sm,
-    borderWidth: 1,
-    borderColor: theme.colors.borderSubtle,
-    borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.surfaceSoft,
-    padding: theme.spacing.md,
-    gap: theme.spacing.sm,
-  },
-  surveyQuestionCount: {
-    ...theme.typography.caption,
-    color: theme.colors.textMutedAccent,
-  },
-  surveyQuestionLabel: {
-    ...theme.typography.cardTitle,
-    color: theme.colors.text,
-  },
-  surveyTextInput: {
-    minHeight: 92,
-    borderRadius: theme.radius.md,
-    borderWidth: 1,
-    borderColor: theme.colors.borderSubtle,
+    borderRadius: theme.radius.lg,
     backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.sm,
-    textAlignVertical: "top",
-  },
-  surveyOptionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-  },
-  surveyOptionLabel: {
-    ...theme.typography.body,
-    color: theme.colors.text,
-    flex: 1,
+    padding: theme.spacing.screenHorizontal,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   surveyCompleteText: {
     ...theme.typography.body,

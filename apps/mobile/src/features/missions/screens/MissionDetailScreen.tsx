@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
 
   submitError: {
     marginTop: theme.spacing.lg,
-    color: theme.colors.text,
+    color: theme.colors.dangerSolid,
     textAlign: "center",
     paddingHorizontal: theme.spacing.md,
   },
