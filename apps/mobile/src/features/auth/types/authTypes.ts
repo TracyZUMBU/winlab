@@ -24,10 +24,11 @@ export type VerifyOtpErrorCode = "OTP_INVALID_LENGTH" | "OTP_VERIFICATION_FAILED
 export type VerifyOtpResult =
   | {
       success: true;
-      user: User;
+      data: { user: User };
     }
   | {
       success: false;
+      kind: "business";
       errorCode: VerifyOtpErrorCode;
     };
 
@@ -40,12 +41,28 @@ export type SendEmailOtpErrorCode =
   | "EMAIL_NOT_AUTHORIZED"
   | "UNKNOWN_ERROR";
 
+/** Mapped failures treated as expected user-facing outcomes (`kind: "business"`). */
+export type SendEmailOtpBusinessErrorCode = Exclude<
+  SendEmailOtpErrorCode,
+  "UNKNOWN_ERROR"
+>;
+
 export type SendEmailOtpResult =
   | {
       success: true;
+      data: undefined;
     }
   | {
       success: false;
-      errorCode: SendEmailOtpErrorCode;
+      kind: "business";
+      errorCode: SendEmailOtpBusinessErrorCode;
+    }
+  | {
+      success: false;
+      kind: "technical";
+    }
+  | {
+      success: false;
+      kind: "unexpected";
     };
 

@@ -1,6 +1,6 @@
-import type { ErrorKind } from "@/src/lib/errors/errorKinds";
 import { logger } from "@/src/lib/logger";
 import { monitoring } from "@/src/lib/monitoring";
+import type { ServiceResult } from "@/src/lib/types/serviceResult";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
 
@@ -28,20 +28,10 @@ export type MissionSubmissionErrorCode =
   | "INVALID_SERVER_RESPONSE"
   | "UNKNOWN_ERROR";
 
-export type SubmitMissionCompletionResult =
-  | {
-      success: true;
-      completionId: string;
-    }
-  | {
-      success: false;
-      kind: "business";
-      errorCode: MissionSubmissionBusinessErrorCode;
-    }
-  | {
-      success: false;
-      kind: Exclude<ErrorKind, "business">;
-    };
+export type SubmitMissionCompletionResult = ServiceResult<
+  { completionId: string },
+  MissionSubmissionBusinessErrorCode
+>;
 
 const SUBMIT_MISSION_COMPLETION_RPC = "submit_mission_completion";
 
@@ -146,7 +136,7 @@ export const submitMissionCompletion = async ({
     }
     return {
       success: true,
-      completionId: row.completion_id,
+      data: { completionId: row.completion_id },
     };
   }
 

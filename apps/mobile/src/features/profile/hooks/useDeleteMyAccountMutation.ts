@@ -11,7 +11,7 @@ export function useDeleteMyAccountMutation() {
   return useMutation({
     mutationFn: (): Promise<DeleteMyAccountResult> => deleteMyAccount(),
     onSuccess: (result) => {
-      if (!result.ok) return;
+      if (!result.success) return;
       // After deletion we generally sign out and leave the authenticated app.
       // Clearing cache avoids showing stale data if the user navigates back quickly.
       queryClient.clear();

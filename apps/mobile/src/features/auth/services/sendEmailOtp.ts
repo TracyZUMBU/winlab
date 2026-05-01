@@ -75,7 +75,7 @@ export const sendEmailOtp = async ({
       });
     }
 
-    if (!error) return { success: true };
+    if (!error) return { success: true, data: undefined };
 
     const supabaseErrorCode = getSupabaseErrorCode(error);
     const errorCode = mapSupabaseErrorCodeToAppErrorCode(supabaseErrorCode);
@@ -106,7 +106,14 @@ export const sendEmailOtp = async ({
       });
     }
 
-    return { success: false, errorCode };
+    if (errorCode === "UNKNOWN_ERROR") {
+      return { success: false, kind: "unexpected" };
+    }
+    return {
+      success: false,
+      kind: "business",
+      errorCode,
+    };
   } catch (error) {
     // Unexpected technical failure (network, SDK, etc.)
     monitoring.captureException({
@@ -120,6 +127,6 @@ export const sendEmailOtp = async ({
       },
     });
 
-    return { success: false, errorCode: "UNKNOWN_ERROR" };
+    return { success: false, kind: "technical" };
   }
 };

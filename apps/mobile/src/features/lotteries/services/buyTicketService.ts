@@ -1,7 +1,7 @@
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-import type { ErrorKind } from "@/src/lib/errors/errorKinds";
 import { logger } from "@/src/lib/logger";
 import { monitoring } from "@/src/lib/monitoring";
+import type { ServiceResult } from "@/src/lib/types/serviceResult";
 
 export type BuyTicketParams = {
   lotteryId: string;
@@ -16,10 +16,10 @@ export type BuyTicketBusinessErrorCode =
   | "LOTTERY_DRAW_ALREADY_STARTED"
   | "INSUFFICIENT_TOKENS";
 
-export type BuyTicketResult =
-  | { success: true; ticketId: string }
-  | { success: false; kind: "business"; errorCode: BuyTicketBusinessErrorCode }
-  | { success: false; kind: Exclude<ErrorKind, "business"> };
+export type BuyTicketResult = ServiceResult<
+  { ticketId: string },
+  BuyTicketBusinessErrorCode
+>;
 
 type BuyTicketRpcRow = {
   success: boolean;
@@ -113,7 +113,7 @@ export async function buyTicket({
       return { success: false, kind: "unexpected" };
     }
 
-    return { success: true, ticketId: row.ticket_id };
+    return { success: true, data: { ticketId: row.ticket_id } };
   }
 
   if (typeof row.error_code !== "string" || row.error_code.length === 0) {

@@ -69,7 +69,7 @@ describe("triggerDailyLoginMission", () => {
     mockGetItem.mockResolvedValue(null);
     mockSubmitMissionCompletion.mockResolvedValue({
       success: true,
-      completionId: "completion-1",
+      data: { completionId: "completion-1" },
     });
 
     const result = await triggerDailyLoginMission();
