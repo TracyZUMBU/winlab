@@ -1,12 +1,14 @@
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { monitoring } from "@/src/lib/monitoring";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { type FieldErrors, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -21,6 +23,10 @@ import { sendEmailOtp } from "../services";
 import { emailSchema, type EmailFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
+
+function createAuthRequestId(): string {
+  return `auth-email-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
 
 export const EmailScreen: React.FC = () => {
   const router = useRouter();
@@ -47,20 +53,69 @@ export const EmailScreen: React.FC = () => {
   const onSubmit = async (values: EmailFormValues) => {
     setServerError(null);
     setInfoMessage(null);
+    const requestId = createAuthRequestId();
+    monitoring.captureMessage({
+      name: "auth_email_continue_submit_started",
+      severity: "info",
+      feature: "auth",
+      requestId,
+      message: "EmailScreen submit started",
+      extra: {
+        platform: Platform.OS,
+      },
+    });
 
-    const result = await sendEmailOtp({ email: values.email });
+    const result = await sendEmailOtp({ email: values.email, requestId });
 
     if (result.success) {
       setInfoMessage(t("auth.emailSent"));
-
-      router.push({
-        pathname: AUTH_ROUTES.otp,
-        params: {
-          email: values.email,
+      monitoring.captureMessage({
+        name: "auth_email_continue_submit_success",
+        severity: "info",
+        feature: "auth",
+        requestId,
+        message: "EmailScreen submit succeeded",
+        extra: {
+          platform: Platform.OS,
         },
       });
+
+      try {
+        router.push({
+          pathname: AUTH_ROUTES.otp,
+          params: {
+            email: values.email,
+            requestId,
+          },
+        });
+      } catch (error) {
+        monitoring.captureException({
+          name: "auth_email_continue_navigation_failed",
+          severity: "error",
+          feature: "auth",
+          requestId,
+          message: "EmailScreen failed to navigate to OTP screen",
+          error,
+          extra: {
+            platform: Platform.OS,
+          },
+        });
+      }
       return;
     }
+
+    monitoring.captureMessage({
+      name: "auth_email_continue_submit_failed",
+      severity: result.kind === "business" ? "warning" : "error",
+      feature: "auth",
+      requestId,
+      message: "EmailScreen submit failed",
+      extra: {
+        platform: Platform.OS,
+        failureKind: result.kind,
+        ...(result.kind === "business" ? { errorCode: result.errorCode } : {}),
+      },
+    });
 
     setServerError(
       result.kind === "business"
@@ -73,6 +128,35 @@ export const EmailScreen: React.FC = () => {
           })
         : t("auth.email.errors.generic"),
     );
+  };
+
+  const onInvalidSubmit = (errors: FieldErrors<EmailFormValues>) => {
+    const hasEmailError = Boolean(errors.email);
+    monitoring.captureMessage({
+      name: "auth_email_continue_validation_failed",
+      severity: "warning",
+      feature: "auth",
+      message: "EmailScreen submit blocked by validation",
+      extra: {
+        platform: Platform.OS,
+        hasEmailError: String(hasEmailError),
+      },
+    });
+  };
+
+  const onPressContinue = () => {
+    monitoring.captureMessage({
+      name: "auth_email_continue_button_pressed",
+      severity: "info",
+      feature: "auth",
+      message: "EmailScreen continue button pressed",
+      extra: {
+        platform: Platform.OS,
+        isSubmitting: String(isSubmitting),
+      },
+    });
+
+    void handleSubmit(onSubmit, onInvalidSubmit)();
   };
 
   return (
@@ -149,7 +233,7 @@ export const EmailScreen: React.FC = () => {
                     pressed && styles.primaryButtonPressed,
                     isSubmitting && styles.primaryButtonDisabled,
                   ]}
-                  onPress={handleSubmit(onSubmit)}
+                  onPress={onPressContinue}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

@@ -1,9 +1,10 @@
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { monitoring } from "@/src/lib/monitoring";
 import { showInfoToast } from "@/src/shared/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useRef, useState } from "react";
+import { type FieldErrors, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -24,11 +25,19 @@ import { otpSchema, type OtpFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
 
+function createAuthRequestId(): string {
+  return `auth-otp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export const OTPScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ email?: string }>();
+  const params = useLocalSearchParams<{ email?: string; requestId?: string }>();
   const emailFromParams = typeof params.email === "string" ? params.email : "";
+  const requestIdFromParams =
+    typeof params.requestId === "string" ? params.requestId : "";
+  const fallbackRequestIdRef = useRef<string>(createAuthRequestId());
+  const requestId = requestIdFromParams || fallbackRequestIdRef.current;
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [resendLoading, setResendLoading] = useState(false);
@@ -52,17 +61,52 @@ export const OTPScreen: React.FC = () => {
 
   const onSubmit = async (values: OtpFormValues) => {
     setServerError(null);
+    monitoring.captureMessage({
+      name: "auth_otp_submit_started",
+      severity: "info",
+      feature: "auth",
+      requestId,
+      message: "OTPScreen submit started",
+      extra: {
+        platform: Platform.OS,
+      },
+    });
 
     const email = values.email ?? emailFromParams;
     if (!email) {
+      monitoring.captureMessage({
+        name: "auth_otp_submit_missing_email",
+        severity: "warning",
+        feature: "auth",
+        requestId,
+        message: "OTPScreen submit aborted: email missing in flow",
+        extra: {
+          platform: Platform.OS,
+        },
+      });
       setServerError(t("auth.otp.emailMissingInFlow"));
       router.replace(AUTH_ROUTES.email);
       return;
     }
 
-    const result = await verifyEmailOtp({ email, token: values.code });
+    const result = await verifyEmailOtp({
+      email,
+      token: values.code,
+      requestId,
+    });
 
     if (!result.success) {
+      monitoring.captureMessage({
+        name: "auth_otp_submit_failed",
+        severity: "warning",
+        feature: "auth",
+        requestId,
+        message: "OTPScreen OTP verification failed",
+        extra: {
+          platform: Platform.OS,
+          errorCode: result.errorCode,
+        },
+      });
       if (result.kind === "business") {
         if (result.errorCode === "OTP_INVALID_LENGTH") {
           setServerError(
@@ -88,17 +132,59 @@ export const OTPScreen: React.FC = () => {
     }
 
     const user = result.data.user;
+    monitoring.captureMessage({
+      name: "auth_otp_submit_success",
+      severity: "info",
+      feature: "auth",
+      requestId,
+      message: "OTPScreen OTP verification succeeded",
+      extra: {
+        platform: Platform.OS,
+      },
+    });
 
     try {
       await redirectAfterAuthSession(router, user.id);
-    } catch {
+    } catch (error) {
+      monitoring.captureException({
+        name: "auth_otp_redirect_after_auth_failed",
+        severity: "error",
+        feature: "auth",
+        requestId,
+        message: "OTPScreen failed to redirect after auth session",
+        error,
+        extra: {
+          platform: Platform.OS,
+        },
+      });
       setServerError(t("auth.genericError"));
     }
   };
 
   const handleResend = async () => {
+    monitoring.captureMessage({
+      name: "auth_otp_resend_pressed",
+      severity: "info",
+      feature: "auth",
+      requestId,
+      message: "OTPScreen resend pressed",
+      extra: {
+        platform: Platform.OS,
+        resendLoading: String(resendLoading),
+      },
+    });
     const email = emailFromParams;
     if (!email) {
+      monitoring.captureMessage({
+        name: "auth_otp_resend_missing_email",
+        severity: "warning",
+        feature: "auth",
+        requestId,
+        message: "OTPScreen resend aborted: email missing in flow",
+        extra: {
+          platform: Platform.OS,
+        },
+      });
       setServerError(t("auth.otp.emailMissingInFlow"));
       router.replace(AUTH_ROUTES.email);
       return;
@@ -107,9 +193,23 @@ export const OTPScreen: React.FC = () => {
     setServerError(null);
     setResendLoading(true);
     try {
-      const result = await sendEmailOtp({ email });
+      const result = await sendEmailOtp({ email, requestId });
 
       if (!result.success) {
+        monitoring.captureMessage({
+          name: "auth_otp_resend_failed",
+          severity: result.kind === "business" ? "warning" : "error",
+          feature: "auth",
+          requestId,
+          message: "OTPScreen resend failed",
+          extra: {
+            platform: Platform.OS,
+            failureKind: result.kind,
+            ...(result.kind === "business"
+              ? { errorCode: result.errorCode }
+              : {}),
+          },
+        });
         setServerError(
           result.kind === "business"
             ? getI18nMessageForCode({
@@ -122,13 +222,65 @@ export const OTPScreen: React.FC = () => {
             : t("auth.email.errors.generic"),
         );
       } else {
+        monitoring.captureMessage({
+          name: "auth_otp_resend_success",
+          severity: "info",
+          feature: "auth",
+          requestId,
+          message: "OTPScreen resend succeeded",
+          extra: {
+            platform: Platform.OS,
+          },
+        });
         showInfoToast({ title: t("auth.otp.resendSuccess") });
       }
-    } catch {
+    } catch (error) {
+      monitoring.captureException({
+        name: "auth_otp_resend_unexpected_exception",
+        severity: "error",
+        feature: "auth",
+        requestId,
+        message: "OTPScreen resend threw unexpected exception",
+        error,
+        extra: {
+          platform: Platform.OS,
+        },
+      });
       setServerError(t("auth.email.errors.generic"));
     } finally {
       setResendLoading(false);
     }
+  };
+
+  const onInvalidSubmit = (errors: FieldErrors<OtpFormValues>) => {
+    const hasCodeError = Boolean(errors.code);
+    monitoring.captureMessage({
+      name: "auth_otp_submit_validation_failed",
+      severity: "warning",
+      feature: "auth",
+      requestId,
+      message: "OTPScreen submit blocked by validation",
+      extra: {
+        platform: Platform.OS,
+        hasCodeError: String(hasCodeError),
+      },
+    });
+  };
+
+  const onPressSubmit = () => {
+    monitoring.captureMessage({
+      name: "auth_otp_submit_button_pressed",
+      severity: "info",
+      feature: "auth",
+      requestId,
+      message: "OTPScreen submit button pressed",
+      extra: {
+        platform: Platform.OS,
+        isSubmitting: String(isSubmitting),
+      },
+    });
+
+    void handleSubmit(onSubmit, onInvalidSubmit)();
   };
 
   const otpSubtitle = emailFromParams
@@ -196,7 +348,7 @@ export const OTPScreen: React.FC = () => {
                 pressed && styles.primaryButtonPressed,
                 isSubmitting && styles.primaryButtonDisabled,
               ]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={onPressSubmit}
               disabled={isSubmitting}
             >
               {isSubmitting ? (

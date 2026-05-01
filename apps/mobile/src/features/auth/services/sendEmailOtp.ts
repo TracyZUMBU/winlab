@@ -54,6 +54,7 @@ function getMonitoringSeverity(
 
 export const sendEmailOtp = async ({
   email,
+  requestId,
 }: EmailOtpPayload): Promise<SendEmailOtpResult> => {
   const supabase = getSupabaseClient();
 
@@ -70,6 +71,7 @@ export const sendEmailOtp = async ({
         name: "auth_send_email_otp_failed",
         severity: "error",
         feature: "auth",
+        requestId,
         message: "Failed to send email OTP",
         error,
       });
@@ -86,6 +88,7 @@ export const sendEmailOtp = async ({
         name: "auth_send_email_otp_user_error",
         severity,
         feature: "auth",
+        requestId,
         message: "sendEmailOtp returned a known user error",
         extra: {
           errorCode,
@@ -97,6 +100,7 @@ export const sendEmailOtp = async ({
         name: "auth_send_email_otp_failed",
         severity,
         feature: "auth",
+        requestId,
         message: "sendEmailOtp failed (known incident/config or unknown)",
         error,
         extra: {
@@ -120,6 +124,7 @@ export const sendEmailOtp = async ({
       name: "auth_send_email_otp_unexpected_exception",
       severity: "error",
       feature: "auth",
+      requestId,
       message: "Unexpected exception while sending email OTP",
       error,
       extra: {

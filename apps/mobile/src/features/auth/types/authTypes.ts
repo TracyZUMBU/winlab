@@ -12,11 +12,13 @@ export type AuthSessionData = {
 
 export type EmailOtpPayload = {
   email: string;
+  requestId?: string;
 };
 
 export type VerifyOtpPayload = {
   email: string;
   token: string;
+  requestId?: string;
 };
 
 export type VerifyOtpErrorCode = "OTP_INVALID_LENGTH" | "OTP_VERIFICATION_FAILED";
