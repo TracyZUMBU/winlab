@@ -1,6 +1,6 @@
-DROP FUNCTION IF EXISTS public.submit_mission_completion(uuid, jsonb);
+-- Survey missions: validate metadata.survey + ordered proof answers before insert.
 
-CREATE FUNCTION public.submit_mission_completion(
+CREATE OR REPLACE FUNCTION public.submit_mission_completion(
   p_mission_id uuid,
   p_proof_data jsonb DEFAULT '{}'::jsonb
 )
@@ -23,13 +23,11 @@ declare
 begin
   v_user_id := auth.uid();
 
-  -- check if user is authenticated
   if v_user_id is null then
     return query select false, null::uuid, 'UNAUTHENTICATED'::text;
     return;
   end if;
 
-  -- check if mission exists
   select *
   into v_mission
   from public.missions
@@ -40,27 +38,22 @@ begin
     return;
   end if;
 
-  -- check if mission is active
   if v_mission.status <> 'active' then
     return query select false, null::uuid, 'MISSION_NOT_ACTIVE'::text;
     return;
   end if;
 
-  -- check if mission is started
   if v_mission.starts_at is not null and v_mission.starts_at > now() then
     return query select false, null::uuid, 'MISSION_NOT_STARTED'::text;
     return;
   end if;
 
-  -- check if mission is expired
   if v_mission.ends_at is not null and v_mission.ends_at < now() then
     return query select false, null::uuid, 'MISSION_EXPIRED'::text;
     return;
   end if;
 
-  -- daily_login missions: at most one pending/approved completion per UTC day.
   if v_mission.mission_type = 'daily_login' then
-    -- serialize per (user, mission, UTC day) to avoid double-credit under concurrency.
     perform pg_advisory_xact_lock(
       hashtextextended(
         concat_ws(
@@ -87,7 +80,6 @@ begin
     end if;
   end if;
 
-  -- Serialize limit checks + insert against TOCTOU races (key space distinct from daily_login lock salt 0).
   if v_mission.max_completions_per_user is not null then
     perform pg_advisory_xact_lock(
       hashtextextended(
@@ -117,7 +109,6 @@ begin
     );
   end if;
 
-  -- check if mission completion limit reached for this user
   select count(*)
   into v_existing_count
   from public.mission_completions
@@ -125,14 +116,12 @@ begin
     and user_id = v_user_id
     and status in ('pending', 'approved');
 
-  -- check if mission completion limit reached for all users
   if v_mission.max_completions_per_user is not null
      and v_existing_count >= v_mission.max_completions_per_user then
     return query select false, null::uuid, 'MISSION_USER_LIMIT_REACHED'::text;
     return;
   end if;
 
-  -- check if mission completion limit reached for all users
   if v_mission.max_completions_total is not null then
     select count(*)
     into v_total_count
@@ -146,7 +135,6 @@ begin
     end if;
   end if;
 
--- Survey validation
   if v_mission.mission_type = 'survey' then
     <<survey_block>>
     declare
@@ -364,7 +352,6 @@ begin
   )
   returning id into v_completion_id;
 
-  -- approve mission completion if validation mode is automatic
   if v_mission.validation_mode = 'automatic' then
     perform public.approve_mission_completion(v_completion_id);
   end if;

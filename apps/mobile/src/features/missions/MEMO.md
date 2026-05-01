@@ -1,6 +1,6 @@
 # Mémo — Feature Missions (mobile)
 
-**Dernière revue du mémo :** 2026-04-30
+**Dernière revue du mémo :** 2026-05-01
 
 ## Objectif
 
@@ -30,7 +30,7 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 | **Soumission** | `hooks/useSubmitMissionCompletionMutation.ts`, `services/missionService.ts` → RPC `submit_mission_completion` |
 | **Daily login** | `hooks/useDailyLoginMission.ts`, `constants/index.ts` ; appel depuis `apps/mobile/src/lib/bootstrap/useAppBootstrap.ts` |
 | **Présentation** | `utils/missionDetailPresentation.ts`, `utils/missionThumbnailFallback.ts` |
-| **Types** | `types/index.ts` |
+| **Types** | `types/index.ts`, `types/surveyProof.ts` (`MissionSurveyProofPayload` pour `proof_data` survey) |
 
 **Règle d’archi :** pas d’appel Supabase depuis les écrans ; services → hooks → UI (voir règles TanStack Query du repo).
 
@@ -44,8 +44,20 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 ### Codes métier stables (soumission)
 
 Définis côté client dans `missionService.ts` (`MissionSubmissionBusinessErrorCode`) :  
-`UNAUTHENTICATED`, `MISSION_NOT_FOUND`, `MISSION_NOT_ACTIVE`, `MISSION_NOT_STARTED`, `MISSION_EXPIRED`, `MISSION_USER_LIMIT_REACHED`, `MISSION_TOTAL_LIMIT_REACHED`.  
+`UNAUTHENTICATED`, `MISSION_NOT_FOUND`, `MISSION_NOT_ACTIVE`, `MISSION_NOT_STARTED`, `MISSION_EXPIRED`, `MISSION_USER_LIMIT_REACHED`, `MISSION_TOTAL_LIMIT_REACHED`,  
+`SURVEY_CONFIG_INVALID`, `SURVEY_PROOF_INVALID`, `SURVEY_ANSWERS_INVALID` (missions `survey`, validation RPC).  
 Les libellés utilisateur passent par i18n sous `missions.submission.errors` (voir `missionService` et locales).
+
+### Mission type `survey` — persistance des réponses
+
+- Le client envoie `p_proof_data` à `submit_mission_completion` ; la RPC écrit ce JSON dans **`mission_completions.proof_data`** (comportement déjà en place pour tous les types).
+- **Contrat côté mobile (types)** : `MissionSurveyProofPayload` dans `types/surveyProof.ts` :
+  - `surveyId` : chaîne réservée au futur backoffice (peut être vide tant que non utilisée).
+  - `answers` : **tableau ordonné** `{ questionId, value }[]`, dans l’ordre du parcours réel (branchement inclus). Même ordre que le rejouage serveur depuis `startQuestionId` → validation séquentielle simple.
+  - `value` : `string` (texte / choix unique) ou `string[]` (choix multiples).
+- **Définition du questionnaire** : sous-clé `survey` dans `missions.metadata` — validée par `submit_mission_completion` (migration `20260501140000_submit_mission_completion_survey_validation.sql`) :
+  - `startQuestionId` (string), `questions` (tableau non vide).
+  - Types de question : `text` (`nextQuestionId` optionnel), `single_choice` (`options[].id`, `label`, `nextQuestionId` optionnel par option ; repli `question.nextQuestionId`), `multi_choice` (`options[].id`, un seul `nextQuestionId` au niveau question ; valeurs = ids distincts).
 
 ## Daily login (résumé)
 

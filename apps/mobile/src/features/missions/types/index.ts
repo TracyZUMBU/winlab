@@ -10,4 +10,10 @@ type MissionStatus = "draft" | "active" | "paused" | "archived";
 
 type MissionValidationMode = "automatic" | "manual";
 
+export type {
+  MissionSurveyAnswerStep,
+  MissionSurveyAnswerValue,
+  MissionSurveyProofPayload,
+} from "./surveyProof";
+
 export { MissionType, MissionStatus, MissionValidationMode };

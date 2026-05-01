@@ -8,6 +8,8 @@ import {
   createWalletTransaction,
   getSupabaseAdminClient,
   getSupabaseAnonClient,
+  testLinearSurveyMetadata,
+  testLinearSurveyProofData,
 } from "@winlab/supabase-test-utils";
 
 const SUBMIT_MISSION_COMPLETION_RPC = "submit_mission_completion";
@@ -177,13 +179,16 @@ describe("submit_mission_completion RPC (integration)", () => {
         mission_type: "survey",
         token_reward: 20,
         max_completions_per_user: 1,
+        metadata: testLinearSurveyMetadata(),
       });
+
+      const proofData = testLinearSurveyProofData();
 
       const { data, error } = await testUser.client.rpc(
         SUBMIT_MISSION_COMPLETION_RPC,
         {
           p_mission_id: mission.id,
-          p_proof_data: {},
+          p_proof_data: proofData,
         },
       );
       expect(error).toBeNull();
@@ -196,6 +201,7 @@ describe("submit_mission_completion RPC (integration)", () => {
         .single();
 
       expect(completionError).toBeNull();
+      expect(completion?.proof_data).toEqual(proofData);
       expect(completion?.status).toBe("approved");
       expect(completion?.reward_transaction_id).toBeTruthy();
 
@@ -413,6 +419,164 @@ describe("submit_mission_completion RPC (integration)", () => {
     });
   });
 
+  describe("survey proof validation", () => {
+    it("returns SURVEY_CONFIG_INVALID when survey metadata is missing", async () => {
+      const testUser = await createAuthenticatedTestUser();
+      const brand = await createBrand();
+
+      const mission = await createMission({
+        brand_id: brand.id,
+        validation_mode: "automatic",
+        mission_type: "survey",
+        token_reward: 10,
+        metadata: {},
+      });
+
+      const { data, error } = await testUser.client.rpc(
+        SUBMIT_MISSION_COMPLETION_RPC,
+        {
+          p_mission_id: mission.id,
+          p_proof_data: testLinearSurveyProofData(),
+        },
+      );
+
+      expect(error).toBeNull();
+      expectRpcBusinessError(data, "SURVEY_CONFIG_INVALID");
+    });
+
+    it("returns SURVEY_PROOF_INVALID when answers array is missing", async () => {
+      const testUser = await createAuthenticatedTestUser();
+      const brand = await createBrand();
+
+      const mission = await createMission({
+        brand_id: brand.id,
+        validation_mode: "automatic",
+        mission_type: "survey",
+        token_reward: 10,
+        metadata: testLinearSurveyMetadata(),
+      });
+
+      const { data, error } = await testUser.client.rpc(
+        SUBMIT_MISSION_COMPLETION_RPC,
+        {
+          p_mission_id: mission.id,
+          p_proof_data: { surveyId: "" },
+        },
+      );
+
+      expect(error).toBeNull();
+      expectRpcBusinessError(data, "SURVEY_PROOF_INVALID");
+    });
+
+    it("returns SURVEY_ANSWERS_INVALID when the path does not match branching", async () => {
+      const testUser = await createAuthenticatedTestUser();
+      const brand = await createBrand();
+
+      const metadata = {
+        survey: {
+          startQuestionId: "q1",
+          questions: [
+            {
+              id: "q1",
+              type: "single_choice",
+              options: [
+                { id: "pick_a", label: "A", nextQuestionId: "q2a" },
+                { id: "pick_b", label: "B", nextQuestionId: "q2b" },
+              ],
+            },
+            { id: "q2a", type: "text", nextQuestionId: null },
+            { id: "q2b", type: "text", nextQuestionId: null },
+          ],
+        },
+      };
+
+      const mission = await createMission({
+        brand_id: brand.id,
+        validation_mode: "automatic",
+        mission_type: "survey",
+        token_reward: 10,
+        metadata,
+      });
+
+      const { data, error } = await testUser.client.rpc(
+        SUBMIT_MISSION_COMPLETION_RPC,
+        {
+          p_mission_id: mission.id,
+          p_proof_data: {
+            surveyId: "",
+            answers: [
+              { questionId: "q1", value: "pick_a" },
+              { questionId: "q2b", value: "wrong branch" },
+            ],
+          },
+        },
+      );
+
+      expect(error).toBeNull();
+      expectRpcBusinessError(data, "SURVEY_ANSWERS_INVALID");
+    });
+
+    it("accepts a valid branching path and stores proof_data", async () => {
+      const testUser = await createAuthenticatedTestUser();
+      const admin = getSupabaseAdminClient();
+      const brand = await createBrand();
+
+      const metadata = {
+        survey: {
+          startQuestionId: "q1",
+          questions: [
+            {
+              id: "q1",
+              type: "single_choice",
+              options: [
+                { id: "pick_a", label: "A", nextQuestionId: "q2a" },
+                { id: "pick_b", label: "B", nextQuestionId: "q2b" },
+              ],
+            },
+            { id: "q2a", type: "text", nextQuestionId: null },
+            { id: "q2b", type: "text", nextQuestionId: null },
+          ],
+        },
+      };
+
+      const proofData = {
+        surveyId: "",
+        answers: [
+          { questionId: "q1", value: "pick_a" },
+          { questionId: "q2a", value: "ok" },
+        ],
+      };
+
+      const mission = await createMission({
+        brand_id: brand.id,
+        validation_mode: "automatic",
+        mission_type: "survey",
+        token_reward: 10,
+        metadata,
+      });
+
+      const { data, error } = await testUser.client.rpc(
+        SUBMIT_MISSION_COMPLETION_RPC,
+        {
+          p_mission_id: mission.id,
+          p_proof_data: proofData,
+        },
+      );
+
+      expect(error).toBeNull();
+      const completionId = expectRpcSuccess(data);
+
+      const { data: completion, error: completionError } = await admin
+        .from("mission_completions")
+        .select("proof_data")
+        .eq("id", completionId)
+        .single();
+
+      expect(completionError).toBeNull();
+      expect(completion?.proof_data).toEqual(proofData);
+    });
+  });
+
   describe("business rules", () => {
     it("does not double-credit wallet on double submit (automatic mission)", async () => {
       const testUser = await createAuthenticatedTestUser();
@@ -425,13 +589,16 @@ describe("submit_mission_completion RPC (integration)", () => {
         mission_type: "survey",
         token_reward: 20,
         max_completions_per_user: 1,
+        metadata: testLinearSurveyMetadata(),
       });
+
+      const proofData = testLinearSurveyProofData();
 
       const { data: completionId1, error: err1 } = await testUser.client.rpc(
         SUBMIT_MISSION_COMPLETION_RPC,
         {
           p_mission_id: mission.id,
-          p_proof_data: {},
+          p_proof_data: proofData,
         },
       );
       expect(err1).toBeNull();
@@ -441,7 +608,7 @@ describe("submit_mission_completion RPC (integration)", () => {
         SUBMIT_MISSION_COMPLETION_RPC,
         {
           p_mission_id: mission.id,
-          p_proof_data: {},
+          p_proof_data: proofData,
         },
       );
 
@@ -481,11 +648,12 @@ describe("submit_mission_completion RPC (integration)", () => {
         validation_mode: "automatic",
         mission_type: "survey",
         token_reward: 20,
+        metadata: testLinearSurveyMetadata(),
       });
 
       const { data, error } = await anon.rpc(SUBMIT_MISSION_COMPLETION_RPC, {
         p_mission_id: mission.id,
-        p_proof_data: {},
+        p_proof_data: testLinearSurveyProofData(),
       });
 
       expect(error).toBeNull();

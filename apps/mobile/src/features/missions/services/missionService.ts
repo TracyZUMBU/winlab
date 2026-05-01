@@ -17,7 +17,10 @@ export type MissionSubmissionBusinessErrorCode =
   | "MISSION_NOT_STARTED"
   | "MISSION_EXPIRED"
   | "MISSION_USER_LIMIT_REACHED"
-  | "MISSION_TOTAL_LIMIT_REACHED";
+  | "MISSION_TOTAL_LIMIT_REACHED"
+  | "SURVEY_CONFIG_INVALID"
+  | "SURVEY_PROOF_INVALID"
+  | "SURVEY_ANSWERS_INVALID";
 
 /**
  * All keys used under `missions.submission.errors` in i18n (business + generic fallbacks).
@@ -49,6 +52,9 @@ const BUSINESS_ERROR_CODES = new Set<MissionSubmissionBusinessErrorCode>([
   "MISSION_EXPIRED",
   "MISSION_USER_LIMIT_REACHED",
   "MISSION_TOTAL_LIMIT_REACHED",
+  "SURVEY_CONFIG_INVALID",
+  "SURVEY_PROOF_INVALID",
+  "SURVEY_ANSWERS_INVALID",
 ]);
 
 export const submitMissionCompletion = async ({

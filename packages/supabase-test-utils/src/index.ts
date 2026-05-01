@@ -21,5 +21,9 @@ export {
 } from "./factories/lottery_tickets";
 export { createWalletTransaction } from "./factories/wallet_transactions";
 export { createMission } from "./factories/missions";
+export {
+  testLinearSurveyMetadata,
+  testLinearSurveyProofData,
+} from "./fixtures/surveyMissionProof";
 export { createMissionCompletion } from "./factories/mission_completion";
 export { createReferral } from "./factories/referrals";
