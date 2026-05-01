@@ -61,6 +61,20 @@ function successResponse(): Response {
   return jsonResponse(body as Json, { status: 200 });
 }
 
+function getAuthAdminBaseUrl(supabaseUrl: string): string {
+  try {
+    const url = new URL(supabaseUrl);
+    // In local `supabase functions serve`, edge runtime may run in a container where
+    // localhost/127.0.0.1 points to itself instead of the host stack.
+    if (url.hostname === "127.0.0.1" || url.hostname === "localhost") {
+      url.hostname = "host.docker.internal";
+    }
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return supabaseUrl.replace(/\/$/, "");
+  }
+}
+
 serve(async (req) => {
   const requestId = createRequestId();
 
@@ -162,8 +176,9 @@ serve(async (req) => {
 
   // 2) Soft delete Auth user.
   // Note: use direct HTTP call to avoid SDK/version mismatch around shouldSoftDelete.
+  const authAdminBaseUrl = getAuthAdminBaseUrl(supabaseUrl);
   const deleteResponse = await fetch(
-    `${supabaseUrl}/auth/v1/admin/users/${userId}`,
+    `${authAdminBaseUrl}/auth/v1/admin/users/${userId}`,
     {
       method: "DELETE",
       headers: {

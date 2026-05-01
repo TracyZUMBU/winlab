@@ -11,6 +11,13 @@ import {
 
 const RPC = "get_user_home_dashboard";
 
+function getActiveMissionWindow() {
+  return {
+    starts_at: new Date(Date.now() - 60_000).toISOString(),
+    ends_at: new Date(Date.now() + 30 * 60_000).toISOString(),
+  };
+}
+
 describe("get_user_home_dashboard RPC (integration)", () => {
   it("returns profile, balance, ongoing lotteries, participations, and mission previews", async () => {
     const uniqueId = `${Date.now()}-${Math.random()}`;
@@ -56,8 +63,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
-      // Keep this mission near top of the preview list (ORDER BY ends_at ASC, id ASC).
-      ends_at: new Date(Date.now() + 60 * 1000).toISOString(),
+      ...getActiveMissionWindow(),
     });
 
     // Repeatable mission logic:
@@ -115,9 +121,9 @@ describe("get_user_home_dashboard RPC (integration)", () => {
 
     const missions = payload.mission_previews as unknown[];
     expect(Array.isArray(missions)).toBe(true);
-    expect(
-      missions.some((m) => (m as { id?: string }).id === mission.id),
-    ).toBe(true);
+    expect(missions.some((m) => (m as { id?: string }).id === mission.id)).toBe(
+      true,
+    );
 
     // Once (pending + approved) count >= max_completions_per_user,
     // the mission must be excluded from the "todo/preview" list.
@@ -127,7 +133,8 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       status: "approved",
     });
 
-    const { data: dataAfterMax, error: errorAfterMax } = await user.client.rpc(RPC);
+    const { data: dataAfterMax, error: errorAfterMax } =
+      await user.client.rpc(RPC);
     expect(errorAfterMax).toBeNull();
     const payloadAfterMax = dataAfterMax as Record<string, unknown>;
     const missionsAfterMax = payloadAfterMax.mission_previews as unknown[];
@@ -176,6 +183,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 1,
+      ...getActiveMissionWindow(),
     });
     const user = await createAuthenticatedTestUser();
     await createMissionCompletion({
@@ -188,8 +196,8 @@ describe("get_user_home_dashboard RPC (integration)", () => {
     expect(error).toBeNull();
     const payload = data as Record<string, unknown>;
     const missions = payload.mission_previews as unknown[];
-    expect(
-      missions.some((m) => (m as { id?: string }).id === mission.id),
-    ).toBe(false);
+    expect(missions.some((m) => (m as { id?: string }).id === mission.id)).toBe(
+      false,
+    );
   });
 });
