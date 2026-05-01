@@ -3,6 +3,8 @@ import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { invalidateAppBootstrapCache } from "@/src/lib/bootstrap/sharedAppBootstrap";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
+import { logger } from "@/src/lib/logger";
+import { showWarningToast } from "@/src/shared/toast/toastService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
 import { useRouter } from "expo-router";
@@ -24,6 +26,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
+import {
+  registerReferralWithCode,
+  type RegisterReferralWithCodeResult,
+} from "../services/registerReferralWithCode";
 import type { ProfileSex } from "../types/profileSex";
 import { CreateProfileError } from "../types/profileTypes";
 import {
@@ -75,11 +81,14 @@ export const CreateProfileScreen: React.FC = () => {
       username: "",
       birth_date: "",
       sex: undefined,
+      referral_code: "",
     },
   });
 
   const usernameField = register("username");
+  const referralCodeField = register("referral_code");
   const usernameValue = watch("username");
+  const referralCodeValue = watch("referral_code");
   const birthDateValue = watch("birth_date");
   const selectedSex = watch("sex");
 
@@ -121,8 +130,36 @@ export const CreateProfileScreen: React.FC = () => {
         sex: values.sex,
       });
 
+      let referralResult: RegisterReferralWithCodeResult = { ok: true };
+      let referralErrorAlreadyToasted = false;
+      try {
+        referralResult = await registerReferralWithCode(values.referral_code);
+      } catch (err) {
+        logger.error("register_referral_with_code threw after profile create", err);
+        referralResult = { ok: false, errorCode: "REFERRAL_RPC_FAILED" };
+        referralErrorAlreadyToasted = true;
+        showWarningToast({
+          title: t("profile.createProfile.referralPartial.title"),
+          message: t("profile.createProfile.referralPartial.messageFallback"),
+        });
+      }
+
       invalidateAppBootstrapCache();
       router.replace("/home");
+
+      if (!referralErrorAlreadyToasted && !referralResult.ok) {
+        showWarningToast({
+          title: t("profile.createProfile.referralPartial.title"),
+          message: getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "profile.createProfile.errors",
+            code: referralResult.errorCode,
+            fallbackKey:
+              "profile.createProfile.referralPartial.messageFallback",
+          }),
+        });
+      }
     } catch (e) {
       if (e instanceof CreateProfileError) {
         setServerError(
@@ -261,6 +298,45 @@ export const CreateProfileScreen: React.FC = () => {
               {errors.sex?.message ? (
                 <Text style={styles.errorText}>{errors.sex.message}</Text>
               ) : null}
+            </View>
+
+            <View style={styles.referralAsideWrap}>
+              <View style={styles.referralAsideDivider} />
+              <View style={styles.referralAside}>
+                <Text style={styles.referralAsideTitle}>
+                  {t("profile.createProfile.screen.referralSectionTitle")}
+                </Text>
+                <Text style={styles.referralAsideSubtitle}>
+                  {t("profile.createProfile.screen.referralSectionSubtitle")}
+                </Text>
+                <Text style={styles.label}>
+                  {t("profile.createProfile.screen.referralCodeLabel")}
+                </Text>
+                <TextInput
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  maxLength={8}
+                  placeholder={t(
+                    "profile.createProfile.screen.referralCodePlaceholder",
+                  )}
+                  placeholderTextColor="#94A3B8"
+                  style={[
+                    styles.input,
+                    errors.referral_code ? styles.inputError : undefined,
+                  ]}
+                  value={referralCodeValue}
+                  onChangeText={(text) => {
+                    setValue("referral_code", text, { shouldValidate: true });
+                  }}
+                  onBlur={referralCodeField.onBlur}
+                />
+
+                {errors.referral_code?.message ? (
+                  <Text style={styles.errorText}>
+                    {errors.referral_code.message}
+                  </Text>
+                ) : null}
+              </View>
             </View>
 
             {serverError ? (
@@ -409,5 +485,34 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+  },
+  referralAsideWrap: {
+    marginTop: 12,
+  },
+  referralAsideDivider: {
+    marginBottom: 20,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#CBD5E1",
+    alignSelf: "stretch",
+  },
+  referralAside: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+  },
+  referralAsideTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#334155",
+  },
+  referralAsideSubtitle: {
+    marginTop: 6,
+    marginBottom: 16,
+    fontSize: 13,
+    lineHeight: 18,
+    color: "#64748B",
   },
 });

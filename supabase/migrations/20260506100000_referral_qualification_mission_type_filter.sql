@@ -1,3 +1,27 @@
+-- Referral bonus: count only missions whose mission_type qualifies (exclude daily_login, etc.).
+-- Extend exclusions by editing mission_type_counts_for_referral_qualification in a follow-up migration.
+
+CREATE OR REPLACE FUNCTION public.mission_type_counts_for_referral_qualification(
+  p_mission_type public.mission_type
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  SELECT NOT (
+    p_mission_type = ANY (
+      ARRAY[
+        'daily_login'::public.mission_type
+      ]
+    )
+  );
+$$;
+
+ALTER FUNCTION public.mission_type_counts_for_referral_qualification(public.mission_type) OWNER TO postgres;
+
+REVOKE ALL ON FUNCTION public.mission_type_counts_for_referral_qualification(public.mission_type) FROM PUBLIC;
+
 DROP FUNCTION IF EXISTS public.handle_referral_after_first_mission(uuid);
 
 CREATE FUNCTION public.handle_referral_after_first_mission(
@@ -13,8 +37,6 @@ declare
   v_approved_count integer;
   v_transaction_id uuid;
 begin
-  -- Exactly one approved + rewarded completion that counts for referral qualification
-  -- (excludes mission types such as daily_login — see mission_type_counts_for_referral_qualification).
   select count(*)
   into v_approved_count
   from public.mission_completions mc
@@ -28,7 +50,6 @@ begin
     return;
   end if;
 
-  -- Lock the referral row to avoid double-qualifying/rewarding.
   select *
   into v_referral
   from public.referrals
@@ -81,4 +102,3 @@ ALTER FUNCTION public.handle_referral_after_first_mission(uuid) OWNER TO postgre
 REVOKE ALL ON FUNCTION public.handle_referral_after_first_mission(uuid) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.handle_referral_after_first_mission(uuid) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.handle_referral_after_first_mission(uuid) TO service_role;
-
