@@ -61,9 +61,12 @@ jobs:
             | sed -e 's/^API_URL=/SUPABASE_URL=/' \
                   -e 's/^ANON_KEY=/SUPABASE_ANON_KEY=/' \
                   -e 's/^SERVICE_ROLE_KEY=/SUPABASE_SERVICE_ROLE_KEY=/' \
+                  -e 's/^\([^=]*\)="\(.*\)"$/\1=\2/' \
             > apps/mobile/.env.test.local
           cp apps/mobile/.env.test.local apps/admin/.env.test.local
           test "$(wc -l < apps/mobile/.env.test.local | tr -d ' ')" -eq 3
+          grep -Eq '^SUPABASE_ANON_KEY=.+' apps/mobile/.env.test.local
+          grep -Eq '^SUPABASE_SERVICE_ROLE_KEY=.+' apps/mobile/.env.test.local
           grep -Eq '^SUPABASE_URL=http://(127\.0\.0\.1|localhost):54321$' apps/mobile/.env.test.local
       - name: Run integration tests (admin)
         run: npm run test:integration -w admin
