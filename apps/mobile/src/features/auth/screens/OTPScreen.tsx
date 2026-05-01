@@ -63,27 +63,31 @@ export const OTPScreen: React.FC = () => {
     const result = await verifyEmailOtp({ email, token: values.code });
 
     if (!result.success) {
-      if (result.errorCode === "OTP_INVALID_LENGTH") {
-        setServerError(
-          t("auth.otp.errors.OTP_INVALID_LENGTH", {
-            length: OTP_CODE_LENGTH,
-          }),
-        );
+      if (result.kind === "business") {
+        if (result.errorCode === "OTP_INVALID_LENGTH") {
+          setServerError(
+            t("auth.otp.errors.OTP_INVALID_LENGTH", {
+              length: OTP_CODE_LENGTH,
+            }),
+          );
+        } else {
+          setServerError(
+            getI18nMessageForCode({
+              t,
+              i18n,
+              baseKey: "auth.otp.errors",
+              code: result.errorCode,
+              fallbackKey: "auth.otp.errors.generic",
+            }),
+          );
+        }
       } else {
-        setServerError(
-          getI18nMessageForCode({
-            t,
-            i18n,
-            baseKey: "auth.otp.errors",
-            code: result.errorCode,
-            fallbackKey: "auth.otp.errors.generic",
-          }),
-        );
+        setServerError(t("auth.otp.errors.generic"));
       }
       return;
     }
 
-    const user = result.user;
+    const user = result.data.user;
 
     try {
       await redirectAfterAuthSession(router, user.id);
@@ -107,13 +111,15 @@ export const OTPScreen: React.FC = () => {
 
       if (!result.success) {
         setServerError(
-          getI18nMessageForCode({
-            t,
-            i18n,
-            baseKey: "auth.email.errors",
-            code: result.errorCode,
-            fallbackKey: "auth.email.errors.generic",
-          }),
+          result.kind === "business"
+            ? getI18nMessageForCode({
+                t,
+                i18n,
+                baseKey: "auth.email.errors",
+                code: result.errorCode,
+                fallbackKey: "auth.email.errors.generic",
+              })
+            : t("auth.email.errors.generic"),
         );
       } else {
         showInfoToast({ title: t("auth.otp.resendSuccess") });
@@ -147,7 +153,10 @@ export const OTPScreen: React.FC = () => {
               maxLength={OTP_CODE_LENGTH}
               placeholder={t("auth.otp.screen.codePlaceholder")}
               placeholderTextColor="#94A3B8"
-              style={[styles.input, errors.code ? styles.inputError : undefined]}
+              style={[
+                styles.input,
+                errors.code ? styles.inputError : undefined,
+              ]}
               value={codeValue}
               onChangeText={(text) => {
                 setValue("code", text.replace(/\D/g, ""), {

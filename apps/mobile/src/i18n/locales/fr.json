@@ -118,7 +118,7 @@
       },
       "screen": {
         "subtitleWithEmail": "Nous avons envoyé un code à {{email}}.",
-        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse email.",
+        "subtitleNoEmail": "Nous avons envoyé un code à votre adresse e-mail.",
         "codePlaceholder": "000000",
         "resendPrompt": "Vous n’avez pas reçu le code ?",
         "resendCta": "Renvoyer le code",
@@ -240,7 +240,8 @@
         "video": "Vidéo de consommation",
         "follow": "Tâche sociale",
         "referral": "Parrainage",
-        "custom": "Mission"
+        "custom": "Mission",
+        "daily_login": "Connexion quotidienne"
       },
       "progress": {
         "title": "Progression",
@@ -277,6 +278,19 @@
       "cta": {
         "launch": "Lancer la mission",
         "launchPending": "Lancement…"
+      },
+      "survey": {
+        "title": "Questionnaire",
+        "questionCount": "Question {{count}}",
+        "textAnswerPlaceholder": "Ta réponse…",
+        "textPlaceholder": "Saisis ta réponse",
+        "next": "Question suivante",
+        "submit": "Soumettre le questionnaire",
+        "previous": "Question précédente",
+        "readyToSubmit": "Vous avez répondu à toutes les questions. Vous pouvez maintenant soumettre votre questionnaire.",
+        "errors": {
+          "missingAnswer": "Réponds à la question avant de continuer."
+        }
       }
     },
     "submission": {
@@ -289,9 +303,15 @@
         "MISSION_EXPIRED": "Cette mission est terminée.",
         "MISSION_USER_LIMIT_REACHED": "Vous avez déjà atteint la limite de participations pour cette mission.",
         "MISSION_TOTAL_LIMIT_REACHED": "La limite globale de participations pour cette mission a été atteinte.",
+        "SURVEY_CONFIG_INVALID": "Ce questionnaire est mal configuré. Réessayez plus tard.",
+        "SURVEY_PROOF_INVALID": "La soumission du questionnaire est invalide. Réessayez.",
+        "SURVEY_ANSWERS_INVALID": "Les réponses ne correspondent pas au questionnaire. Vérifiez et réessayez.",
         "INVALID_SERVER_RESPONSE": "Réponse invalide du serveur. Merci de réessayer.",
         "UNKNOWN_ERROR": "Une erreur est survenue. Merci de réessayer."
       }
+    },
+    "dailyLogin": {
+      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !"
     },
     "screen": {
       "submitMission": "Mission soumise.",

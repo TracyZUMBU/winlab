@@ -1,4 +1,6 @@
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import type { DailyLoginMissionResult } from "@/src/features/missions/hooks/useDailyLoginMission";
+import { triggerDailyLoginMission } from "@/src/features/missions/hooks/useDailyLoginMission";
 import { getProfileByUserId } from "@/src/features/profile/services/getProfileByUserId";
 import type { Profile } from "@/src/features/profile/types/profileTypes";
 import { logger } from "@/src/lib/logger";
@@ -15,6 +17,7 @@ export type AppBootstrapResult = {
   hasSeenOnboarding: boolean;
   sessionUserId: string | null;
   redirectTo: string | null;
+  dailyLoginMissionResult: DailyLoginMissionResult | null;
 };
 
 /**
@@ -30,6 +33,7 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
     hasSeenOnboarding: false,
     sessionUserId: null,
     redirectTo: null,
+    dailyLoginMissionResult: null,
   });
 
   useEffect(() => {
@@ -49,7 +53,9 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
         const sessionUserId = sessionData.user?.id ?? null;
 
         let profile: Profile | null = null;
+        let dailyLoginMissionResult: DailyLoginMissionResult | null = null;
         if (sessionUserId) {
+          //1. get profile
           try {
             profile = await getProfileByUserId(sessionUserId);
           } catch (error) {
@@ -72,8 +78,29 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
             });
             profile = null;
           }
+
+          //2. trigger daily login mission
+          try {
+            dailyLoginMissionResult = await triggerDailyLoginMission();
+          } catch (error) {
+            logger.warn(
+              "[bootstrap] daily login mission trigger failed; continuing without mission result",
+              { userId: sessionUserId, error },
+            );
+            monitoring.captureException({
+              name: "bootstrap_daily_login_mission_failed",
+              severity: "warning",
+              feature: "bootstrap",
+              message: "Daily login mission trigger failed during bootstrap",
+              error,
+              userId: sessionUserId,
+              extra: { action: "triggerDailyLoginMission" },
+            });
+            dailyLoginMissionResult = null;
+          }
         }
 
+        //3. redirect to the right route
         let redirectTo: string;
         if (!sessionUserId) {
           redirectTo = hasSeen ? AUTH_ROUTES.email : "/onboarding";
@@ -88,6 +115,7 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
             hasSeenOnboarding: hasSeen,
             sessionUserId,
             redirectTo,
+            dailyLoginMissionResult,
           });
         }
       } catch (error) {
@@ -112,6 +140,7 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
             hasSeenOnboarding: false,
             sessionUserId: null,
             redirectTo: "/onboarding",
+            dailyLoginMissionResult: null,
           });
         }
       }

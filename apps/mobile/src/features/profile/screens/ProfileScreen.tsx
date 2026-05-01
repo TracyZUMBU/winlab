@@ -252,14 +252,17 @@ export function ProfileScreen() {
           onPress: () => {
             void (async () => {
               const result = await deleteMyAccountMutation.mutateAsync();
-              if (!result.ok) {
-                const message = getI18nMessageForCode({
-                  t,
-                  i18n,
-                  baseKey: "profile.deleteAccount.errors",
-                  code: result.code,
-                  fallbackKey: "profile.deleteAccount.errors.generic",
-                });
+              if (!result.success) {
+                const message =
+                  result.kind === "business"
+                    ? getI18nMessageForCode({
+                        t,
+                        i18n,
+                        baseKey: "profile.deleteAccount.errors",
+                        code: result.errorCode,
+                        fallbackKey: "profile.deleteAccount.errors.generic",
+                      })
+                    : t("profile.deleteAccount.errors.generic");
                 Alert.alert(
                   t("profile.screen.deleteAccountErrorTitle"),
                   message,

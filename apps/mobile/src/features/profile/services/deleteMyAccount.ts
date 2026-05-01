@@ -15,12 +15,24 @@ export type DeleteMyAccountErrorCode =
   | "INVALID_RESPONSE"
   | "UNKNOWN_ERROR";
 
+/** Subset surfaced as `errorCode` when `kind === "business"` (stable i18n mapping). */
+export type DeleteMyAccountBusinessErrorCode =
+  | "UNAUTHENTICATED"
+  | "SESSION_FORBIDDEN"
+  | "METHOD_NOT_ALLOWED"
+  | "ANONYMIZE_PROFILE_FAILED"
+  | "AUTH_DELETE_FAILED";
+
 export type DeleteMyAccountResult =
-  | { ok: true }
+  | { success: true; data: undefined }
   | {
-      ok: false;
-      kind: ErrorKind;
-      code: DeleteMyAccountErrorCode;
+      success: false;
+      kind: "business";
+      errorCode: DeleteMyAccountBusinessErrorCode;
+    }
+  | {
+      success: false;
+      kind: Exclude<ErrorKind, "business">;
     };
 
 type EdgeSuccessBody = {
@@ -148,7 +160,14 @@ export async function deleteMyAccount(): Promise<DeleteMyAccountResult> {
         kind,
         status: e.context?.status,
       });
-      return { ok: false, kind, code };
+      if (kind === "business") {
+        return {
+          success: false,
+          kind: "business",
+          errorCode: code as DeleteMyAccountBusinessErrorCode,
+        };
+      }
+      return { success: false, kind };
     }
 
     monitoring.captureException({
@@ -164,11 +183,11 @@ export async function deleteMyAccount(): Promise<DeleteMyAccountResult> {
     logger.warn("[profile] delete-my-account invoke failed", {
       status: e.context?.status,
     });
-    return { ok: false, kind: "technical", code: "INVOKE_FAILED" };
+    return { success: false, kind: "technical" };
   }
 
   if (isEdgeSuccessBody(data)) {
-    return { ok: true };
+    return { success: true, data: undefined };
   }
 
   if (isEdgeErrorBody(data)) {
@@ -184,7 +203,14 @@ export async function deleteMyAccount(): Promise<DeleteMyAccountResult> {
       });
     }
     logger.warn("[profile] delete-my-account failed (body)", { code, kind });
-    return { ok: false, kind, code };
+    if (kind === "business") {
+      return {
+        success: false,
+        kind: "business",
+        errorCode: code as DeleteMyAccountBusinessErrorCode,
+      };
+    }
+    return { success: false, kind };
   }
 
   monitoring.captureException({
@@ -195,5 +221,5 @@ export async function deleteMyAccount(): Promise<DeleteMyAccountResult> {
     error: new Error("invalid response"),
   });
   logger.warn("[profile] delete-my-account invalid response");
-  return { ok: false, kind: "unexpected", code: "INVALID_RESPONSE" };
+  return { success: false, kind: "unexpected" };
 }

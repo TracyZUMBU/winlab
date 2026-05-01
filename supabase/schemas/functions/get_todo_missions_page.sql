@@ -69,16 +69,20 @@ BEGIN
   FROM public.missions m
   INNER JOIN public.brands b ON b.id = m.brand_id AND b.is_active = true
   WHERE m.status = 'active'::public.mission_status
+    AND m.mission_type <> 'daily_login'
     AND (m.starts_at IS NULL OR m.starts_at <= now())
     AND (m.ends_at IS NULL OR m.ends_at >= now())
-    -- Repeatable missions / quota: pending + approved (same as submit_mission_completion).
     AND (
-      SELECT COUNT(*)::int
-      FROM public.mission_completions mca
-      WHERE mca.mission_id = m.id
-        AND mca.user_id = auth.uid()
-        AND mca.status IN ('pending', 'approved')
-    ) < COALESCE(m.max_completions_per_user, 1)
+      -- user-facing missions only: null max_completions_per_user means unlimited repeats.
+      m.max_completions_per_user IS NULL
+      OR (
+        SELECT COUNT(*)::int
+        FROM public.mission_completions mca
+        WHERE mca.mission_id = m.id
+          AND mca.user_id = auth.uid()
+          AND mca.status IN ('pending', 'approved')
+      ) < m.max_completions_per_user
+    )
   ORDER BY m.ends_at ASC NULLS LAST, m.id ASC
   LIMIT p_limit
   OFFSET p_offset;

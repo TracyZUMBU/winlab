@@ -63,13 +63,15 @@ export const EmailScreen: React.FC = () => {
     }
 
     setServerError(
-      getI18nMessageForCode({
-        t,
-        i18n,
-        baseKey: "auth.email.errors",
-        code: result.errorCode,
-        fallbackKey: "auth.email.errors.generic",
-      }),
+      result.kind === "business"
+        ? getI18nMessageForCode({
+            t,
+            i18n,
+            baseKey: "auth.email.errors",
+            code: result.errorCode,
+            fallbackKey: "auth.email.errors.generic",
+          })
+        : t("auth.email.errors.generic"),
     );
   };
 

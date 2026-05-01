@@ -1,6 +1,6 @@
 import type { Database } from "../databaseTypes";
-import { createTestId } from "../testIds";
 import { getSupabaseAdminClient } from "../supabaseTestClient";
+import { createTestId } from "../testIds";
 
 type MissionInsert = Database["public"]["Tables"]["missions"]["Insert"];
 type MissionRow = Database["public"]["Tables"]["missions"]["Row"];
@@ -15,16 +15,18 @@ export const createMission = async (
   }
 
   const uniqueId = createTestId("mission");
+  const missionType = overrides.mission_type ?? "survey";
 
   const payload: MissionInsert = {
     brand_id: overrides.brand_id,
     title: `Mission test ${uniqueId}`,
     description: `Mission de test ${uniqueId}`,
-    mission_type: "survey",
+    mission_type: missionType,
     validation_mode: "automatic",
     token_reward: 20,
     status: "active",
-    max_completions_per_user: 1,
+    max_completions_per_user: missionType === "daily_login" ? null : 1,
+    max_completions_total: missionType === "daily_login" ? null : undefined,
     metadata: {},
     ...overrides,
   };

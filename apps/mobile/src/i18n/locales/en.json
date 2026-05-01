@@ -236,7 +236,8 @@
         "video": "Video",
         "follow": "Social task",
         "referral": "Referral",
-        "custom": "Mission"
+        "custom": "Mission",
+        "daily_login": "Daily login"
       },
       "progress": {
         "title": "Progress",
@@ -273,6 +274,19 @@
       "cta": {
         "launch": "Launch mission",
         "launchPending": "Launching…"
+      },
+      "survey": {
+        "title": "Survey",
+        "questionCount": "Question {{count}}",
+        "textAnswerPlaceholder": "Your answer…",
+        "textPlaceholder": "Type your answer",
+        "next": "Next",
+        "submit": "Submit survey",
+        "previous": "Previous question",
+        "readyToSubmit": "You have answered all questions. You can now submit your survey.",
+        "errors": {
+          "missingAnswer": "Please answer before continuing."
+        }
       }
     },
     "submission": {
@@ -285,9 +299,15 @@
         "MISSION_EXPIRED": "This mission has ended.",
         "MISSION_USER_LIMIT_REACHED": "You have reached the submission limit for this mission.",
         "MISSION_TOTAL_LIMIT_REACHED": "The total submission limit for this mission has been reached.",
+        "SURVEY_CONFIG_INVALID": "This survey is misconfigured. Please try again later.",
+        "SURVEY_PROOF_INVALID": "The survey submission payload is invalid. Please try again.",
+        "SURVEY_ANSWERS_INVALID": "Your answers don’t match this survey. Please check and try again.",
         "INVALID_SERVER_RESPONSE": "Invalid server response. Please try again.",
         "UNKNOWN_ERROR": "Something went wrong. Please try again."
       }
+    },
+    "dailyLogin": {
+      "toastReward": "🎁 +{{count}} tokens for your daily login!"
     },
     "screen": {
       "submitMission": "Mission submitted.",

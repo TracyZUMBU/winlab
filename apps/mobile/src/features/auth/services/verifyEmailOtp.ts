@@ -11,6 +11,7 @@ export const verifyEmailOtp = async ({
   if (token.length !== OTP_CODE_LENGTH) {
     return {
       success: false,
+      kind: "business",
       errorCode: "OTP_INVALID_LENGTH",
     };
   }
@@ -24,12 +25,13 @@ export const verifyEmailOtp = async ({
   if (error || !data.session || !data.session.user) {
     return {
       success: false,
+      kind: "business",
       errorCode: "OTP_VERIFICATION_FAILED",
     };
   }
 
   return {
     success: true,
-    user: data.session.user,
+    data: { user: data.session.user },
   };
 };

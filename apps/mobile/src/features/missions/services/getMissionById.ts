@@ -2,13 +2,13 @@ import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
 import { MissionType, MissionValidationMode } from "../types";
 
-type MissionBrand = {
+export type MissionBrand = {
   id: string;
   name: string;
   logo_url: string | null;
 };
 
-type MissionRow = {
+export type MissionRow = {
   id: string;
   title: string;
   token_reward: number;

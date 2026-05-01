@@ -53,6 +53,7 @@ export type Database = {
           id: string
           ingredient_id: string
           is_checked: boolean
+          note: string | null
           quantity: number
           unit_id: string
           week_id: string
@@ -62,6 +63,7 @@ export type Database = {
           id?: string
           ingredient_id: string
           is_checked?: boolean
+          note?: string | null
           quantity: number
           unit_id: string
           week_id: string
@@ -71,6 +73,7 @@ export type Database = {
           id?: string
           ingredient_id?: string
           is_checked?: boolean
+          note?: string | null
           quantity?: number
           unit_id?: string
           week_id?: string
@@ -260,20 +263,6 @@ export type Database = {
             foreignKeyName: "lottery_tickets_lottery_id_fkey"
             columns: ["lottery_id"]
             isOneToOne: false
-            referencedRelation: "admin_lotteries_overview"
-            referencedColumns: ["lottery_id"]
-          },
-          {
-            foreignKeyName: "lottery_tickets_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
-            referencedRelation: "admin_lottery_detail"
-            referencedColumns: ["lottery_id"]
-          },
-          {
-            foreignKeyName: "lottery_tickets_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
             referencedRelation: "lotteries"
             referencedColumns: ["id"]
           },
@@ -326,20 +315,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "lottery_winners_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
-            referencedRelation: "admin_lotteries_overview"
-            referencedColumns: ["lottery_id"]
-          },
-          {
-            foreignKeyName: "lottery_winners_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
-            referencedRelation: "admin_lottery_detail"
-            referencedColumns: ["lottery_id"]
-          },
           {
             foreignKeyName: "lottery_winners_lottery_id_fkey"
             columns: ["lottery_id"]
@@ -464,7 +439,7 @@ export type Database = {
           ends_at: string | null
           id: string
           image_url: string | null
-          max_completions_per_user: number
+          max_completions_per_user: number | null
           max_completions_total: number | null
           metadata: Json
           mission_type: Database["public"]["Enums"]["mission_type"]
@@ -482,7 +457,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          max_completions_per_user?: number
+          max_completions_per_user?: number | null
           max_completions_total?: number | null
           metadata?: Json
           mission_type: Database["public"]["Enums"]["mission_type"]
@@ -500,7 +475,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           image_url?: string | null
-          max_completions_per_user?: number
+          max_completions_per_user?: number | null
           max_completions_total?: number | null
           metadata?: Json
           mission_type?: Database["public"]["Enums"]["mission_type"]
@@ -528,6 +503,7 @@ export type Database = {
           created_at: string | null
           email: string
           id: string
+          is_admin: boolean
           referral_code: string | null
           sex: string | null
           updated_at: string | null
@@ -539,6 +515,7 @@ export type Database = {
           created_at?: string | null
           email: string
           id: string
+          is_admin?: boolean
           referral_code?: string | null
           sex?: string | null
           updated_at?: string | null
@@ -550,6 +527,7 @@ export type Database = {
           created_at?: string | null
           email?: string
           id?: string
+          is_admin?: boolean
           referral_code?: string | null
           sex?: string | null
           updated_at?: string | null
@@ -863,44 +841,6 @@ export type Database = {
       }
     }
     Views: {
-      admin_lotteries_overview: {
-        Row: {
-          brand_name: string | null
-          draw_at: string | null
-          ends_at: string | null
-          lottery_id: string | null
-          number_of_winners: number | null
-          starts_at: string | null
-          status: Database["public"]["Enums"]["lottery_status"] | null
-          ticket_cost: number | null
-          tickets_count: number | null
-          title: string | null
-          winners_count: number | null
-        }
-        Relationships: []
-      }
-      admin_lottery_detail: {
-        Row: {
-          brand_name: string | null
-          category: string | null
-          description: string | null
-          draw_at: string | null
-          ends_at: string | null
-          is_featured: boolean | null
-          lottery_id: string | null
-          number_of_winners: number | null
-          short_description: string | null
-          slug: string | null
-          starts_at: string | null
-          status: Database["public"]["Enums"]["lottery_status"] | null
-          ticket_cost: number | null
-          tickets_count: number | null
-          title: string | null
-          winners: Json | null
-          winners_count: number | null
-        }
-        Relationships: []
-      }
       grocery_list_merged: {
         Row: {
           ingredient_id: string | null
@@ -941,6 +881,103 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_lotteries: {
+        Args: never
+        Returns: {
+          brand_name: string
+          draw_at: string
+          ends_at: string
+          lottery_id: string
+          number_of_winners: number
+          starts_at: string
+          status: Database["public"]["Enums"]["lottery_status"]
+          ticket_cost: number
+          tickets_count: number
+          title: string
+          winners_count: number
+        }[]
+      }
+      admin_get_lottery_detail: {
+        Args: { p_lottery_id: string }
+        Returns: {
+          brand_name: string
+          category: string
+          description: string
+          draw_at: string
+          ends_at: string
+          is_featured: boolean
+          lottery_id: string
+          number_of_winners: number
+          short_description: string
+          slug: string
+          starts_at: string
+          status: Database["public"]["Enums"]["lottery_status"]
+          ticket_cost: number
+          tickets_count: number
+          title: string
+          winners: Json
+          winners_count: number
+        }[]
+      }
+      admin_get_mission_detail: {
+        Args: { p_mission_id: string }
+        Returns: {
+          approved_completions: number
+          brand_id: string
+          brand_name: string
+          completed_users: Json
+          created_at: string
+          description: string
+          ends_at: string
+          image_url: string
+          max_completions_per_user: number
+          max_completions_total: number
+          mission_id: string
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          pending_completions: number
+          rejected_completions: number
+          starts_at: string
+          status: Database["public"]["Enums"]["mission_status"]
+          title: string
+          token_reward: number
+          total_completions: number
+          updated_at: string
+          validation_mode: Database["public"]["Enums"]["mission_validation_mode"]
+        }[]
+      }
+      admin_get_missions: {
+        Args: {
+          p_brand_id?: string
+          p_limit?: number
+          p_mission_type?: Database["public"]["Enums"]["mission_type"]
+          p_offset?: number
+          p_sort?: string
+          p_status?: Database["public"]["Enums"]["mission_status"]
+          p_title_search?: string
+        }
+        Returns: {
+          brand_id: string
+          brand_name: string
+          ends_at: string
+          mission_id: string
+          mission_type: Database["public"]["Enums"]["mission_type"]
+          starts_at: string
+          status: Database["public"]["Enums"]["mission_status"]
+          title: string
+          token_reward: number
+          total_completions: number
+          validation_mode: Database["public"]["Enums"]["mission_validation_mode"]
+        }[]
+      }
+      admin_get_missions_count: {
+        Args: {
+          p_brand_id?: string
+          p_mission_type?: Database["public"]["Enums"]["mission_type"]
+          p_status?: Database["public"]["Enums"]["mission_status"]
+          p_title_search?: string
+        }
+        Returns: number
+      }
       approve_mission_completion: {
         Args: { p_completion_id: string }
         Returns: {
@@ -1006,6 +1043,11 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: undefined
       }
+      has_daily_login_completion_for_current_utc_day: {
+        Args: { p_mission_id: string }
+        Returns: boolean
+      }
+      is_admin: { Args: { user_id: string }; Returns: boolean }
       regenerate_grocery_list: {
         Args: { p_week_id: string }
         Returns: undefined
@@ -1026,7 +1068,13 @@ export type Database = {
       meal_type: "breakfast" | "lunch" | "dinner" | "snack"
       mission_completion_status: "pending" | "approved" | "rejected"
       mission_status: "draft" | "active" | "paused" | "archived"
-      mission_type: "survey" | "video" | "follow" | "referral" | "custom"
+      mission_type:
+        | "survey"
+        | "video"
+        | "follow"
+        | "referral"
+        | "custom"
+        | "daily_login"
       mission_validation_mode: "automatic" | "manual"
       referral_status: "pending" | "qualified" | "rewarded" | "cancelled"
       unit_type: "weight" | "volume" | "count"
@@ -1175,7 +1223,14 @@ export const Constants = {
       meal_type: ["breakfast", "lunch", "dinner", "snack"],
       mission_completion_status: ["pending", "approved", "rejected"],
       mission_status: ["draft", "active", "paused", "archived"],
-      mission_type: ["survey", "video", "follow", "referral", "custom"],
+      mission_type: [
+        "survey",
+        "video",
+        "follow",
+        "referral",
+        "custom",
+        "daily_login",
+      ],
       mission_validation_mode: ["automatic", "manual"],
       referral_status: ["pending", "qualified", "rewarded", "cancelled"],
       unit_type: ["weight", "volume", "count"],

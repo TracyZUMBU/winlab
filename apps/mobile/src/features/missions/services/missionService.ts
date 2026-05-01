@@ -1,6 +1,6 @@
-import type { ErrorKind } from "@/src/lib/errors/errorKinds";
 import { logger } from "@/src/lib/logger";
 import { monitoring } from "@/src/lib/monitoring";
+import type { ServiceResult } from "@/src/lib/types/serviceResult";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { Json } from "@/src/types/json";
 
@@ -17,7 +17,10 @@ export type MissionSubmissionBusinessErrorCode =
   | "MISSION_NOT_STARTED"
   | "MISSION_EXPIRED"
   | "MISSION_USER_LIMIT_REACHED"
-  | "MISSION_TOTAL_LIMIT_REACHED";
+  | "MISSION_TOTAL_LIMIT_REACHED"
+  | "SURVEY_CONFIG_INVALID"
+  | "SURVEY_PROOF_INVALID"
+  | "SURVEY_ANSWERS_INVALID";
 
 /**
  * All keys used under `missions.submission.errors` in i18n (business + generic fallbacks).
@@ -28,20 +31,10 @@ export type MissionSubmissionErrorCode =
   | "INVALID_SERVER_RESPONSE"
   | "UNKNOWN_ERROR";
 
-export type SubmitMissionCompletionResult =
-  | {
-      success: true;
-      completionId: string;
-    }
-  | {
-      success: false;
-      kind: "business";
-      errorCode: MissionSubmissionBusinessErrorCode;
-    }
-  | {
-      success: false;
-      kind: Exclude<ErrorKind, "business">;
-    };
+export type SubmitMissionCompletionResult = ServiceResult<
+  { completionId: string },
+  MissionSubmissionBusinessErrorCode
+>;
 
 const SUBMIT_MISSION_COMPLETION_RPC = "submit_mission_completion";
 
@@ -59,6 +52,9 @@ const BUSINESS_ERROR_CODES = new Set<MissionSubmissionBusinessErrorCode>([
   "MISSION_EXPIRED",
   "MISSION_USER_LIMIT_REACHED",
   "MISSION_TOTAL_LIMIT_REACHED",
+  "SURVEY_CONFIG_INVALID",
+  "SURVEY_PROOF_INVALID",
+  "SURVEY_ANSWERS_INVALID",
 ]);
 
 export const submitMissionCompletion = async ({
@@ -146,7 +142,7 @@ export const submitMissionCompletion = async ({
     }
     return {
       success: true,
-      completionId: row.completion_id,
+      data: { completionId: row.completion_id },
     };
   }
 
