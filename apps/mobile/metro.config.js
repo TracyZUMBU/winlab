@@ -16,4 +16,12 @@ config.resolver.extraNodeModules = {
   "react-dom": path.resolve(workspaceRoot, "node_modules/react-dom"),
 };
 
+// Expo adds watcher `additionalExts` for `.env` / `.local` so env files participate in
+// file watching. That can surface Jest-only files such as `.env.test.local` as Metro
+// modules; Babel then tries to parse key=value lines as JS and fails. Never bundle them.
+config.resolver.blockList = [
+  /\.env\.test\.local$/,
+  /\.env\.test$/,
+].concat(config.resolver.blockList ?? []);
+
 module.exports = config;

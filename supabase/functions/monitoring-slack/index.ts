@@ -26,13 +26,6 @@ type RequestPayload = {
   event?: MonitoringEventBase;
 };
 
-function shouldSendToSlack(severity: MonitoringEventBase["severity"]): boolean {
-  // We avoid sending unnecessary debug/info.
-  return (
-    severity === "warning" || severity === "error" || severity === "critical"
-  );
-}
-
 function formatSlackText(event: MonitoringEventBase): string {
   const context: Record<string, unknown> = {
     userId: event.userId,
@@ -71,14 +64,13 @@ serve(async (req) => {
     return new Response("Missing event payload", { status: 400 });
   }
 
-  if (!shouldSendToSlack(event.severity)) {
-    return new Response("Skipped (severity)", { status: 200 });
-  }
+  // TODO(debug): réintroduire un filtre — ignorer `info` et `debug` sauf secret dédié,
+  // pour réduire le volume Slack en prod après investigation auth.
 
   const slackWebhookUrl = Deno.env.get("SLACK_WEBHOOK_URL");
   if (!slackWebhookUrl) {
-    // Best effort: if not configured, we don't fail client-side.
-    return new Response("Slack webhook not configured", { status: 200 });
+    // Return non-"ok" body so the mobile provider surfaces misconfiguration.
+    return new Response("Slack webhook not configured", { status: 503 });
   }
 
   const text = formatSlackText(event);

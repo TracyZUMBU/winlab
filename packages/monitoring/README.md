@@ -24,6 +24,14 @@ Le champ **`service`** sur chaque événement distingue les clients (pas de cham
 Le provider Slack appelle `supabase.functions.invoke(<nom>, { body: { event } })`.  
 L’Edge Function `supabase/functions/monitoring-slack` attend ce contrat ; le secret `SLACK_WEBHOOK_URL` reste côté Supabase.
 
+### Sévérités envoyées vers Slack
+
+**Debug (temporaire)** : toutes les sévérités (`debug`, `info`, `warning`, `error`, `critical`) sont relayées vers Slack. Il existe des **TODO** dans `SlackMonitoringProvider` et dans `supabase/functions/monitoring-slack` pour rétablir un filtre (ex. seulement `warning+`) une fois l’investigation terminée.
+
+Sans `SLACK_WEBHOOK_URL` sur la fonction, aucun message Slack ne part ; la fonction répond en erreur pour que l’échec de configuration soit visible côté client.
+
+La réponse réussie attendue par le provider mobile est le corps **`ok`** (voir implémentation).
+
 ## Bootstrap par app
 
 Chaque app instancie `MonitoringService` avec ses propres providers (dev/prod, client Supabase injecté). Voir :

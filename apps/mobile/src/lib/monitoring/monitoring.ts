@@ -49,6 +49,7 @@ function buildProviders(): MonitoringProvider[] {
   }
 
   if (!isDev && supabaseEnv.isConfigured) {
+    // TODO(debug): après stabilité auth — réduire le bruit Slack (ne plus envoyer `info`/`debug`, voir SlackMonitoringProvider).
     list.push(
       new SlackMonitoringProvider({
         supabaseClient: getSupabaseClient(),
