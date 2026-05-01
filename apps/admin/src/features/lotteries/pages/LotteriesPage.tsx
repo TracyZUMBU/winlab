@@ -1,8 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { LotteriesDevTable } from "../components/LotteriesDevTable";
 import { LotteryDetailPanel } from "../components/LotteryDetailPanel";
 import { useLotteriesQuery } from "../hooks/useLotteriesQuery";
+import { lotteryServiceErrorMessage } from "../lotteryErrorMessages";
+import { lotteryAdminKeys } from "../queries/lotteryAdmin.keys";
+import { resetLotteriesScheduleForDev } from "../services/resetLotteriesScheduleForDev";
 import {
   LOTTERY_ADMIN_STATUSES,
   type AdminLotteryListItem,
@@ -74,11 +78,17 @@ const STATUS_FILTER_OPTIONS: { value: StatusFilterValue; label: string }[] = [
 const DETAIL_QUERY_KEY = "detail";
 
 export function LotteriesPage() {
+  const queryClient = useQueryClient();
   const state = useLotteriesQuery();
   const [searchParams, setSearchParams] = useSearchParams();
   const [titleSearchQuery, setTitleSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilterValue>(STATUS_FILTER_ALL);
   const [sortId, setSortId] = useState<LotteryListDevSortId>("draw_at_desc");
+  const [isResettingLotteries, setIsResettingLotteries] = useState(false);
+  const [resetFeedback, setResetFeedback] = useState<{
+    kind: "success" | "error";
+    message: string;
+  } | null>(null);
 
   const detailLotteryId = searchParams.get(DETAIL_QUERY_KEY)?.trim() ?? "";
 
@@ -99,6 +109,33 @@ export function LotteriesPage() {
       sortId,
     );
   }, [state, titleSearchQuery, statusFilter, sortId]);
+
+  const runDevResetLotteries = useCallback(async () => {
+    // TODO(dev-reset-lotteries): supprimer ce bouton/action avant mise en production.
+    if (!window.confirm("Réinitialiser les dates des loteries (action temporaire de dev) ?")) {
+      return;
+    }
+
+    setIsResettingLotteries(true);
+    setResetFeedback(null);
+
+    const result = await resetLotteriesScheduleForDev();
+    if (!result.success) {
+      setResetFeedback({
+        kind: "error",
+        message: lotteryServiceErrorMessage(result.errorCode),
+      });
+      setIsResettingLotteries(false);
+      return;
+    }
+
+    await queryClient.invalidateQueries({ queryKey: lotteryAdminKeys.list() });
+    setResetFeedback({
+      kind: "success",
+      message: `${result.data.updatedCount} loterie(s) non tirée(s) réinitialisée(s).`,
+    });
+    setIsResettingLotteries(false);
+  }, [queryClient]);
 
   return (
     <section className="page-lotteries" aria-labelledby="lotteries-heading">
@@ -182,7 +219,32 @@ export function LotteriesPage() {
                 ))}
               </select>
             </div>
+            <div className="lotteries-dev-toolbar__field lotteries-dev-toolbar__field--actions">
+              <span className="lotteries-dev-toolbar__label">Actions dev</span>
+              <button
+                type="button"
+                className="lotteries-dev-toolbar__danger-btn"
+                onClick={() => {
+                  void runDevResetLotteries();
+                }}
+                disabled={isResettingLotteries}
+              >
+                {isResettingLotteries ? "Réinitialisation…" : "Reset lotteries (dev)"}
+              </button>
+            </div>
           </div>
+          {resetFeedback ? (
+            <p
+              className={
+                resetFeedback.kind === "error"
+                  ? "page-lotteries__alert page-lotteries__alert--inline"
+                  : "page-lotteries__success"
+              }
+              role={resetFeedback.kind === "error" ? "alert" : "status"}
+            >
+              {resetFeedback.message}
+            </p>
+          ) : null}
           <p className="lotteries-dev-toolbar__hint" aria-live="polite">
             {filteredLotteries.length} affichée(s) sur {state.lotteries.length}
           </p>
