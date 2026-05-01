@@ -11,6 +11,13 @@ import {
 
 const RPC = "get_user_home_dashboard";
 
+function getActiveMissionWindow() {
+  return {
+    starts_at: new Date(Date.now() - 60_000).toISOString(),
+    ends_at: new Date(Date.now() + 30 * 60_000).toISOString(),
+  };
+}
+
 describe("get_user_home_dashboard RPC (integration)", () => {
   it("returns profile, balance, ongoing lotteries, participations, and mission previews", async () => {
     const uniqueId = `${Date.now()}-${Math.random()}`;
@@ -56,6 +63,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      ...getActiveMissionWindow(),
     });
 
     // Repeatable mission logic:
@@ -151,6 +159,7 @@ describe("get_user_home_dashboard RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 1,
+      ...getActiveMissionWindow(),
     });
     const user = await createAuthenticatedTestUser();
     await createMissionCompletion({

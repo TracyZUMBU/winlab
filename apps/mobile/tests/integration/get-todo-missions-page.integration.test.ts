@@ -7,6 +7,13 @@ import {
 
 const RPC = "get_todo_missions_page";
 
+function getActiveMissionWindow() {
+  return {
+    starts_at: new Date(Date.now() - 60_000).toISOString(),
+    ends_at: new Date(Date.now() + 30 * 60_000).toISOString(),
+  };
+}
+
 describe("get_todo_missions_page RPC (integration)", () => {
   it("includes repeatable mission when approved_count < max_completions_per_user", async () => {
     const uniqueId = `${Date.now()}-${Math.random()}`;
@@ -18,6 +25,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      ...getActiveMissionWindow(),
     });
 
     const user = await createAuthenticatedTestUser();
@@ -48,6 +56,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      ...getActiveMissionWindow(),
     });
 
     const user = await createAuthenticatedTestUser();
@@ -82,6 +91,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 1,
+      ...getActiveMissionWindow(),
     });
     const user = await createAuthenticatedTestUser();
     await createMissionCompletion({
@@ -108,6 +118,7 @@ describe("get_todo_missions_page RPC (integration)", () => {
       mission_type: "survey",
       token_reward: 10,
       max_completions_per_user: 2,
+      ...getActiveMissionWindow(),
     });
     const user = await createAuthenticatedTestUser();
     await createMissionCompletion({

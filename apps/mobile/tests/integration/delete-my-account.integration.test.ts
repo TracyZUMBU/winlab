@@ -16,8 +16,9 @@ async function isFunctionsServeUp(): Promise<boolean> {
       headers: { "Content-Type": "application/json" },
       body: "{}",
     });
-    // We expect 401 (no JWT) or 405 if misconfigured; any HTTP response means it's up.
-    return Boolean(res.status);
+    // "Up" means the function runtime is reachable and can execute the handler.
+    // 503 from gateway (e.g. name resolution/runtime issue) should be treated as "not up".
+    return [200, 401, 403, 405].includes(res.status);
   } catch {
     return false;
   }
@@ -90,8 +91,14 @@ describe("delete-my-account Edge Function (integration)", () => {
       body: "{}",
     });
 
-    expect(res.ok).toBe(true);
-    await expect(res.json()).resolves.toEqual({ success: true });
+    const responseText = await res.text();
+    const parsedResponse = responseText ? JSON.parse(responseText) : null;
+    if (!res.ok) {
+      throw new Error(
+        `delete-my-account failed with status=${res.status} body=${responseText}`,
+      );
+    }
+    expect(parsedResponse).toEqual({ success: true });
 
     const afterProfile = await admin
       .from("profiles")
