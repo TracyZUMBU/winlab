@@ -1,7 +1,7 @@
+import { AppCenteredModal } from "@/src/components/ui/AppCenteredModal";
 import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
-import { AppCenteredModal } from "@/src/components/ui/AppCenteredModal";
 import { invalidateAppBootstrapCache } from "@/src/lib/bootstrap/sharedAppBootstrap";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { logger } from "@/src/lib/logger";
@@ -172,7 +172,10 @@ export const CreateProfileScreen: React.FC = () => {
       try {
         referralResult = await registerReferralWithCode(values.referral_code);
       } catch (err) {
-        logger.error("register_referral_with_code threw after profile create", err);
+        logger.error(
+          "register_referral_with_code threw after profile create",
+          err,
+        );
         referralResult = { ok: false, errorCode: "REFERRAL_RPC_FAILED" };
         referralErrorAlreadyToasted = true;
         showWarningToast({
@@ -257,7 +260,10 @@ export const CreateProfileScreen: React.FC = () => {
   const isLoadingSession = status === "loading";
   const isSubmittingProfile = createProfileMutation.isPending;
   const isPending =
-    isLoadingSession || isSubmittingProfile || isSubmitting || welcomeModal.visible;
+    isLoadingSession ||
+    isSubmittingProfile ||
+    isSubmitting ||
+    welcomeModal.visible;
 
   return (
     <AuthScreenLayout
