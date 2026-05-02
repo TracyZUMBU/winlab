@@ -5,6 +5,12 @@
   "bootstrap": {
     "loadFailed": "Could not start the app. Please try again."
   },
+  "notifications": {
+    "referral_reward": {
+      "title": "🎉 Referral confirmed!",
+      "body": "Your friend joined Winlab. Your tokens have been credited!"
+    }
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initializing",

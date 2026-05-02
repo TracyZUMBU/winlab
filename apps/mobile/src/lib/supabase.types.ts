@@ -518,6 +518,7 @@ export type Database = {
           email: string;
           id: string;
           is_admin: boolean;
+          push_token: string | null;
           referral_code: string | null;
           sex: string | null;
           updated_at: string | null;
@@ -530,6 +531,7 @@ export type Database = {
           email: string;
           id: string;
           is_admin?: boolean;
+          push_token?: string | null;
           referral_code?: string | null;
           sex?: string | null;
           updated_at?: string | null;
@@ -542,6 +544,7 @@ export type Database = {
           email?: string;
           id?: string;
           is_admin?: boolean;
+          push_token?: string | null;
           referral_code?: string | null;
           sex?: string | null;
           updated_at?: string | null;

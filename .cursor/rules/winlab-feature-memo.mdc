@@ -1,0 +1,30 @@
+---
+description: Maintenir MEMO.md par feature (mobile + liens Supabase)
+globs: apps/mobile/src/features/**/*,supabase/functions/**/*,supabase/migrations/**/*.sql,supabase/schemas/**/*.sql,supabase/sql_requetes/**/*.sql
+alwaysApply: false
+---
+
+# Documentation feature — `MEMO.md`
+
+## Objectif
+
+Garder une **doc à jour** au plus près du code : chaque fonctionnalité sous `apps/mobile/src/features/<nom>/` peut avoir un **`MEMO.md`** à la racine du dossier feature (voir `missions`, `profile`, `notifications`).
+
+## Quand agir
+
+1. **Nouvelle fonctionnalité** (nouveau dossier sous `features/` ou périmètre clairement nouveau) : **créer** `MEMO.md` si absent, en reprenant la structure des mémos existants (objectif, périmètre, cartographie fichiers, i18n, backend si concerné, déploiement / vérifs, tests, références croisées).
+2. **Changement de comportement** (flux, API utilisée, triggers, Edge Function, bootstrap, clés i18n, règles métier) : **mettre à jour** le `MEMO.md` de la feature concernée dans le **même changement** (ou indiquer explicitement ce qui reste à documenter si hors scope du diff).
+3. **Changements Supabase** (migrations, `schemas/`, `functions/`) : mettre à jour le MEMO de la **feature produit** liée (ex. push → `notifications`) ; si le changement est transversal, au minimum une section « Backend » ou « Références » dans le mémo le plus pertinent.
+
+## Contenu minimal attendu
+
+- **Dernière revue du mémo** (date `YYYY-MM-DD`).
+- **Objectif** et **périmètre** (inclus / exclu).
+- **Cartographie** : hooks, services, écrans, entrées bootstrap, chemins i18n.
+- **Backend** (si applicable) : migrations, fonctions SQL, Edge Functions, secrets, scripts manuels (`sql_requetes/`).
+- **Tests / vérifs manuelles** quand il n’y a pas de tests automatisés.
+
+## Ne pas faire
+
+- Ne pas laisser un mémo **contradictoire** avec le code modifié.
+- Ne pas dupliquer tout le README racine : rester **feature-local** et pointer vers les docs globales si besoin.

@@ -1,3 +1,15 @@
 {
-  "expo": {}
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "bae0f243-f497-4642-be45-1e692436e16a"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.pblv14.winlab",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
 }
