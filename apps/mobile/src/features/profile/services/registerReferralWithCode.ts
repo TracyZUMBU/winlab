@@ -1,5 +1,5 @@
-import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { monitoring } from "@/src/lib/monitoring";
+import { getSupabaseClient } from "@/src/lib/supabase/client";
 
 export type RegisterReferralWithCodeResult =
   | { ok: true }
