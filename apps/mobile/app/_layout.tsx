@@ -8,6 +8,7 @@ import {
 } from "@/src/lib/bootstrap/sharedAppBootstrap";
 import { theme } from "@/src/theme";
 import { queryClient } from "@/src/lib/query/queryClient";
+import { useOtaUpdatePrompt } from "@/src/lib/updates/useOtaUpdatePrompt";
 import { AppToastHost } from "@/src/shared/toast";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, usePathname, useRouter } from "expo-router";
@@ -27,6 +28,13 @@ export default function RootLayout() {
 
   const { status, sessionUserId, redirectTo, dailyLoginMissionResult } =
     useAppBootstrap(true);
+
+  const {
+    visible: otaModalVisible,
+    isApplying: otaApplying,
+    applyUpdate: applyOtaUpdate,
+    dismissLater: dismissOtaLater,
+  } = useOtaUpdatePrompt();
 
   const [dailyRewardModal, setDailyRewardModal] = useState<{
     visible: boolean;
@@ -138,6 +146,22 @@ export default function RootLayout() {
                 />
               </>
             )}
+            <AppCenteredModal
+              visible={otaModalVisible}
+              onDismiss={dismissOtaLater}
+              title={t("otaUpdate.title")}
+              message={t("otaUpdate.message")}
+              primaryActionLabel={t("otaUpdate.updateNow")}
+              onPrimaryPress={() => {
+                void applyOtaUpdate();
+              }}
+              secondaryActionLabel={t("otaUpdate.later")}
+              onSecondaryPress={dismissOtaLater}
+              primaryActionLoading={otaApplying}
+              dismissOnBackdropPress={false}
+              onRequestCloseOverride={dismissOtaLater}
+              testID="ota-update-modal"
+            />
           </View>
         </QueryClientProvider>
       </SafeAreaProvider>
