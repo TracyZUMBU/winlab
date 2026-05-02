@@ -2,7 +2,11 @@ import { CommonMissionDetailSection } from "./CommonMissionDetailSection";
 import { SurveyMissionSection } from "../../components/SurveyMissionSection";
 import type { MissionTypeDetailRendererProps } from "./types";
 
-export function SurveyMissionDetail({ mission, survey }: MissionTypeDetailRendererProps) {
+export function SurveyMissionDetail({
+  mission,
+  survey,
+  video: _video,
+}: MissionTypeDetailRendererProps) {
   if (!survey) return null;
 
   return (

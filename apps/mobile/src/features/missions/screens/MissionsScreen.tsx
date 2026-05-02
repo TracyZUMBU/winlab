@@ -71,7 +71,11 @@ export function MissionsScreen() {
   }, [activeQuery.data, filter]);
 
   const handleMissionPress = (mission: AvailableMission) => {
-    router.push(`/missions/${mission.id}`);
+    const id = mission.id?.trim();
+    if (!id) return;
+    // Chemin relatif au segment `missions/` : évite les échecs de linking
+    // (`getStateFromPath`) observés avec `/missions/uuid` depuis cet écran.
+    router.push(`./${id}`, { relativeToDirectory: true });
   };
 
   const listBottomPadding =

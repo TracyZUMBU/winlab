@@ -95,7 +95,9 @@ export function HomeScreen() {
   };
 
   const onOpenMission = (missionId: string) => {
-    router.push(`/missions/${missionId}`);
+    const id = missionId?.trim();
+    if (!id) return;
+    router.push(`/missions/${id}`, { withAnchor: true });
   };
 
   if (isLoading && !data) {

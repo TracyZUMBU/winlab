@@ -1,7 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { MissionDetailShellSummary } from "../components/MissionDetailShellSummary";
 import { useDefaultMissionDetailController } from "../hooks/useDefaultMissionDetailController";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
+import { useMissionDetailVideo } from "../hooks/useMissionDetailVideo";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 import { useSurveyMissionDetailController } from "../hooks/useSurveyMissionDetailController";
 import { useSurveyMissionForm } from "../survey/useSurveyMissionForm";
@@ -81,6 +82,8 @@ export function MissionDetailScreen() {
     i18n,
     router,
   });
+
+  const { videoDetailSlot, videoController } = useMissionDetailVideo(mission);
 
   const shellHeader = (
     <AppHeader
@@ -151,10 +154,12 @@ export function MissionDetailScreen() {
       pendingAnswer,
       setPendingAnswer,
     },
+    video: videoDetailSlot,
   });
   const activeController = runtime.selectController({
     defaultController,
     surveyController,
+    videoController,
   });
 
   return (
@@ -169,7 +174,15 @@ export function MissionDetailScreen() {
         >
           <MissionDetailShellSummary mission={mission} />
 
-          <TypeDetailRenderer {...typeRendererProps} />
+          <Suspense
+            fallback={
+              <View style={styles.detailSuspenseFallback}>
+                <ActivityIndicator size="small" color={theme.colors.accentSolid} />
+              </View>
+            }
+          >
+            <TypeDetailRenderer {...typeRendererProps} />
+          </Suspense>
 
           {submitError ? (
             <Text style={styles.submitError}>{submitError}</Text>
@@ -234,6 +247,10 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingHorizontal: theme.spacing.screenHorizontal,
     paddingBottom: theme.spacing.lg,
+  },
+  detailSuspenseFallback: {
+    paddingVertical: theme.spacing.md,
+    alignItems: "center",
   },
 
   submitError: {
