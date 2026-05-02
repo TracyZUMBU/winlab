@@ -1,3 +1,5 @@
+import { lazy } from "react";
+
 import type { MissionType } from "../../types";
 import { CustomMissionDetail } from "./CustomMissionDetail";
 import { DailyLoginMissionDetail } from "./DailyLoginMissionDetail";
@@ -10,11 +12,11 @@ import type {
   MissionTypeDetailRendererProps,
   MissionTypeRendererPropsFactoryArgs,
 } from "./types";
-import { VideoMissionDetail } from "./VideoMissionDetail";
 
 type ControllerSet = {
   defaultController: MissionDetailTypeController;
   surveyController: MissionDetailTypeController;
+  videoController: MissionDetailTypeController;
 };
 
 type RuntimeEntry = {
@@ -25,14 +27,14 @@ type RuntimeEntry = {
   selectController: (controllers: ControllerSet) => MissionDetailTypeController;
 };
 
-const defaultEntry: RuntimeEntry = {
-  Renderer: VideoMissionDetail,
-  buildRendererProps: ({ mission }) => ({
-    mission,
-    survey: null,
-  }),
-  selectController: ({ defaultController }) => defaultController,
-};
+/** Lazy: évite de charger `expo-video` au chargement de `MissionDetailScreen` pour les missions non-vidéo. */
+const VideoMissionDetailLazy = lazy(() => import("./VideoMissionDetail"));
+
+const defaultStackProps: RuntimeEntry["buildRendererProps"] = ({ mission }) => ({
+  mission,
+  survey: null,
+  video: null,
+});
 
 const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
   survey: {
@@ -40,28 +42,38 @@ const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
     buildRendererProps: ({ mission, survey }) => ({
       mission,
       survey,
+      video: null,
     }),
     selectController: ({ surveyController }) => surveyController,
   },
   video: {
-    ...defaultEntry,
-    Renderer: VideoMissionDetail,
+    Renderer: VideoMissionDetailLazy,
+    buildRendererProps: ({ mission, video }) => ({
+      mission,
+      survey: null,
+      video,
+    }),
+    selectController: ({ videoController }) => videoController,
   },
   follow: {
-    ...defaultEntry,
     Renderer: FollowMissionDetail,
+    buildRendererProps: defaultStackProps,
+    selectController: ({ defaultController }) => defaultController,
   },
   referral: {
-    ...defaultEntry,
     Renderer: ReferralMissionDetail,
+    buildRendererProps: defaultStackProps,
+    selectController: ({ defaultController }) => defaultController,
   },
   custom: {
-    ...defaultEntry,
     Renderer: CustomMissionDetail,
+    buildRendererProps: defaultStackProps,
+    selectController: ({ defaultController }) => defaultController,
   },
   daily_login: {
-    ...defaultEntry,
     Renderer: DailyLoginMissionDetail,
+    buildRendererProps: defaultStackProps,
+    selectController: ({ defaultController }) => defaultController,
   },
 };
 

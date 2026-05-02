@@ -286,6 +286,16 @@
         "launch": "Lancer la mission",
         "launchPending": "Lancement…"
       },
+      "video": {
+        "completeSuccessToast": "🎉 Vidéo complétée ! +{{tokenReward}} jetons gagnés",
+        "validate": "Valider",
+        "watchToEndHint": "Regardez la vidéo jusqu’à la fin pour valider",
+        "completedState": "Mission complétée",
+        "configError": "Configuration vidéo invalide. Réessayez plus tard.",
+        "nativeModuleUnavailable": "La lecture vidéo n’est pas disponible dans cette build (module natif expo-video manquant). Utilise un build de développement iOS/Android (`npx expo run:ios` / `run:android`) ou une build EAS incluant les modules natifs.",
+        "playerAccessibilityPlay": "Lire la vidéo",
+        "playerAccessibilityPause": "Mettre la vidéo en pause"
+      },
       "survey": {
         "title": "Questionnaire",
         "questionCount": "Question {{count}}",

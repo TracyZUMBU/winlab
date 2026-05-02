@@ -13,21 +13,32 @@ export type SurveyDetailRendererProps = {
   setPendingAnswer: (value: SurveyPendingAnswer) => void;
 };
 
+/** Données player + callbacks pour une mission `video` (écran détail). */
+export type MissionVideoDetailSlotProps = {
+  videoUrl: string;
+  displayTitle: string;
+  thumbnailUrl?: string | null;
+  onVideoComplete: () => void;
+  isCompleted: boolean;
+};
+
 export type MissionTypeDetailRendererProps = {
   mission: MissionRow;
   survey: SurveyDetailRendererProps | null;
+  video: MissionVideoDetailSlotProps | null;
 };
 
 export type MissionTypeRendererPropsFactoryArgs = {
   mission: MissionRow;
   survey: SurveyDetailRendererProps;
+  video: MissionVideoDetailSlotProps | null;
 };
 
 export type MissionTypeDetailRenderer = ComponentType<MissionTypeDetailRendererProps>;
 
 export type MissionDetailPrimaryAction = {
   title: string;
-  iconName: "play-arrow" | "arrow-forward";
+  iconName: "play-arrow" | "arrow-forward" | "check";
   disabled: boolean;
   onPress: () => Promise<void>;
 };

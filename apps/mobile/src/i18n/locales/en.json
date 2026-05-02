@@ -282,6 +282,16 @@
         "launch": "Launch mission",
         "launchPending": "Launching…"
       },
+      "video": {
+        "completeSuccessToast": "🎉 Video completed! +{{tokenReward}} tokens earned",
+        "validate": "Validate",
+        "watchToEndHint": "Watch the video to the end to submit",
+        "completedState": "Mission completed",
+        "configError": "Invalid video configuration. Please try again later.",
+        "nativeModuleUnavailable": "Video playback isn’t available in this build (expo-video native module missing). Use a dev build (`npx expo run:ios` / `run:android`) or an EAS build that includes native modules.",
+        "playerAccessibilityPlay": "Play video",
+        "playerAccessibilityPause": "Pause video"
+      },
       "survey": {
         "title": "Survey",
         "questionCount": "Question {{count}}",
