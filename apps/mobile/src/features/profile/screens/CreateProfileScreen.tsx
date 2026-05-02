@@ -1,14 +1,18 @@
+import { AppCenteredModal } from "@/src/components/ui/AppCenteredModal";
 import { AuthScreenLayout } from "@/src/features/auth/components/AuthScreenLayout";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { invalidateAppBootstrapCache } from "@/src/lib/bootstrap/sharedAppBootstrap";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { logger } from "@/src/lib/logger";
-import { showWarningToast } from "@/src/shared/toast/toastService";
+import {
+  showErrorToast,
+  showWarningToast,
+} from "@/src/shared/toast/toastService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
@@ -26,6 +30,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
+import {
+  grantSignupBonus,
+  type GrantSignupBonusResult,
+} from "../services/grantSignupBonus";
 import {
   registerReferralWithCode,
   type RegisterReferralWithCodeResult,
@@ -68,6 +76,14 @@ export const CreateProfileScreen: React.FC = () => {
   const createProfileMutation = useCreateProfileMutation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+  const [welcomeModal, setWelcomeModal] = useState<{
+    visible: boolean;
+    points: number;
+  }>({ visible: false, points: 0 });
+  const postWelcomeReferralRef = useRef<{
+    referralResult: RegisterReferralWithCodeResult;
+    referralErrorAlreadyToasted: boolean;
+  } | null>(null);
 
   const {
     register,
@@ -130,12 +146,36 @@ export const CreateProfileScreen: React.FC = () => {
         sex: values.sex,
       });
 
+      let signupBonusResult: GrantSignupBonusResult;
+      try {
+        signupBonusResult = await grantSignupBonus();
+        if (!signupBonusResult.ok) {
+          showErrorToast({
+            title: t("profile.createProfile.signupBonusError.title"),
+            message: t("profile.createProfile.signupBonusError.message"),
+          });
+        }
+      } catch (err) {
+        logger.error("grant_signup_bonus threw after profile create", err);
+        signupBonusResult = {
+          ok: false,
+          errorCode: "SIGNUP_BONUS_EXCEPTION",
+        };
+        showErrorToast({
+          title: t("profile.createProfile.signupBonusError.title"),
+          message: t("profile.createProfile.signupBonusError.message"),
+        });
+      }
+
       let referralResult: RegisterReferralWithCodeResult = { ok: true };
       let referralErrorAlreadyToasted = false;
       try {
         referralResult = await registerReferralWithCode(values.referral_code);
       } catch (err) {
-        logger.error("register_referral_with_code threw after profile create", err);
+        logger.error(
+          "register_referral_with_code threw after profile create",
+          err,
+        );
         referralResult = { ok: false, errorCode: "REFERRAL_RPC_FAILED" };
         referralErrorAlreadyToasted = true;
         showWarningToast({
@@ -145,6 +185,23 @@ export const CreateProfileScreen: React.FC = () => {
       }
 
       invalidateAppBootstrapCache();
+
+      if (
+        signupBonusResult.ok &&
+        !signupBonusResult.alreadyGranted &&
+        signupBonusResult.amount > 0
+      ) {
+        postWelcomeReferralRef.current = {
+          referralResult,
+          referralErrorAlreadyToasted,
+        };
+        setWelcomeModal({
+          visible: true,
+          points: signupBonusResult.amount,
+        });
+        return;
+      }
+
       router.replace("/home");
 
       if (!referralErrorAlreadyToasted && !referralResult.ok) {
@@ -177,9 +234,36 @@ export const CreateProfileScreen: React.FC = () => {
     }
   };
 
+  const dismissWelcomeModal = () => {
+    setWelcomeModal({ visible: false, points: 0 });
+    router.replace("/home");
+    const pending = postWelcomeReferralRef.current;
+    postWelcomeReferralRef.current = null;
+    if (
+      pending &&
+      !pending.referralErrorAlreadyToasted &&
+      !pending.referralResult.ok
+    ) {
+      showWarningToast({
+        title: t("profile.createProfile.referralPartial.title"),
+        message: getI18nMessageForCode({
+          t,
+          i18n,
+          baseKey: "profile.createProfile.errors",
+          code: pending.referralResult.errorCode,
+          fallbackKey: "profile.createProfile.referralPartial.messageFallback",
+        }),
+      });
+    }
+  };
+
   const isLoadingSession = status === "loading";
   const isSubmittingProfile = createProfileMutation.isPending;
-  const isPending = isLoadingSession || isSubmittingProfile || isSubmitting;
+  const isPending =
+    isLoadingSession ||
+    isSubmittingProfile ||
+    isSubmitting ||
+    welcomeModal.visible;
 
   return (
     <AuthScreenLayout
@@ -373,6 +457,18 @@ export const CreateProfileScreen: React.FC = () => {
           }}
           initialIso={birthDateValue || undefined}
           language={i18n.language}
+        />
+
+        <AppCenteredModal
+          visible={welcomeModal.visible}
+          onDismiss={dismissWelcomeModal}
+          title={t("profile.createProfile.welcomeModal.title")}
+          message={t("profile.createProfile.welcomeModal.body", {
+            points: welcomeModal.points,
+          })}
+          primaryActionLabel={t("profile.createProfile.welcomeModal.cta")}
+          dismissOnBackdropPress={false}
+          testID="welcome-signup-modal"
         />
       </>
     </AuthScreenLayout>

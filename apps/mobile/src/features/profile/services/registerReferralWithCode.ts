@@ -1,5 +1,5 @@
-import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { monitoring } from "@/src/lib/monitoring";
+import { getSupabaseClient } from "@/src/lib/supabase/client";
 
 export type RegisterReferralWithCodeResult =
   | { ok: true }
@@ -30,7 +30,7 @@ export async function registerReferralWithCode(
     return { ok: false, errorCode: "REFERRAL_RPC_FAILED" };
   }
 
-  const rows = data as { success: boolean; error_code: string | null }[];
+  const rows = data ?? [];
   const row = rows[0];
   if (!row) {
     monitoring.captureMessage({

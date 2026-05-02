@@ -16,6 +16,7 @@ import {
   type SubmitMissionCompletionParams,
   type SubmitMissionCompletionResult,
 } from "../services/missionService";
+import { isDailyLoginIneligibleFirstUtcDay } from "../utils/dailyLoginFirstUtcDay";
 
 export type DailyLoginMissionResult =
   | {
@@ -39,10 +40,16 @@ async function writeLastCompletedUtcDay(value: string): Promise<void> {
   }
 }
 
-export async function triggerDailyLoginMission(): Promise<DailyLoginMissionResult> {
+export async function triggerDailyLoginMission(
+  profileCreatedAt?: string | null,
+): Promise<DailyLoginMissionResult> {
   const todayUtc = formatUtcCalendarDate();
 
   try {
+    if (isDailyLoginIneligibleFirstUtcDay(profileCreatedAt)) {
+      return { alreadyCompleted: true };
+    }
+
     const serverDay = await hasDailyLoginCompletionForCurrentUtcDay(
       DAILY_LOGIN_MISSION_ID,
     );
@@ -99,7 +106,7 @@ export function useDailyLoginMission(): UseDailyLoginMissionState {
     let mounted = true;
 
     const run = async () => {
-      const result = await triggerDailyLoginMission();
+      const result = await triggerDailyLoginMission(undefined);
       if (!mounted) return;
       setState({
         ...result,

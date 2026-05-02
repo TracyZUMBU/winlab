@@ -309,6 +309,7 @@
         "MISSION_NOT_STARTED": "Cette mission n’a pas encore commencé.",
         "MISSION_EXPIRED": "Cette mission est terminée.",
         "MISSION_USER_LIMIT_REACHED": "Vous avez déjà atteint la limite de participations pour cette mission.",
+        "DAILY_LOGIN_INELIGIBLE_FIRST_UTC_DAY": "Le bonus connexion du jour sera disponible à partir de demain (UTC).",
         "MISSION_TOTAL_LIMIT_REACHED": "La limite globale de participations pour cette mission a été atteinte.",
         "SURVEY_CONFIG_INVALID": "Ce questionnaire est mal configuré. Réessayez plus tard.",
         "SURVEY_PROOF_INVALID": "La soumission du questionnaire est invalide. Réessayez.",
@@ -431,8 +432,9 @@
     },
     "missionCompleted": "Mission complétée",
     "ticketPurchase": "Achat de billet",
-    "referralBonus": "Bonus de référence",
+    "referralBonus": "Bonus parrainage",
     "tokenPurchase": "Achat de jetons",
+    "signupBonus": "Bonus de bienvenue",
     "activity": "Activité",
     "completed": "Complété",
     "entryFee": "Frais d'entrée",
@@ -586,6 +588,15 @@
     },
     "createProfile": {
       "successToast": "Profil créé.",
+      "welcomeModal": {
+        "title": "Bienvenue sur Winlab",
+        "body": "Winlab te permet de découvrir des marques, de réaliser des missions simples et de cumuler des jetons utilisables pour des avantages et des jeux.\n\nTu as reçu {{points}} jetons de bienvenue pour commencer.",
+        "cta": "C’est parti"
+      },
+      "signupBonusError": {
+        "title": "Bonus de bienvenue",
+        "message": "Ton profil est bien créé, mais les jetons de bienvenue n’ont pas pu être attribués suite à un problème technique. Notre équipe a été prévenue et corrigera la situation."
+      },
       "referralPartial": {
         "title": "Code parrain",
         "messageFallback": "Votre profil a bien été créé, mais le code parrain n’a pas pu être enregistré."

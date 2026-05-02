@@ -1,3 +1,4 @@
+-- daily_login: first eligible UTC day is the calendar day after profiles.created_at (UTC).
 DROP FUNCTION IF EXISTS public.submit_mission_completion(uuid, jsonb);
 
 CREATE FUNCTION public.submit_mission_completion(

@@ -20,6 +20,8 @@ function iconForTransaction(
       return { name: "card-giftcard", credit: true };
     case "token_purchase":
       return { name: "add-circle", credit: true };
+    case "signup_bonus":
+      return { name: "handshake", credit: true };
     default:
       return { name: "swap-horiz", credit: true };
   }

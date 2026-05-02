@@ -56,6 +56,9 @@ const mockHasDailyLoginCompletion =
   >;
 
 describe("triggerDailyLoginMission", () => {
+  /** Profile must be from a prior UTC day so daily_login submit is allowed under prod rules. */
+  const eligibleProfileCreatedAt = "2018-01-01T00:00:00.000Z";
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
@@ -66,13 +69,23 @@ describe("triggerDailyLoginMission", () => {
     jest.useRealTimers();
   });
 
+  it("returns alreadyCompleted and skips RPCs when profile created_at is same UTC calendar day as now", async () => {
+    const result = await triggerDailyLoginMission("2026-04-30T02:00:00.000Z");
+
+    expect(result).toEqual({ alreadyCompleted: true });
+    expect(mockHasDailyLoginCompletion).not.toHaveBeenCalled();
+    expect(mockSubmitMissionCompletion).not.toHaveBeenCalled();
+    expect(mockRemoveItem).not.toHaveBeenCalled();
+    expect(mockSetItem).not.toHaveBeenCalled();
+  });
+
   it("returns alreadyCompleted true and skips submit when server reports completion for current UTC day", async () => {
     mockHasDailyLoginCompletion.mockResolvedValue({
       ok: true,
       hasCompletion: true,
     });
 
-    const result = await triggerDailyLoginMission();
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
 
     expect(result).toEqual({ alreadyCompleted: true });
     expect(mockSubmitMissionCompletion).not.toHaveBeenCalled();
@@ -90,7 +103,7 @@ describe("triggerDailyLoginMission", () => {
       data: { completionId: "completion-1" },
     });
 
-    const result = await triggerDailyLoginMission();
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
 
     expect(mockSubmitMissionCompletion).toHaveBeenCalledWith({
       missionId: DAILY_LOGIN_MISSION_ID,
@@ -112,7 +125,7 @@ describe("triggerDailyLoginMission", () => {
       errorCode: "MISSION_USER_LIMIT_REACHED",
     });
 
-    const result = await triggerDailyLoginMission();
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
 
     expect(mockRemoveItem).toHaveBeenCalledWith(ASYNC_KEY);
     expect(mockSetItem).not.toHaveBeenCalled();
@@ -129,7 +142,7 @@ describe("triggerDailyLoginMission", () => {
       kind: "technical",
     });
 
-    const result = await triggerDailyLoginMission();
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
 
     expect(mockRemoveItem).toHaveBeenCalledWith(ASYNC_KEY);
     expect(mockSetItem).not.toHaveBeenCalled();
@@ -143,7 +156,7 @@ describe("triggerDailyLoginMission", () => {
       data: { completionId: "completion-1" },
     });
 
-    const result = await triggerDailyLoginMission();
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
 
     expect(mockRemoveItem).not.toHaveBeenCalled();
     expect(mockSubmitMissionCompletion).toHaveBeenCalled();

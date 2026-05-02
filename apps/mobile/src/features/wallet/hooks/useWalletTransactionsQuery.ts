@@ -58,6 +58,8 @@ function mapTransactionTypeToLabel(
       return i18n.t("wallet.referralBonus");
     case "token_purchase":
       return i18n.t("wallet.tokenPurchase");
+    case "signup_bonus":
+      return i18n.t("wallet.signupBonus");
     default:
       return i18n.t("wallet.activity");
   }

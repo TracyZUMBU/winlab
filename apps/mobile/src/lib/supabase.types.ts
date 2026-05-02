@@ -4,1137 +4,1211 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
-  }
+    PostgrestVersion: "14.1";
+  };
   public: {
     Tables: {
       brands: {
         Row: {
-          created_at: string
-          id: string
-          is_active: boolean
-          logo_url: string | null
-          name: string
-          slug: string
-          updated_at: string
-          website_url: string | null
-        }
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          logo_url: string | null;
+          name: string;
+          slug: string;
+          updated_at: string;
+          website_url: string | null;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          logo_url?: string | null
-          name: string
-          slug: string
-          updated_at?: string
-          website_url?: string | null
-        }
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          logo_url?: string | null;
+          name: string;
+          slug: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          is_active?: boolean
-          logo_url?: string | null
-          name?: string
-          slug?: string
-          updated_at?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          logo_url?: string | null;
+          name?: string;
+          slug?: string;
+          updated_at?: string;
+          website_url?: string | null;
+        };
+        Relationships: [];
+      };
       grocery_list_items: {
         Row: {
-          created_at: string
-          id: string
-          ingredient_id: string
-          is_checked: boolean
-          note: string | null
-          quantity: number
-          unit_id: string
-          week_id: string
-        }
+          created_at: string;
+          id: string;
+          ingredient_id: string;
+          is_checked: boolean;
+          note: string | null;
+          quantity: number;
+          unit_id: string;
+          week_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          ingredient_id: string
-          is_checked?: boolean
-          note?: string | null
-          quantity: number
-          unit_id: string
-          week_id: string
-        }
+          created_at?: string;
+          id?: string;
+          ingredient_id: string;
+          is_checked?: boolean;
+          note?: string | null;
+          quantity: number;
+          unit_id: string;
+          week_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          ingredient_id?: string
-          is_checked?: boolean
-          note?: string | null
-          quantity?: number
-          unit_id?: string
-          week_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          ingredient_id?: string;
+          is_checked?: boolean;
+          note?: string | null;
+          quantity?: number;
+          unit_id?: string;
+          week_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "grocery_list_items_ingredient_id_fkey"
-            columns: ["ingredient_id"]
-            isOneToOne: false
-            referencedRelation: "ingredients"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "grocery_list_items_unit_id_fkey"
-            columns: ["unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_unit_id_fkey";
+            columns: ["unit_id"];
+            isOneToOne: false;
+            referencedRelation: "units";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "grocery_list_items_week_id_fkey"
-            columns: ["week_id"]
-            isOneToOne: false
-            referencedRelation: "meal_prep_weeks"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_week_id_fkey";
+            columns: ["week_id"];
+            isOneToOne: false;
+            referencedRelation: "meal_prep_weeks";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       ingredient_categories: {
         Row: {
-          created_at: string
-          id: string
-          name: string
-          sort_order: number
-        }
+          created_at: string;
+          id: string;
+          name: string;
+          sort_order: number;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          sort_order?: number
-        }
+          created_at?: string;
+          id?: string;
+          name: string;
+          sort_order?: number;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          sort_order?: number
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          name?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
       ingredients: {
         Row: {
-          category_id: string | null
-          created_at: string
-          default_unit_id: string | null
-          id: string
-          name: string
-        }
+          category_id: string | null;
+          created_at: string;
+          default_unit_id: string | null;
+          id: string;
+          name: string;
+        };
         Insert: {
-          category_id?: string | null
-          created_at?: string
-          default_unit_id?: string | null
-          id?: string
-          name: string
-        }
+          category_id?: string | null;
+          created_at?: string;
+          default_unit_id?: string | null;
+          id?: string;
+          name: string;
+        };
         Update: {
-          category_id?: string | null
-          created_at?: string
-          default_unit_id?: string | null
-          id?: string
-          name?: string
-        }
+          category_id?: string | null;
+          created_at?: string;
+          default_unit_id?: string | null;
+          id?: string;
+          name?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "ingredients_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "ingredient_categories"
-            referencedColumns: ["id"]
+            foreignKeyName: "ingredients_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredient_categories";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "ingredients_default_unit_id_fkey"
-            columns: ["default_unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            foreignKeyName: "ingredients_default_unit_id_fkey";
+            columns: ["default_unit_id"];
+            isOneToOne: false;
+            referencedRelation: "units";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       lotteries: {
         Row: {
-          brand_id: string
-          category: string | null
-          created_at: string
-          description: string | null
-          draw_at: string
-          ends_at: string | null
-          id: string
-          image_url: string | null
-          is_featured: boolean
-          number_of_winners: number
-          short_description: string | null
-          slug: string | null
-          starts_at: string | null
-          status: Database["public"]["Enums"]["lottery_status"]
-          ticket_cost: number
-          title: string
-          updated_at: string
-        }
+          brand_id: string;
+          category: string | null;
+          created_at: string;
+          description: string | null;
+          draw_at: string;
+          ends_at: string | null;
+          id: string;
+          image_url: string | null;
+          is_featured: boolean;
+          number_of_winners: number;
+          short_description: string | null;
+          slug: string | null;
+          starts_at: string | null;
+          status: Database["public"]["Enums"]["lottery_status"];
+          ticket_cost: number;
+          title: string;
+          updated_at: string;
+        };
         Insert: {
-          brand_id?: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          draw_at: string
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_featured?: boolean
-          number_of_winners?: number
-          short_description?: string | null
-          slug?: string | null
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["lottery_status"]
-          ticket_cost: number
-          title: string
-          updated_at?: string
-        }
+          brand_id?: string;
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          draw_at: string;
+          ends_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          is_featured?: boolean;
+          number_of_winners?: number;
+          short_description?: string | null;
+          slug?: string | null;
+          starts_at?: string | null;
+          status?: Database["public"]["Enums"]["lottery_status"];
+          ticket_cost: number;
+          title: string;
+          updated_at?: string;
+        };
         Update: {
-          brand_id?: string
-          category?: string | null
-          created_at?: string
-          description?: string | null
-          draw_at?: string
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          is_featured?: boolean
-          number_of_winners?: number
-          short_description?: string | null
-          slug?: string | null
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["lottery_status"]
-          ticket_cost?: number
-          title?: string
-          updated_at?: string
-        }
+          brand_id?: string;
+          category?: string | null;
+          created_at?: string;
+          description?: string | null;
+          draw_at?: string;
+          ends_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          is_featured?: boolean;
+          number_of_winners?: number;
+          short_description?: string | null;
+          slug?: string | null;
+          starts_at?: string | null;
+          status?: Database["public"]["Enums"]["lottery_status"];
+          ticket_cost?: number;
+          title?: string;
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "lotteries_brand_id_fkey"
-            columns: ["brand_id"]
-            isOneToOne: false
-            referencedRelation: "brands"
-            referencedColumns: ["id"]
+            foreignKeyName: "lotteries_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       lottery_tickets: {
         Row: {
-          created_at: string
-          id: string
-          lottery_id: string
-          purchased_at: string
-          status: Database["public"]["Enums"]["lottery_ticket_status"]
-          user_id: string
-          wallet_transaction_id: string | null
-        }
+          created_at: string;
+          id: string;
+          lottery_id: string;
+          purchased_at: string;
+          status: Database["public"]["Enums"]["lottery_ticket_status"];
+          user_id: string;
+          wallet_transaction_id: string | null;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          lottery_id: string
-          purchased_at?: string
-          status?: Database["public"]["Enums"]["lottery_ticket_status"]
-          user_id: string
-          wallet_transaction_id?: string | null
-        }
+          created_at?: string;
+          id?: string;
+          lottery_id: string;
+          purchased_at?: string;
+          status?: Database["public"]["Enums"]["lottery_ticket_status"];
+          user_id: string;
+          wallet_transaction_id?: string | null;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          lottery_id?: string
-          purchased_at?: string
-          status?: Database["public"]["Enums"]["lottery_ticket_status"]
-          user_id?: string
-          wallet_transaction_id?: string | null
-        }
+          created_at?: string;
+          id?: string;
+          lottery_id?: string;
+          purchased_at?: string;
+          status?: Database["public"]["Enums"]["lottery_ticket_status"];
+          user_id?: string;
+          wallet_transaction_id?: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "lottery_tickets_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
-            referencedRelation: "lotteries"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_tickets_lottery_id_fkey";
+            columns: ["lottery_id"];
+            isOneToOne: false;
+            referencedRelation: "lotteries";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lottery_tickets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_tickets_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lottery_tickets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "lottery_tickets_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
           },
           {
-            foreignKeyName: "lottery_tickets_wallet_transaction_fk"
-            columns: ["wallet_transaction_id"]
-            isOneToOne: false
-            referencedRelation: "wallet_transactions"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_tickets_wallet_transaction_fk";
+            columns: ["wallet_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+          {
+            foreignKeyName: "lottery_tickets_wallet_transaction_fk";
+            columns: ["wallet_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions_ui";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       lottery_winners: {
         Row: {
-          created_at: string
-          id: string
-          lottery_id: string
-          position: number
-          ticket_id: string
-          user_id: string
-        }
+          created_at: string;
+          id: string;
+          lottery_id: string;
+          position: number;
+          ticket_id: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          lottery_id: string
-          position: number
-          ticket_id: string
-          user_id: string
-        }
+          created_at?: string;
+          id?: string;
+          lottery_id: string;
+          position: number;
+          ticket_id: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          lottery_id?: string
-          position?: number
-          ticket_id?: string
-          user_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          lottery_id?: string;
+          position?: number;
+          ticket_id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "lottery_winners_lottery_id_fkey"
-            columns: ["lottery_id"]
-            isOneToOne: false
-            referencedRelation: "lotteries"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_winners_lottery_id_fkey";
+            columns: ["lottery_id"];
+            isOneToOne: false;
+            referencedRelation: "lotteries";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lottery_winners_ticket_id_fkey"
-            columns: ["ticket_id"]
-            isOneToOne: true
-            referencedRelation: "lottery_tickets"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_winners_ticket_id_fkey";
+            columns: ["ticket_id"];
+            isOneToOne: true;
+            referencedRelation: "lottery_tickets";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lottery_winners_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "lottery_winners_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "lottery_winners_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "lottery_winners_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
           },
-        ]
-      }
+        ];
+      };
       meal_prep_weeks: {
         Row: {
-          created_at: string
-          id: string
-          week_start_date: string
-        }
+          created_at: string;
+          id: string;
+          week_start_date: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          week_start_date: string
-        }
+          created_at?: string;
+          id?: string;
+          week_start_date: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          week_start_date?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          week_start_date?: string;
+        };
+        Relationships: [];
+      };
       mission_completions: {
         Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          mission_id: string
-          proof_data: Json
-          reviewed_at: string | null
-          reward_transaction_id: string | null
-          status: Database["public"]["Enums"]["mission_completion_status"]
-          updated_at: string
-          user_id: string
-        }
+          completed_at: string | null;
+          created_at: string;
+          id: string;
+          mission_id: string;
+          proof_data: Json;
+          reviewed_at: string | null;
+          reward_transaction_id: string | null;
+          status: Database["public"]["Enums"]["mission_completion_status"];
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          mission_id: string
-          proof_data?: Json
-          reviewed_at?: string | null
-          reward_transaction_id?: string | null
-          status?: Database["public"]["Enums"]["mission_completion_status"]
-          updated_at?: string
-          user_id: string
-        }
+          completed_at?: string | null;
+          created_at?: string;
+          id?: string;
+          mission_id: string;
+          proof_data?: Json;
+          reviewed_at?: string | null;
+          reward_transaction_id?: string | null;
+          status?: Database["public"]["Enums"]["mission_completion_status"];
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          mission_id?: string
-          proof_data?: Json
-          reviewed_at?: string | null
-          reward_transaction_id?: string | null
-          status?: Database["public"]["Enums"]["mission_completion_status"]
-          updated_at?: string
-          user_id?: string
-        }
+          completed_at?: string | null;
+          created_at?: string;
+          id?: string;
+          mission_id?: string;
+          proof_data?: Json;
+          reviewed_at?: string | null;
+          reward_transaction_id?: string | null;
+          status?: Database["public"]["Enums"]["mission_completion_status"];
+          updated_at?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "mission_completions_mission_id_fkey"
-            columns: ["mission_id"]
-            isOneToOne: false
-            referencedRelation: "missions"
-            referencedColumns: ["id"]
+            foreignKeyName: "mission_completions_mission_id_fkey";
+            columns: ["mission_id"];
+            isOneToOne: false;
+            referencedRelation: "missions";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "mission_completions_reward_fk"
-            columns: ["reward_transaction_id"]
-            isOneToOne: false
-            referencedRelation: "wallet_transactions"
-            referencedColumns: ["id"]
+            foreignKeyName: "mission_completions_reward_fk";
+            columns: ["reward_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "mission_completions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "mission_completions_reward_fk";
+            columns: ["reward_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions_ui";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "mission_completions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "mission_completions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+          {
+            foreignKeyName: "mission_completions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
       missions: {
         Row: {
-          brand_id: string
-          created_at: string
-          description: string | null
-          ends_at: string | null
-          id: string
-          image_url: string | null
-          max_completions_per_user: number | null
-          max_completions_total: number | null
-          metadata: Json
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          starts_at: string | null
-          status: Database["public"]["Enums"]["mission_status"]
-          title: string
-          token_reward: number
-          updated_at: string
-          validation_mode: Database["public"]["Enums"]["mission_validation_mode"]
-        }
+          brand_id: string;
+          created_at: string;
+          description: string | null;
+          ends_at: string | null;
+          id: string;
+          image_url: string | null;
+          max_completions_per_user: number | null;
+          max_completions_total: number | null;
+          metadata: Json;
+          mission_type: Database["public"]["Enums"]["mission_type"];
+          starts_at: string | null;
+          status: Database["public"]["Enums"]["mission_status"];
+          title: string;
+          token_reward: number;
+          updated_at: string;
+          validation_mode: Database["public"]["Enums"]["mission_validation_mode"];
+        };
         Insert: {
-          brand_id: string
-          created_at?: string
-          description?: string | null
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          max_completions_per_user?: number | null
-          max_completions_total?: number | null
-          metadata?: Json
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["mission_status"]
-          title: string
-          token_reward: number
-          updated_at?: string
-          validation_mode?: Database["public"]["Enums"]["mission_validation_mode"]
-        }
+          brand_id: string;
+          created_at?: string;
+          description?: string | null;
+          ends_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          max_completions_per_user?: number | null;
+          max_completions_total?: number | null;
+          metadata?: Json;
+          mission_type: Database["public"]["Enums"]["mission_type"];
+          starts_at?: string | null;
+          status?: Database["public"]["Enums"]["mission_status"];
+          title: string;
+          token_reward: number;
+          updated_at?: string;
+          validation_mode?: Database["public"]["Enums"]["mission_validation_mode"];
+        };
         Update: {
-          brand_id?: string
-          created_at?: string
-          description?: string | null
-          ends_at?: string | null
-          id?: string
-          image_url?: string | null
-          max_completions_per_user?: number | null
-          max_completions_total?: number | null
-          metadata?: Json
-          mission_type?: Database["public"]["Enums"]["mission_type"]
-          starts_at?: string | null
-          status?: Database["public"]["Enums"]["mission_status"]
-          title?: string
-          token_reward?: number
-          updated_at?: string
-          validation_mode?: Database["public"]["Enums"]["mission_validation_mode"]
-        }
+          brand_id?: string;
+          created_at?: string;
+          description?: string | null;
+          ends_at?: string | null;
+          id?: string;
+          image_url?: string | null;
+          max_completions_per_user?: number | null;
+          max_completions_total?: number | null;
+          metadata?: Json;
+          mission_type?: Database["public"]["Enums"]["mission_type"];
+          starts_at?: string | null;
+          status?: Database["public"]["Enums"]["mission_status"];
+          title?: string;
+          token_reward?: number;
+          updated_at?: string;
+          validation_mode?: Database["public"]["Enums"]["mission_validation_mode"];
+        };
         Relationships: [
           {
-            foreignKeyName: "missions_brand_id_fkey"
-            columns: ["brand_id"]
-            isOneToOne: false
-            referencedRelation: "brands"
-            referencedColumns: ["id"]
+            foreignKeyName: "missions_brand_id_fkey";
+            columns: ["brand_id"];
+            isOneToOne: false;
+            referencedRelation: "brands";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       profiles: {
         Row: {
-          avatar_url: string | null
-          birth_date: string | null
-          created_at: string | null
-          email: string
-          id: string
-          is_admin: boolean
-          referral_code: string | null
-          sex: string | null
-          updated_at: string | null
-          username: string
-        }
+          avatar_url: string | null;
+          birth_date: string | null;
+          created_at: string | null;
+          email: string;
+          id: string;
+          is_admin: boolean;
+          referral_code: string | null;
+          sex: string | null;
+          updated_at: string | null;
+          username: string;
+        };
         Insert: {
-          avatar_url?: string | null
-          birth_date?: string | null
-          created_at?: string | null
-          email: string
-          id: string
-          is_admin?: boolean
-          referral_code?: string | null
-          sex?: string | null
-          updated_at?: string | null
-          username: string
-        }
+          avatar_url?: string | null;
+          birth_date?: string | null;
+          created_at?: string | null;
+          email: string;
+          id: string;
+          is_admin?: boolean;
+          referral_code?: string | null;
+          sex?: string | null;
+          updated_at?: string | null;
+          username: string;
+        };
         Update: {
-          avatar_url?: string | null
-          birth_date?: string | null
-          created_at?: string | null
-          email?: string
-          id?: string
-          is_admin?: boolean
-          referral_code?: string | null
-          sex?: string | null
-          updated_at?: string | null
-          username?: string
-        }
-        Relationships: []
-      }
+          avatar_url?: string | null;
+          birth_date?: string | null;
+          created_at?: string | null;
+          email?: string;
+          id?: string;
+          is_admin?: boolean;
+          referral_code?: string | null;
+          sex?: string | null;
+          updated_at?: string | null;
+          username?: string;
+        };
+        Relationships: [];
+      };
       recipe_ingredients: {
         Row: {
-          created_at: string
-          id: string
-          ingredient_id: string
-          quantity: number
-          recipe_id: string
-          unit_id: string
-        }
+          created_at: string;
+          id: string;
+          ingredient_id: string;
+          quantity: number;
+          recipe_id: string;
+          unit_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          ingredient_id: string
-          quantity: number
-          recipe_id: string
-          unit_id: string
-        }
+          created_at?: string;
+          id?: string;
+          ingredient_id: string;
+          quantity: number;
+          recipe_id: string;
+          unit_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          ingredient_id?: string
-          quantity?: number
-          recipe_id?: string
-          unit_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          ingredient_id?: string;
+          quantity?: number;
+          recipe_id?: string;
+          unit_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "recipe_ingredients_ingredient_id_fkey"
-            columns: ["ingredient_id"]
-            isOneToOne: false
-            referencedRelation: "ingredients"
-            referencedColumns: ["id"]
+            foreignKeyName: "recipe_ingredients_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "recipe_ingredients_recipe_id_fkey"
-            columns: ["recipe_id"]
-            isOneToOne: false
-            referencedRelation: "recipes"
-            referencedColumns: ["id"]
+            foreignKeyName: "recipe_ingredients_recipe_id_fkey";
+            columns: ["recipe_id"];
+            isOneToOne: false;
+            referencedRelation: "recipes";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "recipe_ingredients_unit_id_fkey"
-            columns: ["unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            foreignKeyName: "recipe_ingredients_unit_id_fkey";
+            columns: ["unit_id"];
+            isOneToOne: false;
+            referencedRelation: "units";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       recipes: {
         Row: {
-          base_servings: number
-          calories: number | null
-          created_at: string
-          external_url: string | null
-          id: string
-          image_url: string | null
-          instagram_url: string | null
-          meal_type: string | null
-          name: string
-          notes: string | null
-          youtube_url: string | null
-        }
+          base_servings: number;
+          calories: number | null;
+          created_at: string;
+          external_url: string | null;
+          id: string;
+          image_url: string | null;
+          instagram_url: string | null;
+          meal_type: string | null;
+          name: string;
+          notes: string | null;
+          youtube_url: string | null;
+        };
         Insert: {
-          base_servings: number
-          calories?: number | null
-          created_at?: string
-          external_url?: string | null
-          id?: string
-          image_url?: string | null
-          instagram_url?: string | null
-          meal_type?: string | null
-          name: string
-          notes?: string | null
-          youtube_url?: string | null
-        }
+          base_servings: number;
+          calories?: number | null;
+          created_at?: string;
+          external_url?: string | null;
+          id?: string;
+          image_url?: string | null;
+          instagram_url?: string | null;
+          meal_type?: string | null;
+          name: string;
+          notes?: string | null;
+          youtube_url?: string | null;
+        };
         Update: {
-          base_servings?: number
-          calories?: number | null
-          created_at?: string
-          external_url?: string | null
-          id?: string
-          image_url?: string | null
-          instagram_url?: string | null
-          meal_type?: string | null
-          name?: string
-          notes?: string | null
-          youtube_url?: string | null
-        }
-        Relationships: []
-      }
+          base_servings?: number;
+          calories?: number | null;
+          created_at?: string;
+          external_url?: string | null;
+          id?: string;
+          image_url?: string | null;
+          instagram_url?: string | null;
+          meal_type?: string | null;
+          name?: string;
+          notes?: string | null;
+          youtube_url?: string | null;
+        };
+        Relationships: [];
+      };
       referrals: {
         Row: {
-          created_at: string
-          id: string
-          qualified_at: string | null
-          referral_code: string
-          referred_user_id: string
-          referrer_user_id: string
-          reward_transaction_id: string | null
-          status: Database["public"]["Enums"]["referral_status"]
-          updated_at: string
-        }
+          created_at: string;
+          id: string;
+          qualified_at: string | null;
+          referral_code: string;
+          referred_user_id: string;
+          referrer_user_id: string;
+          reward_transaction_id: string | null;
+          status: Database["public"]["Enums"]["referral_status"];
+          updated_at: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          qualified_at?: string | null
-          referral_code: string
-          referred_user_id: string
-          referrer_user_id: string
-          reward_transaction_id?: string | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
+          created_at?: string;
+          id?: string;
+          qualified_at?: string | null;
+          referral_code: string;
+          referred_user_id: string;
+          referrer_user_id: string;
+          reward_transaction_id?: string | null;
+          status?: Database["public"]["Enums"]["referral_status"];
+          updated_at?: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          qualified_at?: string | null
-          referral_code?: string
-          referred_user_id?: string
-          referrer_user_id?: string
-          reward_transaction_id?: string | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
+          created_at?: string;
+          id?: string;
+          qualified_at?: string | null;
+          referral_code?: string;
+          referred_user_id?: string;
+          referrer_user_id?: string;
+          reward_transaction_id?: string | null;
+          status?: Database["public"]["Enums"]["referral_status"];
+          updated_at?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "referrals_referred_user_id_fkey"
-            columns: ["referred_user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "referrals_referred_user_id_fkey";
+            columns: ["referred_user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "referrals_referred_user_id_fkey"
-            columns: ["referred_user_id"]
-            isOneToOne: true
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "referrals_referred_user_id_fkey";
+            columns: ["referred_user_id"];
+            isOneToOne: true;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
           },
           {
-            foreignKeyName: "referrals_referrer_user_id_fkey"
-            columns: ["referrer_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "referrals_referrer_user_id_fkey";
+            columns: ["referrer_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "referrals_referrer_user_id_fkey"
-            columns: ["referrer_user_id"]
-            isOneToOne: false
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "referrals_referrer_user_id_fkey";
+            columns: ["referrer_user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
           },
           {
-            foreignKeyName: "referrals_reward_transaction_fk"
-            columns: ["reward_transaction_id"]
-            isOneToOne: false
-            referencedRelation: "wallet_transactions"
-            referencedColumns: ["id"]
+            foreignKeyName: "referrals_reward_transaction_fk";
+            columns: ["reward_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+          {
+            foreignKeyName: "referrals_reward_transaction_fk";
+            columns: ["reward_transaction_id"];
+            isOneToOne: false;
+            referencedRelation: "wallet_transactions_ui";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       units: {
         Row: {
-          created_at: string
-          id: string
-          label: string
-          type: Database["public"]["Enums"]["unit_type"]
-        }
+          created_at: string;
+          id: string;
+          label: string;
+          type: Database["public"]["Enums"]["unit_type"];
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          label: string
-          type: Database["public"]["Enums"]["unit_type"]
-        }
+          created_at?: string;
+          id?: string;
+          label: string;
+          type: Database["public"]["Enums"]["unit_type"];
+        };
         Update: {
-          created_at?: string
-          id?: string
-          label?: string
-          type?: Database["public"]["Enums"]["unit_type"]
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          label?: string;
+          type?: Database["public"]["Enums"]["unit_type"];
+        };
+        Relationships: [];
+      };
       wallet_transactions: {
         Row: {
-          amount: number
-          created_at: string
-          description: string | null
-          direction: Database["public"]["Enums"]["wallet_direction"]
-          id: string
-          reference_id: string | null
+          amount: number;
+          created_at: string;
+          description: string | null;
+          direction: Database["public"]["Enums"]["wallet_direction"];
+          id: string;
+          reference_id: string | null;
           reference_type:
             | Database["public"]["Enums"]["wallet_reference_type"]
-            | null
-          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
-          user_id: string
-        }
+            | null;
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"];
+          user_id: string;
+        };
         Insert: {
-          amount: number
-          created_at?: string
-          description?: string | null
-          direction: Database["public"]["Enums"]["wallet_direction"]
-          id?: string
-          reference_id?: string | null
+          amount: number;
+          created_at?: string;
+          description?: string | null;
+          direction: Database["public"]["Enums"]["wallet_direction"];
+          id?: string;
+          reference_id?: string | null;
           reference_type?:
             | Database["public"]["Enums"]["wallet_reference_type"]
-            | null
-          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
-          user_id: string
-        }
+            | null;
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"];
+          user_id: string;
+        };
         Update: {
-          amount?: number
-          created_at?: string
-          description?: string | null
-          direction?: Database["public"]["Enums"]["wallet_direction"]
-          id?: string
-          reference_id?: string | null
+          amount?: number;
+          created_at?: string;
+          description?: string | null;
+          direction?: Database["public"]["Enums"]["wallet_direction"];
+          id?: string;
+          reference_id?: string | null;
           reference_type?:
             | Database["public"]["Enums"]["wallet_reference_type"]
-            | null
-          transaction_type?: Database["public"]["Enums"]["wallet_transaction_type"]
-          user_id?: string
-        }
+            | null;
+          transaction_type?: Database["public"]["Enums"]["wallet_transaction_type"];
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "wallet_transactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            foreignKeyName: "wallet_transactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "wallet_transactions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_wallet_balance"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "wallet_transactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
           },
-        ]
-      }
+        ];
+      };
       weekly_meal_prep: {
         Row: {
-          created_at: string
-          id: string
-          recipe_id: string
-          servings: number
-        }
+          created_at: string;
+          id: string;
+          recipe_id: string;
+          servings: number;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          recipe_id: string
-          servings: number
-        }
+          created_at?: string;
+          id?: string;
+          recipe_id: string;
+          servings: number;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          recipe_id?: string
-          servings?: number
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          recipe_id?: string;
+          servings?: number;
+        };
+        Relationships: [];
+      };
       weekly_meals: {
         Row: {
-          created_at: string
-          id: string
-          meal_type: Database["public"]["Enums"]["meal_type"]
-          planned_servings: number
-          recipe_id: string
-          week_id: string
-        }
+          created_at: string;
+          id: string;
+          meal_type: Database["public"]["Enums"]["meal_type"];
+          planned_servings: number;
+          recipe_id: string;
+          week_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          meal_type: Database["public"]["Enums"]["meal_type"]
-          planned_servings: number
-          recipe_id: string
-          week_id: string
-        }
+          created_at?: string;
+          id?: string;
+          meal_type: Database["public"]["Enums"]["meal_type"];
+          planned_servings: number;
+          recipe_id: string;
+          week_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          meal_type?: Database["public"]["Enums"]["meal_type"]
-          planned_servings?: number
-          recipe_id?: string
-          week_id?: string
-        }
+          created_at?: string;
+          id?: string;
+          meal_type?: Database["public"]["Enums"]["meal_type"];
+          planned_servings?: number;
+          recipe_id?: string;
+          week_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "weekly_meals_recipe_id_fkey"
-            columns: ["recipe_id"]
-            isOneToOne: false
-            referencedRelation: "recipes"
-            referencedColumns: ["id"]
+            foreignKeyName: "weekly_meals_recipe_id_fkey";
+            columns: ["recipe_id"];
+            isOneToOne: false;
+            referencedRelation: "recipes";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "weekly_meals_week_id_fkey"
-            columns: ["week_id"]
-            isOneToOne: false
-            referencedRelation: "meal_prep_weeks"
-            referencedColumns: ["id"]
+            foreignKeyName: "weekly_meals_week_id_fkey";
+            columns: ["week_id"];
+            isOneToOne: false;
+            referencedRelation: "meal_prep_weeks";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-    }
+        ];
+      };
+    };
     Views: {
       grocery_list_merged: {
         Row: {
-          ingredient_id: string | null
-          total_quantity: number | null
-          unit_id: string | null
-          week_id: string | null
-        }
+          ingredient_id: string | null;
+          total_quantity: number | null;
+          unit_id: string | null;
+          week_id: string | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "grocery_list_items_ingredient_id_fkey"
-            columns: ["ingredient_id"]
-            isOneToOne: false
-            referencedRelation: "ingredients"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_ingredient_id_fkey";
+            columns: ["ingredient_id"];
+            isOneToOne: false;
+            referencedRelation: "ingredients";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "grocery_list_items_unit_id_fkey"
-            columns: ["unit_id"]
-            isOneToOne: false
-            referencedRelation: "units"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_unit_id_fkey";
+            columns: ["unit_id"];
+            isOneToOne: false;
+            referencedRelation: "units";
+            referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "grocery_list_items_week_id_fkey"
-            columns: ["week_id"]
-            isOneToOne: false
-            referencedRelation: "meal_prep_weeks"
-            referencedColumns: ["id"]
+            foreignKeyName: "grocery_list_items_week_id_fkey";
+            columns: ["week_id"];
+            isOneToOne: false;
+            referencedRelation: "meal_prep_weeks";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       user_wallet_balance: {
         Row: {
-          balance: number | null
-          user_id: string | null
-        }
-        Relationships: []
-      }
-    }
+          balance: number | null;
+          user_id: string | null;
+        };
+        Relationships: [];
+      };
+      wallet_transactions_ui: {
+        Row: {
+          amount: number | null;
+          context_title: string | null;
+          created_at: string | null;
+          description: string | null;
+          direction: Database["public"]["Enums"]["wallet_direction"] | null;
+          id: string | null;
+          reference_id: string | null;
+          reference_type:
+            | Database["public"]["Enums"]["wallet_reference_type"]
+            | null;
+          transaction_type:
+            | Database["public"]["Enums"]["wallet_transaction_type"]
+            | null;
+          user_id: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_transactions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "user_wallet_balance";
+            referencedColumns: ["user_id"];
+          },
+        ];
+      };
+    };
     Functions: {
+      admin_dev_reset_lotteries_schedule: { Args: never; Returns: number };
       admin_get_lotteries: {
-        Args: never
+        Args: never;
         Returns: {
-          brand_name: string
-          draw_at: string
-          ends_at: string
-          lottery_id: string
-          number_of_winners: number
-          starts_at: string
-          status: Database["public"]["Enums"]["lottery_status"]
-          ticket_cost: number
-          tickets_count: number
-          title: string
-          winners_count: number
-        }[]
-      }
+          brand_name: string;
+          draw_at: string;
+          ends_at: string;
+          lottery_id: string;
+          number_of_winners: number;
+          starts_at: string;
+          status: Database["public"]["Enums"]["lottery_status"];
+          ticket_cost: number;
+          tickets_count: number;
+          title: string;
+          winners_count: number;
+        }[];
+      };
       admin_get_lottery_detail: {
-        Args: { p_lottery_id: string }
+        Args: { p_lottery_id: string };
         Returns: {
-          brand_name: string
-          category: string
-          description: string
-          draw_at: string
-          ends_at: string
-          is_featured: boolean
-          lottery_id: string
-          number_of_winners: number
-          short_description: string
-          slug: string
-          starts_at: string
-          status: Database["public"]["Enums"]["lottery_status"]
-          ticket_cost: number
-          tickets_count: number
-          title: string
-          winners: Json
-          winners_count: number
-        }[]
-      }
+          brand_name: string;
+          category: string;
+          description: string;
+          draw_at: string;
+          ends_at: string;
+          is_featured: boolean;
+          lottery_id: string;
+          number_of_winners: number;
+          short_description: string;
+          slug: string;
+          starts_at: string;
+          status: Database["public"]["Enums"]["lottery_status"];
+          ticket_cost: number;
+          tickets_count: number;
+          title: string;
+          winners: Json;
+          winners_count: number;
+        }[];
+      };
       admin_get_mission_detail: {
-        Args: { p_mission_id: string }
+        Args: { p_mission_id: string };
         Returns: {
-          approved_completions: number
-          brand_id: string
-          brand_name: string
-          completed_users: Json
-          created_at: string
-          description: string
-          ends_at: string
-          image_url: string
-          max_completions_per_user: number
-          max_completions_total: number
-          mission_id: string
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          pending_completions: number
-          rejected_completions: number
-          starts_at: string
-          status: Database["public"]["Enums"]["mission_status"]
-          title: string
-          token_reward: number
-          total_completions: number
-          updated_at: string
-          validation_mode: Database["public"]["Enums"]["mission_validation_mode"]
-        }[]
-      }
+          approved_completions: number;
+          brand_id: string;
+          brand_name: string;
+          completed_users: Json;
+          created_at: string;
+          description: string;
+          ends_at: string;
+          image_url: string;
+          max_completions_per_user: number;
+          max_completions_total: number;
+          mission_id: string;
+          mission_type: Database["public"]["Enums"]["mission_type"];
+          pending_completions: number;
+          rejected_completions: number;
+          starts_at: string;
+          status: Database["public"]["Enums"]["mission_status"];
+          title: string;
+          token_reward: number;
+          total_completions: number;
+          updated_at: string;
+          validation_mode: Database["public"]["Enums"]["mission_validation_mode"];
+        }[];
+      };
       admin_get_missions: {
         Args: {
-          p_brand_id?: string
-          p_limit?: number
-          p_mission_type?: Database["public"]["Enums"]["mission_type"]
-          p_offset?: number
-          p_sort?: string
-          p_status?: Database["public"]["Enums"]["mission_status"]
-          p_title_search?: string
-        }
+          p_brand_id?: string;
+          p_limit?: number;
+          p_mission_type?: Database["public"]["Enums"]["mission_type"];
+          p_offset?: number;
+          p_sort?: string;
+          p_status?: Database["public"]["Enums"]["mission_status"];
+          p_title_search?: string;
+        };
         Returns: {
-          brand_id: string
-          brand_name: string
-          ends_at: string
-          mission_id: string
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          starts_at: string
-          status: Database["public"]["Enums"]["mission_status"]
-          title: string
-          token_reward: number
-          total_completions: number
-          validation_mode: Database["public"]["Enums"]["mission_validation_mode"]
-        }[]
-      }
+          brand_id: string;
+          brand_name: string;
+          ends_at: string;
+          mission_id: string;
+          mission_type: Database["public"]["Enums"]["mission_type"];
+          starts_at: string;
+          status: Database["public"]["Enums"]["mission_status"];
+          title: string;
+          token_reward: number;
+          total_completions: number;
+          validation_mode: Database["public"]["Enums"]["mission_validation_mode"];
+        }[];
+      };
       admin_get_missions_count: {
         Args: {
-          p_brand_id?: string
-          p_mission_type?: Database["public"]["Enums"]["mission_type"]
-          p_status?: Database["public"]["Enums"]["mission_status"]
-          p_title_search?: string
-        }
-        Returns: number
-      }
+          p_brand_id?: string;
+          p_mission_type?: Database["public"]["Enums"]["mission_type"];
+          p_status?: Database["public"]["Enums"]["mission_status"];
+          p_title_search?: string;
+        };
+        Returns: number;
+      };
       approve_mission_completion: {
-        Args: { p_completion_id: string }
+        Args: { p_completion_id: string };
         Returns: {
-          error_code: string
-          success: boolean
-        }[]
-      }
+          error_code: string;
+          success: boolean;
+        }[];
+      };
       buy_ticket: {
-        Args: { p_lottery_id: string }
+        Args: { p_lottery_id: string };
         Returns: {
-          error_code: string
-          success: boolean
-          ticket_id: string
-        }[]
-      }
+          error_code: string;
+          success: boolean;
+          ticket_id: string;
+        }[];
+      };
       generate_profile_referral_code: {
-        Args: { code_length?: number }
-        Returns: string
-      }
+        Args: { code_length?: number };
+        Returns: string;
+      };
       get_lottery_active_ticket_counts: {
-        Args: { p_lottery_ids: string[] }
+        Args: { p_lottery_ids: string[] };
         Returns: {
-          active_tickets_count: number
-          lottery_id: string
-        }[]
-      }
+          active_tickets_count: number;
+          lottery_id: string;
+        }[];
+      };
       get_my_referral_invitees: {
-        Args: Record<string, never>
+        Args: never;
         Returns: {
-          created_at: string
-          qualified_at: string | null
-          referral_id: string
-          referred_username: string | null
-          status: Database["public"]["Enums"]["referral_status"]
-        }[]
-      }
+          created_at: string;
+          qualified_at: string | null;
+          referral_id: string;
+          referred_username: string | null;
+          status: Database["public"]["Enums"]["referral_status"];
+        }[];
+      };
       get_todo_missions_page: {
-        Args: { p_limit: number; p_offset: number }
+        Args: { p_limit: number; p_offset: number };
         Returns: {
-          brand: Json
-          description: string
-          ends_at: string
-          id: string
-          image_url: string
-          mission_completions: Json
-          mission_type: Database["public"]["Enums"]["mission_type"]
-          title: string
-          token_reward: number
-        }[]
-      }
+          brand: Json;
+          description: string;
+          ends_at: string;
+          id: string;
+          image_url: string;
+          mission_completions: Json;
+          mission_type: Database["public"]["Enums"]["mission_type"];
+          title: string;
+          token_reward: number;
+        }[];
+      };
       get_user_active_ticket_counts_by_lottery: {
-        Args: { p_lottery_ids: string[] }
+        Args: { p_lottery_ids: string[] };
         Returns: {
-          active_count: number
-          lottery_id: string
-        }[]
-      }
-      get_user_home_dashboard: { Args: never; Returns: Json }
+          active_count: number;
+          lottery_id: string;
+        }[];
+      };
+      get_user_home_dashboard: { Args: never; Returns: Json };
       get_wallet_transactions_enriched: {
-        Args: never
+        Args: never;
         Returns: {
-          amount: number
-          context_title: string
-          created_at: string
-          direction: Database["public"]["Enums"]["wallet_direction"]
-          id: string
-          reference_id: string
-          reference_type: Database["public"]["Enums"]["wallet_reference_type"]
-          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
-        }[]
-      }
+          amount: number;
+          context_title: string;
+          created_at: string;
+          direction: Database["public"]["Enums"]["wallet_direction"];
+          id: string;
+          reference_id: string;
+          reference_type: Database["public"]["Enums"]["wallet_reference_type"];
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"];
+        }[];
+      };
+      grant_signup_bonus: {
+        Args: never;
+        Returns: {
+          already_granted: boolean;
+          amount: number;
+          error_code: string;
+          success: boolean;
+        }[];
+      };
       handle_referral_after_first_mission: {
-        Args: { p_user_id: string }
-        Returns: undefined
-      }
+        Args: { p_user_id: string };
+        Returns: undefined;
+      };
       has_daily_login_completion_for_current_utc_day: {
-        Args: { p_mission_id: string }
-        Returns: boolean
-      }
-      is_admin: { Args: { user_id: string }; Returns: boolean }
-      register_referral_with_code: {
-        Args: { p_code: string }
-        Returns: {
-          error_code: string | null
-          success: boolean
-        }[]
-      }
+        Args: { p_mission_id: string };
+        Returns: boolean;
+      };
+      is_admin: { Args: { user_id: string }; Returns: boolean };
+      mission_type_counts_for_referral_qualification: {
+        Args: { p_mission_type: Database["public"]["Enums"]["mission_type"] };
+        Returns: boolean;
+      };
       regenerate_grocery_list: {
-        Args: { p_week_id: string }
-        Returns: undefined
-      }
-      run_lottery: { Args: { p_lottery_id: string }; Returns: string[] }
-      submit_mission_completion: {
-        Args: { p_mission_id: string; p_proof_data?: Json }
+        Args: { p_week_id: string };
+        Returns: undefined;
+      };
+      register_referral_with_code: {
+        Args: { p_code: string };
         Returns: {
-          completion_id: string
-          error_code: string
-          success: boolean
-        }[]
-      }
-    }
+          error_code: string | null;
+          success: boolean;
+        }[];
+      };
+      run_lottery: { Args: { p_lottery_id: string }; Returns: string[] };
+      submit_mission_completion: {
+        Args: { p_mission_id: string; p_proof_data?: Json };
+        Returns: {
+          completion_id: string;
+          error_code: string;
+          success: boolean;
+        }[];
+      };
+    };
     Enums: {
-      lottery_status: "draft" | "active" | "closed" | "drawn" | "cancelled"
-      lottery_ticket_status: "active" | "cancelled"
-      meal_type: "breakfast" | "lunch" | "dinner" | "snack"
-      mission_completion_status: "pending" | "approved" | "rejected"
-      mission_status: "draft" | "active" | "paused" | "archived"
+      lottery_status: "draft" | "active" | "closed" | "drawn" | "cancelled";
+      lottery_ticket_status: "active" | "cancelled";
+      meal_type: "breakfast" | "lunch" | "dinner" | "snack";
+      mission_completion_status: "pending" | "approved" | "rejected";
+      mission_status: "draft" | "active" | "paused" | "archived";
       mission_type:
         | "survey"
         | "video"
         | "follow"
         | "referral"
         | "custom"
-        | "daily_login"
-      mission_validation_mode: "automatic" | "manual"
-      referral_status: "pending" | "qualified" | "rewarded" | "cancelled"
-      unit_type: "weight" | "volume" | "count"
-      wallet_direction: "credit" | "debit"
+        | "daily_login";
+      mission_validation_mode: "automatic" | "manual";
+      referral_status: "pending" | "qualified" | "rewarded" | "cancelled";
+      unit_type: "weight" | "volume" | "count";
+      wallet_direction: "credit" | "debit";
       wallet_reference_type:
         | "mission_completion"
         | "lottery_ticket"
         | "referral"
         | "purchase"
         | "admin"
+        | "profile";
       wallet_transaction_type:
         | "mission_reward"
         | "ticket_purchase"
         | "referral_bonus"
         | "token_purchase"
         | "manual_adjustment"
-    }
+        | "signup_bonus";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+  keyof Database,
+  "public"
+>];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
@@ -1142,95 +1216,95 @@ export type Tables<
         DefaultSchema["Views"])
     ? (DefaultSchema["Tables"] &
         DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
@@ -1258,6 +1332,7 @@ export const Constants = {
         "referral",
         "purchase",
         "admin",
+        "profile",
       ],
       wallet_transaction_type: [
         "mission_reward",
@@ -1265,7 +1340,8 @@ export const Constants = {
         "referral_bonus",
         "token_purchase",
         "manual_adjustment",
+        "signup_bonus",
       ],
     },
   },
-} as const
+} as const;
