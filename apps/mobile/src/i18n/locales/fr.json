@@ -11,6 +11,14 @@
       "body": "Ton ami a rejoint Winlab. Tes tokens ont été crédités !"
     }
   },
+  "otaUpdate": {
+    "title": "Mise à jour disponible",
+    "message": "Une nouvelle version de l’app est prête. Mets-la à jour pour profiter des dernières améliorations.",
+    "updateNow": "Mettre à jour",
+    "later": "Plus tard",
+    "fetchFailedTitle": "Mise à jour impossible",
+    "fetchFailedMessage": "Vérifie ta connexion et réessaie."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initialisation",
