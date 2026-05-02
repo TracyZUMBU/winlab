@@ -1,5 +1,6 @@
 import { formatDateTimeForDev } from "../../../lib/formatDateTimeForDev";
 import type { DetailState } from "../hooks/useLotteryAdminDetail";
+import { AdminRunLotterySection } from "./AdminRunLotterySection";
 
 function formatIntFr(n: number): string {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(n);
@@ -120,6 +121,8 @@ export function LotteryDetailContent({
               </p>
             )}
           </section>
+
+          <AdminRunLotterySection detail={state.detail} />
 
           <section className="admin-detail-section" aria-labelledby={ticketsSectionId}>
             <h3 id={ticketsSectionId} className="admin-detail-section__title">

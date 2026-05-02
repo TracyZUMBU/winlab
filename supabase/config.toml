@@ -393,3 +393,7 @@ verify_jwt = false
 # JWT vérifié dans le handler (`role === authenticated`) ; service role uniquement côté Deno.
 [functions.admin-send-push-mvp]
 verify_jwt = false
+
+# Idem : JWT + `profiles.is_admin` dans le handler ; `run_lottery` via service_role uniquement.
+[functions.admin-run-lottery]
+verify_jwt = false
