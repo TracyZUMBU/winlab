@@ -287,6 +287,13 @@ export type Database = {
             referencedRelation: "wallet_transactions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lottery_tickets_wallet_transaction_fk"
+            columns: ["wallet_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_transactions_ui"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lottery_winners: {
@@ -413,6 +420,13 @@ export type Database = {
             columns: ["reward_transaction_id"]
             isOneToOne: false
             referencedRelation: "wallet_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mission_completions_reward_fk"
+            columns: ["reward_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_transactions_ui"
             referencedColumns: ["id"]
           },
           {
@@ -696,6 +710,13 @@ export type Database = {
             referencedRelation: "wallet_transactions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "referrals_reward_transaction_fk"
+            columns: ["reward_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "wallet_transactions_ui"
+            referencedColumns: ["id"]
+          },
         ]
       }
       units: {
@@ -879,8 +900,43 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions_ui: {
+        Row: {
+          amount: number | null
+          context_title: string | null
+          created_at: string | null
+          description: string | null
+          direction: Database["public"]["Enums"]["wallet_direction"] | null
+          id: string | null
+          reference_id: string | null
+          reference_type:
+            | Database["public"]["Enums"]["wallet_reference_type"]
+            | null
+          transaction_type:
+            | Database["public"]["Enums"]["wallet_transaction_type"]
+            | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_wallet_balance"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
     }
     Functions: {
+      admin_dev_reset_lotteries_schedule: { Args: never; Returns: number }
       admin_get_lotteries: {
         Args: never
         Returns: {
@@ -1005,7 +1061,7 @@ export type Database = {
         }[]
       }
       get_my_referral_invitees: {
-        Args: Record<string, never>
+        Args: never
         Returns: {
           created_at: string
           qualified_at: string | null
@@ -1049,6 +1105,15 @@ export type Database = {
           transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
         }[]
       }
+      grant_signup_bonus: {
+        Args: never
+        Returns: {
+          already_granted: boolean
+          amount: number
+          error_code: string
+          success: boolean
+        }[]
+      }
       handle_referral_after_first_mission: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -1058,16 +1123,20 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { user_id: string }; Returns: boolean }
+      mission_type_counts_for_referral_qualification: {
+        Args: { p_mission_type: Database["public"]["Enums"]["mission_type"] }
+        Returns: boolean
+      }
+      regenerate_grocery_list: {
+        Args: { p_week_id: string }
+        Returns: undefined
+      }
       register_referral_with_code: {
         Args: { p_code: string }
         Returns: {
           error_code: string | null
           success: boolean
         }[]
-      }
-      regenerate_grocery_list: {
-        Args: { p_week_id: string }
-        Returns: undefined
       }
       run_lottery: { Args: { p_lottery_id: string }; Returns: string[] }
       submit_mission_completion: {
@@ -1102,12 +1171,14 @@ export type Database = {
         | "referral"
         | "purchase"
         | "admin"
+        | "profile"
       wallet_transaction_type:
         | "mission_reward"
         | "ticket_purchase"
         | "referral_bonus"
         | "token_purchase"
         | "manual_adjustment"
+        | "signup_bonus"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1258,6 +1329,7 @@ export const Constants = {
         "referral",
         "purchase",
         "admin",
+        "profile",
       ],
       wallet_transaction_type: [
         "mission_reward",
@@ -1265,6 +1337,7 @@ export const Constants = {
         "referral_bonus",
         "token_purchase",
         "manual_adjustment",
+        "signup_bonus",
       ],
     },
   },

@@ -47,7 +47,8 @@ BEGIN
         WHERE ltx.wallet_transaction_id = wt.id
         ORDER BY ltx.created_at DESC, ltx.id DESC
         LIMIT 1
-      )
+      ),
+      wt.description
     ) AS context_title
   FROM public.wallet_transactions wt
   LEFT JOIN public.mission_completions mc
@@ -72,7 +73,7 @@ $$;
 ALTER FUNCTION public.get_wallet_transactions_enriched() OWNER TO postgres;
 
 COMMENT ON FUNCTION public.get_wallet_transactions_enriched() IS
-  'Wallet ledger + context_title: primary joins on reference_id; fallbacks via reward_transaction_id / wallet_transaction_id for legacy or inconsistent reference_id. Fallback rows are chosen deterministically (newest completion/ticket by created_at, then id).';
+  'Wallet ledger + context_title: primary joins on reference_id; fallbacks via reward_transaction_id / wallet_transaction_id for legacy or inconsistent reference_id. signup_bonus uses wallet_transactions.description when joins do not apply. Fallback rows are chosen deterministically (newest completion/ticket by created_at, then id).';
 
 REVOKE ALL ON FUNCTION public.get_wallet_transactions_enriched() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_wallet_transactions_enriched() TO authenticated;

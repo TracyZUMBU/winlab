@@ -42,12 +42,49 @@ const expectRpcBusinessError = (data: unknown, errorCode: string) => {
   expect(rows[0]?.error_code).toBe(errorCode);
 };
 
+/** Past UTC instant so daily_login is allowed (not the profile creation UTC day). */
+const DAILY_LOGIN_ELIGIBLE_PROFILE_CREATED_AT = "2018-01-01T00:00:00.000Z";
+
+async function backdateProfileForDailyLogin(
+  admin: ReturnType<typeof getSupabaseAdminClient>,
+  userId: string,
+) {
+  const { error } = await admin
+    .from("profiles")
+    .update({ created_at: DAILY_LOGIN_ELIGIBLE_PROFILE_CREATED_AT })
+    .eq("id", userId);
+  expect(error).toBeNull();
+}
+
 describe("submit_mission_completion RPC (integration)", () => {
   describe("when submitting a mission completion", () => {
     describe("daily_login", () => {
+      it("refuse le jour UTC de creation du profil (DAILY_LOGIN_INELIGIBLE_FIRST_UTC_DAY)", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const brand = await createBrand();
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "daily_login",
+          token_reward: 10,
+        });
+
+        const { data, error } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: {},
+          },
+        );
+        expect(error).toBeNull();
+        expectRpcBusinessError(data, "DAILY_LOGIN_INELIGIBLE_FIRST_UTC_DAY");
+      });
+
       it("obtient les points sur la 1ere connexion de la journee", async () => {
         const testUser = await createAuthenticatedTestUser();
         const admin = getSupabaseAdminClient();
+        await backdateProfileForDailyLogin(admin, testUser.userId);
         const brand = await createBrand();
 
         const mission = await createMission({
@@ -90,6 +127,8 @@ describe("submit_mission_completion RPC (integration)", () => {
 
       it("accepte aujourd'hui malgre max_completions_per_user=1 si la seule completion anterieure est sur un autre jour UTC", async () => {
         const testUser = await createAuthenticatedTestUser();
+        const admin = getSupabaseAdminClient();
+        await backdateProfileForDailyLogin(admin, testUser.userId);
         const brand = await createBrand();
 
         const mission = await createMission({
@@ -125,6 +164,8 @@ describe("submit_mission_completion RPC (integration)", () => {
 
       it("refuse l'obtention si deja connecte aujourd'hui", async () => {
         const testUser = await createAuthenticatedTestUser();
+        const admin = getSupabaseAdminClient();
+        await backdateProfileForDailyLogin(admin, testUser.userId);
         const brand = await createBrand();
 
         const mission = await createMission({
@@ -159,6 +200,7 @@ describe("submit_mission_completion RPC (integration)", () => {
       it("autorise l'obtention si la derniere completion date d'hier", async () => {
         const testUser = await createAuthenticatedTestUser();
         const admin = getSupabaseAdminClient();
+        await backdateProfileForDailyLogin(admin, testUser.userId);
         const brand = await createBrand();
 
         const mission = await createMission({

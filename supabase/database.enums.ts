@@ -97,7 +97,8 @@ export const WalletReferenceType = {
   "lottery_ticket": "lottery_ticket",
   "referral": "referral",
   "purchase": "purchase",
-  "admin": "admin"
+  "admin": "admin",
+  "profile": "profile"
 } as const;
 export type WalletReferenceType = (typeof WalletReferenceType)[keyof typeof WalletReferenceType];
 
@@ -107,7 +108,8 @@ export const WalletTransactionType = {
   "ticket_purchase": "ticket_purchase",
   "referral_bonus": "referral_bonus",
   "token_purchase": "token_purchase",
-  "manual_adjustment": "manual_adjustment"
+  "manual_adjustment": "manual_adjustment",
+  "signup_bonus": "signup_bonus"
 } as const;
 export type WalletTransactionType = (typeof WalletTransactionType)[keyof typeof WalletTransactionType];
 

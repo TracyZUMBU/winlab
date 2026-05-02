@@ -169,7 +169,9 @@ async function runBootstrapForSession(
     // mission_completions FK → profiles: cannot submit daily_login before a profile row exists.
     if (profile) {
       try {
-        dailyLoginMissionResult = await triggerDailyLoginMission();
+        dailyLoginMissionResult = await triggerDailyLoginMission(
+          profile.created_at,
+        );
       } catch (error) {
         logger.warn(
           "[bootstrap] daily login mission trigger failed; continuing without mission result",

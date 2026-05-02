@@ -28,7 +28,7 @@ describe("get_my_referral_invitees (integration)", () => {
     const expectedUsername = referredProfile?.username;
     if (!expectedUsername) throw new Error("Referred profile missing username");
 
-    const { data, error } = await referrer.client.rpc(RPC, {});
+    const { data, error } = await referrer.client.rpc(RPC);
 
     expect(error).toBeNull();
     expect(Array.isArray(data)).toBe(true);

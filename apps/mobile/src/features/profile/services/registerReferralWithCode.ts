@@ -30,7 +30,7 @@ export async function registerReferralWithCode(
     return { ok: false, errorCode: "REFERRAL_RPC_FAILED" };
   }
 
-  const rows = data as { success: boolean; error_code: string | null }[];
+  const rows = data ?? [];
   const row = rows[0];
   if (!row) {
     monitoring.captureMessage({

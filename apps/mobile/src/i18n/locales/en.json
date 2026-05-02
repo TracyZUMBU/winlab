@@ -305,6 +305,7 @@
         "MISSION_NOT_STARTED": "This mission has not started yet.",
         "MISSION_EXPIRED": "This mission has ended.",
         "MISSION_USER_LIMIT_REACHED": "You have reached the submission limit for this mission.",
+        "DAILY_LOGIN_INELIGIBLE_FIRST_UTC_DAY": "Your daily login reward will be available starting tomorrow (UTC).",
         "MISSION_TOTAL_LIMIT_REACHED": "The total submission limit for this mission has been reached.",
         "SURVEY_CONFIG_INVALID": "This survey is misconfigured. Please try again later.",
         "SURVEY_PROOF_INVALID": "The survey submission payload is invalid. Please try again.",
@@ -429,6 +430,7 @@
     "ticketPurchase": "Lottery entry",
     "referralBonus": "Referral bonus",
     "tokenPurchase": "Token purchase",
+    "signupBonus": "Welcome bonus",
     "activity": "Activity",
     "completed": "Completed",
     "entryFee": "Entry fee",
@@ -582,6 +584,15 @@
     },
     "createProfile": {
       "successToast": "Profile created.",
+      "welcomeModal": {
+        "title": "Welcome to Winlab",
+        "body": "Winlab helps you discover brands, complete simple missions, and earn tokens you can use for perks and games.\n\nYou’ve received {{points}} welcome tokens to get started.",
+        "cta": "Let’s go"
+      },
+      "signupBonusError": {
+        "title": "Welcome bonus",
+        "message": "Your profile was created, but your welcome tokens could not be added due to a technical issue. Our team has been notified and will fix it."
+      },
       "referralPartial": {
         "title": "Referral code",
         "messageFallback": "Your profile was created, but the referral code could not be applied."
