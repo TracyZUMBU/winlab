@@ -5,6 +5,12 @@
   "bootstrap": {
     "loadFailed": "Impossible de démarrer l’application. Réessayez."
   },
+  "notifications": {
+    "referral_reward": {
+      "title": "🎉 Parrainage validé !",
+      "body": "Ton ami a rejoint Winlab. Tes tokens ont été crédités !"
+    }
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initialisation",

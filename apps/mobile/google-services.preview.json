@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "871693202730",
+    "project_id": "winlab-488a6",
+    "storage_bucket": "winlab-488a6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871693202730:android:19207e2fd790a98e6eda53",
+        "android_client_info": {
+          "package_name": "com.winlab.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfysDDCT9jZW4-8-f3ipHrt7ntCKdXCj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871693202730:android:15955c62cc91a9886eda53",
+        "android_client_info": {
+          "package_name": "com.winlab.app.preview"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfysDDCT9jZW4-8-f3ipHrt7ntCKdXCj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

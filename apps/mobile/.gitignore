@@ -35,6 +35,9 @@ yarn-error.*
 .env.test
 .env*.local
 
+# Firebase service account (upload via EAS only — never commit)
+*firebase-adminsdk*.json
+
 # typescript
 *.tsbuildinfo
 
