@@ -30,6 +30,10 @@ function mapEdgeErrorToCode(raw: string): string {
   switch (raw) {
     case "UNAUTHORIZED":
       return "UNAUTHORIZED";
+    case "FORBIDDEN":
+      return "FORBIDDEN";
+    case "PROFILE_CHECK_FAILED":
+      return "PROFILE_CHECK_FAILED";
     case "METHOD_NOT_ALLOWED":
       return "METHOD_NOT_ALLOWED";
     case "SERVER_MISCONFIGURED":

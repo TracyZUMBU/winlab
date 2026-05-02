@@ -11,7 +11,8 @@ type AdminAuthGateProps = {
 };
 
 /**
- * Garde globale : config → session → profil `is_admin` → application.
+ * Garde globale : config Supabase → session Auth → `profiles.is_admin === true` → application.
+ * Seuls les comptes marqués administrateur en base accèdent au dashboard (aligné sur les RPC admin).
  */
 export function AdminAuthGate({ children }: AdminAuthGateProps) {
   const authState = useCurrentUser();

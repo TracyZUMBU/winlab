@@ -1,13 +1,13 @@
 /**
- * MVP : envoi push manuel depuis l’admin (session utilisateur `authenticated`).
- * Vérifie le JWT avec la même stack que les clients Supabase ; l’appel Postgres / Expo
- * passe par la service role **uniquement** dans cette fonction (jamais exposée au navigateur).
- *
- * À durcir plus tard (rôle admin dédié, quotas, historique).
+ * MVP : envoi push manuel depuis l’admin Winlab.
+ * Vérifie le JWT de session + `profiles.is_admin` (via `requireAdminServiceClient`) ;
+ * Postgres / Expo passent par la service role **uniquement** ici (jamais exposée au navigateur).
  */
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
-import * as jose from "https://esm.sh/jose@5.9.6";
+import {
+  bearerTokenFromAuthorization,
+  requireAdminServiceClient,
+} from "../_shared/adminEdgeAuth.ts";
 
 type Json =
   | null
@@ -101,60 +101,6 @@ function collectTickets(expoBody: unknown): ExpoPushTicket[] {
   return [];
 }
 
-function bearerTokenFromAuthorization(header: string): string | null {
-  const m = /^Bearer\s+(\S+)$/i.exec(header.trim());
-  return m ? m[1] : null;
-}
-
-function originOnlyFromUrl(url: string): string | null {
-  try {
-    const u = new URL(url.trim());
-    return `${u.protocol}//${u.host}`;
-  } catch {
-    return null;
-  }
-}
-
-async function verifyAuthenticatedEndUserJwt(
-  bearerToken: string,
-  supabaseUrl: string,
-): Promise<boolean> {
-  if (!bearerToken.startsWith("eyJ")) {
-    return false;
-  }
-
-  const symmetricSecrets = [
-    Deno.env.get("SUPABASE_JWT_SECRET"),
-    Deno.env.get("JWT_SECRET"),
-    Deno.env.get("GOTRUE_JWT_SECRET"),
-  ]
-    .map((s) => s?.trim())
-    .filter((s): s is string => Boolean(s))
-    .map((s) => new TextEncoder().encode(s));
-
-  for (const keyMaterial of symmetricSecrets) {
-    try {
-      const { payload } = await jose.jwtVerify(bearerToken, keyMaterial, {
-        algorithms: ["HS256"],
-      });
-      if (payload.role === "authenticated") return true;
-    } catch {
-      continue;
-    }
-  }
-
-  const projectOrigin = originOnlyFromUrl(supabaseUrl);
-  if (!projectOrigin) return false;
-  const jwksUrl = new URL("/auth/v1/.well-known/jwks.json", `${projectOrigin}/`);
-  const JWKS = jose.createRemoteJWKSet(jwksUrl);
-  try {
-    const { payload } = await jose.jwtVerify(bearerToken, JWKS);
-    return payload.role === "authenticated";
-  } catch {
-    return false;
-  }
-}
-
 serve(async (req) => {
   const requestId = createRequestId();
 
@@ -189,15 +135,35 @@ serve(async (req) => {
   const bearerToken = bearerTokenFromAuthorization(
     req.headers.get("Authorization") ?? "",
   );
-  if (!bearerToken || !(await verifyAuthenticatedEndUserJwt(bearerToken, supabaseUrl))) {
-    safeLog(requestId, "warn", "auth_rejected_authenticated_only");
+
+  const adminAuth = await requireAdminServiceClient({
+    bearerToken,
+    supabaseUrl,
+    serviceRoleKey: supabaseServiceRoleKey,
+  });
+
+  if (!adminAuth.ok) {
+    const logMsg =
+      adminAuth.error === "UNAUTHORIZED"
+        ? "auth_rejected_unauthorized"
+        : adminAuth.error === "FORBIDDEN"
+          ? "auth_rejected_not_admin"
+          : "auth_profile_check_failed";
+    safeLog(requestId, "warn", logMsg, {
+      error: adminAuth.error,
+      ...(adminAuth.callerUserId
+        ? { callerUserId: adminAuth.callerUserId }
+        : {}),
+    });
     return jsonResponse(
-      { success: false, error: "UNAUTHORIZED" },
+      { success: false, error: adminAuth.error },
       req,
-      { status: 401 },
+      { status: adminAuth.status },
     );
   }
-  safeLog(requestId, "info", "auth_ok_authenticated");
+
+  const { admin, callerUserId } = adminAuth;
+  safeLog(requestId, "info", "auth_ok_admin", { callerUserId });
 
   let payload: NotificationPayload;
   try {
@@ -227,16 +193,6 @@ serve(async (req) => {
       { status: 400 },
     );
   }
-
-  const admin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-    global: {
-      headers: {
-        apikey: supabaseServiceRoleKey,
-        Authorization: `Bearer ${supabaseServiceRoleKey}`,
-      },
-    },
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
 
   const { data: profile, error: profileError } = await admin
     .from("profiles")

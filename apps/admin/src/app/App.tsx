@@ -5,7 +5,7 @@ import { MissionDetailFromRouteRedirect, MissionsPage } from "../features/missio
 import { PushAdminMvpPage } from "../features/push-admin-mvp";
 import { AdminLayout } from "./AdminLayout";
 
-/** Routes sous garde auth + `profiles.is_admin`. */
+/** Routes sous garde : authentification Supabase + `profiles.is_admin` (pas « tout utilisateur connecté »). */
 export function App() {
   return (
     <AdminAuthGate>

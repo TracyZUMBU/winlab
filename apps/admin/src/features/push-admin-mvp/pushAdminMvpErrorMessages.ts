@@ -5,6 +5,10 @@ export function pushAdminMvpErrorMessage(errorCode: string): string {
       return "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env (voir .env.example).";
     case "UNAUTHORIZED":
       return "Session invalide ou expirée. Reconnectez-vous.";
+    case "FORBIDDEN":
+      return "Ce compte n’a pas les droits administrateur requis pour cette action.";
+    case "PROFILE_CHECK_FAILED":
+      return "Impossible de vérifier les droits administrateur. Réessayez plus tard.";
     case "INVALID_USER_ID":
       return "Identifiant utilisateur (UUID) invalide.";
     case "VALIDATION_ERROR":
