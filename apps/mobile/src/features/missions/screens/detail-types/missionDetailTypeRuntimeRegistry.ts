@@ -3,6 +3,7 @@ import { lazy } from "react";
 import type { MissionType } from "../../types";
 import { CustomMissionDetail } from "./CustomMissionDetail";
 import { DailyLoginMissionDetail } from "./DailyLoginMissionDetail";
+import { ExternalActionMissionDetail } from "./ExternalActionMissionDetail";
 import { FollowMissionDetail } from "./FollowMissionDetail";
 import { ReferralMissionDetail } from "./ReferralMissionDetail";
 import { SurveyMissionDetail } from "./SurveyMissionDetail";
@@ -17,6 +18,7 @@ type ControllerSet = {
   defaultController: MissionDetailTypeController;
   surveyController: MissionDetailTypeController;
   videoController: MissionDetailTypeController;
+  externalActionController: MissionDetailTypeController;
 };
 
 type RuntimeEntry = {
@@ -34,6 +36,7 @@ const defaultStackProps: RuntimeEntry["buildRendererProps"] = ({ mission }) => (
   mission,
   survey: null,
   video: null,
+  externalAction: null,
 });
 
 const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
@@ -43,6 +46,7 @@ const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
       mission,
       survey,
       video: null,
+      externalAction: null,
     }),
     selectController: ({ surveyController }) => surveyController,
   },
@@ -52,6 +56,7 @@ const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
       mission,
       survey: null,
       video,
+      externalAction: null,
     }),
     selectController: ({ videoController }) => videoController,
   },
@@ -74,6 +79,16 @@ const runtimeRegistry: Record<MissionType, RuntimeEntry> = {
     Renderer: DailyLoginMissionDetail,
     buildRendererProps: defaultStackProps,
     selectController: ({ defaultController }) => defaultController,
+  },
+  external_action: {
+    Renderer: ExternalActionMissionDetail,
+    buildRendererProps: ({ mission, externalAction }) => ({
+      mission,
+      survey: null,
+      video: null,
+      externalAction,
+    }),
+    selectController: ({ externalActionController }) => externalActionController,
   },
 };
 

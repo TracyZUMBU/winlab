@@ -71,6 +71,7 @@ function durationHintI18nKey(
   | "missions.durationHint.survey"
   | "missions.durationHint.video"
   | "missions.durationHint.follow"
+  | "missions.durationHint.external_action"
   | null {
   switch (missionType) {
     case "survey":
@@ -79,6 +80,8 @@ function durationHintI18nKey(
       return "missions.durationHint.video";
     case "follow":
       return "missions.durationHint.follow";
+    case "external_action":
+      return "missions.durationHint.external_action";
     default:
       return null;
   }

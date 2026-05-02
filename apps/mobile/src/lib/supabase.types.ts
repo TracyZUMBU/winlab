@@ -1160,7 +1160,8 @@ export type Database = {
         | "follow"
         | "referral"
         | "custom"
-        | "daily_login";
+        | "daily_login"
+        | "external_action";
       mission_validation_mode: "automatic" | "manual";
       referral_status: "pending" | "qualified" | "rewarded" | "cancelled";
       unit_type: "weight" | "volume" | "count";
@@ -1321,6 +1322,7 @@ export const Constants = {
         "referral",
         "custom",
         "daily_login",
+        "external_action",
       ],
       mission_validation_mode: ["automatic", "manual"],
       referral_status: ["pending", "qualified", "rewarded", "cancelled"],

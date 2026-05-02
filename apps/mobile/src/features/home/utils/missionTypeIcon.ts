@@ -8,7 +8,8 @@ export function missionTypeToMaterialIconName(
   | "assignment"
   | "link"
   | "flag"
-  | "today" {
+  | "today"
+  | "open-in-new" {
   switch (missionType) {
     case "video":
       return "play-circle-filled";
@@ -20,6 +21,8 @@ export function missionTypeToMaterialIconName(
       return "link";
     case "daily_login":
       return "today";
+    case "external_action":
+      return "open-in-new";
     case "custom":
     default:
       return "flag";

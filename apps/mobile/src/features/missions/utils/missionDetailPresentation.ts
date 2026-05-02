@@ -45,6 +45,8 @@ export function getMissionDurationHintI18nKey(
       return "missions.durationHint.video";
     case "follow":
       return "missions.durationHint.follow";
+    case "external_action":
+      return "missions.durationHint.external_action";
     default:
       return null;
   }
@@ -64,6 +66,8 @@ export function getMissionTypeLabelI18nKey(missionType: MissionType): string {
       return "missions.detail.typeLabel.custom";
     case "daily_login":
       return "missions.detail.typeLabel.daily_login";
+    case "external_action":
+      return "missions.detail.typeLabel.external_action";
   }
 }
 

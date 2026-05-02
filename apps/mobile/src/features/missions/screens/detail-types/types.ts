@@ -22,16 +22,32 @@ export type MissionVideoDetailSlotProps = {
   isCompleted: boolean;
 };
 
+/** Données + callbacks mission `external_action` (écran détail). */
+export type MissionExternalActionDetailSlotProps = {
+  url: string;
+  label: string;
+  platform: string;
+  hasOpenedLink: boolean;
+  canSubmit: boolean;
+  isSubmitting: boolean;
+  isCompleted: boolean;
+  secondsRemaining: number;
+  handleLinkOpened: () => void;
+  handleSubmit: () => void;
+} | null;
+
 export type MissionTypeDetailRendererProps = {
   mission: MissionRow;
   survey: SurveyDetailRendererProps | null;
   video: MissionVideoDetailSlotProps | null;
+  externalAction: MissionExternalActionDetailSlotProps;
 };
 
 export type MissionTypeRendererPropsFactoryArgs = {
   mission: MissionRow;
   survey: SurveyDetailRendererProps;
   video: MissionVideoDetailSlotProps | null;
+  externalAction: MissionExternalActionDetailSlotProps;
 };
 
 export type MissionTypeDetailRenderer = ComponentType<MissionTypeDetailRendererProps>;
@@ -50,6 +66,8 @@ export type MissionDetailSecondaryAction = {
 };
 
 export type MissionDetailTypeController = {
+  /** Quand `true`, le CTA principal du bas n’est pas affiché (ex. mission `external_action`). */
+  hideBottomPrimary?: boolean;
   primary: MissionDetailPrimaryAction;
   secondary: MissionDetailSecondaryAction | null;
 };

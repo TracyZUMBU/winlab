@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
@@ -20,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { MissionDetailShellSummary } from "../components/MissionDetailShellSummary";
 import { useDefaultMissionDetailController } from "../hooks/useDefaultMissionDetailController";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
+import { useMissionDetailExternalAction } from "../hooks/useMissionDetailExternalAction";
 import { useMissionDetailVideo } from "../hooks/useMissionDetailVideo";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 import { useSurveyMissionDetailController } from "../hooks/useSurveyMissionDetailController";
@@ -29,6 +31,7 @@ import { getMissionDetailTypeRuntime } from "./detail-types/missionDetailTypeRun
 export function MissionDetailScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const { missionId } = useLocalSearchParams<{ missionId: string }>();
   const {
@@ -84,6 +87,8 @@ export function MissionDetailScreen() {
   });
 
   const { videoDetailSlot, videoController } = useMissionDetailVideo(mission);
+  const { externalActionSlot, externalActionController } =
+    useMissionDetailExternalAction(mission);
 
   const shellHeader = (
     <AppHeader
@@ -155,12 +160,21 @@ export function MissionDetailScreen() {
       setPendingAnswer,
     },
     video: videoDetailSlot,
+    externalAction: externalActionSlot,
   });
   const activeController = runtime.selectController({
     defaultController,
     surveyController,
     videoController,
+    externalActionController,
   });
+
+  const hideBottomPrimary = Boolean(activeController.hideBottomPrimary);
+  const scrollBottomPadding =
+    theme.spacing.lg +
+    (hideBottomPrimary
+      ? Math.max(insets.bottom, theme.spacing.md)
+      : theme.spacing.sm);
 
   return (
     <Screen>
@@ -169,7 +183,10 @@ export function MissionDetailScreen() {
       <View style={styles.container}>
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[styles.content]}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: scrollBottomPadding },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <MissionDetailShellSummary mission={mission} />
@@ -189,42 +206,44 @@ export function MissionDetailScreen() {
           ) : null}
         </ScrollView>
 
-        <View style={styles.bottomBar} pointerEvents="box-none">
-          <LinearGradient
-            colors={["transparent", theme.colors.surface, theme.colors.surface]}
-            style={StyleSheet.absoluteFill}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-          />
-          <View
-            style={[styles.bottomBarInner, { paddingBottom: theme.spacing.sm }]}
-          >
-            <Button
-              title={activeController.primary.title}
-              onPress={() => void activeController.primary.onPress()}
-              disabled={activeController.primary.disabled}
-              fullWidth
-              rightIcon={
-                <MaterialIcons
-                  name={activeController.primary.iconName}
-                  size={18}
-                  color={theme.colors.onAccent}
-                />
-              }
+        {!hideBottomPrimary ? (
+          <View style={styles.bottomBar} pointerEvents="box-none">
+            <LinearGradient
+              colors={["transparent", theme.colors.surface, theme.colors.surface]}
+              style={StyleSheet.absoluteFill}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
             />
-            {activeController.secondary ? (
-              <Pressable
-                style={styles.surveyBackButton}
-                onPress={activeController.secondary.onPress}
-                disabled={activeController.secondary.disabled}
-              >
-                <Text style={styles.surveyBackButtonText}>
-                  {activeController.secondary.title}
-                </Text>
-              </Pressable>
-            ) : null}
+            <View
+              style={[styles.bottomBarInner, { paddingBottom: theme.spacing.sm }]}
+            >
+              <Button
+                title={activeController.primary.title}
+                onPress={() => void activeController.primary.onPress()}
+                disabled={activeController.primary.disabled}
+                fullWidth
+                rightIcon={
+                  <MaterialIcons
+                    name={activeController.primary.iconName}
+                    size={18}
+                    color={theme.colors.onAccent}
+                  />
+                }
+              />
+              {activeController.secondary ? (
+                <Pressable
+                  style={styles.surveyBackButton}
+                  onPress={activeController.secondary.onPress}
+                  disabled={activeController.secondary.disabled}
+                >
+                  <Text style={styles.surveyBackButtonText}>
+                    {activeController.secondary.title}
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
           </View>
-        </View>
+        ) : null}
       </View>
     </Screen>
   );
@@ -246,7 +265,6 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 0,
     paddingHorizontal: theme.spacing.screenHorizontal,
-    paddingBottom: theme.spacing.lg,
   },
   detailSuspenseFallback: {
     paddingVertical: theme.spacing.md,

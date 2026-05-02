@@ -5,6 +5,7 @@ export function CustomMissionDetail({
   mission,
   survey: _survey,
   video: _video,
+  externalAction: _externalAction,
 }: MissionTypeDetailRendererProps) {
   return <CommonMissionDetailSection mission={mission} />;
 }

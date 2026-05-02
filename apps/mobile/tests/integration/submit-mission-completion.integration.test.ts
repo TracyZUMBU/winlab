@@ -245,6 +245,66 @@ describe("submit_mission_completion RPC (integration)", () => {
       });
     });
 
+    describe("external_action", () => {
+      it("soumet avec proof_data declarative et credite le wallet (validation automatique)", async () => {
+        const testUser = await createAuthenticatedTestUser();
+        const admin = getSupabaseAdminClient();
+        const brand = await createBrand();
+
+        const proofData = {
+          declared: true,
+          platform: "instagram",
+          opened_link: true,
+        };
+
+        const mission = await createMission({
+          brand_id: brand.id,
+          validation_mode: "automatic",
+          mission_type: "external_action",
+          token_reward: 15,
+          max_completions_per_user: 1,
+          metadata: {
+            external_url: "https://example.com/winlab",
+            platform: "instagram",
+            action_label: "Suivre sur Instagram",
+            min_external_duration_seconds: 5,
+          },
+        });
+
+        const { data, error } = await testUser.client.rpc(
+          SUBMIT_MISSION_COMPLETION_RPC,
+          {
+            p_mission_id: mission.id,
+            p_proof_data: proofData,
+          },
+        );
+        expect(error).toBeNull();
+        const completionId = expectRpcSuccess(data);
+
+        const { data: completion, error: completionError } = await admin
+          .from("mission_completions")
+          .select("*")
+          .eq("id", completionId)
+          .single();
+
+        expect(completionError).toBeNull();
+        expect(completion?.proof_data).toEqual(proofData);
+        expect(completion?.status).toBe("approved");
+        expect(completion?.reward_transaction_id).toBeTruthy();
+
+        const { data: walletTransactions, error: walletError } = await admin
+          .from("wallet_transactions")
+          .select("*")
+          .eq("user_id", testUser.userId)
+          .eq("transaction_type", "mission_reward");
+
+        expect(walletError).toBeNull();
+        expect(walletTransactions).toHaveLength(1);
+        expect(walletTransactions?.[0]?.amount).toBe(15);
+        expect(walletTransactions?.[0]?.direction).toBe("credit");
+      });
+    });
+
     it("soumet une mission automatique et crédite le wallet", async () => {
       const testUser = await createAuthenticatedTestUser();
       const admin = getSupabaseAdminClient();
