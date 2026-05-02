@@ -5,6 +5,7 @@ export function FollowMissionDetail({
   mission,
   survey: _survey,
   video: _video,
+  externalAction: _externalAction,
 }: MissionTypeDetailRendererProps) {
   return <CommonMissionDetailSection mission={mission} />;
 }

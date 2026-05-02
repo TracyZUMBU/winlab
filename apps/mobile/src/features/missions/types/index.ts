@@ -4,7 +4,8 @@ type MissionType =
   | "follow"
   | "referral"
   | "custom"
-  | "daily_login";
+  | "daily_login"
+  | "external_action";
 
 type MissionStatus = "draft" | "active" | "paused" | "archived";
 

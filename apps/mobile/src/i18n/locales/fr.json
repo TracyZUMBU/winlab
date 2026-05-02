@@ -236,7 +236,8 @@
     "durationHint": {
       "survey": "2 min",
       "video": "30 sec",
-      "follow": "15 sec"
+      "follow": "15 sec",
+      "external_action": "1 min"
     },
     "detail": {
       "screen": {
@@ -248,7 +249,8 @@
         "follow": "Tâche sociale",
         "referral": "Parrainage",
         "custom": "Mission",
-        "daily_login": "Connexion quotidienne"
+        "daily_login": "Connexion quotidienne",
+        "external_action": "Action externe"
       },
       "progress": {
         "title": "Progression",
@@ -285,6 +287,17 @@
       "cta": {
         "launch": "Lancer la mission",
         "launchPending": "Lancement…"
+      },
+      "externalAction": {
+        "linkOpenError": "Impossible d'ouvrir le lien",
+        "successToast": "✅ Action validée ! +{{tokenReward}} jetons gagnés",
+        "configError": "Configuration de la mission invalide. Réessayez plus tard.",
+        "submitDefault": "J'ai fait l'action",
+        "submitCountdown": "Disponible dans {{seconds}}s",
+        "submitValidating": "Validation…",
+        "submitDone": "✅ Complétée",
+        "hintOpenLinkFirst": "Ouvre le lien d'abord",
+        "hintCountdown": "Disponible dans {{seconds}}s…"
       },
       "video": {
         "completeSuccessToast": "🎉 Vidéo complétée ! +{{tokenReward}} jetons gagnés",

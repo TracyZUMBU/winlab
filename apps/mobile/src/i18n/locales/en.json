@@ -232,7 +232,8 @@
     "durationHint": {
       "survey": "2 min",
       "video": "30 sec",
-      "follow": "15 sec"
+      "follow": "15 sec",
+      "external_action": "1 min"
     },
     "detail": {
       "screen": {
@@ -244,7 +245,8 @@
         "follow": "Social task",
         "referral": "Referral",
         "custom": "Mission",
-        "daily_login": "Daily login"
+        "daily_login": "Daily login",
+        "external_action": "External action"
       },
       "progress": {
         "title": "Progress",
@@ -281,6 +283,17 @@
       "cta": {
         "launch": "Launch mission",
         "launchPending": "Launching…"
+      },
+      "externalAction": {
+        "linkOpenError": "Could not open the link",
+        "successToast": "✅ Action confirmed! +{{tokenReward}} tokens earned",
+        "configError": "This mission is misconfigured. Please try again later.",
+        "submitDefault": "I've completed the action",
+        "submitCountdown": "Available in {{seconds}}s",
+        "submitValidating": "Submitting…",
+        "submitDone": "✅ Completed",
+        "hintOpenLinkFirst": "Open the link first",
+        "hintCountdown": "Available in {{seconds}}s…"
       },
       "video": {
         "completeSuccessToast": "🎉 Video completed! +{{tokenReward}} tokens earned",

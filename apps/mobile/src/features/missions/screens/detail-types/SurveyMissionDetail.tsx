@@ -6,6 +6,7 @@ export function SurveyMissionDetail({
   mission,
   survey,
   video: _video,
+  externalAction: _externalAction,
 }: MissionTypeDetailRendererProps) {
   if (!survey) return null;
 

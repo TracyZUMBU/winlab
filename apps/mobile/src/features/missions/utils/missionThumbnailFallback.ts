@@ -43,6 +43,8 @@ const DAILY_LOGIN = [
   `https://images.unsplash.com/photo-1517694712202-3dd8430e106c?${UNSPLASH}`,
 ] as const;
 
+const EXTERNAL_ACTION = FOLLOW;
+
 const POOLS: Record<Enums<"mission_type">, readonly string[]> = {
   survey: SURVEY,
   video: VIDEO,
@@ -50,6 +52,7 @@ const POOLS: Record<Enums<"mission_type">, readonly string[]> = {
   referral: REFERRAL,
   custom: CUSTOM,
   daily_login: DAILY_LOGIN,
+  external_action: EXTERNAL_ACTION,
 };
 
 function hashMissionId(id: string): number {

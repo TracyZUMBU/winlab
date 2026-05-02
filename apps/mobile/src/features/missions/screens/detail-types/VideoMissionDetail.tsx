@@ -30,6 +30,7 @@ const MissionVideoPlayerLoadable = lazy(() =>
 function VideoMissionDetail({
   mission,
   video,
+  externalAction: _externalAction,
 }: MissionTypeDetailRendererProps) {
   const { t } = useTranslation();
 

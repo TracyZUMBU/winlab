@@ -22,7 +22,9 @@ function parseProfile(value: unknown): HomeDashboardProfile {
   };
 }
 
-function parseOngoingLottery(value: unknown): HomeDashboardOngoingLottery | null {
+function parseOngoingLottery(
+  value: unknown,
+): HomeDashboardOngoingLottery | null {
   if (!isRecord(value)) return null;
   if (typeof value.id !== "string" || typeof value.title !== "string") {
     return null;
@@ -54,9 +56,7 @@ function parseOngoingLottery(value: unknown): HomeDashboardOngoingLottery | null
   };
 }
 
-function parseParticipation(
-  value: unknown,
-): HomeDashboardParticipation | null {
+function parseParticipation(value: unknown): HomeDashboardParticipation | null {
   if (!isRecord(value)) return null;
   if (
     typeof value.lottery_id !== "string" ||
@@ -101,6 +101,7 @@ const MISSION_TYPES: readonly Enums<"mission_type">[] = [
   "follow",
   "referral",
   "custom",
+  "external_action",
 ];
 
 function parseMissionPreview(
@@ -138,9 +139,7 @@ function parseMissionPreview(
   };
 }
 
-export function parseHomeDashboardPayload(
-  raw: unknown,
-): HomeDashboardPayload {
+export function parseHomeDashboardPayload(raw: unknown): HomeDashboardPayload {
   if (!isRecord(raw)) {
     throw new Error("Invalid home dashboard payload");
   }
