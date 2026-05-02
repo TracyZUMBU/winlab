@@ -1,13 +1,7 @@
-import type { MonitoringEvent, MonitoringSeverity } from "../types";
+import type { MonitoringEvent } from "../types";
 import type { MonitoringProvider } from "./monitoring-provider";
 
 const DEFAULT_EDGE_FUNCTION_NAME = "monitoring-slack";
-
-function shouldSendToSlack(severity: MonitoringSeverity): boolean {
-  return (
-    severity === "warning" || severity === "error" || severity === "critical"
-  );
-}
 
 /**
  * Minimal Supabase client surface for `functions.invoke` (avoids coupling to a
@@ -44,8 +38,7 @@ export class SlackMonitoringProvider implements MonitoringProvider {
   }
 
   public async capture(event: MonitoringEvent): Promise<void> {
-    if (!shouldSendToSlack(event.severity)) return;
-
+    // TODO(debug): filtrer à nouveau — ne pas envoyer `info` ni `debug` vers Slack en prod (bruit).
     const { data, error } = await this.supabaseClient.functions.invoke(
       this.edgeFunctionName,
       {

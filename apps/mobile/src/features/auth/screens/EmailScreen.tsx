@@ -4,7 +4,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { type FieldErrors, useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -182,7 +182,6 @@ export const EmailScreen: React.FC = () => {
               <Text style={styles.title}>{t("emailScreen.title")}</Text>
               <Text style={styles.subtitle}>{t("emailScreen.subtitle")}</Text>
             </View>
-
             {/* Form */}
             <View style={styles.form}>
               <View style={styles.fieldContainer}>
@@ -248,7 +247,6 @@ export const EmailScreen: React.FC = () => {
 
               {__DEV__ ? <DevPasswordLoginPanel email={emailValue} /> : null}
             </View>
-
             {/* Footer */}
             <View style={styles.footer}>
               <View style={styles.securityRow}>

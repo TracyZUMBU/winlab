@@ -8,8 +8,8 @@ import { PaginationDots } from "@/src/components/ui/PaginationDots";
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
 
-import { setHasSeenOnboardingTrue } from "@/src/lib/onboardingStorage";
 import { logger } from "@/src/lib/logger";
+import { setHasSeenOnboardingTrue } from "@/src/lib/onboardingStorage";
 import { useRouter } from "expo-router";
 import { AUTH_ROUTES } from "../../auth/constants/authConstants";
 import { ONBOARDING_SLIDES } from "../constants";
@@ -91,7 +91,6 @@ export function OnboardingScreen() {
           </Text>
         </View>
       </View>
-
       <View style={styles.footer}>
         <PaginationDots
           total={ONBOARDING_SLIDES.length}

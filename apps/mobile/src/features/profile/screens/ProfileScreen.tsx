@@ -291,13 +291,8 @@ export function ProfileScreen() {
   }, [router]);
 
   const openReferral = useCallback(() => {
-    const code =
-      profile?.referral_code?.trim() || t("profile.screen.valueUnknown");
-    Alert.alert(
-      t("profile.menu.referralAlertTitle"),
-      `${code}\n\n${t("profile.menu.referralAlertHint")}`,
-    );
-  }, [profile?.referral_code, t]);
+    router.push("/referral");
+  }, [router]);
 
   const openSupport = useCallback(() => {
     Alert.alert(t("profile.menu.support"), t("profile.menu.supportMessage"));

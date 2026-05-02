@@ -1004,6 +1004,16 @@ export type Database = {
           lottery_id: string
         }[]
       }
+      get_my_referral_invitees: {
+        Args: Record<string, never>
+        Returns: {
+          created_at: string
+          qualified_at: string | null
+          referral_id: string
+          referred_username: string | null
+          status: Database["public"]["Enums"]["referral_status"]
+        }[]
+      }
       get_todo_missions_page: {
         Args: { p_limit: number; p_offset: number }
         Returns: {
@@ -1048,6 +1058,13 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { user_id: string }; Returns: boolean }
+      register_referral_with_code: {
+        Args: { p_code: string }
+        Returns: {
+          error_code: string | null
+          success: boolean
+        }[]
+      }
       regenerate_grocery_list: {
         Args: { p_week_id: string }
         Returns: undefined

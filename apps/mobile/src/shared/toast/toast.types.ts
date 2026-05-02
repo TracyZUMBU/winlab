@@ -25,6 +25,11 @@ export type ShowToastInput = {
   message?: string;
   durationMs?: number;
   /**
+   * When false, the toast stays until the user dismisses it (tap / swipe per library behavior).
+   * Default true.
+   */
+  autoHide?: boolean;
+  /**
    * Reserved for future analytics (no-op today).
    * Do not log PII.
    */

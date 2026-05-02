@@ -1,6 +1,6 @@
 # Mémo — Feature Missions (mobile)
 
-**Dernière revue du mémo :** 2026-05-01
+**Dernière revue du mémo :** 2026-05-06
 
 ## Objectif
 
@@ -9,7 +9,8 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 ## Périmètre
 
 - **Inclus :** listes missions todo / complétées, écran détail, soumission de complétion, codes d’erreur métier exposés au client, mission daily login (côté client + constantes), invalidation des caches liés après succès.
-- **Hors périmètre (autres features / admin) :** approbation admin des complétions (`approve_mission_completion`), wallet UI détaillée, referral — sauf impact **cache** documenté ci‑dessous.
+- **Hors périmètre (autres features / admin) :** approbation admin des complétions (`approve_mission_completion`), wallet UI détaillée.
+- **Lien produit parrainage (hors UI missions) :** le bonus parrain est déclenché côté serveur après `approve_mission_completion` (`handle_referral_after_first_mission`) ; les types de mission **non qualifiants** pour la 1ʳᵉ récompense (ex. `daily_login`) sont exclus via SQL — voir **`src/features/profile/MEMO.md`**. Les invalidations TanStack actuelles après soumission **ne** couvrent **pas** `referralKeys` ; ajouter une invalidation ciblée seulement si l’UX profil doit se mettre à jour sans refetch manuel.
 
 ## Navigation (Expo Router)
 
@@ -38,7 +39,7 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 
 - **RPC :** `get_todo_missions_page`, `submit_mission_completion`.
 - **Lecture directe (client typé) :** `missions`, `mission_completions` (complétées), selon les services ci‑dessus.
-- **Impact home :** `get_user_home_dashboard` peut exposer des missions / états liés ; garder cohérent avec les filtres produit (ex. daily login, exclusions de listes).
+- **Impact home :** `get_user_home_dashboard` peut exposer des missions / états liés ; garder cohérent avec les filtres produit (ex. daily login, exclusions de listes). **Parrainage :** une complétion approuvée + récompensée peut qualifier un filleul (hors types exclus) — pas de champ dédié dans les payloads missions mobile, effet visible côté **profil / wallet** (RPC wallet / hub parrain).
 - **Schémas source :** `supabase/schemas/functions/*.sql` ; **migrations :** `supabase/migrations/` (chercher `daily_login`, `submit_mission_completion`, `todo_missions`, `mission_type`, etc.).
 
 ### Codes métier stables (soumission)

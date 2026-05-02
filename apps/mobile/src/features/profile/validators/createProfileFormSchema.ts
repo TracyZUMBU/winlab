@@ -6,6 +6,8 @@ import { z } from "zod";
 import { PROFILE_SEX, type ProfileSex } from "../types/profileSex";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+/** Same alphabet as DB-generated referral_code (no I, O, 0, 1). */
+const REFERRAL_CODE_CHARS_RE = /^[A-HJ-NP-Z2-9]{8}$/;
 
 const profileSexZodEnum = z.enum([
   PROFILE_SEX.female,
@@ -39,6 +41,24 @@ const createProfileFormBaseSchema = usernameSchema.extend({
     }),
   /** Optionnel côté défaut RHF ; obligatoire après validation (voir `refine`). */
   sex: profileSexZodEnum.optional(),
+  referral_code: z
+    .string()
+    .transform((s) => s.trim().toUpperCase())
+    .pipe(
+      z.union([
+        z.literal(""),
+        z
+          .string()
+          .length(
+            8,
+            i18n.t("schema.createProfile.referralCode.length"),
+          )
+          .regex(
+            REFERRAL_CODE_CHARS_RE,
+            i18n.t("schema.createProfile.referralCode.invalid"),
+          ),
+      ]),
+    ),
 });
 
 export const createProfileFormSchema = createProfileFormBaseSchema.refine(

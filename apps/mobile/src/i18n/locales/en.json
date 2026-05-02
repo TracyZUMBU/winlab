@@ -2,6 +2,9 @@
   "app": {
     "name": "Winlab"
   },
+  "bootstrap": {
+    "loadFailed": "Could not start the app. Please try again."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initializing",
@@ -174,6 +177,10 @@
       "sex": {
         "required": "Please select an option",
         "invalid": "Unrecognized value"
+      },
+      "referralCode": {
+        "length": "Referral code must be exactly 8 characters.",
+        "invalid": "Invalid referral code characters."
       }
     }
   },
@@ -307,7 +314,9 @@
       }
     },
     "dailyLogin": {
-      "toastReward": "🎁 +{{count}} tokens for your daily login!"
+      "toastReward": "🎁 +{{count}} tokens for your daily login!",
+      "modalTitle": "Daily login bonus",
+      "modalMessage": "🎁 +{{count}} tokens for your daily login!"
     },
     "screen": {
       "submitMission": "Mission submitted.",
@@ -511,6 +520,7 @@
     "loading": "Loading…",
     "back": "Back",
     "close": "Close",
+    "ok": "OK",
     "retry": "Retry",
     "share": "Share",
     "loadMore": "Load more",
@@ -572,17 +582,33 @@
     },
     "createProfile": {
       "successToast": "Profile created.",
+      "referralPartial": {
+        "title": "Referral code",
+        "messageFallback": "Your profile was created, but the referral code could not be applied."
+      },
       "errors": {
         "sessionExpired": "Your session has expired. Please sign in again.",
         "emailUnavailable": "We could not read your email. Please sign in again.",
         "submitFailed": "We could not create your profile. Please try again.",
-        "USERNAME_TAKEN": "This username is already taken. Please choose another one."
+        "USERNAME_TAKEN": "This username is already taken. Please choose another one.",
+        "REFERRAL_CODE_INVALID_FORMAT": "Referral code must be exactly 8 valid characters.",
+        "REFERRAL_CODE_NOT_FOUND": "This referral code was not found.",
+        "REFERRAL_SELF_NOT_ALLOWED": "You cannot use your own referral code.",
+        "REFERRAL_ALREADY_REGISTERED": "A referral is already linked to your account.",
+        "NOT_AUTHENTICATED": "Your session has expired. Please sign in again.",
+        "REFERRAL_RPC_FAILED": "We could not verify the referral code. Please try again later.",
+        "REFERRAL_UNKNOWN": "We could not apply the referral code. Please try again later."
       },
       "screen": {
         "title": "Create your profile",
         "subtitle": "Please complete the following information to finish signing up.",
         "label": "USERNAME",
         "placeholder": "Your username",
+        "referralSectionTitle": "Referral",
+        "referralSectionSubtitle": "You have been invited by a friend? Enter their code below.",
+        "referralCodeLabel": "REFERRAL CODE",
+        "referralCodePlaceholder": "XR3R42K4",
+
         "birthDateLabel": "DATE OF BIRTH",
         "birthDatePlaceholder": "Tap to choose a date",
         "birthDateHint": "Display: day / month / year (DD/MM/YYYY)",
@@ -607,6 +633,38 @@
       "a11yBack": "Go back",
       "a11ySettings": "Account settings"
     },
+    "referralHub": {
+      "title": "Referrals",
+      "a11yBack": "Go back",
+      "sectionCode": "Your code",
+      "sectionInvitees": "Your referrals",
+      "codeLabel": "Your referral code",
+      "codeHint": "Select the code above to copy it, or tap Share to open your device menu (Messages, Mail, WhatsApp, etc.).",
+      "loadingInvitees": "Loading your referrals…",
+      "error": "Could not load your referral list.",
+      "emptyTitle": "No referrals yet",
+      "emptyBody": "Share your code: when a friend joins Winlab and completes a qualifying mission, you earn rewards.",
+      "status": {
+        "pending": "Pending",
+        "qualified": "Qualified",
+        "rewarded": "Validated",
+        "cancelled": "Cancelled"
+      },
+      "invitee": {
+        "anonymous": "Invited member",
+        "since": "Referred on {{date}}",
+        "qualifiedOn": "Validated on {{date}}"
+      },
+      "share": {
+        "title": "Join me on Winlab",
+        "body": "Join Winlab with my referral code: {{code}}",
+        "bodyFallback": "Join me on Winlab.",
+        "native": "Share",
+        "nativeA11y": "Open the share sheet",
+        "errorTitle": "Share",
+        "errorMessage": "Something went wrong. Please try again."
+      }
+    },
     "section": {
       "activityRewards": "Activity & rewards",
       "supportInfo": "Support & info",
@@ -617,7 +675,7 @@
       "participationsA11y": "Open my participations",
       "referral": "Referral",
       "referralSubtitle": "Invite friends and earn tokens",
-      "referralA11y": "View referral code",
+      "referralA11y": "Open referrals and your code",
       "referralAlertTitle": "Your referral code",
       "referralAlertHint": "Share this code so friends can join Winlab and unlock rewards together.",
       "support": "Support",

@@ -1,23 +1,20 @@
-import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
-import type { DailyLoginMissionResult } from "@/src/features/missions/hooks/useDailyLoginMission";
-import { triggerDailyLoginMission } from "@/src/features/missions/hooks/useDailyLoginMission";
-import { getProfileByUserId } from "@/src/features/profile/services/getProfileByUserId";
-import type { Profile } from "@/src/features/profile/types/profileTypes";
-import { logger } from "@/src/lib/logger";
-import { monitoring } from "@/src/lib/monitoring";
-import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
-import { getCurrentSession } from "@/src/lib/supabase/session";
-import { useEffect, useState } from "react";
+import { subscribeToAuthChanges } from "@/src/lib/supabase/session";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-export type AppBootstrapStatus = "idle" | "loading" | "ready";
+import type { AppBootstrapPayload } from "./sharedAppBootstrap";
+import {
+  getBootstrapCacheBumpVersion,
+  invalidateAppBootstrapCache,
+  resolveSharedAppBootstrapPayload,
+  subscribeBootstrapCacheBump,
+} from "./sharedAppBootstrap";
 
-export type AppBootstrapResult = {
+export type AppBootstrapStatus = "idle" | "loading" | "ready" | "error";
+
+export type AppBootstrapResult = AppBootstrapPayload & {
   status: AppBootstrapStatus;
-  profile: Profile | null;
-  hasSeenOnboarding: boolean;
-  sessionUserId: string | null;
-  redirectTo: string | null;
-  dailyLoginMissionResult: DailyLoginMissionResult | null;
+  /** Set when `status` is `"error"` after an unexpected bootstrap failure. */
+  bootstrapError: unknown | null;
 };
 
 /**
@@ -25,10 +22,17 @@ export type AppBootstrapResult = {
  * - session Supabase
  * - profil en base
  * - état local onboarding (device)
+ *
+ * Tous les écrans qui appellent ce hook partagent le même chargement (cache + promesse unique)
+ * pour éviter un double `triggerDailyLoginMission` (récompense invisible).
+ *
+ * Recharge après changement d’utilisateur (connexion / déconnexion) pour ne pas garder
+ * un snapshot « anonyme » une fois la session OTP créée.
  */
 export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
   const [state, setState] = useState<AppBootstrapResult>({
     status: "idle",
+    bootstrapError: null,
     profile: null,
     hasSeenOnboarding: false,
     sessionUserId: null,
@@ -36,122 +40,84 @@ export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
     dailyLoginMissionResult: null,
   });
 
+  const [bootstrapReloadNonce, setBootstrapReloadNonce] = useState(0);
+  /** Incrémenté dans `invalidateAppBootstrapCache` pour forcer un reload sur tous les hooks montés. */
+  const cacheBumpVersion = useSyncExternalStore(
+    subscribeBootstrapCacheBump,
+    getBootstrapCacheBumpVersion,
+    getBootstrapCacheBumpVersion,
+  );
+  /** `undefined` = avant le premier événement auth ; évite un reload doublon au cold start. */
+  const lastAuthUserIdRef = useRef<string | null | undefined>(undefined);
+
   useEffect(() => {
     if (!enabled) return;
 
-    let isMounted = true;
+    const unsub = subscribeToAuthChanges((session) => {
+      const nextUserId = session?.user?.id ?? null;
+
+      if (lastAuthUserIdRef.current === undefined) {
+        lastAuthUserIdRef.current = nextUserId;
+        invalidateAppBootstrapCache();
+        setBootstrapReloadNonce((n) => n + 1);
+        return;
+      }
+
+      if (lastAuthUserIdRef.current === nextUserId) {
+        return;
+      }
+
+      lastAuthUserIdRef.current = nextUserId;
+      invalidateAppBootstrapCache();
+      setBootstrapReloadNonce((n) => n + 1);
+    });
+
+    return unsub;
+  }, [enabled]);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    let cancelled = false;
 
     const load = async () => {
-      setState((prev) => ({ ...prev, status: "loading" }));
+      setState((prev) => ({
+        ...prev,
+        status: "loading",
+        bootstrapError: null,
+      }));
 
       try {
-        const [sessionData, hasSeen] = await Promise.all([
-          getCurrentSession(),
-          readHasSeenOnboarding(),
-        ]);
+        const payload = await resolveSharedAppBootstrapPayload();
 
-        const sessionUserId = sessionData.user?.id ?? null;
-
-        let profile: Profile | null = null;
-        let dailyLoginMissionResult: DailyLoginMissionResult | null = null;
-        if (sessionUserId) {
-          //1. get profile
-          try {
-            profile = await getProfileByUserId(sessionUserId);
-          } catch (error) {
-            logger.warn(
-              "[bootstrap] profile fetch failed; treating as no profile (same redirect as absent row)",
-              {
-                userId: sessionUserId,
-                error,
-              },
-            );
-            monitoring.captureException({
-              name: "bootstrap_profile_fetch_failed",
-              severity: "warning",
-              feature: "bootstrap",
-              message:
-                "Profile fetch failed during bootstrap; UX fallback matches missing profile",
-              error,
-              userId: sessionUserId,
-              extra: { action: "getProfileByUserId" },
-            });
-            profile = null;
-          }
-
-          //2. trigger daily login mission
-          try {
-            dailyLoginMissionResult = await triggerDailyLoginMission();
-          } catch (error) {
-            logger.warn(
-              "[bootstrap] daily login mission trigger failed; continuing without mission result",
-              { userId: sessionUserId, error },
-            );
-            monitoring.captureException({
-              name: "bootstrap_daily_login_mission_failed",
-              severity: "warning",
-              feature: "bootstrap",
-              message: "Daily login mission trigger failed during bootstrap",
-              error,
-              userId: sessionUserId,
-              extra: { action: "triggerDailyLoginMission" },
-            });
-            dailyLoginMissionResult = null;
-          }
+        if (cancelled) {
+          return;
         }
 
-        //3. redirect to the right route
-        let redirectTo: string;
-        if (!sessionUserId) {
-          redirectTo = hasSeen ? AUTH_ROUTES.email : "/onboarding";
-        } else {
-          redirectTo = profile ? "/home" : AUTH_ROUTES.createProfile;
-        }
-
-        if (isMounted) {
-          setState({
-            status: "ready",
-            profile,
-            hasSeenOnboarding: hasSeen,
-            sessionUserId,
-            redirectTo,
-            dailyLoginMissionResult,
-          });
-        }
-      } catch (error) {
-        // conservative behavior: if session/hasSeenOnboarding fails, we send to onboarding.
-        logger.warn(
-          "[bootstrap] session or onboarding read failed; redirecting to onboarding",
-          {
-            error,
-          },
-        );
-        monitoring.captureException({
-          name: "app_bootstrap_failed",
-          severity: "error",
-          feature: "bootstrap",
-          message: "App bootstrap failed",
-          error,
+        setState({
+          status: "ready",
+          bootstrapError: null,
+          ...payload,
         });
-        if (isMounted) {
-          setState({
-            status: "ready",
-            profile: null,
-            hasSeenOnboarding: false,
-            sessionUserId: null,
-            redirectTo: "/onboarding",
-            dailyLoginMissionResult: null,
-          });
+      } catch (error) {
+        if (cancelled) {
+          return;
         }
+
+        setState((prev) => ({
+          ...prev,
+          status: "error",
+          bootstrapError: error,
+        }));
       }
     };
 
     void load();
 
     return () => {
-      isMounted = false;
+      cancelled = true;
     };
-  }, [enabled]);
+  }, [enabled, bootstrapReloadNonce, cacheBumpVersion]);
 
   return state;
 }

@@ -96,6 +96,89 @@ describe("handle_referral_after_first_mission (integration)", () => {
     expect(balanceRow?.balance).toBe(30);
   });
 
+  it("ignores daily_login for referral qualification; rewards after first qualifying mission", async () => {
+    const admin = getSupabaseAdminClient();
+
+    const referrer = await createAuthenticatedTestUser();
+    const referred = await createAuthenticatedTestUser();
+
+    const brand = await createBrand();
+
+    const dailyMission = await createMission({
+      brand_id: brand.id,
+      mission_type: "daily_login",
+      validation_mode: "automatic",
+      token_reward: 5,
+    });
+
+    const surveyMission = await createMission({
+      brand_id: brand.id,
+      validation_mode: "automatic",
+      mission_type: "survey",
+      token_reward: 20,
+    });
+
+    const referral = await createReferral({
+      referrer_user_id: referrer.userId,
+      referred_user_id: referred.userId,
+      status: "pending",
+    });
+    const referralId = referral.id;
+
+    const dailyCompletion = await createMissionCompletion({
+      mission_id: dailyMission.id,
+      user_id: referred.userId,
+      status: "pending",
+      proof_data: {},
+    });
+
+    const { data: approveDailyData, error: approveDailyError } =
+      await referred.client.rpc(APPROVE_MISSION_COMPLETION_RPC, {
+        p_completion_id: dailyCompletion.id,
+      });
+    expect(approveDailyError).toBeNull();
+    expectRpcSuccess(approveDailyData);
+
+    const { data: referralAfterDaily, error: referralAfterDailyError } =
+      await admin.from("referrals").select("*").eq("id", referralId).single();
+
+    expect(referralAfterDailyError).toBeNull();
+    if (!referralAfterDaily) throw new Error("Referral row missing");
+    expect(referralAfterDaily.status).toBe("pending");
+    expect(referralAfterDaily.reward_transaction_id).toBeNull();
+
+    const { data: noBonusYet, error: noBonusYetError } = await admin
+      .from("wallet_transactions")
+      .select("*")
+      .eq("user_id", referrer.userId)
+      .eq("transaction_type", "referral_bonus");
+
+    expect(noBonusYetError).toBeNull();
+    expect(noBonusYet).toHaveLength(0);
+
+    const surveyCompletion = await createMissionCompletion({
+      mission_id: surveyMission.id,
+      user_id: referred.userId,
+      status: "pending",
+      proof_data: {},
+    });
+
+    const { data: approveSurveyData, error: approveSurveyError } =
+      await referred.client.rpc(APPROVE_MISSION_COMPLETION_RPC, {
+        p_completion_id: surveyCompletion.id,
+      });
+    expect(approveSurveyError).toBeNull();
+    expectRpcSuccess(approveSurveyData);
+
+    const { data: referralAfterSurvey, error: referralAfterSurveyError } =
+      await admin.from("referrals").select("*").eq("id", referralId).single();
+
+    expect(referralAfterSurveyError).toBeNull();
+    if (!referralAfterSurvey) throw new Error("Referral row missing after survey");
+    expect(referralAfterSurvey.status).toBe("rewarded");
+    expect(referralAfterSurvey.reward_transaction_id).toBeTruthy();
+  });
+
   it("does not reward if referred user already has more than one approved mission", async () => {
     const admin = getSupabaseAdminClient();
 

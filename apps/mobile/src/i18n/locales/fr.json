@@ -2,6 +2,9 @@
   "app": {
     "name": "Winlab"
   },
+  "bootstrap": {
+    "loadFailed": "Impossible de démarrer l’application. Réessayez."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initialisation",
@@ -178,6 +181,10 @@
       "sex": {
         "required": "Veuillez indiquer une option",
         "invalid": "Valeur non reconnue"
+      },
+      "referralCode": {
+        "length": "Le code parrain doit contenir exactement 8 caractères.",
+        "invalid": "Caractères du code parrain invalides."
       }
     }
   },
@@ -311,7 +318,9 @@
       }
     },
     "dailyLogin": {
-      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !"
+      "toastReward": "🎁 +{{count}} jetons pour ta connexion du jour !",
+      "modalTitle": "Bonus connexion",
+      "modalMessage": "🎁 +{{count}} jetons pour ta connexion du jour !"
     },
     "screen": {
       "submitMission": "Mission soumise.",
@@ -515,6 +524,7 @@
     "loading": "Chargement…",
     "back": "Retour",
     "close": "Fermer",
+    "ok": "OK",
     "retry": "Réessayer",
     "share": "Partager",
     "loadMore": "Voir plus",
@@ -576,17 +586,33 @@
     },
     "createProfile": {
       "successToast": "Profil créé.",
+      "referralPartial": {
+        "title": "Code parrain",
+        "messageFallback": "Votre profil a bien été créé, mais le code parrain n’a pas pu être enregistré."
+      },
       "errors": {
         "sessionExpired": "Votre session a expiré. Merci de vous reconnecter.",
         "emailUnavailable": "Impossible de récupérer votre email. Merci de vous reconnecter.",
         "submitFailed": "Impossible de créer votre profil. Réessayez.",
-        "USERNAME_TAKEN": "Ce pseudo est déjà utilisé. Choisissez-en un autre."
+        "USERNAME_TAKEN": "Ce pseudo est déjà utilisé. Choisissez-en un autre.",
+        "REFERRAL_CODE_INVALID_FORMAT": "Le code parrain doit contenir exactement 8 caractères valides.",
+        "REFERRAL_CODE_NOT_FOUND": "Ce code parrain est introuvable.",
+        "REFERRAL_SELF_NOT_ALLOWED": "Vous ne pouvez pas utiliser votre propre code parrain.",
+        "REFERRAL_ALREADY_REGISTERED": "Un parrain est déjà associé à votre compte.",
+        "NOT_AUTHENTICATED": "Votre session a expiré. Merci de vous reconnecter.",
+        "REFERRAL_RPC_FAILED": "Impossible de valider le code parrain. Réessayez plus tard.",
+        "REFERRAL_UNKNOWN": "Le code parrain n’a pas pu être enregistré. Réessayez plus tard."
       },
       "screen": {
         "title": "Créez votre profil",
         "subtitle": "Veuillez compléter les informations suivantes pour finaliser votre inscription.",
         "label": "PSEUDO",
         "placeholder": "Votre pseudo",
+        "referralSectionTitle": "Parrainage",
+        "referralSectionSubtitle": "Vous avez été invité par un ami ? Entrez son code ci-dessous.",
+        "referralCodeLabel": "CODE PARRAIN",
+        "referralCodePlaceholder": "XR3R42K4",
+
         "birthDateLabel": "DATE DE NAISSANCE",
         "birthDatePlaceholder": "Appuyez pour choisir une date",
         "birthDateHint": "Affichage : jour-mois-année (JJ-MM-AAAA)",
@@ -611,6 +637,38 @@
       "a11yBack": "Retour",
       "a11ySettings": "Réglages du compte"
     },
+    "referralHub": {
+      "title": "Parrainage",
+      "a11yBack": "Retour",
+      "sectionCode": "Votre code",
+      "sectionInvitees": "Vos parrainages",
+      "codeLabel": "Votre code de parrainage",
+      "codeHint": "Sélectionnez le code ci-dessus pour le copier, ou touchez Partager pour ouvrir le menu du téléphone (Messages, Mail, WhatsApp, etc.).",
+      "loadingInvitees": "Chargement de vos parrainages…",
+      "error": "Impossible de charger la liste des parrainages.",
+      "emptyTitle": "Aucun parrainage pour l'instant",
+      "emptyBody": "Partagez votre code : lorsqu’un proche rejoint Winlab et termine une mission éligible, vous cumulez des récompenses.",
+      "status": {
+        "pending": "En attente",
+        "qualified": "Qualifié",
+        "rewarded": "Validé",
+        "cancelled": "Annulé"
+      },
+      "invitee": {
+        "anonymous": "Membre invité",
+        "since": "Parrainé le {{date}}",
+        "qualifiedOn": "Validé le {{date}}"
+      },
+      "share": {
+        "title": "Rejoins-moi sur Winlab",
+        "body": "Rejoins Winlab avec mon code de parrainage : {{code}}",
+        "bodyFallback": "Rejoins-moi sur Winlab.",
+        "native": "Partager",
+        "nativeA11y": "Ouvrir le menu de partage",
+        "errorTitle": "Partage",
+        "errorMessage": "Une erreur s’est produite. Réessayez."
+      }
+    },
     "section": {
       "activityRewards": "Activité & récompenses",
       "supportInfo": "Aide & infos",
@@ -621,7 +679,7 @@
       "participationsA11y": "Ouvrir mes participations",
       "referral": "Parrainage",
       "referralSubtitle": "Invitez des amis et gagnez des jetons",
-      "referralA11y": "Voir mon code de parrainage",
+      "referralA11y": "Ouvrir le parrainage et mon code",
       "referralAlertTitle": "Votre code de parrainage",
       "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
       "support": "Support",
