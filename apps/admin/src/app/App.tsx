@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminAuthGate } from "../features/auth";
 import { LotteriesPage, LotteryDetailFromRouteRedirect } from "../features/lotteries";
 import { MissionDetailFromRouteRedirect, MissionsPage } from "../features/missions";
+import { PushAdminMvpPage } from "../features/push-admin-mvp";
 import { AdminLayout } from "./AdminLayout";
 
 /** Routes sous garde auth + `profiles.is_admin`. */
@@ -21,6 +22,7 @@ export function App() {
             path="missions/:missionId"
             element={<MissionDetailFromRouteRedirect />}
           />
+          <Route path="push-mvp" element={<PushAdminMvpPage />} />
         </Route>
       </Routes>
     </AdminAuthGate>

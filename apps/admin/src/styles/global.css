@@ -838,3 +838,113 @@ body {
   background: #f1f5f9;
   color: #64748b;
 }
+
+/* Push admin MVP (/push-mvp) */
+.page-push-mvp__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.page-push-mvp__intro {
+  margin: 0 0 1rem;
+  max-width: 40rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.page-push-mvp__code {
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.page-push-mvp__alert {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.page-push-mvp__alert--error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.page-push-mvp__alert--success {
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.page-push-mvp__form {
+  max-width: 28rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.page-push-mvp__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.page-push-mvp__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.page-push-mvp__input,
+.page-push-mvp__textarea {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: #fff;
+  color: #0f172a;
+}
+
+.page-push-mvp__textarea {
+  resize: vertical;
+  min-height: 5rem;
+}
+
+.page-push-mvp__input:focus,
+.page-push-mvp__textarea:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.page-push-mvp__actions {
+  margin-top: 0.25rem;
+}
+
+.page-push-mvp__submit {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.page-push-mvp__submit:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.page-push-mvp__submit:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}

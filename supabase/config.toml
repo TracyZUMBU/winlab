@@ -385,3 +385,11 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.delete-my-account]
 verify_jwt = false
+
+# Invoked by Postgres (pg_net) with service role Bearer only — no end-user JWT.
+[functions.send-push-notification]
+verify_jwt = false
+
+# JWT vérifié dans le handler (`role === authenticated`) ; service role uniquement côté Deno.
+[functions.admin-send-push-mvp]
+verify_jwt = false
