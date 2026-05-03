@@ -61,6 +61,7 @@
         }
       ],
       "expo-secure-store",
+      "expo-notifications",
       "expo-video"
     ],
     "experiments": {

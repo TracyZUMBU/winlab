@@ -294,6 +294,10 @@ export function ProfileScreen() {
     router.push("/referral");
   }, [router]);
 
+  const openNotificationSettings = useCallback(() => {
+    router.push("/notifications");
+  }, [router]);
+
   const openSupport = useCallback(() => {
     Alert.alert(t("profile.menu.support"), t("profile.menu.supportMessage"));
   }, [t]);
@@ -561,7 +565,16 @@ export function ProfileScreen() {
             title={t("profile.menu.referral")}
             subtitle={t("profile.menu.referralSubtitle")}
             onPress={openReferral}
+            showDivider
             accessibilityLabel={t("profile.menu.referralA11y")}
+          />
+          <ProfileMenuRow
+            icon="notifications-active"
+            iconVariant="accent"
+            title={t("profile.menu.notifications")}
+            subtitle={t("profile.menu.notificationsSubtitle")}
+            onPress={openNotificationSettings}
+            accessibilityLabel={t("profile.menu.notificationsA11y")}
           />
         </ListGroup>
 

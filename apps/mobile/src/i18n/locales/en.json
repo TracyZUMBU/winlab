@@ -675,6 +675,30 @@
       "a11yBack": "Go back",
       "a11ySettings": "Account settings"
     },
+    "notificationsDetail": {
+      "title": "Notifications",
+      "a11yBack": "Go back",
+      "sectionStatus": "Permissions",
+      "statusLabel": "Push notifications",
+      "loading": "Reading permissions…",
+      "unsupported": "Push notifications are not available on this platform.",
+      "error": "Could not read notification status. Please try again.",
+      "status": {
+        "enabled": "On",
+        "disabled": "Off",
+        "undetermined": "Not requested yet",
+        "provisional": "Provisional (quiet)"
+      },
+      "hintEnabled": "Winlab can send alerts to this device.",
+      "hintDisabled": "Notifications are turned off. You can enable them in your device settings.",
+      "hintUndetermined": "Allow Winlab to send notifications so you do not miss missions and rewards.",
+      "requestCta": "Allow notifications",
+      "openSettingsCta": "Open app settings",
+      "requestErrorTitle": "Notifications",
+      "requestErrorBody": "The permission request did not complete. Please try again.",
+      "openSettingsErrorTitle": "Settings",
+      "openSettingsErrorBody": "Could not open settings. Please open them manually from your device."
+    },
     "referralHub": {
       "title": "Referrals",
       "a11yBack": "Go back",
@@ -718,6 +742,9 @@
       "referral": "Referral",
       "referralSubtitle": "Invite friends and earn tokens",
       "referralA11y": "Open referrals and your code",
+      "notifications": "Notifications",
+      "notificationsSubtitle": "See whether alerts are allowed on this device",
+      "notificationsA11y": "Open notification details",
       "referralAlertTitle": "Your referral code",
       "referralAlertHint": "Share this code so friends can join Winlab and unlock rewards together.",
       "support": "Support",

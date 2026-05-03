@@ -679,6 +679,30 @@
       "a11yBack": "Retour",
       "a11ySettings": "Réglages du compte"
     },
+    "notificationsDetail": {
+      "title": "Notifications",
+      "a11yBack": "Retour",
+      "sectionStatus": "Autorisations",
+      "statusLabel": "Notifications push",
+      "loading": "Lecture des autorisations…",
+      "unsupported": "Les notifications push ne sont pas disponibles sur cette plateforme.",
+      "error": "Impossible de lire l’état des notifications. Réessayez.",
+      "status": {
+        "enabled": "Activées",
+        "disabled": "Désactivées",
+        "undetermined": "Pas encore demandées",
+        "provisional": "Aperçu (silencieux)"
+      },
+      "hintEnabled": "Vous pouvez recevoir des alertes Winlab sur cet appareil.",
+      "hintDisabled": "Les notifications sont refusées. Vous pouvez les activer dans les réglages du téléphone.",
+      "hintUndetermined": "Autorisez Winlab à vous envoyer des notifications pour être tenu au courant des missions et des gains.",
+      "requestCta": "Autoriser les notifications",
+      "openSettingsCta": "Ouvrir les réglages de l’app",
+      "requestErrorTitle": "Notifications",
+      "requestErrorBody": "La demande d’autorisation n’a pas abouti. Réessayez.",
+      "openSettingsErrorTitle": "Réglages",
+      "openSettingsErrorBody": "Impossible d’ouvrir les réglages. Ouvrez-les manuellement depuis votre téléphone."
+    },
     "referralHub": {
       "title": "Parrainage",
       "a11yBack": "Retour",
@@ -722,6 +746,9 @@
       "referral": "Parrainage",
       "referralSubtitle": "Invitez des amis et gagnez des jetons",
       "referralA11y": "Ouvrir le parrainage et mon code",
+      "notifications": "Notifications",
+      "notificationsSubtitle": "Voir si les alertes sont autorisées sur cet appareil",
+      "notificationsA11y": "Ouvrir le détail des notifications",
       "referralAlertTitle": "Votre code de parrainage",
       "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
       "support": "Support",
