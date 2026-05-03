@@ -10,6 +10,11 @@ import { parseVideoMissionMetadata } from "../utils/videoMissionMetadata";
 import { useVideoMissionDetailController } from "./useVideoMissionDetailController";
 import { useWatchVideoMission } from "./useWatchVideoMission";
 
+export type UseMissionDetailVideoOptions = {
+  /** Désactive lecteur / progression locale (mission déjà figée côté serveur sur l’écran détail). */
+  disableVideoFlow?: boolean;
+};
+
 export type UseMissionDetailVideoResult = {
   videoDetailSlot: MissionVideoDetailSlotProps | null;
   videoController: MissionDetailTypeController;
@@ -21,8 +26,10 @@ export type UseMissionDetailVideoResult = {
  */
 export function useMissionDetailVideo(
   mission: MissionRow | undefined,
+  options?: UseMissionDetailVideoOptions,
 ): UseMissionDetailVideoResult {
   const { t } = useTranslation();
+  const disableVideoFlow = Boolean(options?.disableVideoFlow);
 
   const videoMetaParsed = useMemo(
     () =>
@@ -33,7 +40,10 @@ export function useMissionDetailVideo(
   );
 
   const videoMissionEnabled = Boolean(
-    mission && mission.mission_type === "video" && videoMetaParsed,
+    mission &&
+      mission.mission_type === "video" &&
+      videoMetaParsed &&
+      !disableVideoFlow,
   );
 
   const videoWatch = useWatchVideoMission({
@@ -74,7 +84,8 @@ export function useMissionDetailVideo(
 
   const videoController = useVideoMissionDetailController({
     isCompleted:
-      mission?.mission_type === "video" ? isVideoMissionCompleted : false,
+      disableVideoFlow ||
+      (mission?.mission_type === "video" ? isVideoMissionCompleted : false),
     canSubmit:
       mission?.mission_type === "video" ? canSubmitVideoMission : false,
     isSubmitting:

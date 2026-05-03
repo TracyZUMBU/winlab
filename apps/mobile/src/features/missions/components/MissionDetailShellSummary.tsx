@@ -62,9 +62,6 @@ export function MissionDetailShellSummary({ mission }: Props) {
     brand: brandName || t("app.name"),
   });
 
-  const progressPercent = 0;
-  const progressBarWidthPercent = progressPercent === 0 ? 5 : progressPercent;
-
   return (
     <>
       <View style={styles.hero} pointerEvents="none">
@@ -122,23 +119,6 @@ export function MissionDetailShellSummary({ mission }: Props) {
         {missionTypeLabelKey ? (
           <Text style={styles.typeLabel}>{t(missionTypeLabelKey)}</Text>
         ) : null}
-      </View>
-
-      <View style={styles.progressSection}>
-        <View style={styles.progressTopRow}>
-          <Text style={styles.progressTitle}>{t("missions.detail.progress.title")}</Text>
-          <Text style={styles.progressPercent}>
-            {t("missions.detail.progress.percent", {
-              percent: progressPercent,
-            })}
-          </Text>
-        </View>
-
-        <View style={styles.progressTrack}>
-          <View
-            style={[styles.progressFill, { width: `${progressBarWidthPercent}%` }]}
-          />
-        </View>
       </View>
 
       <View style={styles.metaCardsRow}>
@@ -224,34 +204,6 @@ const styles = StyleSheet.create({
     ...theme.typography.overline,
     color: theme.colors.accentSolid,
     textAlign: "center",
-  },
-  progressSection: {
-    marginTop: theme.spacing.lg,
-    gap: theme.spacing.sm,
-  },
-  progressTopRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-  progressTitle: {
-    ...theme.typography.cardBody,
-    color: theme.colors.text,
-    fontWeight: "700",
-  },
-  progressPercent: {
-    ...theme.typography.caption,
-    color: theme.colors.textMuted,
-  },
-  progressTrack: {
-    height: 6,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surfaceSoft,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: theme.colors.accentSolid,
   },
   metaCardsRow: {
     flexDirection: "row",

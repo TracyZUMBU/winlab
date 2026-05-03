@@ -262,10 +262,6 @@
         "daily_login": "Daily login",
         "external_action": "External action"
       },
-      "progress": {
-        "title": "Progress",
-        "percent": "{{percent}}%"
-      },
       "meta": {
         "tokenRewardTitle": "Reward",
         "tokenReward": "{{count}} tokens",
@@ -318,6 +314,22 @@
         "nativeModuleUnavailable": "Video playback isn’t available in this build (expo-video native module missing). Use a dev build (`npx expo run:ios` / `run:android`) or an EAS build that includes native modules.",
         "playerAccessibilityPlay": "Play video",
         "playerAccessibilityPause": "Pause video"
+      },
+      "outcome": {
+        "approved": {
+          "title": "Mission completed",
+          "subtitle": "Your participation is recorded. Tokens were credited according to this mission’s rules."
+        },
+        "pending": {
+          "title": "Awaiting review",
+          "subtitle": "Your submission was received. You’ll get your tokens after validation."
+        },
+        "rejected": {
+          "title": "Last submission wasn’t approved",
+          "subtitle": "You can adjust and submit again following the mission instructions.",
+          "dateLabel": "As of {{date}}"
+        },
+        "dateLabel": "On {{date}}"
       },
       "survey": {
         "title": "Survey",

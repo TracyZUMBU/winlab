@@ -8,6 +8,7 @@ import { queryClient } from "@/src/lib/query/queryClient";
 import { logger } from "@/src/lib/logger";
 import { showErrorToast, showSuccessToast } from "@/src/shared/toast";
 
+import { missionKeys } from "../queries/missionKeys";
 import { missionListKeys } from "../queries/missionListKeys";
 import { submitMissionCompletion } from "../services/missionService";
 
@@ -37,7 +38,9 @@ export type UseWatchVideoMissionResult = {
 
 function invalidateMissionCaches(missionId: string, userId: string | null) {
   void queryClient.invalidateQueries({ queryKey: [...missionListKeys.all] });
-  void queryClient.invalidateQueries({ queryKey: ["missions", missionId] });
+  void queryClient.invalidateQueries({
+    queryKey: [...missionKeys.all, "detail", missionId],
+  });
 
   if (!userId) return;
 

@@ -5,6 +5,7 @@ import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
 import { homeDashboardKeys } from "@/src/features/home/queries/homeDashboardKeys";
 
+import { missionKeys } from "../queries/missionKeys";
 import { missionListKeys } from "../queries/missionListKeys";
 import {
   submitMissionCompletion,
@@ -28,7 +29,7 @@ export function useSubmitMissionCompletionMutation() {
 
       queryClient.invalidateQueries({ queryKey: [...missionListKeys.all] });
       queryClient.invalidateQueries({
-        queryKey: ["missions", variables.missionId],
+        queryKey: [...missionKeys.all, "detail", variables.missionId],
       });
 
       if (!userId) return;

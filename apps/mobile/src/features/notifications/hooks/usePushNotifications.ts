@@ -20,7 +20,6 @@ export function usePushNotifications(enabled = true): {
   isRegistered: boolean;
   notification: Notifications.Notification | null;
 } {
-  console.log("usePushNotifications");
   useEffect(() => {
     if (!enabled) {
       return;

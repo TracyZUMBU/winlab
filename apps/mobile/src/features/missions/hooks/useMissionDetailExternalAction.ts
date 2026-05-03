@@ -5,10 +5,13 @@ import type {
   MissionExternalActionDetailSlotProps,
 } from "../screens/detail-types/types";
 import type { MissionRow } from "../services/getMissionById";
+import {
+  isMissionDetailReadonlyOutcome,
+  resolveMissionDetailInteractionState,
+} from "../utils/missionDetailInteractionState";
 import { parseExternalActionMissionMetadata } from "../utils/parseExternalActionMissionMetadata";
 import { useExternalActionMission } from "./useExternalActionMission";
 import { useExternalActionMissionDetailController } from "./useExternalActionMissionDetailController";
-import { useTodoMissionsQuery } from "./useTodoMissionsQuery";
 
 export type UseMissionDetailExternalActionResult = {
   externalActionSlot: MissionExternalActionDetailSlotProps;
@@ -18,8 +21,6 @@ export type UseMissionDetailExternalActionResult = {
 export function useMissionDetailExternalAction(
   mission: MissionRow | undefined,
 ): UseMissionDetailExternalActionResult {
-  const { data: todoMissions } = useTodoMissionsQuery();
-
   const metaParsed = useMemo(
     () =>
       mission?.mission_type === "external_action"
@@ -29,11 +30,11 @@ export function useMissionDetailExternalAction(
   );
 
   const initialServerCompleted = useMemo(() => {
-    if (!mission?.id || !todoMissions) return false;
-    const row = todoMissions.find((m) => m.id === mission.id);
-    if (!row) return false;
-    return row.userStatus === "completed" || row.userStatus === "pending";
-  }, [mission?.id, todoMissions]);
+    if (!mission?.mission_completions?.length) return false;
+    return isMissionDetailReadonlyOutcome(
+      resolveMissionDetailInteractionState(mission.mission_completions),
+    );
+  }, [mission?.mission_completions]);
 
   const isExternalType = mission?.mission_type === "external_action";
   const enabled = Boolean(mission?.id && isExternalType && metaParsed);

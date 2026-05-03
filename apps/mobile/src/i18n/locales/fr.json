@@ -266,10 +266,6 @@
         "daily_login": "Connexion quotidienne",
         "external_action": "Action externe"
       },
-      "progress": {
-        "title": "Progression",
-        "percent": "{{percent}}%"
-      },
       "meta": {
         "tokenRewardTitle": "Récompense",
         "tokenReward": "{{count}} jetons",
@@ -322,6 +318,22 @@
         "nativeModuleUnavailable": "La lecture vidéo n’est pas disponible dans cette build (module natif expo-video manquant). Utilise un build de développement iOS/Android (`npx expo run:ios` / `run:android`) ou une build EAS incluant les modules natifs.",
         "playerAccessibilityPlay": "Lire la vidéo",
         "playerAccessibilityPause": "Mettre la vidéo en pause"
+      },
+      "outcome": {
+        "approved": {
+          "title": "Mission terminée",
+          "subtitle": "Ta participation est enregistrée. Les jetons associés ont été crédités selon les règles de la mission."
+        },
+        "pending": {
+          "title": "En attente de validation",
+          "subtitle": "Ta soumission a bien été reçue. Tu recevras tes jetons après validation."
+        },
+        "rejected": {
+          "title": "Dernière soumission non validée",
+          "subtitle": "Tu peux corriger et soumettre à nouveau selon les consignes de la mission.",
+          "dateLabel": "Statut du {{date}}"
+        },
+        "dateLabel": "Le {{date}}"
       },
       "survey": {
         "title": "Questionnaire",

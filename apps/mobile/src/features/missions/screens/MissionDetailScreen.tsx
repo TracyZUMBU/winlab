@@ -1,7 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -18,6 +18,8 @@ import { Screen } from "@/src/components/ui/Screen";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
+import { MissionDetailReadonlyOutcome } from "../components/MissionDetailReadonlyOutcome";
+import { MissionDetailRejectionBanner } from "../components/MissionDetailRejectionBanner";
 import { MissionDetailShellSummary } from "../components/MissionDetailShellSummary";
 import { useDefaultMissionDetailController } from "../hooks/useDefaultMissionDetailController";
 import { useGetMissionByIdQuery } from "../hooks/useGetMissionByIdQuery";
@@ -26,7 +28,23 @@ import { useMissionDetailVideo } from "../hooks/useMissionDetailVideo";
 import { useSubmitMissionCompletionMutation } from "../hooks/useSubmitMissionCompletionMutation";
 import { useSurveyMissionDetailController } from "../hooks/useSurveyMissionDetailController";
 import { useSurveyMissionForm } from "../survey/useSurveyMissionForm";
+import {
+  isMissionDetailReadonlyOutcome,
+  resolveMissionDetailInteractionState,
+} from "../utils/missionDetailInteractionState";
+import type { MissionDetailTypeController } from "./detail-types/types";
 import { getMissionDetailTypeRuntime } from "./detail-types/missionDetailTypeRuntimeRegistry";
+
+const READONLY_MISSION_DETAIL_CONTROLLER: MissionDetailTypeController = {
+  hideBottomPrimary: true,
+  primary: {
+    title: "",
+    iconName: "check",
+    disabled: true,
+    onPress: async () => {},
+  },
+  secondary: null,
+};
 
 export function MissionDetailScreen() {
   const { t, i18n } = useTranslation();
@@ -86,7 +104,16 @@ export function MissionDetailScreen() {
     router,
   });
 
-  const { videoDetailSlot, videoController } = useMissionDetailVideo(mission);
+  const interaction = useMemo(
+    () =>
+      resolveMissionDetailInteractionState(mission?.mission_completions ?? []),
+    [mission?.mission_completions],
+  );
+  const isDetailReadonly = isMissionDetailReadonlyOutcome(interaction);
+
+  const { videoDetailSlot, videoController } = useMissionDetailVideo(mission, {
+    disableVideoFlow: isDetailReadonly,
+  });
   const { externalActionSlot, externalActionController } =
     useMissionDetailExternalAction(mission);
 
@@ -162,12 +189,14 @@ export function MissionDetailScreen() {
     video: videoDetailSlot,
     externalAction: externalActionSlot,
   });
-  const activeController = runtime.selectController({
-    defaultController,
-    surveyController,
-    videoController,
-    externalActionController,
-  });
+  const activeController = isDetailReadonly
+    ? READONLY_MISSION_DETAIL_CONTROLLER
+    : runtime.selectController({
+        defaultController,
+        surveyController,
+        videoController,
+        externalActionController,
+      });
 
   const hideBottomPrimary = Boolean(activeController.hideBottomPrimary);
   const scrollBottomPadding =
@@ -191,17 +220,33 @@ export function MissionDetailScreen() {
         >
           <MissionDetailShellSummary mission={mission} />
 
-          <Suspense
-            fallback={
-              <View style={styles.detailSuspenseFallback}>
-                <ActivityIndicator size="small" color={theme.colors.accentSolid} />
-              </View>
-            }
-          >
-            <TypeDetailRenderer {...typeRendererProps} />
-          </Suspense>
+          {interaction.kind === "active_after_rejection" ? (
+            <MissionDetailRejectionBanner
+              completion={interaction.latestCompletion}
+            />
+          ) : null}
 
-          {submitError ? (
+          {interaction.kind === "readonly_approved" ||
+          interaction.kind === "readonly_pending" ? (
+            <MissionDetailReadonlyOutcome
+              variant={
+                interaction.kind === "readonly_approved" ? "approved" : "pending"
+              }
+              completion={interaction.latestCompletion}
+            />
+          ) : (
+            <Suspense
+              fallback={
+                <View style={styles.detailSuspenseFallback}>
+                  <ActivityIndicator size="small" color={theme.colors.accentSolid} />
+                </View>
+              }
+            >
+              <TypeDetailRenderer {...typeRendererProps} />
+            </Suspense>
+          )}
+
+          {!isDetailReadonly && submitError ? (
             <Text style={styles.submitError}>{submitError}</Text>
           ) : null}
         </ScrollView>

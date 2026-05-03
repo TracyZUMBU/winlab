@@ -1,6 +1,6 @@
 # Mémo — Feature Missions (mobile)
 
-**Dernière revue du mémo :** 2026-05-06
+**Dernière revue du mémo :** 2026-05-03
 
 ## Objectif
 
@@ -8,7 +8,7 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 
 ## Périmètre
 
-- **Inclus :** listes missions todo / complétées, écran détail, soumission de complétion, codes d’erreur métier exposés au client, mission daily login (côté client + constantes), invalidation des caches liés après succès.
+- **Inclus :** listes missions todo / complétées, écran détail (états **terminée / en attente / refus + réessai** selon la dernière `mission_completion`), soumission de complétion, codes d’erreur métier exposés au client, mission daily login (côté client + constantes), invalidation des caches liés après succès.
 - **Hors périmètre (autres features / admin) :** approbation admin des complétions (`approve_mission_completion`), wallet UI détaillée.
 - **Lien produit parrainage (hors UI missions) :** le bonus parrain est déclenché côté serveur après `approve_mission_completion` (`handle_referral_after_first_mission`) ; les types de mission **non qualifiants** pour la 1ʳᵉ récompense (ex. `daily_login`) sont exclus via SQL — voir **`src/features/profile/MEMO.md`**. Les invalidations TanStack actuelles après soumission **ne** couvrent **pas** `referralKeys` ; ajouter une invalidation ciblée seulement si l’UX profil doit se mettre à jour sans refetch manuel.
 
@@ -24,8 +24,8 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 
 | Rôle | Fichiers principaux |
 |------|---------------------|
-| **Clés TanStack Query** | `queries/missionListKeys.ts` — `all`, `todo(userId)`, `completed(userId)` |
-| **Détail mission** | `hooks/useGetMissionByIdQuery.ts` — `queryKey: ["missions", missionId]` ; `services/getMissionById.ts` (table `missions` + `brands`) |
+| **Clés TanStack Query** | `queries/missionListKeys.ts` — `all`, `todo(userId)`, `completed(userId)` ; `queries/missionKeys.ts` — `detail(missionId, userId)` pour le détail |
+| **Détail mission** | `hooks/useGetMissionByIdQuery.ts` ; `services/getMissionById.ts` (`missions` + `brands` + `mission_completions` du user, RLS) ; `utils/missionDetailInteractionState.ts` ; `components/MissionDetailReadonlyOutcome.tsx`, `MissionDetailRejectionBanner.tsx` ; résumé haut de page sans barre de progression (retirée : non branchée à une donnée métier) |
 | **Liste todo (paginée)** | `hooks/useTodoMissionsQuery.ts`, `services/getAvailableMissionsPage.ts` → RPC `get_todo_missions_page` |
 | **Liste complétions (paginée)** | `hooks/useCompletedMissionsQuery.ts`, `services/getCompletedMissionsPage.ts` → table `mission_completions` |
 | **Soumission** | `hooks/useSubmitMissionCompletionMutation.ts`, `services/missionService.ts` → RPC `submit_mission_completion` |
@@ -71,7 +71,7 @@ Les libellés utilisateur passent par i18n sous `missions.submission.errors` (vo
 `useSubmitMissionCompletionMutation` invalide notamment :
 
 - tout le namespace listes missions : `queryKey` préfixe `missionListKeys.all` (`["missions", "list"]`) ;
-- détail : `["missions", variables.missionId]` ;
+- détail : préfixe `["missions", "detail", variables.missionId]` (toutes variantes `userId` invalidées) ;
 - si `userId` : wallet (`balance`, `pendingRewards`, `transactions`), `homeDashboardKeys.detail(userId)`.
 
 Toute nouvelle lecture affichée après une complétion doit être réfléchie ici ou dans le hook de mutation.

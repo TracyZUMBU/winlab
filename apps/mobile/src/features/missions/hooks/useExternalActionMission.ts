@@ -40,7 +40,7 @@ export type UseExternalActionMissionResult = {
 function invalidateMissionCaches(missionId: string, userId: string | null) {
   void queryClient.invalidateQueries({ queryKey: [...missionListKeys.all] });
   void queryClient.invalidateQueries({
-    queryKey: missionKeys.detail(missionId),
+    queryKey: [...missionKeys.all, "detail", missionId],
   });
 
   if (!userId) return;
