@@ -17,12 +17,20 @@ export const createLottery = async (
   const uniqueId = createTestId("lottery");
   const now = Date.now();
 
+  const drawAtIso =
+    (overrides.draw_at as string | undefined) ??
+    new Date(now + 120_000).toISOString();
+  const endsAtIso =
+    (overrides.ends_at as string | undefined) ??
+    new Date(new Date(drawAtIso).getTime() - 60_000).toISOString();
+
   const payload: LotteryInsert = {
     brand_id: overrides.brand_id,
     title: `Lottery test ${uniqueId}`,
     ticket_cost: 10,
     number_of_winners: 1,
-    draw_at: new Date(now + 120_000).toISOString(),
+    draw_at: drawAtIso,
+    ends_at: endsAtIso,
     ...overrides,
   };
 

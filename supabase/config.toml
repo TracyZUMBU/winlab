@@ -397,3 +397,7 @@ verify_jwt = false
 # Idem : JWT + `profiles.is_admin` dans le handler ; `run_lottery` via service_role uniquement.
 [functions.admin-run-lottery]
 verify_jwt = false
+
+# Secret `X-Winlab-Cron-Secret` + service_role dans le handler (scheduler Supabase).
+[functions.lottery-results-notify-cron]
+verify_jwt = false

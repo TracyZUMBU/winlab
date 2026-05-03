@@ -446,7 +446,7 @@ const lotteries: LotterySeed[] = [
     number_of_winners: 1,
     status: "draft",
     starts_at: null,
-    ends_at: null,
+    ends_at: "2026-04-19T23:59:59Z",
     draw_at: "2026-04-20T12:00:00Z",
   },
 ];
