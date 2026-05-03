@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   Modal,
   Platform,
   Pressable,
@@ -22,6 +23,18 @@ export type AppCenteredModalProps = {
   message?: string;
   /** Primary button label; defaults to `common.ok`. */
   primaryActionLabel?: string;
+  /**
+   * When set, the primary button calls this instead of `onDismiss`.
+   * Use with `secondaryActionLabel` / `onSecondaryPress` for two-step choices.
+   */
+  onPrimaryPress?: () => void;
+  /** Optional second button below the primary (e.g. “Later”). */
+  secondaryActionLabel?: string;
+  onSecondaryPress?: () => void;
+  /** When true, primary shows a spinner and both actions are disabled. */
+  primaryActionLoading?: boolean;
+  /** Android hardware back / `onRequestClose`; defaults to `onDismiss`. */
+  onRequestCloseOverride?: () => void;
   /** When true, tapping the dimmed backdrop calls `onDismiss`. Default true. */
   dismissOnBackdropPress?: boolean;
   testID?: string;
@@ -37,12 +50,23 @@ export function AppCenteredModal({
   title,
   message,
   primaryActionLabel,
+  onPrimaryPress,
+  secondaryActionLabel,
+  onSecondaryPress,
+  primaryActionLoading = false,
+  onRequestCloseOverride,
   dismissOnBackdropPress = true,
   testID,
 }: AppCenteredModalProps) {
   const { t } = useTranslation();
   const okLabel = primaryActionLabel ?? t("common.ok");
   const hasMessage = Boolean(message?.trim());
+  const hasSecondary = Boolean(
+    secondaryActionLabel?.trim() && onSecondaryPress,
+  );
+  const primaryPress = onPrimaryPress ?? onDismiss;
+  const requestClose = onRequestCloseOverride ?? onDismiss;
+  const actionsDisabled = primaryActionLoading;
 
   return (
     <Modal
@@ -50,7 +74,7 @@ export function AppCenteredModal({
       transparent
       animationType="fade"
       presentationStyle="overFullScreen"
-      onRequestClose={onDismiss}
+      onRequestClose={requestClose}
       statusBarTranslucent={Platform.OS === "android"}
     >
       <View style={styles.root} testID={testID}>
@@ -86,10 +110,38 @@ export function AppCenteredModal({
               ) : null}
               <Button
                 title={okLabel}
-                onPress={onDismiss}
+                onPress={() => {
+                  if (!actionsDisabled) {
+                    primaryPress();
+                  }
+                }}
                 fullWidth
+                disabled={actionsDisabled}
                 style={styles.button}
+                leftIcon={
+                  primaryActionLoading ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.onAccent}
+                      style={styles.primarySpinner}
+                    />
+                  ) : undefined
+                }
               />
+              {hasSecondary ? (
+                <Button
+                  title={secondaryActionLabel!.trim()}
+                  variant="ghost"
+                  onPress={() => {
+                    if (!actionsDisabled) {
+                      onSecondaryPress!();
+                    }
+                  }}
+                  fullWidth
+                  disabled={actionsDisabled}
+                  style={styles.secondaryButton}
+                />
+              ) : null}
             </Card>
           </View>
         </View>
@@ -132,5 +184,11 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: theme.spacing.xs,
+  },
+  secondaryButton: {
+    marginTop: 0,
+  },
+  primarySpinner: {
+    marginRight: theme.spacing.sm,
   },
 });

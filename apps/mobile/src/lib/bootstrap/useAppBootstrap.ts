@@ -1,3 +1,4 @@
+import { usePushNotifications } from "@/src/features/notifications/hooks/usePushNotifications";
 import { subscribeToAuthChanges } from "@/src/lib/supabase/session";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
@@ -30,6 +31,8 @@ export type AppBootstrapResult = AppBootstrapPayload & {
  * un snapshot « anonyme » une fois la session OTP créée.
  */
 export function useAppBootstrap(enabled: boolean): AppBootstrapResult {
+  usePushNotifications(enabled);
+
   const [state, setState] = useState<AppBootstrapResult>({
     status: "idle",
     bootstrapError: null,

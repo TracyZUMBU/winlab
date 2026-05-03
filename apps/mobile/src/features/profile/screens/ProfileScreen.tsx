@@ -341,7 +341,7 @@ export function ProfileScreen() {
           {
             modKeys: Object.keys(mod as object),
             developerHint:
-              "Dynamic import did not expose pickProfileAvatarFromLibrary or default export. Rebuild the native app (npx expo run:ios | npx expo run:android). Ensure expo-image-picker is in app.json plugins.",
+              "Dynamic import did not expose pickProfileAvatarFromLibrary or default export. Rebuild the native app (npx expo run:ios | npx expo run:android). Ensure expo-image-picker is in app.config.js plugins.",
           },
         );
         Alert.alert(
