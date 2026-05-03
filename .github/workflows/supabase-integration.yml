@@ -1,9 +1,7 @@
 # Tests d’intégration Jest contre Supabase **local** (Docker sur le runner).
 # Séparé de `.github/workflows/ci.yml` : plus lourd, nécessite la CLI + stack locale.
-#
-# Déclenchement optionnel sur PR (désactivé par défaut — activer si besoin) :
-#   pull_request:
-#     branches: [main]
+# Sur PR vers `main` : à combiner avec une règle de branche « required status check »
+# pour bloquer le merge tant que ce job est rouge.
 
 name: Supabase integration tests
 
@@ -12,14 +10,15 @@ on:
   push:
     branches:
       - main
-  # pull_request:
-  #   branches: [main]
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
 
 concurrency:
-  group: supabase-integration-${{ github.workflow }}-${{ github.ref }}
+  group: supabase-integration-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -54,20 +53,7 @@ jobs:
       # `loadIntegrationTestEnv` (mobile) exige un fichier `.env.test.local` ;
       # on le dérive des clés exposées par `supabase status` (même schéma que en local).
       - name: Write Jest .env.test.local from supabase status
-        run: |
-          set -euo pipefail
-          supabase status -o env --workdir . \
-            | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=' \
-            | sed -e 's/^API_URL=/SUPABASE_URL=/' \
-                  -e 's/^ANON_KEY=/SUPABASE_ANON_KEY=/' \
-                  -e 's/^SERVICE_ROLE_KEY=/SUPABASE_SERVICE_ROLE_KEY=/' \
-                  -e 's/^\([^=]*\)="\(.*\)"$/\1=\2/' \
-            > apps/mobile/.env.test.local
-          cp apps/mobile/.env.test.local apps/admin/.env.test.local
-          test "$(wc -l < apps/mobile/.env.test.local | tr -d ' ')" -eq 3
-          grep -Eq '^SUPABASE_ANON_KEY=.+' apps/mobile/.env.test.local
-          grep -Eq '^SUPABASE_SERVICE_ROLE_KEY=.+' apps/mobile/.env.test.local
-          grep -Eq '^SUPABASE_URL=http://(127\.0\.0\.1|localhost):54321$' apps/mobile/.env.test.local
+        run: bash scripts/write-integration-test-env-from-supabase.sh
       - name: Run integration tests (admin)
         run: npm run test:integration -w admin
 

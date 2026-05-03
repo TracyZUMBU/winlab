@@ -4,9 +4,9 @@
 
 Ce projet utilise une stratégie de validation en **3 niveaux** pour garantir la qualité du code :
 
-1. **Pre-push local** (rapide)
-2. **CI standard GitHub** (qualité applicative)
-3. **CI Supabase** (tests d’intégration avec DB réelle)
+1. **Pre-push local** (lint + typecheck uniquement)
+2. **CI standard GitHub** (qualité applicative sur chaque PR)
+3. **CI Supabase** (intégration sur chaque PR vers `main`, sur push `main`, et manuel)
 
 ---
 
@@ -46,9 +46,11 @@ Les workspaces concernés incluent notamment `admin`, `mobile`, `@winlab/monitor
 
 ### Ne fait pas
 
-- tests
-- Supabase
-- build
+- tests (unitaires ou intégration)
+- Supabase / Docker
+- build production
+
+Les tests d’intégration Supabase passent sur **GitHub Actions** (voir section 3) ; en local tu peux lancer `npm run supabase:test:integration` avant d’ouvrir une PR si tu touches au schéma ou aux RPC.
 
 ---
 
@@ -87,8 +89,19 @@ Tester les **intégrations réelles** avec Supabase.
 
 ### Déclenchement
 
+- **`pull_request`** ciblant `main` (chaque **nouveau commit** poussé sur la branche de la PR relance le workflow)
+- `push` sur `main` (après merge)
 - manuel (`workflow_dispatch`)
-- `push` sur `main`
+
+### Bloquer le merge si les tests échouent
+
+Dans GitHub : **Settings** → **Branches** → règle sur `main` (ou **Rulesets**), active **Require status checks to pass before merging**, puis ajoute le check correspondant au job, en général :
+
+`Supabase integration tests / Integration tests (Jest + local Supabase)`
+
+(le libellé exact apparaît dans l’onglet **Checks** d’une PR après au moins un run du workflow).
+
+Tant que ce check est rouge, le bouton **Merge** reste désactivé ; un **nouveau push** sur la branche `X` met à jour la PR et relance la CI jusqu’à ce que les tests passent.
 
 ### Étapes
 
@@ -222,17 +235,16 @@ npm run test -w mobile
 ### Si tu modifies Supabase
 
 ```bash
-npm run supabase:test:prepare
-npm run test:integration -w admin
-npm run test:integration -w mobile
+npm run supabase:test:integration
 ```
+
+(équivalent à `supabase:test:prepare` + génération des `.env.test.local` + `test:integration` admin et mobile.)
 
 ---
 
 ### Sur GitHub
 
-- PR → CI standard
-- tests Supabase → manuel ou `main`
+- PR vers `main` → **CI standard** + **tests d’intégration Supabase** (voir règle de branche ci-dessus pour imposer le vert avant merge)
 
 ---
 

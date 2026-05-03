@@ -18,7 +18,8 @@
     "migrate:remote": "supabase migration up --linked --include-all --workdir .",
     "migrate:all": "npm run migrate:local && npm run migrate:remote",
     "gen:types": "supabase gen types typescript --workdir . --project-id lfmkzmgxopogmuyusdde --schema public > apps/mobile/src/lib/supabase.types.ts && node apps/mobile/scripts/gen-enums.js",
-    "supabase:test:prepare": "supabase start --workdir . && supabase db reset --workdir ."
+    "supabase:test:prepare": "supabase start --workdir . && supabase db reset --workdir .",
+    "supabase:test:integration": "npm run supabase:test:prepare && bash scripts/write-integration-test-env-from-supabase.sh && npm run test:integration -w admin && npm run test:integration -w mobile"
   },
   "devDependencies": {
     "husky": "^9.1.7"
