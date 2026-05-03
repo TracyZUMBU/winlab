@@ -20,7 +20,7 @@ export function LoginPage() {
     <div className="auth-login">
       <div className="auth-login__card">
         <h1 className="auth-login__title">Winlab Admin</h1>
-        <p className="auth-login__subtitle">Connexion réservée à l’équipe.</p>
+        <p className="auth-login__subtitle">Connexion administrateur Winlab</p>
         <form className="auth-login__form" onSubmit={handleSubmit}>
           <label className="auth-login__label" htmlFor="auth-email">
             Email

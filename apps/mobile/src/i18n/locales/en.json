@@ -11,6 +11,14 @@
       "body": "Your friend joined Winlab. Your tokens have been credited!"
     }
   },
+  "otaUpdate": {
+    "title": "Update available",
+    "message": "A new version of the app is ready. Update now to get the latest improvements.",
+    "updateNow": "Update now",
+    "later": "Later",
+    "fetchFailedTitle": "Could not update",
+    "fetchFailedMessage": "Check your connection and try again."
+  },
   "splash": {
     "baseline": "Complete missions. Win big.",
     "status_initializing": "Initializing",

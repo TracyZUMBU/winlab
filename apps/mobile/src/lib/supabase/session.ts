@@ -1,5 +1,7 @@
-import type { Session, User } from '@supabase/supabase-js';
-import { getSupabaseClient } from './client';
+import type { Session, User } from "@supabase/supabase-js";
+
+import { getSupabaseClient } from "./client";
+import { supabaseEnv } from "./env";
 
 export type AuthSession = {
   session: Session | null;
@@ -21,8 +23,13 @@ export const getCurrentSession = async (): Promise<AuthSession> => {
 };
 
 export const subscribeToAuthChanges = (
-  callback: (session: Session | null) => void
+  callback: (session: Session | null) => void,
 ) => {
+  if (!supabaseEnv.isConfigured) {
+    callback(null);
+    return () => undefined;
+  }
+
   const supabase = getSupabaseClient();
 
   const {
