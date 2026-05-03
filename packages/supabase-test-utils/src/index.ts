@@ -13,6 +13,10 @@ export {
 } from "./factories/auth";
 export { createBrand } from "./factories/brands";
 export { createLottery } from "./factories/lotteries";
+export {
+  createLotteryResultsNotifyRun,
+  createLotteryResultsNotifyRunItem,
+} from "./factories/lottery_results_notify";
 export { setProfileIsAdmin } from "./factories/profiles";
 export { createLotteryWinner } from "./factories/lottery_winners";
 export {

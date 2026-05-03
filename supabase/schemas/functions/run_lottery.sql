@@ -62,13 +62,13 @@ BEGIN
   --
   -- The draw can only happen when:
   -- - draw_at <= now()
-  -- - and if ends_at exists, it must also be in the past
+  -- - ends_at <= now() (ends_at is NOT NULL on lotteries)
   ---------------------------------------------------------------------------
   IF v_lottery.draw_at > now() THEN
     RAISE EXCEPTION 'LOTTERY_DRAW_NOT_READY';
   END IF;
 
-  IF v_lottery.ends_at IS NOT NULL AND v_lottery.ends_at > now() THEN
+  IF v_lottery.ends_at > now() THEN
     RAISE EXCEPTION 'LOTTERY_NOT_ENDED';
   END IF;
 
