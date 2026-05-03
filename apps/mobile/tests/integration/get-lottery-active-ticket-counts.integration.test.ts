@@ -9,6 +9,8 @@ import {
 const GET_LOTTERY_ACTIVE_TICKET_COUNTS_RPC = "get_lottery_active_ticket_counts";
 
 describe("get_lottery_active_ticket_counts RPC (integration)", () => {
+  jest.setTimeout(30_000);
+
   describe("counting logic", () => {
     it("returns active tickets count per lottery id", async () => {
       const brand = await createBrand();

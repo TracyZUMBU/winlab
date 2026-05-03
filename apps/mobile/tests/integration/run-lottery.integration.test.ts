@@ -620,11 +620,12 @@ describe("run_lottery RPC (integration)", () => {
       const admin = getSupabaseAdminClient();
       const brand = await createBrand();
 
+      const endsAt = new Date(Date.now() + 600_000).toISOString();
       const lottery = await createLottery({
         brand_id: brand.id,
         status: "active",
-        ends_at: new Date(Date.now() - 10_000).toISOString(),
-        draw_at: new Date(Date.now() - 5_000).toISOString(),
+        ends_at: endsAt,
+        draw_at: endsAt,
       });
 
       const result = await admin.rpc(RUN_LOTTERY_RPC, {

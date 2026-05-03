@@ -190,7 +190,7 @@ describe("buy_ticket RPC (integration)", () => {
   });
 
   describe("loterie expirée", () => {
-    it("does not create a wallet debit nor a ticket when ends_at is in the past", async () => {
+    it("does not create a wallet debit nor a ticket when ends_at is in the past (row auto-closed)", async () => {
       const testUser = await createAuthenticatedTestUser();
       const admin = getSupabaseAdminClient();
 
@@ -203,7 +203,6 @@ describe("buy_ticket RPC (integration)", () => {
         status: "active",
         starts_at: null,
         ends_at: new Date(Date.now() - 60_000).toISOString(),
-        // Keep draw_at in the future so we fail specifically on "expired".
         draw_at: new Date(Date.now() + 120_000).toISOString(),
       });
 
@@ -220,7 +219,9 @@ describe("buy_ticket RPC (integration)", () => {
         p_lottery_id: lottery.id,
       });
 
-      expectRpcBusinessErrorCode(rpcResult as any, "LOTTERY_EXPIRED");
+      // BEFORE INSERT trigger closes active lotteries when ends_at <= now(), so buy_ticket
+      // sees status !== active and returns LOTTERY_NOT_PURCHASABLE (not LOTTERY_EXPIRED).
+      expectRpcBusinessErrorCode(rpcResult as any, "LOTTERY_NOT_PURCHASABLE");
 
       // Should not create any ticket.
       const { data: tickets, error: ticketsErr } = await admin
