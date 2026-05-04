@@ -30,6 +30,33 @@ export function getRelativeDayBucket(
   return { kind: "daysAgo", days: diffDays };
 }
 
+const MS_PER_UTC_DAY = 86_400_000;
+
+function utcCalendarDayStartMs(d: Date): number {
+  return Date.UTC(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+  );
+}
+
+/** Same buckets as {@link getRelativeDayBucket}, but using the UTC calendar day (aligns wallet with daily missions in UTC). */
+export function getRelativeDayBucketUtc(
+  iso: string,
+  now: Date = new Date(),
+): RelativeDayBucket {
+  const parsed = new Date(iso);
+  if (!isValid(parsed)) return { kind: "unknown" };
+
+  const startTodayUtc = utcCalendarDayStartMs(now);
+  const startThatUtc = utcCalendarDayStartMs(parsed);
+  const diffDays = Math.round((startTodayUtc - startThatUtc) / MS_PER_UTC_DAY);
+
+  if (diffDays <= 0) return { kind: "today" };
+  if (diffDays === 1) return { kind: "yesterday" };
+  return { kind: "daysAgo", days: diffDays };
+}
+
 export function formatAbsoluteDateFr(iso: string): string {
   const parsed = new Date(iso);
   if (!isValid(parsed)) return iso;

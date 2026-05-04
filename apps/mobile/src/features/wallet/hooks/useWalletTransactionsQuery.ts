@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 
 import i18n from "@/src/i18n";
-import { getRelativeDayBucket } from "@/src/lib/date/format";
+import { getRelativeDayBucketUtc } from "@/src/lib/date/format";
 import {
   getWalletTransactions,
   type WalletTransactionRow,
@@ -20,7 +20,7 @@ export type WalletTransactionUi = {
 
   amountFormatted: string; // +XX or -XX
   label: string; // Mission completed, Lottery entry, ...
-  /** Mission / lottery name • relative date when `context_title` is set; else generic prefix • date. */
+  /** Mission / lottery name • relative date (UTC day) when `context_title` is set; else generic prefix • date. */
   subtitle: string;
 };
 
@@ -32,7 +32,7 @@ function formatTokenAmount(amount: number): string {
 }
 
 function formatRelativeDayLabel(iso: string): string {
-  const bucket = getRelativeDayBucket(iso);
+  const bucket = getRelativeDayBucketUtc(iso);
 
   switch (bucket.kind) {
     case "today":
