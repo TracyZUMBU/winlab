@@ -8,6 +8,7 @@ Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’a
 - **Android** : compte développeur Google si Play Store plus tard.
 - **iOS** : compte **Apple Developer**, `bundleIdentifier` (`com.winlab.app`), credentials configurés avec EAS (`eas credentials` au besoin).
 - CLI : `eas-cli` en `devDependency` ; depuis `apps/mobile`, `eas` est disponible via `npm run`.
+- **`expo-dev-client`** est aussi en **`devDependency`** (réservé aux builds *development* / client de dev). Les installs **EAS Build** et un `npm install` local classique incluent toujours les devDependencies — ne pas utiliser `npm install --omit=dev` pour builder le client de dev.
 - Répertoire de travail : `cd apps/mobile`.
 
 ## Fichiers et commandes
