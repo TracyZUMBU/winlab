@@ -1,10 +1,10 @@
 # Release mobile (Android, iOS) et OTA (preview)
 
-Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Winlab, avec **`runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.json`).
+Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Winlab, avec **`runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.config.js`).
 
 ## Prérequis
 
-- Compte Expo / projet lié (`extra.eas.projectId` dans `app.json`).
+- Compte Expo / projet lié (`extra.eas.projectId` dans `app.config.js`).
 - **Android** : compte développeur Google si Play Store plus tard.
 - **iOS** : compte **Apple Developer**, `bundleIdentifier` (`com.winlab.app`), credentials configurés avec EAS (`eas credentials` au besoin).
 - CLI : `eas-cli` en `devDependency` ; depuis `apps/mobile`, `eas` est disponible via `npm run`.
@@ -14,8 +14,8 @@ Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’a
 
 | Élément | Rôle |
 |--------|------|
-| `app.json` | `expo.version`, `expo.android.versionCode`, `expo.ios.buildNumber`, `runtimeVersion.policy: "appVersion"` |
-| `eas.json` | Profils `preview` / `production` ; `appVersionSource: "local"` |
+| `app.config.js` | `expo.version`, `expo.android.versionCode`, `expo.ios.buildNumber`, `runtimeVersion.policy: "appVersion"` |
+| `apps/mobile/eas.json` | Profils `preview` / `production` ; `appVersionSource: "local"` ; `APP_ENV` par profil |
 | `npm run bump:release -- <patch\|minor\|major>` | Incrémente `expo.version`, `android.versionCode`, **`ios.buildNumber`**, aligne `package.json` |
 | `npm run build:apk` | `eas build --platform android --profile preview` |
 | `npm run build:ios-preview` | `eas build --platform ios --profile preview` (IPA interne / testeurs) |
@@ -46,13 +46,13 @@ Si des builds ont déjà été distribués **sans** ces champs dans le dépôt, 
 
 ### Profil `production` et `autoIncrement`
 
-Le profil **`production`** dans `eas.json` a **`autoIncrement: true`** : EAS peut encore ajuster les numéros de build côté serveur. Avec **`appVersionSource: "local"`**, la base reste `app.json`. En cas de doute avant une soumission iOS, vérifiez **`ios.buildNumber`** après le build dans les logs / sur App Store Connect.
+Le profil **`production`** dans `apps/mobile/eas.json` a **`autoIncrement: true`** : EAS peut encore ajuster les numéros de build côté serveur. Avec **`appVersionSource: "local"`**, la base reste `app.config.js`. En cas de doute avant une soumission iOS, vérifiez **`ios.buildNumber`** après le build dans les logs / sur App Store Connect.
 
 ## Quand rebuild natif vs OTA
 
 ### Rebuild (APK / IPA)
 
-À privilégier si le **natif** change : SDK Expo, modules natifs, plugins `app.json`, permissions, icônes / splash, ou vous publiez une **nouvelle** `expo.version`.
+À privilégier si le **natif** change : SDK Expo, modules natifs, plugins `app.config.js`, permissions, icônes / splash, ou vous publiez une **nouvelle** `expo.version`.
 
 ### OTA (`npm run update:preview`)
 
@@ -86,7 +86,7 @@ Les testeurs **preview** doivent avoir l’IPA **preview** installé pour recevo
 
 1. Natif prêt (SDK, plugins, permissions, etc.).
 2. `npm run bump:release -- patch` (ou `minor` / `major`).
-3. Vérifier `app.json` : `expo.version`, `android.versionCode`, **`ios.buildNumber`**.
+3. Vérifier `app.config.js` : `expo.version`, `android.versionCode`, **`ios.buildNumber`**.
 4. (Recommandé) Commit des fichiers de version.
 5. Secrets / env sur [expo.dev](https://expo.dev).
 6. Build : `npm run build:apk` et/ou `npm run build:ios-preview` ou `build:ios-production`.

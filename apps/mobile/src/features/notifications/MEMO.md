@@ -27,7 +27,7 @@ Enregistrer un **token Expo Push** par utilisateur (`profiles.push_token`), rece
 ## Config native (`apps/mobile`)
 
 - **`app.config.js`** : plugin `expo-notifications` (icône `assets/images/notification-icon.png` — asset à créer si absent), `ios.googleServicesFile` / `android.googleServicesFile` par `APP_ENV`, commentaires rebuild EAS + étapes manuelles (Vault, déploiement function, etc.).
-- **`eas.json`** : `APP_ENV` par profil de build.
+- **`apps/mobile/eas.json`** : `APP_ENV` par profil de build.
 - **Types DB client** : `profiles.push_token` dans `src/lib/supabase.types.ts`.
 
 ## Backend Supabase

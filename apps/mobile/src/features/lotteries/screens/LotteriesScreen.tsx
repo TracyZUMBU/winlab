@@ -47,10 +47,6 @@ export function LotteriesScreen() {
     fetchNextPage,
     isFetchingNextPage,
   } = useAvailableLotteriesQuery();
-  console.warn(
-    "data =>",
-    data?.map((l) => l.category === "gift-card"),
-  );
 
   const openDetail = (lotteryId: string) => {
     router.push(`/lotteries/${lotteryId}`);
