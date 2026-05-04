@@ -30,7 +30,9 @@ export function LegalScrollModal({ documentId, onClose }: LegalScrollModalProps)
   const title =
     documentId === "terms"
       ? t("emailScreen.termsOfService")
-      : t("emailScreen.privacyPolicy");
+      : documentId === "privacy"
+        ? t("emailScreen.privacyPolicy")
+        : t("legalDocuments.lotteryRulesTitle");
 
   const body = getLegalDocumentBody(documentId, i18n.language);
 

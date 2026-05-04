@@ -11,6 +11,7 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
+  Linking,
   Modal,
   Platform,
   Pressable,
@@ -27,17 +28,20 @@ import { Button } from "@/src/components/ui/Button";
 import { ListGroup } from "@/src/components/ui/ListGroup";
 import { Screen } from "@/src/components/ui/Screen";
 import { ScreenSectionOverline } from "@/src/components/ui/ScreenSectionOverline";
+import { LegalScrollModal } from "@/src/features/auth/components/LegalScrollModal";
 import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
+import { legalEntityInfo, type LegalDocumentId } from "@/src/legal/index";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { logger } from "@/src/lib/logger";
-import { showSuccessToast } from "@/src/shared/toast";
+import { showErrorToast, showSuccessToast } from "@/src/shared/toast";
 import { theme } from "@/src/theme";
 
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
+import { ProfileLegalDocumentsMenuModal } from "../components/ProfileLegalDocumentsMenuModal";
 import { ProfileHeroHeader } from "../components/ProfileHeroHeader";
 import { ProfileMenuRow } from "../components/ProfileMenuRow";
 import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
@@ -113,6 +117,10 @@ export function ProfileScreen() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+  const [legalMenuVisible, setLegalMenuVisible] = useState(false);
+  const [legalDocument, setLegalDocument] = useState<LegalDocumentId | null>(
+    null,
+  );
 
   const editForm = useForm<EditProfileFormValues>({
     resolver: zodResolver(editProfileFormSchema),
@@ -294,16 +302,33 @@ export function ProfileScreen() {
     router.push("/referral");
   }, [router]);
 
-  const openSupport = useCallback(() => {
-    Alert.alert(t("profile.menu.support"), t("profile.menu.supportMessage"));
-  }, [t]);
+  const openSupport = useCallback(async () => {
+    const p = profileQuery.data;
+    const mail = legalEntityInfo.contactEmail;
+    const subject = encodeURIComponent(t("profile.menu.supportMailSubject"));
+    const body = encodeURIComponent(
+      t("profile.menu.supportMailBody", {
+        email: p?.email?.trim() || "—",
+        username: p?.username?.trim() || "—",
+        userId: user?.id?.trim() || "—",
+      }),
+    );
+    const url = `mailto:${mail}?subject=${subject}&body=${body}`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      showErrorToast({
+        title: t("profile.menu.supportOpenErrorTitle"),
+        message: t("profile.menu.supportOpenErrorMessage", {
+          contact: mail,
+        }),
+      });
+    }
+  }, [profileQuery.data, t, user?.id]);
 
   const openRegulations = useCallback(() => {
-    Alert.alert(
-      t("profile.menu.regulations"),
-      t("profile.menu.regulationsMessage"),
-    );
-  }, [t]);
+    setLegalMenuVisible(true);
+  }, []);
 
   const handleChangeAvatar = useCallback(async () => {
     if (!userId || uploadAvatarMutation.isPending) {
@@ -644,6 +669,22 @@ export function ProfileScreen() {
           <Text style={styles.tagline}>{t("profile.footer.tagline")}</Text>
         </View>
       </ScrollView>
+
+      <ProfileLegalDocumentsMenuModal
+        visible={legalMenuVisible}
+        onClose={() => setLegalMenuVisible(false)}
+        onSelect={(id) => {
+          setLegalMenuVisible(false);
+          setLegalDocument(id);
+        }}
+      />
+
+      {legalDocument != null ? (
+        <LegalScrollModal
+          documentId={legalDocument}
+          onClose={() => setLegalDocument(null)}
+        />
+      ) : null}
 
       <Modal
         visible={isEditingProfile}

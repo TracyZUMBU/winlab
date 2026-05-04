@@ -7,13 +7,16 @@ import { buildTermsOfServiceEn, buildTermsOfServiceFr } from "./termsBodies";
 export type { LegalEntityInfo } from "./entityInfo";
 export { legalEntityInfo } from "./entityInfo";
 
-export type LegalDocumentId = "privacy" | "terms";
+export type LegalDocumentId = "privacy" | "terms" | "lotteryRules";
 
 export function getLegalDocumentBody(
   id: LegalDocumentId,
   language: string | undefined,
   entity: LegalEntityInfo = legalEntityInfo,
 ): string {
+  if (id === "lotteryRules") {
+    return buildLotteryRegulationStandaloneDraftFr(entity);
+  }
   const lang = (language ?? "fr").toLowerCase();
   const isFr = lang.startsWith("fr");
   if (id === "privacy") {

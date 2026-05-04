@@ -1,6 +1,6 @@
 # Mémo — Feature Profil (mobile)
 
-**Dernière revue du mémo :** 2026-05-06
+**Dernière revue du mémo :** 2026-05-04
 
 ## Objectif
 
@@ -31,6 +31,7 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 | **Création profil + parrain** | `screens/CreateProfileScreen.tsx`, `services/createProfile.ts`, schéma `validators/createProfileFormSchema.ts` |
 | **Hub UI** | `screens/ReferralHubScreen.tsx` (partage natif `Share.share`) |
 | **Profil « classique »** | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, mutations update / avatar / delete |
+| **Support & documents légaux** | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` (corps prérempli pseudo / email / id) ; entrée « Règlement » → `ProfileLegalDocumentsMenuModal` puis `LegalScrollModal` (CGU, politique de confidentialité, règlement des jeux depuis `@/src/legal`). |
 
 **Règle d’archi :** pas d’appel Supabase depuis les écrans ; services → hooks → UI.
 

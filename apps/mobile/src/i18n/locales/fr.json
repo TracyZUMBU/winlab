@@ -2,6 +2,9 @@
   "app": {
     "name": "Winlab"
   },
+  "legalDocuments": {
+    "lotteryRulesTitle": "Règlement des jeux et opérations promotionnelles"
+  },
   "bootstrap": {
     "loadFailed": "Impossible de démarrer l’application. Réessayez."
   },
@@ -743,11 +746,14 @@
       "referralAlertTitle": "Votre code de parrainage",
       "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
       "support": "Support",
-      "supportA11y": "Contacter le support",
-      "supportMessage": "Notre équipe support vous répondra bientôt. Utilisez l’email associé à votre compte pour nous écrire.",
-      "regulations": "Règlement",
-      "regulationsA11y": "Voir le règlement",
-      "regulationsMessage": "Les conditions générales et le règlement des jeux seront disponibles ici prochainement.",
+      "supportA11y": "Contacter le support par email",
+      "supportMailSubject": "Support Winlab",
+      "supportMailBody": "Bonjour,\n\n— Compte —\nEmail : {{email}}\nPseudo : {{username}}\nIdentifiant : {{userId}}\n\n— Votre message —\n",
+      "supportOpenErrorTitle": "Email impossible",
+      "supportOpenErrorMessage": "Aucune application mail n’a pu être ouverte. Écrivez-nous à {{contact}} depuis un navigateur.",
+      "regulations": "Règlement et infos légales",
+      "regulationsA11y": "Voir les conditions, la confidentialité et le règlement des jeux",
+      "legalDocumentsSheetTitle": "Documents légaux",
       "deleteAccountA11y": "Supprimer définitivement mon compte"
     },
     "hero": {
