@@ -2,7 +2,7 @@
   "name": "@winlab/monitoring",
   "version": "0.0.0",
   "private": true,
-  "description": "Monitoring incident (messages + exceptions) framework-agnostic : types, sanitization, providers Slack / console / Sentry stub.",
+  "description": "Monitoring incident (messages + exceptions) framework-agnostic : types, sanitization, providers Slack / console.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {

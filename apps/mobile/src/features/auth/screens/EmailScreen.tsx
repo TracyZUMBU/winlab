@@ -18,8 +18,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
+import { LegalScrollModal } from "../components/LegalScrollModal";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { sendEmailOtp } from "../services";
+import type { LegalDocumentId } from "@/src/legal/index";
 import { emailSchema, type EmailFormValues } from "../validators";
 
 const ACCENT = "#FF8C00";
@@ -33,6 +35,9 @@ export const EmailScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [legalDocument, setLegalDocument] = useState<LegalDocumentId | null>(
+    null,
+  );
 
   const {
     register,
@@ -263,11 +268,19 @@ export const EmailScreen: React.FC = () => {
 
               <Text style={styles.termsText}>
                 <Text>{t("emailScreen.terms.lead")}</Text>
-                <Text style={styles.termsLink}>
+                <Text
+                  accessibilityRole="link"
+                  onPress={() => setLegalDocument("terms")}
+                  style={styles.termsLink}
+                >
                   {t("emailScreen.termsOfService")}
                 </Text>
                 <Text>{t("emailScreen.terms.middle")}</Text>
-                <Text style={styles.termsLink}>
+                <Text
+                  accessibilityRole="link"
+                  onPress={() => setLegalDocument("privacy")}
+                  style={styles.termsLink}
+                >
                   {t("emailScreen.privacyPolicy")}
                 </Text>
                 <Text>{t("emailScreen.terms.trail")}</Text>
@@ -279,6 +292,13 @@ export const EmailScreen: React.FC = () => {
           <View style={styles.decorativeBubble} />
         </View>
       </View>
+
+      {legalDocument != null ? (
+        <LegalScrollModal
+          documentId={legalDocument}
+          onClose={() => setLegalDocument(null)}
+        />
+      ) : null}
     </SafeAreaView>
   );
 };

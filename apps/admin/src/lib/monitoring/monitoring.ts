@@ -1,7 +1,6 @@
 import {
   ConsoleMonitoringProvider,
   MonitoringService,
-  SentryMonitoringProvider,
   SlackMonitoringProvider,
 } from "@winlab/monitoring";
 import type { MonitoringProvider } from "@winlab/monitoring";
@@ -41,17 +40,12 @@ function buildProviders(): MonitoringProvider[] {
     );
   }
 
-  if (import.meta.env.VITE_SENTRY_DSN) {
-    list.push(new SentryMonitoringProvider());
-  }
-
   if (!isDev && list.length === 0) {
     console.warn(
       "[monitoring] No MonitoringProvider configured; using console fallback",
       {
         environment,
         slackSupabaseConfigured: isSupabaseConfigured(),
-        sentryDsnConfigured: Boolean(import.meta.env.VITE_SENTRY_DSN),
       },
     );
     list.push(new ConsoleMonitoringProvider());

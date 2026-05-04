@@ -1,7 +1,6 @@
 import {
   ConsoleMonitoringProvider,
   MonitoringService,
-  SentryMonitoringProvider,
   SlackMonitoringProvider,
   type MonitoringProvider,
 } from "@winlab/monitoring";
@@ -58,17 +57,12 @@ function buildProviders(): MonitoringProvider[] {
     );
   }
 
-  if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
-    list.push(new SentryMonitoringProvider());
-  }
-
   if (!isDev && list.length === 0) {
     logger.warn(
       "[monitoring] No MonitoringProvider configured; using console fallback",
       {
         environment,
         slackSupabaseConfigured: supabaseEnv.isConfigured,
-        sentryDsnConfigured: Boolean(process.env.EXPO_PUBLIC_SENTRY_DSN),
       },
     );
     list.push(

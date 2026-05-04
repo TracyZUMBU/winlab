@@ -8,7 +8,7 @@ Couche **framework-agnostic** pour le monitoring incident (messages + exceptions
 - `MonitoringService` (`captureMessage`, `captureException`)
 - Sanitization / pseudonymisation (`sanitizeMonitoringEvent`, hash `userId`)
 - `normalizeError`
-- Providers : `ConsoleMonitoringProvider`, `SlackMonitoringProvider`, `SentryMonitoringProvider` (stub)
+- Providers : `ConsoleMonitoringProvider`, `SlackMonitoringProvider`
 
 ## Convention `service`
 
@@ -42,4 +42,3 @@ Chaque app instancie `MonitoringService` avec ses propres providers (dev/prod, c
 ## Limites
 
 - **Logger applicatif** (`apps/mobile/src/lib/logger`) reste spécifique mobile pour l’instant.
-- **Sentry** : interface prête ; implémentation SDK à brancher dans `SentryMonitoringProvider`.

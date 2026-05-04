@@ -1,0 +1,71 @@
+import type { LegalEntityInfo } from "./entityInfo";
+
+/**
+ * Brouillon de « règlement des jeux / opérations promotionnelles » destiné à être
+ * copié dans un PDF ou une page web publique. À compléter opération par opération
+ * avec un juriste. Les valeurs entre crochets […] sont des placeholders.
+ */
+export function buildLotteryRegulationStandaloneDraftFr(
+  e: LegalEntityInfo,
+): string {
+  return `RÈGLEMENT TYPE — OPÉRATIONS PROMOTIONNELLES / TIRAGES AU SORT
+Application ${e.tradeName}
+
+Éditeur / organisateur : ${e.legalName}
+Siège : ${e.registeredAddress}
+SIRET : ${e.siret ?? "—"}
+Contact : ${e.contactEmail}
+
+Dernière mise à jour du modèle : ${e.lastUpdatedFr}
+
+— — —
+
+PRÉAMBULE
+Le présent document fixe les règles communes applicables aux opérations promotionnelles de type tirage au sort ou jeu sans achat obligatoire accessible depuis l’application ${e.tradeName}, dans le respect du droit français applicable aux jeux-concours et opérations équivalentes. Chaque opération peut faire l’objet d’un avenant ou d’un règlement particulier (dates, lots, nombre de tickets, etc.) publié sur [URL ou emplacement à compléter].
+
+ARTICLE 1 — Objet
+Permettre aux utilisateurs remplissant les conditions d’éligibilité de participer à des opérations promotionnelles décrites dans l’Application, selon les modalités ci-dessous et celles de l’opération concernée.
+
+ARTICLE 2 — Conditions de participation
+2.1. Participation gratuite : aucun achat d’argent n’est exigé pour participer lorsque l’opération est présentée comme gratuite au sens des règles affichées dans l’Application (participation par jetons virtuels obtenus sans contrepartie monétaire obligatoire dans le cadre du service).
+2.2. Âge : sauf mention contraire sur l’opération, l’utilisation générale du service est réservée aux personnes d’au moins 15 ans ; certaines opérations ou certains lots peuvent être réservés aux majeurs de 18 ans. L’âge requis est indiqué sur la fiche de l’opération.
+2.3. Territoire : sauf mention contraire, les opérations sont ouvertes aux personnes résidant en France, dans la limite des fonctionnalités effectivement proposées par l’Application.
+2.4. Compte : une seule participation par personne physique et par compte utilisateur peut être exigée pour une même opération, sauf règles spécifiques affichées.
+2.5. Exclusions : sont exclus les salariés ou prestataires de l’éditeur ayant conçu ou géré l’opération, ainsi que les membres de leur foyer, si une telle exclusion est prévue pour l’opération ; toute autre exclusion légale ou contractuelle sera indiquée dans l’Application.
+
+ARTICLE 3 — Jetons virtuels et tickets
+3.1. Les jetons sont des unités internes au service ${e.tradeName}, sans valeur monétaire en dehors du cadre décrit dans les CGU, sauf stipulation légale contraire.
+3.2. Le coût en jetons pour obtenir un ticket ou une chance de participer est affiché dans l’Application avant validation.
+3.3. Les tickets ou participations sont enregistrés de manière traçable sur les systèmes de l’éditeur (hébergement Supabase).
+
+ARTICLE 4 — Désignation des gagnants
+4.1. Les gagnants sont désignés par tirage au sort ou mécanisme équivalent, équitable et documenté, parmi les participations valides, à la date indiquée pour l’opération.
+4.2. Les résultats sont communiqués dans l’Application et/ou par notification, selon les paramètres techniques disponibles.
+4.3. En cas d’impossibilité technique ou de force majeure, l’éditeur peut reporter ou annuler l’opération ; les participants en sont informés dans la mesure du possible.
+
+ARTICLE 5 — Lots
+5.1. Nature et valeur indicative des lots : [À compléter par opération].
+5.2. Aucun lot ne peut être échangé contre sa valeur en espèces, sauf obligation légale impérative.
+5.3. Les gagnants disposent d’un délai de [ex. 30 jours] à compter de la notification pour fournir les informations nécessaires à la remise du lot (adresse, justificatif d’identité si le lot ou la loi l’exige). À défaut, le lot peut être attribué à un remplaçant ou annulé selon les modalités précisées pour l’opération.
+
+ARTICLE 6 — Fraude et bonne foi
+Toute fraude, utilisation de comptes multiples fictifs, bot, ou manipulation des systèmes entraîne l’exclusion de l’opération et éventuellement la suspension du compte, sans préjudice d’actions légales.
+
+ARTICLE 7 — Données personnelles
+Les données collectées pour les opérations (identité du participant, preuve de gain, contact pour remise du lot) sont traitées conformément à la politique de confidentialité de l’Application et au RGPD. Les gagnants peuvent être publiés sous pseudonyme dans l’Application si cette mention figure au règlement de l’opération.
+
+ARTICLE 8 — Réclamations
+Toute réclamation relative à une opération doit être adressée à ${e.contactEmail}, dans un délai de [ex. 30 jours] après publication des résultats, en indiquant l’identifiant de l’opération et l’adresse e-mail du compte utilisateur.
+
+ARTICLE 9 — Litiges
+Le droit français s’applique. À défaut de résolution amiable, les tribunaux compétents du ressort de la juridiction applicable aux consommateurs sont seuls compétents, sous réserve des règles impératives.
+
+ARTICLE 10 — Acceptation
+La participation à une opération vaut acceptation du présent règlement et des CGU de ${e.tradeName}.
+
+— — —
+Fiches d’information (références générales, non exhaustives) :
+• CNIL — jeux-concours et données : https://www.cnil.fr/
+• DGCCRF — jeux-concours : https://www.economie.gouv.fr/dgccrf
+`;
+}

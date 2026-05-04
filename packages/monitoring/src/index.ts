@@ -37,5 +37,3 @@ export type {
   SlackMonitoringProviderOptions,
   MonitoringFunctionsInvokeClient,
 } from "./providers/slack-monitoring-provider";
-
-export { SentryMonitoringProvider } from "./providers/sentry-monitoring-provider";
