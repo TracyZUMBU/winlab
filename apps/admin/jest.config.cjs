@@ -1,3 +1,5 @@
+const path = require("node:path");
+
 /** @type {import('jest').Config} */
 module.exports = {
   // Permet `jest --selectProjects unit` tant qu’aucun fichier `*.unit.test.ts` n’existe sous `src/`.
@@ -24,6 +26,12 @@ module.exports = {
       moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
       transform: {
         "^.+\\.(ts|tsx)$": "ts-jest",
+      },
+      moduleNameMapper: {
+        "^marked$": path.join(
+          __dirname,
+          "../../node_modules/marked/lib/marked.umd.js",
+        ),
       },
       setupFiles: ["<rootDir>/tests/setupEnv.ts"],
       maxWorkers: 1,

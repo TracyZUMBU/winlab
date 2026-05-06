@@ -16,15 +16,32 @@ export type MissionAdminKnownStatus = (typeof MISSION_ADMIN_STATUSES)[number];
 /** Valeur d’enum Postgres `mission_status` ou valeur inattendue. */
 export type MissionAdminStatus = MissionAdminKnownStatus | "unknown";
 
-export const MISSION_ADMIN_TYPES = [
+/** Valeurs `mission_type` connues côté admin (alignées sur l’enum Postgres). */
+export type MissionAdminKnownType =
+  | "survey"
+  | "video"
+  | "follow"
+  | "referral"
+  | "custom"
+  | "daily_login"
+  | "external_action";
+
+export const MISSION_ADMIN_TYPES: readonly MissionAdminKnownType[] = [
   "survey",
   "video",
   "follow",
   "referral",
   "custom",
-] as const;
+  "daily_login",
+  "external_action",
+];
 
-export type MissionAdminKnownType = (typeof MISSION_ADMIN_TYPES)[number];
+/** Types autorisés à la création (= enum Postgres `mission_type`). */
+export const MISSION_CREATE_TYPES = ["survey", "video", "external_action"];
+export type CreateAdminMissionMissionType = Extract<
+  MissionAdminKnownType,
+  "survey" | "video" | "external_action"
+>;
 
 /** Valeur d’enum Postgres `mission_type` ou valeur inattendue. */
 export type MissionAdminType = MissionAdminKnownType | "unknown";
@@ -35,7 +52,8 @@ export type MissionAdminKnownValidationMode =
   (typeof MISSION_ADMIN_VALIDATION_MODES)[number];
 
 export type MissionAdminValidationMode =
-  MissionAdminKnownValidationMode | "unknown";
+  | MissionAdminKnownValidationMode
+  | "unknown";
 
 /** Valeurs acceptées par `p_sort` dans `admin_get_missions` (liste blanche SQL). */
 export const MISSION_ADMIN_LIST_SORT_IDS = [
@@ -53,7 +71,8 @@ export const MISSION_ADMIN_LIST_SORT_IDS = [
   "total_completions_asc",
 ] as const;
 
-export type MissionAdminListSortId = (typeof MISSION_ADMIN_LIST_SORT_IDS)[number];
+export type MissionAdminListSortId =
+  (typeof MISSION_ADMIN_LIST_SORT_IDS)[number];
 
 /** Filtres communs à `admin_get_missions` et `admin_get_missions_count`. */
 export type AdminMissionsListFilters = {
@@ -99,6 +118,29 @@ export type AdminMissionListItem = {
 export type AdminMissionCompletedUser = {
   user_id: string;
   username: string;
+};
+
+/** Payload création mission (table `missions`, sans `created_at` / `updated_at`). */
+export type CreateAdminMissionInput = {
+  brand_id: string;
+  title: string;
+  rules_text: string;
+  mission_type: CreateAdminMissionMissionType;
+  token_reward: number;
+  validation_mode: MissionAdminKnownValidationMode;
+  description?: string | null;
+  /** Défaut côté service : `draft`. */
+  status?: MissionAdminKnownStatus;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  max_completions_total?: number | null;
+  max_completions_per_user?: number | null;
+  metadata?: Record<string, unknown>;
+  image_url?: string | null;
+};
+
+export type CreatedAdminMission = {
+  id: string;
 };
 
 /** Détail admin : ligne `admin_get_mission_detail` + `completed_users` typés. */

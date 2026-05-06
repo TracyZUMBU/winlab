@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { ServiceFailureError } from "../../../lib/api/serviceFailureError";
 import { isSupabaseConfigured } from "../../../lib/supabase";
+import { CreateMissionModal } from "../components/CreateMissionModal";
 import { MissionDetailPanel } from "../components/MissionDetailPanel";
 import { MissionsListTable } from "../components/MissionsListTable";
 import { useAdminMissionsListQuery } from "../hooks/useAdminMissionsListQuery";
@@ -76,6 +77,7 @@ export function MissionsPage() {
   const [sort, setSort] = useState<MissionAdminListSortId>("created_at_desc");
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const brandsQuery = useQuery({
     ...adminBrandFilterOptionsQuery(),
@@ -129,9 +131,29 @@ export function MissionsPage() {
         <MissionDetailPanel missionId={detailMissionId} onClose={closeDetailPanel} />
       ) : null}
 
-      <h2 id="missions-heading" className="page-missions__heading">
-        Missions
-      </h2>
+      {createModalOpen ? (
+        <CreateMissionModal
+          open
+          onClose={() => setCreateModalOpen(false)}
+          brands={brandsQuery.isSuccess ? brandsQuery.data : []}
+          brandsLoading={brandsQuery.isPending}
+        />
+      ) : null}
+
+      <div className="page-missions__header-row">
+        <h2 id="missions-heading" className="page-missions__heading">
+          Missions
+        </h2>
+        {isSupabaseConfigured() ? (
+          <button
+            type="button"
+            className="missions-create-btn"
+            onClick={() => setCreateModalOpen(true)}
+          >
+            Créer une mission
+          </button>
+        ) : null}
+      </div>
 
       {listState.kind === "loading" && (
         <p className="page-lotteries__muted" role="status">

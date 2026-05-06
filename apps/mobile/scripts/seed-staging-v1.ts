@@ -74,7 +74,12 @@ type MissionSeed = {
   max_completions_per_user: number;
   validation_mode: MissionValidationMode;
   metadata: Record<string, unknown>;
+  /** Markdown FR ; défaut seed si absent */
+  rules_text?: string;
 };
+
+const SEED_MISSION_DEFAULT_RULES_TEXT =
+  "## Règlement\n\nConditions générales de la mission (données de seed).";
 
 type LotterySeed = {
   key: string;
@@ -1062,6 +1067,7 @@ async function upsertMissions(brandIdBySlug: Map<string, string>) {
     max_completions_per_user: mission.max_completions_per_user,
     metadata: { ...mission.metadata, seed_key: mission.key },
     validation_mode: mission.validation_mode,
+    rules_text: mission.rules_text ?? SEED_MISSION_DEFAULT_RULES_TEXT,
   }));
 
   // Pas de slug sur missions dans ton schéma, donc on nettoie puis on recrée via seed_key en metadata.

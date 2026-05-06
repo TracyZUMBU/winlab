@@ -1,6 +1,7 @@
 /// <reference types="jest" />
 
 import {
+  createAdminMission,
   getAdminMissionDetail,
   getAdminMissions,
   getAdminMissionsCount,
@@ -10,6 +11,7 @@ import {
   createAuthenticatedTestUser,
   createBrand,
   createMission,
+  getSupabaseAdminClient,
   setProfileIsAdmin,
 } from "@winlab/supabase-test-utils";
 
@@ -92,5 +94,85 @@ describe("admin mission services (integration)", () => {
 
     const detailResult = await getAdminMissionDetail(mission.id);
     expect(detailResult.success).toBe(false);
+  });
+
+  it("creates a draft mission with rules_text for an admin user", async () => {
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-create-${uniqueId}` });
+
+    const adminUser = await createAuthenticatedTestUser();
+    await setProfileIsAdmin(adminUser.userId, true);
+    await syncAppClientSession(adminUser.client);
+
+    const rulesText = `## Règlement\n\nCréation admin ${uniqueId}.`;
+    const createResult = await createAdminMission({
+      brand_id: brand.id,
+      title: `Mission créée ${uniqueId}`,
+      rules_text: rulesText,
+      mission_type: "survey",
+      token_reward: 15,
+      validation_mode: "automatic",
+    });
+
+    expect(createResult.success).toBe(true);
+    if (!createResult.success) {
+      return;
+    }
+
+    const missionId = createResult.data.id;
+    const admin = getSupabaseAdminClient();
+    const { data: row, error } = await admin
+      .from("missions")
+      .select("id, status, rules_text, title")
+      .eq("id", missionId)
+      .single();
+    expect(error).toBeNull();
+    expect(row?.status).toBe("draft");
+    expect(row?.rules_text).toBe(rulesText);
+    expect(row?.title).toBe(`Mission créée ${uniqueId}`);
+  });
+
+  it("rejects create mission for non-admin (RLS)", async () => {
+    const uniqueId = `${Date.now()}-${Math.random()}`;
+    const brand = await createBrand({ name: `brand-forbid-${uniqueId}` });
+
+    const user = await createAuthenticatedTestUser();
+    await setProfileIsAdmin(user.userId, false);
+    await syncAppClientSession(user.client);
+
+    const createResult = await createAdminMission({
+      brand_id: brand.id,
+      title: `Tentative ${uniqueId}`,
+      rules_text: "## R\n\nx",
+      mission_type: "survey",
+      token_reward: 10,
+      validation_mode: "automatic",
+    });
+
+    expect(createResult.success).toBe(false);
+    expect(createResult.success ? null : createResult.errorCode).toBe(
+      "FORBIDDEN",
+    );
+  });
+
+  it("returns INVALID_PAYLOAD when title is empty after trim", async () => {
+    const brand = await createBrand();
+    const adminUser = await createAuthenticatedTestUser();
+    await setProfileIsAdmin(adminUser.userId, true);
+    await syncAppClientSession(adminUser.client);
+
+    const createResult = await createAdminMission({
+      brand_id: brand.id,
+      title: "   ",
+      rules_text: "## R\n\nx",
+      mission_type: "survey",
+      token_reward: 10,
+      validation_mode: "automatic",
+    });
+
+    expect(createResult.success).toBe(false);
+    expect(createResult.success ? null : createResult.errorCode).toBe(
+      "INVALID_PAYLOAD",
+    );
   });
 });

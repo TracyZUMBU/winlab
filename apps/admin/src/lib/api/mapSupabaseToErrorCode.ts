@@ -50,6 +50,10 @@ export function mapSupabaseToErrorCode(error: unknown): string {
     return "INVALID_MISSION_ID";
   }
 
+  if (/row-level security/i.test(msg)) {
+    return "FORBIDDEN";
+  }
+
   if (isLikelyNetworkError(error)) {
     return "NETWORK";
   }

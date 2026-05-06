@@ -24,7 +24,10 @@ export {
   createLotteryTickets,
 } from "./factories/lottery_tickets";
 export { createWalletTransaction } from "./factories/wallet_transactions";
-export { createMission } from "./factories/missions";
+export {
+  createMission,
+  insertMissionWithUserClient,
+} from "./factories/missions";
 export {
   testLinearSurveyMetadata,
   testLinearSurveyProofData,

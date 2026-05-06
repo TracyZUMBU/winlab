@@ -5,8 +5,12 @@ export function missionServiceErrorMessage(errorCode: string): string {
       return "Supabase non configuré : renseigner VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY dans apps/admin/.env (voir .env.example).";
     case "UNAUTHORIZED":
       return "Accès réservé aux administrateurs.";
+    case "FORBIDDEN":
+      return "Action non autorisée pour ce compte.";
     case "INVALID_MISSION_ID":
       return "Identifiant de mission invalide.";
+    case "INVALID_PAYLOAD":
+      return "Données invalides : vérifiez les champs obligatoires.";
     case "NETWORK":
       return "Impossible de joindre le serveur. Vérifiez votre connexion.";
     case "RPC_ERROR":

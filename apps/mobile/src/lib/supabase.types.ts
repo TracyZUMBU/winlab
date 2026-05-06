@@ -457,6 +457,7 @@ export type Database = {
           max_completions_total: number | null;
           metadata: Json;
           mission_type: Database["public"]["Enums"]["mission_type"];
+          rules_text: string;
           starts_at: string | null;
           status: Database["public"]["Enums"]["mission_status"];
           title: string;
@@ -475,6 +476,7 @@ export type Database = {
           max_completions_total?: number | null;
           metadata?: Json;
           mission_type: Database["public"]["Enums"]["mission_type"];
+          rules_text: string;
           starts_at?: string | null;
           status?: Database["public"]["Enums"]["mission_status"];
           title: string;
@@ -493,6 +495,7 @@ export type Database = {
           max_completions_total?: number | null;
           metadata?: Json;
           mission_type?: Database["public"]["Enums"]["mission_type"];
+          rules_text?: string;
           starts_at?: string | null;
           status?: Database["public"]["Enums"]["mission_status"];
           title?: string;

@@ -1,10 +1,12 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import type { ComponentProps } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { SectionHeader } from "@/src/components/ui/SectionHeader";
 import { theme } from "@/src/theme";
+import { MissionRulesMarkdownModal } from "../../components/MissionRulesMarkdownModal";
 import type { MissionRow } from "../../services/getMissionById";
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>["name"];
@@ -15,18 +17,25 @@ type Props = {
 
 export function CommonMissionDetailSection({ mission }: Props) {
   const { t } = useTranslation();
+  const [rulesModalOpen, setRulesModalOpen] = useState(false);
+  const hasRules = (mission.rules_text ?? "").trim().length > 0;
 
-  const validationFeature = mission.validation_mode === "automatic"
-    ? {
-        title: t("missions.detail.features.validationInstant.title"),
-        description: t("missions.detail.features.validationInstant.description"),
-        iconName: "check-circle" as MaterialIconName,
-      }
-    : {
-        title: t("missions.detail.features.validationManual.title"),
-        description: t("missions.detail.features.validationManual.description"),
-        iconName: "schedule" as MaterialIconName,
-      };
+  const validationFeature =
+    mission.validation_mode === "automatic"
+      ? {
+          title: t("missions.detail.features.validationInstant.title"),
+          description: t(
+            "missions.detail.features.validationInstant.description",
+          ),
+          iconName: "check-circle" as MaterialIconName,
+        }
+      : {
+          title: t("missions.detail.features.validationManual.title"),
+          description: t(
+            "missions.detail.features.validationManual.description",
+          ),
+          iconName: "schedule" as MaterialIconName,
+        };
 
   return (
     <View style={styles.aboutSection}>
@@ -38,6 +47,27 @@ export function CommonMissionDetailSection({ mission }: Props) {
           {t("missions.detail.about.descriptionFallback")}
         </Text>
       )}
+
+      {hasRules ? (
+        <Pressable
+          accessibilityRole="link"
+          accessibilityLabel={t("missions.detail.rulesLinkA11y")}
+          onPress={() => setRulesModalOpen(true)}
+          style={({ pressed }) => [
+            styles.rulesLinkWrap,
+            pressed && styles.rulesLinkPressed,
+          ]}
+        >
+          <Text style={styles.rulesLink}>{t("missions.detail.rulesLink")}</Text>
+        </Pressable>
+      ) : null}
+
+      {rulesModalOpen ? (
+        <MissionRulesMarkdownModal
+          markdown={mission.rules_text}
+          onClose={() => setRulesModalOpen(false)}
+        />
+      ) : null}
 
       <View style={styles.features}>
         <View style={styles.featureRow}>
@@ -83,6 +113,20 @@ const styles = StyleSheet.create({
     color: theme.colors.textMuted,
     ...theme.typography.body,
     lineHeight: 22,
+  },
+  rulesLinkWrap: {
+    alignSelf: "flex-start",
+    marginTop: theme.spacing.xs,
+  },
+  rulesLinkPressed: {
+    opacity: 0.75,
+  },
+  rulesLink: {
+    ...theme.typography.body,
+    fontSize: 15,
+    fontWeight: "600",
+    color: theme.colors.accentSolid,
+    textDecorationLine: "underline",
   },
   features: {
     marginTop: theme.spacing.lg,
