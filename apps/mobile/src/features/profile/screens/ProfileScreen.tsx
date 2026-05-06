@@ -23,7 +23,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
 import { ListGroup } from "@/src/components/ui/ListGroup";
 import { Screen } from "@/src/components/ui/Screen";
@@ -41,9 +41,11 @@ import { showErrorToast, showSuccessToast } from "@/src/shared/toast";
 import { theme } from "@/src/theme";
 
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
+import { DepartmentPickerSheet } from "../components/DepartmentPickerSheet";
 import { ProfileLegalDocumentsMenuModal } from "../components/ProfileLegalDocumentsMenuModal";
 import { ProfileHeroHeader } from "../components/ProfileHeroHeader";
 import { ProfileMenuRow } from "../components/ProfileMenuRow";
+import { getFrenchDepartmentLabel } from "../constants/frenchDepartments";
 import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
 import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
@@ -117,6 +119,7 @@ export function ProfileScreen() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+  const [departmentSheetOpen, setDepartmentSheetOpen] = useState(false);
   const [legalMenuVisible, setLegalMenuVisible] = useState(false);
   const [legalDocument, setLegalDocument] = useState<LegalDocumentId | null>(
     null,
@@ -128,6 +131,7 @@ export function ProfileScreen() {
       username: "",
       birth_date: "",
       sex: undefined,
+      department_code: "",
     },
   });
 
@@ -144,6 +148,7 @@ export function ProfileScreen() {
   const usernameValue = watch("username");
   const birthDateValue = watch("birth_date");
   const selectedSex = watch("sex");
+  const departmentCodeValue = watch("department_code");
 
   const profile = profileQuery.data;
 
@@ -182,19 +187,27 @@ export function ProfileScreen() {
       username: profile.username?.trim() ?? "",
       birth_date: profile.birth_date ?? "",
       sex: profile.sex ?? undefined,
+      department_code: profile.department_code ?? "",
     });
     setBirthSheetOpen(false);
+    setDepartmentSheetOpen(false);
     setIsEditingProfile(true);
   }, [profile, reset]);
 
   const cancelEditProfile = useCallback(() => {
     setBirthSheetOpen(false);
+    setDepartmentSheetOpen(false);
     setIsEditingProfile(false);
   }, []);
 
   const openBirthDatePicker = useCallback(() => {
     Keyboard.dismiss();
     setBirthSheetOpen(true);
+  }, []);
+
+  const openDepartmentPicker = useCallback(() => {
+    Keyboard.dismiss();
+    setDepartmentSheetOpen(true);
   }, []);
 
   const onSubmitEditProfile = useCallback(
@@ -208,9 +221,11 @@ export function ProfileScreen() {
           username: values.username,
           birth_date: values.birth_date,
           sex: values.sex,
+          department_code: values.department_code?.trim().toUpperCase() ?? "",
         });
         setIsEditingProfile(false);
         setBirthSheetOpen(false);
+        setDepartmentSheetOpen(false);
         showSuccessToast({ title: t("profile.screen.updateSuccess") });
       } catch (error: unknown) {
         if (
@@ -540,7 +555,7 @@ export function ProfileScreen() {
   return (
     <Screen edges={["top"]} style={styles.screenBg}>
       <View style={styles.headerWrap}>
-        <AppHeaderFull
+        <AppHeader
           title={t("profile.screen.title")}
           titleAlign="center"
           showBottomBorder={false}
@@ -824,6 +839,43 @@ export function ProfileScreen() {
                 ) : null}
               </View>
 
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("profile.createProfile.screen.departmentLabel")}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    "profile.createProfile.screen.departmentPickerA11y",
+                  )}
+                  onPress={openDepartmentPicker}
+                  style={({ pressed }) => [
+                    styles.input,
+                    styles.dateFieldButton,
+                    errors.department_code ? styles.inputError : undefined,
+                    pressed && styles.dateFieldPressed,
+                  ]}
+                >
+                  <Text
+                    style={
+                      departmentCodeValue?.trim()
+                        ? styles.dateFieldText
+                        : styles.dateFieldPlaceholder
+                    }
+                    numberOfLines={1}
+                  >
+                    {departmentCodeValue?.trim()
+                      ? getFrenchDepartmentLabel(departmentCodeValue)
+                      : t("profile.createProfile.screen.departmentPlaceholder")}
+                  </Text>
+                </Pressable>
+                {errors.department_code?.message ? (
+                  <Text style={styles.errorTextSmall}>
+                    {errors.department_code.message}
+                  </Text>
+                ) : null}
+              </View>
+
               <Button
                 title={
                   updateMutation.isPending
@@ -848,6 +900,15 @@ export function ProfileScreen() {
             initialIso={birthDateValue || undefined}
             language={i18n.language}
           />
+
+          <DepartmentPickerSheet
+            visible={departmentSheetOpen}
+            onClose={() => setDepartmentSheetOpen(false)}
+            onConfirm={(code) => {
+              setValue("department_code", code, { shouldValidate: true });
+            }}
+            initialDepartmentCode={departmentCodeValue || undefined}
+          />
         </View>
       </Modal>
     </Screen>
@@ -860,7 +921,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   headerWrap: {
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: 0,
   },
   scroll: {
     flex: 1,

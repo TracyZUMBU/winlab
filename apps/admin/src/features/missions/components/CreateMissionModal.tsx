@@ -1,13 +1,13 @@
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import {
-  type FormEvent,
   useCallback,
   useEffect,
   useId,
   useMemo,
   useRef,
   useState,
+  type FormEvent,
 } from "react";
 import { createPortal } from "react-dom";
 
@@ -99,6 +99,7 @@ export function CreateMissionModal({
   brandsLoading,
 }: CreateMissionModalProps) {
   const titleId = useId();
+  const sheetRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const requestCloseRef = useRef<(() => void) | null>(null);
   const [form, setForm] = useState<FormState>(getInitialFormState);
@@ -154,20 +155,107 @@ export function CreateMissionModal({
       if (e.key === "Escape") {
         e.preventDefault();
         requestCloseRef.current?.();
+        return;
+      }
+
+      if (e.key !== "Tab") {
+        return;
+      }
+
+      const container = sheetRef.current;
+      if (!container) {
+        return;
+      }
+
+      const focusableSelector = [
+        'a[href]:not([tabindex="-1"])',
+        'area[href]:not([tabindex="-1"])',
+        'button:not([disabled]):not([tabindex="-1"])',
+        'input:not([disabled]):not([type="hidden"]):not([tabindex="-1"])',
+        'select:not([disabled]):not([tabindex="-1"])',
+        'textarea:not([disabled]):not([tabindex="-1"])',
+        'iframe:not([tabindex="-1"])',
+        'object:not([tabindex="-1"])',
+        'embed:not([tabindex="-1"])',
+        '[contenteditable="true"]:not([tabindex="-1"])',
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(",");
+
+      const focusables = Array.from(
+        container.querySelectorAll<HTMLElement>(focusableSelector),
+      ).filter((el) => {
+        if (el.getAttribute("aria-hidden") === "true") return false;
+        if (el.hasAttribute("disabled")) return false;
+        const style = window.getComputedStyle(el);
+        if (style.visibility === "hidden" || style.display === "none")
+          return false;
+        // offsetParent is null for display:none and some fixed elements; keep style checks above.
+        return true;
+      });
+
+      if (focusables.length === 0) {
+        return;
+      }
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+
+      if (e.shiftKey) {
+        if (!active || active === first || !container.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (!active || active === last || !container.contains(active)) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     };
     document.addEventListener("keydown", onKeyDown);
-    closeRef.current?.focus();
+
+    const prevActiveElement =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    const container = sheetRef.current;
+    const focusableSelector = [
+      'a[href]:not([tabindex="-1"])',
+      'area[href]:not([tabindex="-1"])',
+      'button:not([disabled]):not([tabindex="-1"])',
+      'input:not([disabled]):not([type="hidden"]):not([tabindex="-1"])',
+      'select:not([disabled]):not([tabindex="-1"])',
+      'textarea:not([disabled]):not([tabindex="-1"])',
+      'iframe:not([tabindex="-1"])',
+      'object:not([tabindex="-1"])',
+      'embed:not([tabindex="-1"])',
+      '[contenteditable="true"]:not([tabindex="-1"])',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(",");
+
+    const initialFocusable =
+      container?.querySelector<HTMLElement>(focusableSelector) ??
+      closeRef.current;
+    initialFocusable?.focus();
 
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      prevActiveElement?.focus?.();
     };
   }, [open]);
 
-  const setMissionType = useCallback((nextType: CreateAdminMissionMissionType) => {
-    setForm((prev) => ({ ...prev, mission_type: nextType }));
-  }, []);
+  const setMissionType = useCallback(
+    (nextType: CreateAdminMissionMissionType) => {
+      setForm((prev) => ({ ...prev, mission_type: nextType }));
+    },
+    [],
+  );
 
   const update =
     <K extends keyof FormState>(key: K) =>
@@ -186,7 +274,9 @@ export function CreateMissionModal({
     }
     const tokenReward = Number(form.token_reward);
     if (!Number.isFinite(tokenReward) || tokenReward <= 0) {
-      setFieldError("La récompense (jetons) doit être un nombre strictement positif.");
+      setFieldError(
+        "La récompense (jetons) doit être un nombre strictement positif.",
+      );
       return;
     }
 
@@ -197,8 +287,12 @@ export function CreateMissionModal({
     } else {
       try {
         const parsed: unknown = JSON.parse(metaRaw);
-        if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-          setFieldError("Le métadonnées JSON doit être un objet (ex. {}).");
+        if (
+          parsed === null ||
+          typeof parsed !== "object" ||
+          Array.isArray(parsed)
+        ) {
+          setFieldError("Les métadonnées JSON doit être un objet (ex. {}).");
           return;
         }
         metadata = parsed as Record<string, unknown>;
@@ -212,7 +306,9 @@ export function CreateMissionModal({
     const ends = toIsoOrNull(form.ends_at);
     if (starts && ends) {
       if (new Date(starts).getTime() >= new Date(ends).getTime()) {
-        setFieldError("La date de fin doit être postérieure à la date de début.");
+        setFieldError(
+          "La date de fin doit être postérieure à la date de début.",
+        );
         return;
       }
     }
@@ -233,7 +329,9 @@ export function CreateMissionModal({
     if (form.max_completions_per_user.trim() !== "") {
       const n = Number(form.max_completions_per_user);
       if (!Number.isFinite(n) || n <= 0) {
-        setFieldError("Quota par utilisateur : nombre positif ou champ vide (défaut : 1).");
+        setFieldError(
+          "Quota par utilisateur : nombre positif ou champ vide (défaut : 1).",
+        );
         return;
       }
       maxPerUser = n;
@@ -287,6 +385,7 @@ export function CreateMissionModal({
       />
       <div
         className="lottery-detail-panel__sheet mission-create-modal__sheet"
+        ref={sheetRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -309,14 +408,20 @@ export function CreateMissionModal({
         <div className="lottery-detail-panel__body">
           <form className="mission-create-form" onSubmit={handleSubmit}>
             {(fieldError || submitError) && (
-              <div className="page-lotteries__alert mission-create-form__alert" role="alert">
+              <div
+                className="page-lotteries__alert mission-create-form__alert"
+                role="alert"
+              >
                 {fieldError ?? submitError}
               </div>
             )}
 
             <div className="mission-create-form__grid">
               <div className="mission-create-form__field mission-create-form__field--full">
-                <label className="mission-create-form__label" htmlFor="mission-create-brand">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-brand"
+                >
                   Marque
                 </label>
                 <select
@@ -337,7 +442,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field mission-create-form__field--full">
-                <label className="mission-create-form__label" htmlFor="mission-create-title">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-title"
+                >
                   Titre
                 </label>
                 <input
@@ -352,7 +460,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field mission-create-form__field--full">
-                <label className="mission-create-form__label" htmlFor="mission-create-description">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-description"
+                >
                   Description
                 </label>
                 <textarea
@@ -365,7 +476,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-type">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-type"
+                >
                   Type
                 </label>
                 <select
@@ -373,7 +487,9 @@ export function CreateMissionModal({
                   className="mission-create-form__control"
                   value={form.mission_type}
                   onChange={(e) =>
-                    setMissionType(e.target.value as CreateAdminMissionMissionType)
+                    setMissionType(
+                      e.target.value as CreateAdminMissionMissionType,
+                    )
                   }
                 >
                   {MISSION_CREATE_TYPES.map((t) => (
@@ -385,14 +501,19 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-status">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-status"
+                >
                   Statut
                 </label>
                 <select
                   id="mission-create-status"
                   className="mission-create-form__control"
                   value={form.status}
-                  onChange={(e) => update("status")(e.target.value as MissionAdminKnownStatus)}
+                  onChange={(e) =>
+                    update("status")(e.target.value as MissionAdminKnownStatus)
+                  }
                 >
                   {MISSION_ADMIN_STATUSES.map((s) => (
                     <option key={s} value={s}>
@@ -403,7 +524,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-tokens">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-tokens"
+                >
                   Récompense (jetons)
                 </label>
                 <input
@@ -419,7 +543,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-validation">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-validation"
+                >
                   Mode validation
                 </label>
                 <select
@@ -427,7 +554,9 @@ export function CreateMissionModal({
                   className="mission-create-form__control"
                   value={form.validation_mode}
                   onChange={(e) =>
-                    update("validation_mode")(e.target.value as MissionAdminKnownValidationMode)
+                    update("validation_mode")(
+                      e.target.value as MissionAdminKnownValidationMode,
+                    )
                   }
                 >
                   {MISSION_ADMIN_VALIDATION_MODES.map((m) => (
@@ -439,7 +568,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-starts">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-starts"
+                >
                   Début (optionnel)
                 </label>
                 <input
@@ -452,7 +584,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-ends">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-ends"
+                >
                   Fin (optionnel)
                 </label>
                 <input
@@ -465,7 +600,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-max-total">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-max-total"
+                >
                   Quota total complétions
                 </label>
                 <input
@@ -476,12 +614,17 @@ export function CreateMissionModal({
                   step={1}
                   placeholder="vide = illimité"
                   value={form.max_completions_total}
-                  onChange={(e) => update("max_completions_total")(e.target.value)}
+                  onChange={(e) =>
+                    update("max_completions_total")(e.target.value)
+                  }
                 />
               </div>
 
               <div className="mission-create-form__field">
-                <label className="mission-create-form__label" htmlFor="mission-create-max-user">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-max-user"
+                >
                   Quota / utilisateur
                 </label>
                 <input
@@ -492,12 +635,17 @@ export function CreateMissionModal({
                   step={1}
                   placeholder="vide = 1"
                   value={form.max_completions_per_user}
-                  onChange={(e) => update("max_completions_per_user")(e.target.value)}
+                  onChange={(e) =>
+                    update("max_completions_per_user")(e.target.value)
+                  }
                 />
               </div>
 
               <div className="mission-create-form__field mission-create-form__field--full">
-                <label className="mission-create-form__label" htmlFor="mission-create-image">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-image"
+                >
                   URL image (optionnel)
                 </label>
                 <input
@@ -512,7 +660,10 @@ export function CreateMissionModal({
               </div>
 
               <div className="mission-create-form__field mission-create-form__field--full">
-                <label className="mission-create-form__label" htmlFor="mission-create-metadata">
+                <label
+                  className="mission-create-form__label"
+                  htmlFor="mission-create-metadata"
+                >
                   Métadonnées (JSON)
                 </label>
                 <textarea
@@ -527,8 +678,14 @@ export function CreateMissionModal({
 
               <div className="mission-create-form__field mission-create-form__field--full">
                 <div className="mission-create-form__label-row">
-                  <span className="mission-create-form__label">Règlement (Markdown)</span>
-                  <div className="mission-create-form__tabs" role="tablist" aria-label="Règlement">
+                  <span className="mission-create-form__label">
+                    Règlement (Markdown)
+                  </span>
+                  <div
+                    className="mission-create-form__tabs"
+                    role="tablist"
+                    aria-label="Règlement"
+                  >
                     <button
                       type="button"
                       role="tab"
@@ -590,7 +747,9 @@ export function CreateMissionModal({
                 className="mission-create-form__btn mission-create-form__btn--primary"
                 disabled={createMutation.isPending || brands.length === 0}
               >
-                {createMutation.isPending ? "Enregistrement…" : "Créer la mission"}
+                {createMutation.isPending
+                  ? "Enregistrement…"
+                  : "Créer la mission"}
               </button>
             </div>
           </form>

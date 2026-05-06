@@ -195,6 +195,10 @@
         "invalid": "Date invalide",
         "future": "La date ne peut pas être dans le futur"
       },
+      "department": {
+        "required": "Sélectionnez votre département d’habitation",
+        "invalid": "Département invalide"
+      },
       "sex": {
         "required": "Veuillez indiquer une option",
         "invalid": "Valeur non reconnue"
@@ -498,6 +502,10 @@
     "pendingRewards": "Récompenses en attente",
     "transactions": "Transactions",
     "tickets": "Tickets",
+    "ticketSubtitle": {
+      "drawOn": "Tirage le {{date}}",
+      "drawCompleted": "Tirage effectué"
+    },
     "noTransactions": "Aucune transaction",
     "noTickets": "Aucun ticket"
   },
@@ -581,6 +589,7 @@
     "loading": "Chargement…",
     "back": "Retour",
     "close": "Fermer",
+    "clear": "Effacer",
     "ok": "OK",
     "retry": "Réessayer",
     "share": "Partager",
@@ -690,6 +699,9 @@
         "birthDateColumnYear": "Année",
         "birthDatePickerA11y": "Ouvrir le sélecteur de date de naissance",
         "sexLabel": "SEXE",
+        "departmentLabel": "DÉPARTEMENT D’HABITATION",
+        "departmentPlaceholder": "Appuyez pour choisir un département",
+        "departmentPickerA11y": "Ouvrir le sélecteur de département d’habitation",
         "sex": {
           "female": "Femme",
           "male": "Homme",
@@ -698,6 +710,13 @@
         },
         "submit": "Continuer"
       }
+    },
+    "departmentPicker": {
+      "title": "Choisissez votre département",
+      "current": "Actuel : {{value}}",
+      "searchPlaceholder": "Rechercher (ex. 75, Paris, Rhône…)",
+      "searchA11y": "Rechercher un département",
+      "empty": "Aucun département trouvé."
     },
     "layout": {
       "a11yBack": "Retour",
@@ -818,5 +837,12 @@
         "UNKNOWN_ERROR": "Une erreur est survenue. Réessayez."
       }
     }
+  },
+  "tabs": {
+    "lotteries": "Loteries",
+    "wallet": "Portefeuille",
+    "missions": "Missions",
+    "profile": "Profil",
+    "home": "Accueil"
   }
 }

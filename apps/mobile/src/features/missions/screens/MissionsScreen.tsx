@@ -85,6 +85,11 @@ export function MissionsScreen() {
     <AppHeader
       title={t("missions.layout.title")}
       titleAlign="start"
+      leftSlot={
+        <View style={styles.headerIcon}>
+          <MaterialIcons name="flag" size={18} color={theme.colors.onAccent} />
+        </View>
+      }
       rightSlot={<TokenBalancePill />}
     />
   );
@@ -378,6 +383,14 @@ const styles = StyleSheet.create({
   chipLabelIdle: {
     color: theme.colors.textMutedAccent,
     fontWeight: "500",
+  },
+  headerIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.accentSolid,
   },
   listContent: {
     flexGrow: 1,

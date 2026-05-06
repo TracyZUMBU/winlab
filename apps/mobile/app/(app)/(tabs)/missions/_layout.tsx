@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 /** Requis pour les deep links / `withAnchor` quand un stack vit dans un onglet (cf. doc Expo « Stacks inside tabs »). */
 export const unstable_settings = {
@@ -7,11 +7,12 @@ export const unstable_settings = {
 };
 
 export default function MissionsLayout() {
+  const { t } = useTranslation();
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        title: "Missions",
+        title: t("missions.layout.title"),
       }}
     >
       <Stack.Screen

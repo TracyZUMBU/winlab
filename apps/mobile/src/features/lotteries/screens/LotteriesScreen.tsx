@@ -21,7 +21,7 @@ import { theme } from "@/src/theme";
 
 import { trackEvent } from "@/src/lib/analytics/trackEvent";
 
-import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { AppHeader } from "@/src/components/ui/AppHeader";
 import { LotteryEndingSoonCard } from "../components/LotteryEndingSoonCard";
 import { LotteryFeaturedCard } from "../components/LotteryFeaturedCard";
 import { LotteryGiftCardTile } from "../components/LotteryGiftCardTile";
@@ -358,7 +358,7 @@ function Header({
 
   return (
     <View style={styles.headerRoot}>
-      <AppHeaderFull
+      <AppHeader
         title={title}
         titleAlign="start"
         leftSlot={
@@ -374,74 +374,78 @@ function Header({
         showBottomBorder={false}
       />
 
-      <View style={styles.searchWrap}>
-        <MaterialIcons
-          name="search"
-          size={18}
-          color={theme.colors.textMuted}
-          style={styles.searchIcon}
-        />
-        <TextInput
-          value={query}
-          onChangeText={onQueryChange}
-          placeholder={t("lotteries.list.searchPlaceholder")}
-          placeholderTextColor={theme.colors.textMuted}
-          style={styles.searchInput}
-          returnKeyType="search"
-        />
-      </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.chipsScroll}
-      >
-        {categories.map((id) => {
-          const selected = category.toLowerCase() === id.toLowerCase();
-          const label = id === "all" ? t("lotteries.list.categories.all") : id;
-
-          return (
-            <Pressable
-              key={id}
-              onPress={() => onCategoryChange(id)}
-              style={[
-                styles.chip,
-                selected ? styles.chipActive : styles.chipIdle,
-              ]}
-              accessibilityRole="button"
-              accessibilityState={{ selected }}
-            >
-              <Text
-                style={[
-                  styles.chipLabel,
-                  selected ? styles.chipLabelActive : styles.chipLabelIdle,
-                ]}
-                numberOfLines={1}
-              >
-                {label.charAt(0).toUpperCase() + label.slice(1)}
-              </Text>
-            </Pressable>
-          );
-        })}
-
-        <Pressable
-          onPress={onPressResults}
-          style={[styles.chip, styles.chipResults]}
-          accessibilityRole="button"
-        >
+      <View style={styles.headerInner}>
+        <View style={styles.searchWrap}>
           <MaterialIcons
-            name="emoji-events"
-            size={16}
-            color={theme.colors.text}
+            name="search"
+            size={18}
+            color={theme.colors.textMuted}
+            style={styles.searchIcon}
           />
-          <Text
-            style={[styles.chipLabel, styles.chipLabelIdle]}
-            numberOfLines={1}
+          <TextInput
+            value={query}
+            onChangeText={onQueryChange}
+            placeholder={t("lotteries.list.searchPlaceholder")}
+            placeholderTextColor={theme.colors.textMuted}
+            style={styles.searchInput}
+            returnKeyType="search"
+          />
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsScroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          {categories.map((id) => {
+            const selected = category.toLowerCase() === id.toLowerCase();
+            const label =
+              id === "all" ? t("lotteries.list.categories.all") : id;
+
+            return (
+              <Pressable
+                key={id}
+                onPress={() => onCategoryChange(id)}
+                style={[
+                  styles.chip,
+                  selected ? styles.chipActive : styles.chipIdle,
+                ]}
+                accessibilityRole="button"
+                accessibilityState={{ selected }}
+              >
+                <Text
+                  style={[
+                    styles.chipLabel,
+                    selected ? styles.chipLabelActive : styles.chipLabelIdle,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {label.charAt(0).toUpperCase() + label.slice(1)}
+                </Text>
+              </Pressable>
+            );
+          })}
+
+          <Pressable
+            onPress={onPressResults}
+            style={[styles.chip, styles.chipResults]}
+            accessibilityRole="button"
           >
-            {t("lottery.screen.goToResults")}
-          </Text>
-        </Pressable>
-      </ScrollView>
+            <MaterialIcons
+              name="emoji-events"
+              size={16}
+              color={theme.colors.text}
+            />
+            <Text
+              style={[styles.chipLabel, styles.chipLabelIdle]}
+              numberOfLines={1}
+            >
+              {t("lottery.screen.goToResults")}
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -450,10 +454,14 @@ const styles = StyleSheet.create({
   headerRoot: {
     paddingTop: theme.spacing.sm,
     paddingBottom: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.screenHorizontal,
-    backgroundColor: theme.colors.background,
+    paddingHorizontal: 0,
+    backgroundColor: theme.colors.backgroundHeader,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.borderSubtle,
+    gap: theme.spacing.md,
+  },
+  headerInner: {
+    paddingHorizontal: theme.spacing.screenHorizontal,
     gap: theme.spacing.md,
   },
   headerIcon: {

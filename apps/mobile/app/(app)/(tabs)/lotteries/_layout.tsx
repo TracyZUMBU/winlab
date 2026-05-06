@@ -1,14 +1,16 @@
 import { Stack } from "expo-router";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function LotteriesLayout() {
+  const { t } = useTranslation();
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        title: "Lotteries",
+        title: t("tabs.lotteries"),
       }}
     >
+      s
       <Stack.Screen
         name="index"
         options={{ title: t("lotteries.layout.title") }}

@@ -15,6 +15,7 @@ export const createProfile = async ({
   username,
   birth_date,
   sex,
+  department_code,
 }: CreateProfilePayload): Promise<Profile> => {
   const supabase = getSupabaseClient();
 
@@ -27,6 +28,7 @@ export const createProfile = async ({
         username,
         birth_date,
         sex,
+        department_code,
       })
       .select("*")
       .single();
