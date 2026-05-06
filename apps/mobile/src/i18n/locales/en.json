@@ -279,6 +279,9 @@
         "title": "About the mission",
         "descriptionFallback": "No mission description available."
       },
+      "rulesLink": "View rules",
+      "rulesLinkA11y": "Open this mission’s rules",
+      "rulesModalTitle": "Rules",
       "features": {
         "anonymous": {
           "title": "Anonymous responses",

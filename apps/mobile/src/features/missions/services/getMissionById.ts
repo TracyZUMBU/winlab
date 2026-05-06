@@ -23,6 +23,7 @@ export type MissionRow = {
   title: string;
   token_reward: number;
   description: string | null;
+  rules_text: string;
   mission_type: MissionType;
   starts_at: string | null;
   ends_at: string | null;
@@ -42,6 +43,7 @@ export async function getMissionById(missionId: string): Promise<MissionRow> {
       id,
       title,
       description,
+      rules_text,
       mission_type,
       token_reward,
       starts_at,

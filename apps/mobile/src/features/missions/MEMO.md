@@ -1,6 +1,6 @@
 # Mémo — Feature Missions (mobile)
 
-**Dernière revue du mémo :** 2026-05-03
+**Dernière revue du mémo :** 2026-05-04
 
 ## Objectif
 
@@ -8,7 +8,7 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 
 ## Périmètre
 
-- **Inclus :** listes missions todo / complétées, écran détail (états **terminée / en attente / refus + réessai** selon la dernière `mission_completion`), soumission de complétion, codes d’erreur métier exposés au client, mission daily login (côté client + constantes), invalidation des caches liés après succès.
+- **Inclus :** listes missions todo / complétées, écran détail (états **terminée / en attente / refus + réessai** selon la dernière `mission_completion`), **règlement mission** (`rules_text` en Markdown, modale depuis la section « À propos »), soumission de complétion, codes d’erreur métier exposés au client, mission daily login (côté client + constantes), invalidation des caches liés après succès.
 - **Hors périmètre (autres features / admin) :** approbation admin des complétions (`approve_mission_completion`), wallet UI détaillée.
 - **Lien produit parrainage (hors UI missions) :** le bonus parrain est déclenché côté serveur après `approve_mission_completion` (`handle_referral_after_first_mission`) ; les types de mission **non qualifiants** pour la 1ʳᵉ récompense (ex. `daily_login`) sont exclus via SQL — voir **`src/features/profile/MEMO.md`**. Les invalidations TanStack actuelles après soumission **ne** couvrent **pas** `referralKeys` ; ajouter une invalidation ciblée seulement si l’UX profil doit se mettre à jour sans refetch manuel.
 
@@ -25,7 +25,7 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 | Rôle | Fichiers principaux |
 |------|---------------------|
 | **Clés TanStack Query** | `queries/missionListKeys.ts` — `all`, `todo(userId)`, `completed(userId)` ; `queries/missionKeys.ts` — `detail(missionId, userId)` pour le détail |
-| **Détail mission** | `hooks/useGetMissionByIdQuery.ts` ; `services/getMissionById.ts` (`missions` + `brands` + `mission_completions` du user, RLS) ; `utils/missionDetailInteractionState.ts` ; `components/MissionDetailReadonlyOutcome.tsx`, `MissionDetailRejectionBanner.tsx` ; résumé haut de page sans barre de progression (retirée : non branchée à une donnée métier) |
+| **Détail mission** | `hooks/useGetMissionByIdQuery.ts` ; `services/getMissionById.ts` (`missions` + `brands` + `mission_completions` du user, RLS, champ **`rules_text`**) ; `utils/missionDetailInteractionState.ts` ; `components/MissionDetailReadonlyOutcome.tsx`, `MissionDetailRejectionBanner.tsx` ; résumé haut de page sans barre de progression (retirée : non branchée à une donnée métier) ; **`screens/detail-types/CommonMissionDetailSection.tsx`** (lien règlement + état modale) ; **`components/MissionRulesMarkdownModal.tsx`** (contenu Markdown, UX proche des modales légales / scroll) |
 | **Liste todo (paginée)** | `hooks/useTodoMissionsQuery.ts`, `services/getAvailableMissionsPage.ts` → RPC `get_todo_missions_page` |
 | **Liste complétions (paginée)** | `hooks/useCompletedMissionsQuery.ts`, `services/getCompletedMissionsPage.ts` → table `mission_completions` |
 | **Soumission** | `hooks/useSubmitMissionCompletionMutation.ts`, `services/missionService.ts` → RPC `submit_mission_completion` |
@@ -38,6 +38,8 @@ Permettre à l’utilisateur authentifié de parcourir les missions (liste « à
 ## Backend Supabase (références)
 
 - **RPC :** `get_todo_missions_page`, `submit_mission_completion`.
+- **Table `missions` :** colonne **`rules_text`** (Markdown FR, `NOT NULL`, max 32 000 caractères, non vide après `btrim` sur espaces / tab / LF / CR). Réservé **admin** (`profiles.is_admin`) : politiques RLS **INSERT**, **UPDATE**, **SELECT** sur toutes les lignes (brouillons inclus) — migration `20260516120000_missions_rules_text_admin_rls.sql` ; miroir `supabase/schemas/tables/missions_rules_text_admin_rls.sql`.
+- **Affichage mobile :** le détail charge `rules_text` avec le reste de la mission. Un lien **« Voir le règlement »** (i18n) n’apparaît que si `mission.rules_text.trim().length > 0` : pas de CTA vide si le texte n’est que des blancs ou absent du cache ; rendu Markdown via **`react-native-markdown-display`** dans la modale.
 - **Lecture directe (client typé) :** `missions`, `mission_completions` (complétées), selon les services ci‑dessus.
 - **Impact home :** `get_user_home_dashboard` peut exposer des missions / états liés ; garder cohérent avec les filtres produit (ex. daily login, exclusions de listes). **Parrainage :** une complétion approuvée + récompensée peut qualifier un filleul (hors types exclus) — pas de champ dédié dans les payloads missions mobile, effet visible côté **profil / wallet** (RPC wallet / hub parrain).
 - **Schémas source :** `supabase/schemas/functions/*.sql` ; **migrations :** `supabase/migrations/` (chercher `daily_login`, `submit_mission_completion`, `todo_missions`, `mission_type`, etc.).
@@ -78,6 +80,7 @@ Toute nouvelle lecture affichée après une complétion doit être réfléchie i
 
 ## Tests
 
+- Intégration RLS admin missions : `apps/mobile/tests/integration/missions-admin-rls.integration.test.ts`.
 - `apps/mobile/tests/integration/get-todo-missions-page.integration.test.ts`
 - `apps/mobile/tests/integration/submit-mission-completion.integration.test.ts`
 - `apps/mobile/tests/integration/get-user-home-dashboard.integration.test.ts` (si le dashboard home dépend des missions)
@@ -85,7 +88,7 @@ Toute nouvelle lecture affichée après une complétion doit être réfléchie i
 
 ## i18n
 
-Préfixes typiques : `missions.layout.*`, contenus écran / erreurs sous l’objet `missions` dans `apps/mobile/src/i18n/locales/en.json` et `fr.json` (garder les deux fichiers synchrones).
+Préfixes typiques : `missions.layout.*`, contenus écran / erreurs sous l’objet `missions` dans `apps/mobile/src/i18n/locales/en.json` et `fr.json` (garder les deux fichiers synchrones). **Règlement (détail) :** `missions.detail.rulesLink`, `missions.detail.rulesLinkA11y`, `missions.detail.rulesModalTitle`.
 
 ---
 

@@ -10,7 +10,8 @@ INSERT INTO public.missions (
   status,
   max_completions_per_user,
   validation_mode,
-  metadata
+  metadata,
+  rules_text
 )
 SELECT
   b.id,
@@ -26,7 +27,8 @@ SELECT
     "min_watch_duration_seconds": null,
     "title": "Titre de la vidéo",
     "thumbnail_url": "https://example.com/thumbnail.jpg"
-  }'::jsonb
+  }'::jsonb,
+  e'## Règlement\n\nVoir les conditions dans l''application.'
 FROM public.brands b
 WHERE b.is_active = true
 ORDER BY b.created_at ASC

@@ -21,7 +21,8 @@ INSERT INTO public.missions (
   status,
   max_completions_per_user,
   validation_mode,
-  metadata
+  metadata,
+  rules_text
 )
 SELECT
   b.id,
@@ -37,7 +38,8 @@ SELECT
     "platform": "instagram",
     "action_label": "Suivre sur Instagram",
     "min_external_duration_seconds": 5
-  }'::jsonb
+  }'::jsonb,
+  e'## Règlement\n\nVoir les conditions dans l''application.'
 FROM public.brands b
 WHERE b.is_active = true
   AND NOT EXISTS (
@@ -59,7 +61,8 @@ INSERT INTO public.missions (
   status,
   max_completions_per_user,
   validation_mode,
-  metadata
+  metadata,
+  rules_text
 )
 SELECT
   b.id,
@@ -75,7 +78,8 @@ SELECT
     "platform": "tiktok",
     "action_label": "Liker le post TikTok",
     "min_external_duration_seconds": 10
-  }'::jsonb
+  }'::jsonb,
+  e'## Règlement\n\nVoir les conditions dans l''application.'
 FROM public.brands b
 WHERE b.is_active = true
   AND NOT EXISTS (
@@ -97,7 +101,8 @@ INSERT INTO public.missions (
   status,
   max_completions_per_user,
   validation_mode,
-  metadata
+  metadata,
+  rules_text
 )
 SELECT
   b.id,
@@ -113,7 +118,8 @@ SELECT
     "platform": "website",
     "action_label": "Visiter le site",
     "min_external_duration_seconds": 15
-  }'::jsonb
+  }'::jsonb,
+  e'## Règlement\n\nVoir les conditions dans l''application.'
 FROM public.brands b
 WHERE b.is_active = true
   AND NOT EXISTS (

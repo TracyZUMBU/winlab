@@ -16,19 +16,22 @@
     "test:integration": "jest --selectProjects integration"
   },
   "dependencies": {
-    "@winlab/monitoring": "*",
     "@supabase/supabase-js": "^2.101.0",
     "@tanstack/react-query": "^5.97.0",
+    "@winlab/monitoring": "*",
+    "dompurify": "^3.4.2",
+    "marked": "^18.0.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
-    "@winlab/supabase-test-utils": "*",
+    "@types/dompurify": "^3.0.5",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "@winlab/supabase-test-utils": "*",
     "jest": "^29.7.0",
     "ts-jest": "^29.3.4",
     "typescript": "~5.9.2",

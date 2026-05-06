@@ -283,6 +283,9 @@
         "title": "À propos de la mission",
         "descriptionFallback": "Aucune description de mission n’est disponible."
       },
+      "rulesLink": "Voir le règlement",
+      "rulesLinkA11y": "Ouvrir le règlement de la mission",
+      "rulesModalTitle": "Règlement",
       "features": {
         "anonymous": {
           "title": "Réponses anonymes",
