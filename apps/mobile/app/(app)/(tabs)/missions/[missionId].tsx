@@ -3,3 +3,4 @@ import { MissionDetailScreen } from "@/src/features/missions/screens/MissionDeta
 export default function MissionDetailRoute() {
   return <MissionDetailScreen />;
 }
+

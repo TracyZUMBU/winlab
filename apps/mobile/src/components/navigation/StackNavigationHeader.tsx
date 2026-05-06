@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { type ReactNode, isValidElement } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { theme } from "@/src/theme";
 
@@ -59,6 +60,7 @@ export function StackNavigationHeader({
 }: StackNavigationHeaderProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const o = options as { tintColor?: string; headerTintColor?: string };
   const tintColor =
@@ -78,7 +80,13 @@ export function StackNavigationHeader({
   };
 
   return (
-    <View style={[styles.root, showBottomBorder && styles.rootBordered]}>
+    <View
+      style={[
+        styles.root,
+        { paddingTop: insets.top + theme.spacing.sm },
+        showBottomBorder && styles.rootBordered,
+      ]}
+    >
       <View style={styles.side}>
         {leftSlot ? (
           leftSlot

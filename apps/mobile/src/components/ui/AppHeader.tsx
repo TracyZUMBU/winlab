@@ -24,33 +24,47 @@ export function AppHeader({
 }: AppHeaderProps) {
   if (titleAlign === "start") {
     return (
-      <View style={[styles.rootStart, showBottomBorder && styles.rootBordered]}>
-        {leftSlot ? <View style={styles.startLeft}>{leftSlot}</View> : null}
-        <Text style={styles.titleStart} numberOfLines={1}>
-          {title}
-        </Text>
-        {rightSlot ? <View style={styles.startRight}>{rightSlot}</View> : null}
+      <View style={[styles.shell, showBottomBorder && styles.shellBordered]}>
+        <View style={styles.contentStart}>
+          {leftSlot ? <View style={styles.startLeft}>{leftSlot}</View> : null}
+          <Text style={styles.titleStart} numberOfLines={1}>
+            {title}
+          </Text>
+          {rightSlot ? (
+            <View style={styles.startRight}>{rightSlot}</View>
+          ) : null}
+        </View>
       </View>
     );
   }
 
   return (
-    <View style={[styles.root, showBottomBorder && styles.rootBordered]}>
-      <View style={styles.side}>
-        {leftSlot ?? <View style={styles.sideSpacer} />}
-      </View>
-      <Text style={styles.titleCenter} numberOfLines={1}>
-        {title}
-      </Text>
-      <View style={styles.side}>
-        {rightSlot ?? <View style={styles.sideSpacer} />}
+    <View style={[styles.shell, showBottomBorder && styles.shellBordered]}>
+      <View style={styles.contentCenter}>
+        <View style={styles.side}>
+          {leftSlot ?? <View style={styles.sideSpacer} />}
+        </View>
+        <Text style={styles.titleCenter} numberOfLines={1}>
+          {title}
+        </Text>
+        <View style={styles.side}>
+          {rightSlot ?? <View style={styles.sideSpacer} />}
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: {
+  shell: {
+    backgroundColor: theme.colors.backgroundHeader,
+  },
+  shellBordered: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: theme.colors.borderSubtle,
+    backgroundColor: theme.colors.backgroundHeader,
+  },
+  contentCenter: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -58,17 +72,13 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.screenHorizontal,
   },
-  rootStart: {
+  contentStart: {
     flexDirection: "row",
     alignItems: "center",
     minHeight: theme.layout.headerContentMinHeight,
-    paddingVertical: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.screenHorizontal,
     gap: theme.spacing.sm,
-  },
-  rootBordered: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: theme.colors.borderSubtle,
   },
   side: {
     minWidth: theme.layout.minTouchTarget,

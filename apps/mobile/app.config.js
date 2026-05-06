@@ -59,6 +59,7 @@ module.exports = {
         backgroundImage: "./assets/images/android-icon-background.png",
         monochromeImage: "./assets/images/android-icon-monochrome.png",
       },
+      softwareKeyboardLayoutMode: "resize",
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: getPackageName(),

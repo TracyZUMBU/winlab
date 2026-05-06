@@ -518,6 +518,7 @@ export type Database = {
           avatar_url: string | null;
           birth_date: string | null;
           created_at: string | null;
+          department_code: string | null;
           email: string;
           id: string;
           is_admin: boolean;
@@ -531,6 +532,7 @@ export type Database = {
           avatar_url?: string | null;
           birth_date?: string | null;
           created_at?: string | null;
+          department_code?: string | null;
           email: string;
           id: string;
           is_admin?: boolean;
@@ -544,6 +546,7 @@ export type Database = {
           avatar_url?: string | null;
           birth_date?: string | null;
           created_at?: string | null;
+          department_code?: string | null;
           email?: string;
           id?: string;
           is_admin?: boolean;

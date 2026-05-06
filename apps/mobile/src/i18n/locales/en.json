@@ -191,6 +191,10 @@
         "invalid": "Invalid date",
         "future": "Date cannot be in the future"
       },
+      "department": {
+        "required": "Select your home department",
+        "invalid": "Invalid department"
+      },
       "sex": {
         "required": "Please select an option",
         "invalid": "Unrecognized value"
@@ -494,6 +498,10 @@
     "pendingRewards": "Pending rewards",
     "transactions": "Transactions",
     "tickets": "Tickets",
+    "ticketSubtitle": {
+      "drawOn": "Draw on {{date}}",
+      "drawCompleted": "Draw completed"
+    },
     "noTransactions": "No transactions",
     "noTickets": "No tickets"
   },
@@ -577,6 +585,7 @@
     "loading": "Loading…",
     "back": "Back",
     "close": "Close",
+    "clear": "Clear",
     "ok": "OK",
     "retry": "Retry",
     "share": "Share",
@@ -686,6 +695,9 @@
         "birthDateColumnYear": "Year",
         "birthDatePickerA11y": "Open date of birth picker",
         "sexLabel": "BIOLOGICAL SEX",
+        "departmentLabel": "HOME DEPARTMENT",
+        "departmentPlaceholder": "Tap to choose a department",
+        "departmentPickerA11y": "Open home department picker",
         "sex": {
           "female": "Female",
           "male": "Male",
@@ -694,6 +706,13 @@
         },
         "submit": "Continue"
       }
+    },
+    "departmentPicker": {
+      "title": "Choose your department",
+      "current": "Current: {{value}}",
+      "searchPlaceholder": "Search (e.g. 75, Paris, Rhône…)",
+      "searchA11y": "Search for a department",
+      "empty": "No departments found."
     },
     "layout": {
       "a11yBack": "Go back",
@@ -814,5 +833,12 @@
         "UNKNOWN_ERROR": "Something went wrong. Please try again."
       }
     }
+  },
+  "tabs": {
+    "lotteries": "Lotteries",
+    "wallet": "Wallet",
+    "missions": "Missions",
+    "profile": "Profile",
+    "home": "Home"
   }
 }

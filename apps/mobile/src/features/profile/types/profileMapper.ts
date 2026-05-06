@@ -12,6 +12,7 @@ export type ProfileRowFields = Pick<
   | "avatar_url"
   | "birth_date"
   | "sex"
+  | "department_code"
   | "created_at"
   | "updated_at"
   | "referral_code"
@@ -32,5 +33,6 @@ export function profileFromRow(row: ProfileRowFields): Profile {
     referral_code: row.referral_code,
     birth_date: row.birth_date,
     sex: row.sex !== null && isProfileSex(row.sex) ? row.sex : null,
+    department_code: row.department_code,
   };
 }

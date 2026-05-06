@@ -12,7 +12,7 @@ import { trackEvent } from "@/src/lib/analytics/trackEvent";
 import { initialsFromUsername } from "@/src/lib/display/initialsFromUsername";
 import { theme } from "@/src/theme";
 
-import { AppHeaderFull } from "./AppHeaderFull";
+import { AppHeader } from "./AppHeader";
 
 export type AppUserHeaderBarProps = {
   /** @default true */
@@ -20,7 +20,7 @@ export type AppUserHeaderBarProps = {
 };
 
 export function AppUserHeaderBar({
-  showNotifications = true,
+  showNotifications = false,
 }: AppUserHeaderBarProps) {
   const { t, i18n } = useTranslation();
   const router = useRouter();
@@ -37,10 +37,7 @@ export function AppUserHeaderBar({
 
   const avatarUri = useMemo(
     () =>
-      resolveAvatarDisplayUri(
-        profile?.avatar_url,
-        profile?.updated_at ?? null,
-      ),
+      resolveAvatarDisplayUri(profile?.avatar_url, profile?.updated_at ?? null),
     [profile?.avatar_url, profile?.updated_at],
   );
   const displayInitials = initialsFromUsername(profile?.username ?? null);
@@ -59,7 +56,7 @@ export function AppUserHeaderBar({
 
   return (
     <View style={styles.stickyShell}>
-      <AppHeaderFull
+      <AppHeader
         title={t("app.name")}
         titleAlign="start"
         showBottomBorder
@@ -129,7 +126,6 @@ const AVATAR = 40;
 const styles = StyleSheet.create({
   stickyShell: {
     backgroundColor: theme.colors.backgroundHeader,
-    paddingHorizontal: theme.spacing.screenHorizontal,
   },
   avatar: {
     width: AVATAR,

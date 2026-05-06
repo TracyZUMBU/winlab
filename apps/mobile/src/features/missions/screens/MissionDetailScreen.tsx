@@ -4,6 +4,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -209,7 +211,10 @@ export function MissionDetailScreen() {
     <Screen>
       {shellHeader}
 
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={[
@@ -217,6 +222,8 @@ export function MissionDetailScreen() {
             { paddingBottom: scrollBottomPadding },
           ]}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <MissionDetailShellSummary mission={mission} />
 
@@ -289,7 +296,7 @@ export function MissionDetailScreen() {
             </View>
           </View>
         ) : null}
-      </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
 }
