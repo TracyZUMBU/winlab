@@ -6,7 +6,10 @@ import { Platform } from "react-native";
 import i18n from "@/src/i18n";
 import { logger } from "@/src/lib/logger";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-import { getCurrentSession, subscribeToAuthChanges } from "@/src/lib/supabase/session";
+import {
+  getCurrentSession,
+  subscribeToAuthChanges,
+} from "@/src/lib/supabase/session";
 
 /** Sans ceci, iOS/Android peuvent ne rien afficher quand l’app est au premier plan. */
 Notifications.setNotificationHandler({
@@ -59,7 +62,9 @@ let coordinatorRefCount = 0;
 let coordinatorCleanup: (() => void) | null = null;
 
 /** i18n copy for known notification types (foreground UX). */
-export function getLocalizedNotificationOverlay(data: unknown): { title: string; body: string } | null {
+export function getLocalizedNotificationOverlay(
+  data: unknown,
+): { title: string; body: string } | null {
   if (!data || typeof data !== "object") {
     return null;
   }
@@ -90,6 +95,7 @@ async function registerForPushNotificationsAsync(
   }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  console.log("existingStatus", existingStatus);
   let finalStatus = existingStatus;
   if (existingStatus !== "granted") {
     const { status } = await Notifications.requestPermissionsAsync();
@@ -100,8 +106,11 @@ async function registerForPushNotificationsAsync(
   }
 
   const projectId = String(
-    (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)?.eas
-      ?.projectId ?? "",
+    (
+      Constants.expoConfig?.extra as
+        | { eas?: { projectId?: string } }
+        | undefined
+    )?.eas?.projectId ?? "",
   );
 
   if (!projectId) {
@@ -130,9 +139,11 @@ function attachNotificationListeners(): () => void {
     setSnapshot({ notification: n });
   });
 
-  const responseSub = Notifications.addNotificationResponseReceivedListener((r) => {
-    setSnapshot({ notification: r.notification });
-  });
+  const responseSub = Notifications.addNotificationResponseReceivedListener(
+    (r) => {
+      setSnapshot({ notification: r.notification });
+    },
+  );
 
   return () => {
     receivedSub.remove();
