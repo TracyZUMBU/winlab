@@ -3,3 +3,4 @@ import { LotteriesCatalogScreen } from "@/src/features/lotteries/screens/Lotteri
 export default function LotteriesAllRoute() {
   return <LotteriesCatalogScreen />;
 }
+

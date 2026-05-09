@@ -3,10 +3,12 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
-import i18n from "@/src/i18n";
 import { logger } from "@/src/lib/logger";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
-import { getCurrentSession, subscribeToAuthChanges } from "@/src/lib/supabase/session";
+import {
+  getCurrentSession,
+  subscribeToAuthChanges,
+} from "@/src/lib/supabase/session";
 
 /** Sans ceci, iOS/Android peuvent ne rien afficher quand l’app est au premier plan. */
 Notifications.setNotificationHandler({
@@ -58,21 +60,6 @@ export function getPushNotificationsSnapshot(): PushNotificationsSnapshot {
 let coordinatorRefCount = 0;
 let coordinatorCleanup: (() => void) | null = null;
 
-/** i18n copy for known notification types (foreground UX). */
-export function getLocalizedNotificationOverlay(data: unknown): { title: string; body: string } | null {
-  if (!data || typeof data !== "object") {
-    return null;
-  }
-  const type = (data as { type?: unknown }).type;
-  if (type === "referral_reward") {
-    return {
-      title: i18n.t("notifications.referral_reward.title"),
-      body: i18n.t("notifications.referral_reward.body"),
-    };
-  }
-  return null;
-}
-
 async function registerForPushNotificationsAsync(
   userId: string,
 ): Promise<string | null> {
@@ -100,8 +87,11 @@ async function registerForPushNotificationsAsync(
   }
 
   const projectId = String(
-    (Constants.expoConfig?.extra as { eas?: { projectId?: string } } | undefined)?.eas
-      ?.projectId ?? "",
+    (
+      Constants.expoConfig?.extra as
+        | { eas?: { projectId?: string } }
+        | undefined
+    )?.eas?.projectId ?? "",
   );
 
   if (!projectId) {
@@ -130,9 +120,11 @@ function attachNotificationListeners(): () => void {
     setSnapshot({ notification: n });
   });
 
-  const responseSub = Notifications.addNotificationResponseReceivedListener((r) => {
-    setSnapshot({ notification: r.notification });
-  });
+  const responseSub = Notifications.addNotificationResponseReceivedListener(
+    (r) => {
+      setSnapshot({ notification: r.notification });
+    },
+  );
 
   return () => {
     receivedSub.remove();

@@ -12,6 +12,8 @@ export type Profile = {
   /** Date civile `YYYY-MM-DD` (colonne Postgres `date`). */
   birth_date: string | null;
   sex: ProfileSex | null;
+  /** Code département (France uniquement pour l’instant), ex. "75", "2A". */
+  department_code: string | null;
   created_at: string | null;
   /** Pour cache-bust de l’image avatar après remplacement du fichier. */
   updated_at: string | null;
@@ -25,6 +27,7 @@ export type CreateProfilePayload = {
   /** Date civile `YYYY-MM-DD` pour `profiles.birth_date`. */
   birth_date: string;
   sex: ProfileSex;
+  department_code: string;
 };
 
 export type CreateProfileErrorCode = "USERNAME_TAKEN";
@@ -44,4 +47,5 @@ export type UpdateMyProfileInput = {
   /** Date civile `YYYY-MM-DD` pour `profiles.birth_date`. */
   birth_date: string;
   sex: ProfileSex;
+  department_code: string;
 };

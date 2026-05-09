@@ -3,6 +3,7 @@ import i18n from "@/src/i18n";
 import { format, isValid, parse, startOfDay } from "date-fns";
 import { z } from "zod";
 
+import { isFrenchDepartmentCode } from "../constants/frenchDepartments";
 import { PROFILE_SEX, type ProfileSex } from "../types/profileSex";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -41,6 +42,11 @@ const createProfileFormBaseSchema = usernameSchema.extend({
     }),
   /** Optionnel côté défaut RHF ; obligatoire après validation (voir `refine`). */
   sex: profileSexZodEnum.optional(),
+  /** Code département FR (hors DOM-TOM). Optionnel côté défaut RHF ; obligatoire après validation (voir `refine`). */
+  department_code: z
+    .string()
+    .transform((s) => s.trim().toUpperCase())
+    .optional(),
   referral_code: z
     .string()
     .transform((s) => s.trim().toUpperCase())
@@ -49,10 +55,7 @@ const createProfileFormBaseSchema = usernameSchema.extend({
         z.literal(""),
         z
           .string()
-          .length(
-            8,
-            i18n.t("schema.createProfile.referralCode.length"),
-          )
+          .length(8, i18n.t("schema.createProfile.referralCode.length"))
           .regex(
             REFERRAL_CODE_CHARS_RE,
             i18n.t("schema.createProfile.referralCode.invalid"),
@@ -61,16 +64,29 @@ const createProfileFormBaseSchema = usernameSchema.extend({
     ),
 });
 
-export const createProfileFormSchema = createProfileFormBaseSchema.refine(
-  (data) => data.sex !== undefined,
-  {
+export const createProfileFormSchema = createProfileFormBaseSchema
+  .refine((data) => data.sex !== undefined, {
     path: ["sex"],
     message: i18n.t("schema.createProfile.sex.required"),
-  },
-);
+  })
+  .refine((data) => Boolean(data.department_code?.trim()), {
+    path: ["department_code"],
+    message: i18n.t("schema.createProfile.department.required"),
+  })
+  .refine(
+    (data) =>
+      !data.department_code?.trim() ||
+      isFrenchDepartmentCode(data.department_code),
+    {
+      path: ["department_code"],
+      message: i18n.t("schema.createProfile.department.invalid"),
+    },
+  );
 
 /** Valeurs du formulaire (avant / après validation). */
-export type CreateProfileFormValues = z.infer<typeof createProfileFormBaseSchema>;
+export type CreateProfileFormValues = z.infer<
+  typeof createProfileFormBaseSchema
+>;
 
 /** Ordre d’affichage des options sexe (inscription). */
 export const CREATE_PROFILE_SEX_FIELD_ORDER: readonly ProfileSex[] = [

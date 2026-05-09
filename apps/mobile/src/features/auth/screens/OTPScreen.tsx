@@ -1,6 +1,7 @@
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { monitoring } from "@/src/lib/monitoring";
 import { showInfoToast } from "@/src/shared/toast";
+import { colors } from "@/src/theme/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
@@ -22,8 +23,6 @@ import { AUTH_ROUTES, OTP_CODE_LENGTH } from "../constants/authConstants";
 import { sendEmailOtp, verifyEmailOtp } from "../services";
 import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
 import { otpSchema, type OtpFormValues } from "../validators";
-
-const ACCENT = "#FF8C00";
 
 function createAuthRequestId(): string {
   return `auth-otp-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -332,7 +331,7 @@ export const OTPScreen: React.FC = () => {
             </Text>
             <Pressable onPress={handleResend} disabled={resendLoading}>
               {resendLoading ? (
-                <ActivityIndicator size="small" color={ACCENT} />
+                <ActivityIndicator size="small" color={colors.accentSolid} />
               ) : (
                 <Text style={styles.resendLink}>
                   {t("auth.otp.screen.resendCta")}
@@ -422,7 +421,7 @@ const styles = StyleSheet.create({
   resendLink: {
     fontSize: 14,
     fontWeight: "600",
-    color: ACCENT,
+    color: colors.accentSolid,
   },
   footer: {
     marginTop: "auto",
@@ -432,7 +431,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accentSolid,
   },
   primaryButtonPressed: {
     opacity: 0.9,
@@ -441,7 +440,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   primaryButtonText: {
-    color: "#FFFFFF",
+    color: colors.onAccent,
     fontSize: 16,
     fontWeight: "600",
   },

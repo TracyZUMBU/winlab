@@ -16,7 +16,7 @@ import { LotteryCountdownTimer } from "../components/LotteryCountdownTimer";
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
 import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
 
-import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Screen } from "@/src/components/ui/Screen";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
@@ -110,7 +110,7 @@ export function LotteryDetailScreenMaquette() {
     <Screen edges={["top"]} style={styles.screen}>
       <View style={styles.root}>
         <View style={styles.topBar}>
-          <AppHeaderFull
+          <AppHeader
             title={t("lotteries.layout.detail")}
             titleAlign="center"
             showBottomBorder
@@ -148,19 +148,6 @@ export function LotteryDetailScreenMaquette() {
               ) : (
                 <View style={styles.heroPlaceholder} />
               )}
-
-              {data.is_featured ? (
-                <View style={styles.verifiedBadge}>
-                  <MaterialIcons
-                    name="verified"
-                    size={16}
-                    color={theme.colors.accentSolid}
-                  />
-                  <Text style={styles.verifiedText}>
-                    {t("lottery.detail.verifiedOffer")}
-                  </Text>
-                </View>
-              ) : null}
             </View>
           </View>
 
@@ -218,7 +205,7 @@ export function LotteryDetailScreenMaquette() {
 
               <Pressable
                 style={styles.gainMore}
-                onPress={() => router.push("/wallet")}
+                onPress={() => router.push("/missions")}
                 accessibilityRole="button"
               >
                 <Text style={styles.gainMoreText}>
@@ -350,10 +337,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   topBar: {
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: theme.colors.borderSubtle,
-    paddingHorizontal: theme.spacing.screenHorizontal,
+    backgroundColor: theme.colors.backgroundHeader,
+    paddingHorizontal: 0,
   },
   iconCircle: {
     width: 40,
@@ -428,20 +413,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: theme.spacing.md,
     right: theme.spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 4,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: theme.colors.borderSubtle,
-  },
-  verifiedText: {
-    fontSize: 11,
-    fontWeight: "900",
-    color: theme.colors.text,
   },
   titleBlock: {
     gap: theme.spacing.xs,

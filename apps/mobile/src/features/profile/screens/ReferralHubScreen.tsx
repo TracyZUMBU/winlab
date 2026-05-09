@@ -14,7 +14,7 @@ import {
   View,
 } from "react-native";
 
-import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { AppHeader } from "@/src/components/ui/AppHeader";
 import { ListGroup } from "@/src/components/ui/ListGroup";
 import { Screen } from "@/src/components/ui/Screen";
 import { ScreenSectionOverline } from "@/src/components/ui/ScreenSectionOverline";
@@ -102,7 +102,7 @@ export function ReferralHubScreen() {
   return (
     <Screen edges={["top"]} style={styles.screen}>
       <View style={styles.topBar}>
-        <AppHeaderFull
+        <AppHeader
           title={t("profile.referralHub.title")}
           titleAlign="center"
           showBottomBorder
@@ -281,10 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   topBar: {
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: theme.colors.borderSubtle,
-    paddingHorizontal: theme.spacing.screenHorizontal,
+    backgroundColor: theme.colors.backgroundHeader,
   },
   iconCircle: {
     width: 40,

@@ -1,13 +1,13 @@
 import { mixHex } from "./mixHex";
 
 /** Single source for solid accent — `textMutedAccent` is derived from this. */
-const ACCENT_SOLID = "#FF8C00";
+const ACCENT_SOLID = "#3B82F6";
 
 const TEXT = "#020617";
 const TEXT_MUTED = "#6B7280";
 
 /**
- * Secondary copy with a hint of the accent hue (maquette: #61896f from green).
+ * Secondary copy with a hint of the accent hue (mixed from accent toward muted gray).
  * Recomputed when `ACCENT_SOLID` changes; do not hardcode a separate tint.
  */
 const TEXT_MUTED_ACCENT = mixHex(ACCENT_SOLID, TEXT_MUTED, 0.4);
@@ -16,20 +16,22 @@ const TEXT_MUTED_ACCENT = mixHex(ACCENT_SOLID, TEXT_MUTED, 0.4);
 const DANGER_MUTED = "rgba(220, 38, 38, 0.15)";
 
 export const colors = {
-  // Base (list/dashboard canvas — maquette #f6f8f6)
-  background: "#F6F8F6",
+  // Base — cool neutral canvas (harmonized with blue primary)
+  background: "#F4F7FC",
   backgroundDark: "#020617",
 
   backgroundHeader: "#FFFFFF",
 
-  // Brand / accent (never hardcode mockup green in components)
-  accent: "rgba(255, 140, 0, 0.9)",
+  // Brand / accent (#3B82F6, blue-500)
+  accent: "rgba(59, 130, 246, 0.9)",
   accentSolid: ACCENT_SOLID,
-  accentMuted: "rgba(255, 140, 0, 0.2)",
-  /** Full-width info strip (maquette primary/10) */
-  accentWash: "rgba(255, 140, 0, 0.1)",
-  /** Hairline around accent-tinted surfaces (maquette primary/20) */
-  accentBorderMuted: "rgba(255, 140, 0, 0.22)",
+  accentMuted: "rgba(59, 130, 246, 0.2)",
+  /** Full-width info strip (primary ~10%) */
+  accentWash: "rgba(59, 130, 246, 0.1)",
+  /** Hairline around accent-tinted surfaces (primary ~20%) */
+  accentBorderMuted: "rgba(59, 130, 246, 0.22)",
+  /** Selected rows / chips (replaces former orange-50 surfaces). */
+  accentSurfaceTint: "#EFF6FF",
   onAccent: "#FFFFFF",
 
   // Text
@@ -43,13 +45,13 @@ export const colors = {
 
   // Surfaces
   surface: "#FFFFFF",
-  surfaceSoft: "#F3F4F6",
+  surfaceSoft: "#F1F5F9",
 
   // Borders & lines
   borderSubtle: "rgba(15, 23, 42, 0.06)",
   /** Marketplace / card frames (maquette). */
   borderCard: "rgba(15, 23, 42, 0.12)",
-  borderAccentMuted: "rgba(196, 130, 51, 0.2)",
+  borderAccentMuted: "rgba(59, 130, 246, 0.2)",
 
   /** Flat success (icons, sparse use) */
   success: "#16A34A",

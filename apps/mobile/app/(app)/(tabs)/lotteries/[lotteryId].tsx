@@ -3,3 +3,4 @@ import { LotteryDetailScreenMaquette } from "@/src/features/lotteries/screens/Lo
 export default function LotteryDetailRoute() {
   return <LotteryDetailScreenMaquette />;
 }
+

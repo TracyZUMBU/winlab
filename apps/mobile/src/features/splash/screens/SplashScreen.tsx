@@ -25,7 +25,7 @@ export function SplashScreen() {
   return (
     <Screen>
       <LinearGradient
-        colors={["#FFFFFF", "rgba(255, 140, 0, 0.04)"]}
+        colors={["#FFFFFF", "rgba(59, 130, 246, 0.04)"]}
         style={styles.gradient}
       >
         <View style={styles.content}>

@@ -8,6 +8,7 @@ export type PurchasedTicketRow = {
   lotteries: {
     title: string;
     status: Enums<"lottery_status">;
+    draw_at: string;
   } | null;
 };
 
@@ -22,7 +23,7 @@ export async function getPurchasedTickets(
       id,
       lottery_id,
       purchased_at,
-      lotteries ( title, status )
+      lotteries ( title, status, draw_at )
     `,
     )
     .eq("user_id", userId)

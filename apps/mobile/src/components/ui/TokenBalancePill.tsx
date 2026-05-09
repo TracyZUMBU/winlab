@@ -24,7 +24,7 @@ export function TokenBalancePill() {
       accessibilityRole="text"
       accessibilityLabel={t("common.a11y.tokenBalance", { amount: a11yAmount })}
     >
-      <MaterialIcons name="token" size={16} color={theme.colors.text} />
+      <MaterialIcons name="token" size={16} color={theme.colors.accent} />
       <Text style={styles.text}>{amount}</Text>
     </View>
   );

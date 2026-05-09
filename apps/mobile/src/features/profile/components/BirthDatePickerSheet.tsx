@@ -24,7 +24,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const ACCENT = "#FF8C00";
+import { colors } from "@/src/theme/colors";
+
 const ROW_H = 44;
 const LIST_H = 220;
 
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#E2E8F0",
   },
   cellSelected: {
-    backgroundColor: "#FFF7ED",
+    backgroundColor: colors.accentSurfaceTint,
   },
   cellText: {
     fontSize: 15,
@@ -428,7 +429,7 @@ const styles = StyleSheet.create({
   },
   cellTextSelected: {
     fontWeight: "700",
-    color: ACCENT,
+    color: colors.accentSolid,
   },
   actions: {
     flexDirection: "row",
@@ -452,7 +453,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     borderRadius: 24,
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accentSolid,
     alignItems: "center",
   },
   primaryBtnText: {

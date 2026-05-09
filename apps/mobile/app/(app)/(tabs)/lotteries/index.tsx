@@ -3,3 +3,4 @@ import { LotteriesScreen } from "@/src/features/lotteries/screens/LotteriesScree
 export default function LotteriesIndexRoute() {
   return <LotteriesScreen />;
 }
+

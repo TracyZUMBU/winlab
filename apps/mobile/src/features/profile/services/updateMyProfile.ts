@@ -35,6 +35,7 @@ export async function updateMyProfile(
       username: input.username,
       birth_date: input.birth_date,
       sex: input.sex,
+      department_code: input.department_code,
     })
     .eq("id", user.id)
     .select(PROFILE_MVP_COLUMNS)

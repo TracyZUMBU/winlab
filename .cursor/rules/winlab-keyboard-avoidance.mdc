@@ -1,0 +1,40 @@
+---
+description: React Native - keyboard avoidance for TextInput (ScrollView + bottom bars)
+globs: apps/mobile/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Keyboard avoidance (React Native)
+
+## Objectif
+Éviter que le clavier recouvre un `TextInput` (iOS + Android), surtout quand l’écran contient :
+- un `ScrollView`
+- une bottom bar fixe (CTA, barre d’action)
+- des `TextInput multiline` (sondage, formulaire, etc.)
+
+## Règles (à appliquer dès qu’un écran contient un champ éditable)
+
+### 1) Toujours prévoir un “keyboard avoidance” au niveau écran
+- Envelopper la zone “scroll + bottom bar” dans un `KeyboardAvoidingView`
+- Recommandation:
+  - iOS: `behavior="padding"`
+  - Android: `behavior="height"`
+- Garder le header *hors* du `KeyboardAvoidingView` si possible (sinon régler `keyboardVerticalOffset`)
+
+### 2) Sur les `ScrollView` contenant des champs
+Ajouter au minimum :
+- `keyboardShouldPersistTaps="handled"` (évite des taps “perdus”)
+- `keyboardDismissMode="on-drag"` (UX: on peut fermer au scroll)
+
+### 3) Android: mode de layout clavier
+Pour éviter le recouvrement complet, configurer Expo Android en :
+- `android.softwareKeyboardLayoutMode = "resize"`
+
+## Anti-patterns
+- `ScrollView` sans `KeyboardAvoidingView` sur un écran avec `TextInput`
+- bottom bar fixe qui ne se décale jamais (CTA recouvert / input invisible)
+- padding bottom uniquement basé sur safe-area (ne tient pas compte du clavier)
+
+## Référence interne
+- Exemple appliqué : `apps/mobile/src/features/missions/screens/MissionDetailScreen.tsx`
+

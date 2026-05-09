@@ -16,6 +16,12 @@ module.exports = defineConfig([
       'import/parsers': {
         [typeScriptImportParserPath]: ['.ts', '.tsx', '.cts', '.mts', '.d.ts'],
       },
+      // Monorepo: workspace deps live in the root `node_modules`; TS resolution matches `tsc`.
+      'import/resolver': {
+        typescript: {
+          project: path.join(__dirname, 'tsconfig.json'),
+        },
+      },
     },
   },
   {

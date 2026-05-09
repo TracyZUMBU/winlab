@@ -22,9 +22,8 @@ import { LegalScrollModal } from "../components/LegalScrollModal";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { sendEmailOtp } from "../services";
 import type { LegalDocumentId } from "@/src/legal/index";
+import { colors } from "@/src/theme/colors";
 import { emailSchema, type EmailFormValues } from "../validators";
-
-const ACCENT = "#FF8C00";
 
 function createAuthRequestId(): string {
   return `auth-email-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -172,7 +171,7 @@ export const EmailScreen: React.FC = () => {
           <View style={styles.topBar}>
             <View style={styles.tokenWrapper}>
               <View style={styles.tokenBackground}>
-                <MaterialIcons name="token" size={22} color={ACCENT} />
+                <MaterialIcons name="token" size={22} color={colors.accentSolid} />
               </View>
             </View>
           </View>
@@ -195,7 +194,7 @@ export const EmailScreen: React.FC = () => {
                   <MaterialIcons
                     name="mail"
                     size={20}
-                    color="#61896f"
+                    color={colors.textMutedAccent}
                     style={styles.inputIcon}
                   />
 
@@ -204,7 +203,7 @@ export const EmailScreen: React.FC = () => {
                     keyboardType="email-address"
                     textContentType="emailAddress"
                     placeholder={t("emailScreen.emailPlaceholder")}
-                    placeholderTextColor="#61896f"
+                    placeholderTextColor={colors.textMutedAccent}
                     style={[
                       styles.input,
                       errors.email ? styles.inputError : undefined,
@@ -258,7 +257,7 @@ export const EmailScreen: React.FC = () => {
                 <MaterialIcons
                   name="lock"
                   size={14}
-                  color="#61896f"
+                  color={colors.textMutedAccent}
                   style={styles.lockIcon}
                 />
                 <Text style={styles.securityText}>
@@ -345,7 +344,7 @@ const styles = StyleSheet.create({
     paddingRight: 48,
   },
   tokenBackground: {
-    backgroundColor: "rgba(255,140,0,0.16)",
+    backgroundColor: colors.accentMuted,
     padding: 8,
     borderRadius: 12,
   },
@@ -368,7 +367,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     lineHeight: 22,
-    color: "#61896f",
+    color: colors.textMutedAccent,
   },
   form: {
     marginTop: 8,
@@ -395,7 +394,7 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#dbe6df",
+    borderColor: "#BFDBFE",
     paddingLeft: 48,
     paddingRight: 16,
     height: 64,
@@ -429,8 +428,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: ACCENT,
-    shadowColor: ACCENT,
+    backgroundColor: colors.accentSolid,
+    shadowColor: colors.accentSolid,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -443,7 +442,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   primaryButtonText: {
-    color: "#111813",
+    color: colors.onAccent,
     fontSize: 18,
     fontWeight: "700",
   },
@@ -463,12 +462,12 @@ const styles = StyleSheet.create({
   },
   securityText: {
     fontSize: 13,
-    color: "#61896f",
+    color: colors.textMutedAccent,
   },
   termsText: {
     fontSize: 11,
     lineHeight: 16,
-    color: "#61896f",
+    color: colors.textMutedAccent,
     textAlign: "center",
     maxWidth: 280,
   },
@@ -482,7 +481,7 @@ const styles = StyleSheet.create({
     width: 256,
     height: 256,
     borderRadius: 999,
-    backgroundColor: "rgba(255,140,0,0.1)",
+    backgroundColor: colors.accentWash,
     bottom: -96,
     right: -96,
   },

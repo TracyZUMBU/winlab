@@ -2,8 +2,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet, Text, View } from "react-native";
 
 import { Button } from "@/src/components/ui/Button";
-import { mixHex } from "@/src/theme/mixHex";
 import { theme } from "@/src/theme";
+import { mixHex } from "@/src/theme/mixHex";
 
 const HERO_GRADIENT_END = mixHex(
   theme.colors.backgroundDark,
@@ -70,6 +70,7 @@ export function WalletBalanceHero({
 
 const styles = StyleSheet.create({
   outer: {
+    paddingTop: theme.spacing.sm,
     borderRadius: theme.radius.md,
     overflow: "hidden",
     shadowColor: theme.colors.shadow,

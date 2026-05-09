@@ -12,6 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTranslation } from "react-i18next";
 import { signInWithEmailPassword } from "../services";
 import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
+import { colors } from "@/src/theme/colors";
 import { devPasswordLoginSchema, emailSchema } from "../validators";
 
 export type DevPasswordLoginPanelProps = {
@@ -74,14 +75,14 @@ export const DevPasswordLoginPanel: React.FC<DevPasswordLoginPanelProps> = ({
           <MaterialIcons
             name="lock"
             size={20}
-            color="#61896f"
+            color={colors.textMutedAccent}
             style={styles.inputIcon}
           />
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             placeholder={t("emailScreen.dev.passwordPlaceholder")}
-            placeholderTextColor="#61896f"
+            placeholderTextColor={colors.textMutedAccent}
             secureTextEntry
             textContentType="password"
             style={styles.input}
@@ -120,20 +121,20 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 140, 0, 0.45)",
-    backgroundColor: "rgba(255, 140, 0, 0.06)",
+    borderColor: "rgba(59, 130, 246, 0.45)",
+    backgroundColor: "rgba(59, 130, 246, 0.06)",
     gap: 12,
   },
   panelTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#92400e",
+    color: "#1E40AF",
     letterSpacing: 0.3,
   },
   panelSubtitle: {
     fontSize: 13,
     lineHeight: 18,
-    color: "#a16207",
+    color: "#2563EB",
   },
   fieldContainer: {
     gap: 8,
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#dbe6df",
+    borderColor: "#BFDBFE",
     paddingLeft: 48,
     paddingRight: 16,
     height: 64,

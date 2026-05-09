@@ -9,6 +9,7 @@ import {
   showErrorToast,
   showWarningToast,
 } from "@/src/shared/toast/toastService";
+import { colors } from "@/src/theme/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
 import { useRouter } from "expo-router";
@@ -29,6 +30,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
+import { DepartmentPickerSheet } from "../components/DepartmentPickerSheet";
+import { getFrenchDepartmentLabel } from "../constants/frenchDepartments";
 import { useCreateProfileMutation } from "../hooks/useCreateProfileMutation";
 import {
   grantSignupBonus,
@@ -45,8 +48,6 @@ import {
   createProfileFormSchema,
   type CreateProfileFormValues,
 } from "../validators/createProfileFormSchema";
-
-const ACCENT = "#FF8C00";
 
 function sexTranslationKey(value: ProfileSex): string {
   return `profile.createProfile.screen.sex.${value}`;
@@ -76,6 +77,7 @@ export const CreateProfileScreen: React.FC = () => {
   const createProfileMutation = useCreateProfileMutation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+  const [departmentSheetOpen, setDepartmentSheetOpen] = useState(false);
   const [welcomeModal, setWelcomeModal] = useState<{
     visible: boolean;
     points: number;
@@ -97,6 +99,7 @@ export const CreateProfileScreen: React.FC = () => {
       username: "",
       birth_date: "",
       sex: undefined,
+      department_code: "",
       referral_code: "",
     },
   });
@@ -107,6 +110,7 @@ export const CreateProfileScreen: React.FC = () => {
   const referralCodeValue = watch("referral_code");
   const birthDateValue = watch("birth_date");
   const selectedSex = watch("sex");
+  const departmentCodeValue = watch("department_code");
 
   const birthDateDisplay = formatBirthDateForDisplay(
     birthDateValue,
@@ -116,6 +120,11 @@ export const CreateProfileScreen: React.FC = () => {
   const openBirthDatePicker = () => {
     Keyboard.dismiss();
     setBirthSheetOpen(true);
+  };
+
+  const openDepartmentPicker = () => {
+    Keyboard.dismiss();
+    setDepartmentSheetOpen(true);
   };
 
   const onSubmit = async (values: CreateProfileFormValues) => {
@@ -144,6 +153,7 @@ export const CreateProfileScreen: React.FC = () => {
         username: values.username,
         birth_date: values.birth_date,
         sex: values.sex,
+        department_code: values.department_code?.trim().toUpperCase() ?? "",
       });
 
       let signupBonusResult: GrantSignupBonusResult;
@@ -384,6 +394,43 @@ export const CreateProfileScreen: React.FC = () => {
               ) : null}
             </View>
 
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>
+                {t("profile.createProfile.screen.departmentLabel")}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t(
+                  "profile.createProfile.screen.departmentPickerA11y",
+                )}
+                onPress={openDepartmentPicker}
+                style={({ pressed }) => [
+                  styles.input,
+                  styles.dateFieldButton,
+                  errors.department_code ? styles.inputError : undefined,
+                  pressed && styles.dateFieldButtonPressed,
+                ]}
+              >
+                <Text
+                  style={
+                    departmentCodeValue?.trim()
+                      ? styles.dateFieldText
+                      : styles.dateFieldPlaceholder
+                  }
+                  numberOfLines={1}
+                >
+                  {departmentCodeValue?.trim()
+                    ? getFrenchDepartmentLabel(departmentCodeValue)
+                    : t("profile.createProfile.screen.departmentPlaceholder")}
+                </Text>
+              </Pressable>
+              {errors.department_code?.message ? (
+                <Text style={styles.errorText}>
+                  {errors.department_code.message}
+                </Text>
+              ) : null}
+            </View>
+
             <View style={styles.referralAsideWrap}>
               <View style={styles.referralAsideDivider} />
               <View style={styles.referralAside}>
@@ -457,6 +504,15 @@ export const CreateProfileScreen: React.FC = () => {
           }}
           initialIso={birthDateValue || undefined}
           language={i18n.language}
+        />
+
+        <DepartmentPickerSheet
+          visible={departmentSheetOpen}
+          onClose={() => setDepartmentSheetOpen(false)}
+          onConfirm={(code) => {
+            setValue("department_code", code, { shouldValidate: true });
+          }}
+          initialDepartmentCode={departmentCodeValue || undefined}
         />
 
         <AppCenteredModal
@@ -547,8 +603,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   sexOptionSelected: {
-    borderColor: ACCENT,
-    backgroundColor: "#FFF7ED",
+    borderColor: colors.accentSolid,
+    backgroundColor: colors.accentSurfaceTint,
   },
   sexOptionPressed: {
     opacity: 0.92,
@@ -569,7 +625,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accentSolid,
   },
   primaryButtonPressed: {
     opacity: 0.9,

@@ -21,14 +21,14 @@ import { useWalletBalanceQuery } from "../hooks/useWalletBalanceQuery";
 import type { WalletTransactionUi } from "../hooks/useWalletTransactionsQuery";
 import { useWalletTransactionsQuery } from "../hooks/useWalletTransactionsQuery";
 
-import { AppHeaderFull } from "@/src/components/ui/AppHeaderFull";
+import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Button } from "@/src/components/ui/Button";
 import { Screen } from "@/src/components/ui/Screen";
 import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
 import { formatAbsoluteDateFr } from "@/src/lib/date/format";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
-import { theme } from "@/src/theme";
 import { showInfoToast } from "@/src/shared/toast";
+import { theme } from "@/src/theme";
 
 type WalletSegmentId = "history" | "tickets";
 type ActivityFilterId = "all" | "credit" | "debit";
@@ -143,26 +143,10 @@ export function WalletScreen() {
   return (
     <Screen edges={["top"]} style={styles.screen}>
       <View style={styles.headerWrap}>
-        <AppHeaderFull
+        <AppHeader
           title={t("wallet.layout.title")}
           titleAlign="center"
           showBottomBorder={false}
-          leftSlot={
-            router.canGoBack() ? (
-              <Pressable
-                onPress={() => router.back()}
-                style={styles.iconHit}
-                accessibilityRole="button"
-                accessibilityLabel={t("wallet.a11y.back")}
-              >
-                <MaterialIcons
-                  name="arrow-back-ios-new"
-                  size={20}
-                  color={theme.colors.text}
-                />
-              </Pressable>
-            ) : undefined
-          }
           rightSlot={
             <Pressable
               onPress={onWalletInfo}
@@ -273,7 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   headerWrap: {
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: 0,
   },
   centered: {
     flex: 1,

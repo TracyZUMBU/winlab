@@ -77,7 +77,7 @@ export function HomeScreen() {
 
   const onOpenWallet = () => {
     trackEvent("home_open_wallet");
-    router.push("/wallet");
+    router.push("/lotteries");
   };
 
   const onOpenLotteries = () => {
