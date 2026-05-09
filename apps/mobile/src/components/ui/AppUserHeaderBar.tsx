@@ -15,7 +15,7 @@ import { theme } from "@/src/theme";
 import { AppHeader } from "./AppHeader";
 
 export type AppUserHeaderBarProps = {
-  /** @default true */
+  /** @default false */
   showNotifications?: boolean;
 };
 

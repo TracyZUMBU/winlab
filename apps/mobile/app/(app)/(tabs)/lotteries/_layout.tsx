@@ -10,7 +10,6 @@ export default function LotteriesLayout() {
         title: t("tabs.lotteries"),
       }}
     >
-      s
       <Stack.Screen
         name="index"
         options={{ title: t("lotteries.layout.title") }}

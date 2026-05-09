@@ -1,6 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
 
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
@@ -71,17 +70,3 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  walletTabIconFocused: {
-    marginTop: -12,
-    padding: theme.spacing.sm,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentSolid,
-    shadowColor: theme.colors.accentSolid,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-});

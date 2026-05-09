@@ -8,7 +8,7 @@ Enregistrer un **token Expo Push** par utilisateur (`profiles.push_token`), rece
 
 ## Périmètre
 
-- **Inclus :** permission + channel Android + persistance token après login, listeners reçu / réponse, texte **i18n** pour types connus affichés côté client (`getLocalizedNotificationOverlay`), branchement bootstrap.
+- **Inclus :** permission + channel Android + persistance token après login, listeners reçu / réponse, texte **i18n** pour types connus affichés côté client (`adapters/notificationOverlayAdapter.ts` → `getLocalizedNotificationOverlay`), branchement bootstrap.
 - **Hors périmètre :** choix produit des écrans qui consomment `notification` (aucun écran dédié imposé ici), campagnes marketing batch, analytics push.
 - **Backend envoi :** Edge Function + triggers SQL ; pas d’appel direct Expo depuis l’app mobile hors enregistrement token.
 
@@ -17,7 +17,8 @@ Enregistrer un **token Expo Push** par utilisateur (`profiles.push_token`), rece
 | Rôle                                 | Fichiers                                                                                                                                                                                                                                                                                          |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Hook public**                      | `hooks/usePushNotifications.ts` — `useSyncExternalStore` + ref-count coordinateur                                                                                                                                                                                                                 |
-| **Coordination / token / listeners** | `services/notificationService.ts` — `acquirePushCoordinator`, `startCoordinator` (sync coalescé : `subscribeToAuthChanges` + `getCurrentSession` → une seule `syncPushForUser` par utilisateur tant qu’elle est en cours), `registerForPushNotificationsAsync`, `getLocalizedNotificationOverlay` |
+| **Coordination / token / listeners** | `services/notificationService.ts` — `acquirePushCoordinator`, `startCoordinator` (sync coalescé : `subscribeToAuthChanges` + `getCurrentSession` → une seule `syncPushForUser` par utilisateur tant qu’elle est en cours), `registerForPushNotificationsAsync` |
+| **Copy foreground (i18n)**            | `adapters/notificationOverlayAdapter.ts` — `getLocalizedNotificationOverlay(data)` |
 | **Bootstrap**                        | `src/lib/bootstrap/useAppBootstrap.ts` — `usePushNotifications(enabled)` (ne bloque pas le bootstrap si permission refusée / simulateur)                                                                                                                                                          |
 
 **Dépendances Expo :** `expo-notifications`, `expo-device`, `expo-constants` (projectId EAS pour `getExpoPushTokenAsync`).

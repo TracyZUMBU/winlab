@@ -25,7 +25,7 @@ export function AdminLayout() {
         <div className="admin-layout__header-row">
           <h1 className="admin-layout__title">
             <Link to="/" className="admin-layout__brand-link">
-              Winlab Admin
+              Wintix Admin
             </Link>
           </h1>
           <nav className="admin-layout__nav" aria-label="Navigation principale">

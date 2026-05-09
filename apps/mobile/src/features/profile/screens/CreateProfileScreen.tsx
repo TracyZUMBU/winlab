@@ -9,6 +9,7 @@ import {
   showErrorToast,
   showWarningToast,
 } from "@/src/shared/toast/toastService";
+import { colors } from "@/src/theme/colors";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
 import { useRouter } from "expo-router";
@@ -47,8 +48,6 @@ import {
   createProfileFormSchema,
   type CreateProfileFormValues,
 } from "../validators/createProfileFormSchema";
-
-const ACCENT = "#FF8C00";
 
 function sexTranslationKey(value: ProfileSex): string {
   return `profile.createProfile.screen.sex.${value}`;
@@ -604,8 +603,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   sexOptionSelected: {
-    borderColor: ACCENT,
-    backgroundColor: "#FFF7ED",
+    borderColor: colors.accentSolid,
+    backgroundColor: colors.accentSurfaceTint,
   },
   sexOptionPressed: {
     opacity: 0.92,
@@ -626,7 +625,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accentSolid,
   },
   primaryButtonPressed: {
     opacity: 0.9,

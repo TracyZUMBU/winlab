@@ -5,6 +5,7 @@ import {
   insertProfileWithReferralRetry,
   isProfileUsernameUniqueViolation,
 } from "./insertProfileWithReferralRetry";
+import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 import { monitoring } from "@/src/lib/monitoring";
 
 const PROFILES_TABLE = "profiles";
@@ -30,7 +31,7 @@ export const createProfile = async ({
         sex,
         department_code,
       })
-      .select("*")
+      .select(PROFILE_MVP_COLUMNS)
       .single();
     if (error) {
       if (isProfileUsernameUniqueViolation(error)) {

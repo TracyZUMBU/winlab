@@ -9,11 +9,10 @@ import {
   View,
 } from "react-native";
 import { showErrorToast } from "@/src/shared/toast";
+import { colors } from "@/src/theme/colors";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { useAuthSession } from "../hooks/useAuthSession";
 import { useSignOutMutation } from "../hooks/useSignOutMutation";
-
-const ACCENT = "#FF8C00";
 
 export const AppPlaceholderScreen: React.FC = () => {
   const router = useRouter();
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingVertical: 14,
     paddingHorizontal: 32,
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accentSolid,
   },
   primaryButtonPressed: {
     opacity: 0.9,

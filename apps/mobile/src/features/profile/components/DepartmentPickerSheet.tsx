@@ -3,7 +3,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -12,13 +14,12 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { colors } from "@/src/theme/colors";
 import {
   filterFrenchDepartments,
   getFrenchDepartmentLabel,
   type FrenchDepartment,
 } from "../constants/frenchDepartments";
-
-const ACCENT = "#FF8C00";
 
 export type DepartmentPickerSheetProps = {
   visible: boolean;
@@ -100,74 +101,83 @@ export function DepartmentPickerSheet({
         />
 
         <View pointerEvents="box-none" style={styles.foreground}>
-          <View
-            style={[
-              styles.sheet,
-              { paddingBottom: Math.max(insets.bottom, 16) },
-            ]}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={Platform.OS === "ios" ? insets.top : 0}
+            style={styles.keyboardAvoidSheet}
           >
-            <View style={styles.header}>
-              <View style={styles.headerText}>
-                <Text style={styles.title}>
-                  {t("profile.departmentPicker.title")}
-                </Text>
-                {initialLabel ? (
-                  <Text style={styles.subtitle} numberOfLines={1}>
-                    {t("profile.departmentPicker.current", { value: initialLabel })}
+            <View
+              style={[
+                styles.sheet,
+                { paddingBottom: Math.max(insets.bottom, 16) },
+              ]}
+            >
+              <View style={styles.header}>
+                <View style={styles.headerText}>
+                  <Text style={styles.title}>
+                    {t("profile.departmentPicker.title")}
                   </Text>
+                  {initialLabel ? (
+                    <Text style={styles.subtitle} numberOfLines={1}>
+                      {t("profile.departmentPicker.current", {
+                        value: initialLabel,
+                      })}
+                    </Text>
+                  ) : null}
+                </View>
+                <Pressable
+                  onPress={onClose}
+                  hitSlop={12}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("common.close")}
+                >
+                  <MaterialIcons name="close" size={22} color="#0F172A" />
+                </Pressable>
+              </View>
+
+              <View style={styles.searchWrap}>
+                <MaterialIcons name="search" size={18} color="#64748B" />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder={t("profile.departmentPicker.searchPlaceholder")}
+                  placeholderTextColor="#94A3B8"
+                  style={styles.searchInput}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  accessibilityLabel={t("profile.departmentPicker.searchA11y")}
+                />
+                {query ? (
+                  <Pressable
+                    onPress={() => setQuery("")}
+                    hitSlop={10}
+                    accessibilityRole="button"
+                    accessibilityLabel={t("common.clear")}
+                  >
+                    <MaterialIcons name="close" size={18} color="#64748B" />
+                  </Pressable>
                 ) : null}
               </View>
-              <Pressable
-                onPress={onClose}
-                hitSlop={12}
-                accessibilityRole="button"
-                accessibilityLabel={t("common.close")}
-              >
-                <MaterialIcons name="close" size={22} color="#0F172A" />
-              </Pressable>
-            </View>
 
-            <View style={styles.searchWrap}>
-              <MaterialIcons name="search" size={18} color="#64748B" />
-              <TextInput
-                value={query}
-                onChangeText={setQuery}
-                placeholder={t("profile.departmentPicker.searchPlaceholder")}
-                placeholderTextColor="#94A3B8"
-                style={styles.searchInput}
-                autoCapitalize="none"
-                autoCorrect={false}
-                accessibilityLabel={t("profile.departmentPicker.searchA11y")}
+              <FlatList
+                data={results}
+                keyExtractor={(item) => item.code}
+                renderItem={renderItem}
+                keyboardDismissMode="on-drag"
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                style={styles.list}
+                contentContainerStyle={styles.listContent}
+                ListEmptyComponent={
+                  <View style={styles.empty}>
+                    <Text style={styles.emptyText}>
+                      {t("profile.departmentPicker.empty")}
+                    </Text>
+                  </View>
+                }
               />
-              {query ? (
-                <Pressable
-                  onPress={() => setQuery("")}
-                  hitSlop={10}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("common.clear")}
-                >
-                  <MaterialIcons name="close" size={18} color="#64748B" />
-                </Pressable>
-              ) : null}
             </View>
-
-            <FlatList
-              data={results}
-              keyExtractor={(item) => item.code}
-              renderItem={renderItem}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              style={styles.list}
-              contentContainerStyle={styles.listContent}
-              ListEmptyComponent={
-                <View style={styles.empty}>
-                  <Text style={styles.emptyText}>
-                    {t("profile.departmentPicker.empty")}
-                  </Text>
-                </View>
-              }
-            />
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </View>
     </Modal>
@@ -184,6 +194,9 @@ const styles = StyleSheet.create({
   foreground: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",
+  },
+  keyboardAvoidSheet: {
+    width: "100%",
   },
   sheet: {
     backgroundColor: "#FFFFFF",
@@ -250,13 +263,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   rowPressed: {
-    backgroundColor: "#FFF7ED",
+    backgroundColor: colors.accentSurfaceTint,
   },
   rowCode: {
     width: 36,
     fontSize: 14,
     fontWeight: "800",
-    color: ACCENT,
+    color: colors.accentSolid,
   },
   rowName: {
     flex: 1,
