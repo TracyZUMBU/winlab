@@ -1,10 +1,7 @@
-import DOMPurify from "dompurify";
-import { marked } from "marked";
 import {
   useCallback,
   useEffect,
   useId,
-  useMemo,
   useRef,
   useState,
   type FormEvent,
@@ -23,12 +20,14 @@ import {
   type MissionAdminKnownStatus,
   type MissionAdminKnownValidationMode,
 } from "../types/missionAdmin";
-
-marked.setOptions({ gfm: true, breaks: true });
+import { buildMissionMetadata } from "./create-mission/buildMissionMetadata";
+import type { RulesTab } from "./create-mission/createMissionFormTypes";
+import { MissionMetadataSection } from "./create-mission/MissionMetadataSection";
+import { MissionRulesMarkdownField } from "./create-mission/missionRulesMarkdownField";
+import { createDefaultSurveyDraft } from "./create-mission/survey-builder/defaultSurveyDraft";
+import type { SurveyDraft } from "./create-mission/survey-builder/surveyDraft.types";
 
 type BrandOption = { id: string; name: string };
-
-type RulesTab = "edit" | "preview";
 
 type FormState = {
   brand_id: string;
@@ -43,7 +42,14 @@ type FormState = {
   ends_at: string;
   max_completions_total: string;
   max_completions_per_user: string;
-  metadataJson: string;
+  survey_draft: SurveyDraft;
+  video_metadata_url: string;
+  video_metadata_title: string;
+  video_metadata_thumbnail_url: string;
+  external_metadata_url: string;
+  external_metadata_platform: string;
+  external_metadata_action_label: string;
+  external_metadata_min_seconds: string;
   image_url: string;
   rulesTab: RulesTab;
 };
@@ -62,7 +68,14 @@ function getInitialFormState(): FormState {
     ends_at: "",
     max_completions_total: "",
     max_completions_per_user: "",
-    metadataJson: "{}",
+    survey_draft: createDefaultSurveyDraft(),
+    video_metadata_url: "",
+    video_metadata_title: "",
+    video_metadata_thumbnail_url: "",
+    external_metadata_url: "",
+    external_metadata_platform: "",
+    external_metadata_action_label: "",
+    external_metadata_min_seconds: "",
     image_url: "",
     rulesTab: "edit",
   };
@@ -107,11 +120,6 @@ export function CreateMissionModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const createMutation = useCreateAdminMissionMutation();
-
-  const previewHtml = useMemo(() => {
-    const raw = marked.parse(form.rules_text || "") as string;
-    return DOMPurify.sanitize(raw);
-  }, [form.rules_text]);
 
   useEffect(() => {
     if (!open) {
@@ -279,28 +287,27 @@ export function CreateMissionModal({
       );
       return;
     }
-
-    let metadata: Record<string, unknown> | undefined;
-    const metaRaw = form.metadataJson.trim();
-    if (metaRaw === "") {
-      metadata = {};
-    } else {
-      try {
-        const parsed: unknown = JSON.parse(metaRaw);
-        if (
-          parsed === null ||
-          typeof parsed !== "object" ||
-          Array.isArray(parsed)
-        ) {
-          setFieldError("Les métadonnées JSON doit être un objet (ex. {}).");
-          return;
-        }
-        metadata = parsed as Record<string, unknown>;
-      } catch {
-        setFieldError("JSON métadonnées invalide.");
-        return;
-      }
+    if (form.rules_text.trim() === "") {
+      setFieldError("Saisissez le règlement de la mission.");
+      return;
     }
+
+    const built = buildMissionMetadata({
+      missionType: form.mission_type,
+      surveyDraft: form.survey_draft,
+      videoUrl: form.video_metadata_url,
+      videoTitle: form.video_metadata_title,
+      videoThumbnailUrl: form.video_metadata_thumbnail_url,
+      externalUrl: form.external_metadata_url,
+      externalPlatform: form.external_metadata_platform,
+      externalActionLabel: form.external_metadata_action_label,
+      externalMinSeconds: form.external_metadata_min_seconds,
+    });
+    if (!built.ok) {
+      setFieldError(built.message);
+      return;
+    }
+    const metadata = built.metadata;
 
     const starts = toIsoOrNull(form.starts_at);
     const ends = toIsoOrNull(form.ends_at);
@@ -572,7 +579,7 @@ export function CreateMissionModal({
                   className="mission-create-form__label"
                   htmlFor="mission-create-starts"
                 >
-                  Début (optionnel)
+                  Début
                 </label>
                 <input
                   id="mission-create-starts"
@@ -588,7 +595,7 @@ export function CreateMissionModal({
                   className="mission-create-form__label"
                   htmlFor="mission-create-ends"
                 >
-                  Fin (optionnel)
+                  Fin
                 </label>
                 <input
                   id="mission-create-ends"
@@ -658,79 +665,40 @@ export function CreateMissionModal({
                   onChange={(e) => update("image_url")(e.target.value)}
                 />
               </div>
-
-              <div className="mission-create-form__field mission-create-form__field--full">
-                <label
-                  className="mission-create-form__label"
-                  htmlFor="mission-create-metadata"
-                >
-                  Métadonnées (JSON)
-                </label>
-                <textarea
-                  id="mission-create-metadata"
-                  className="mission-create-form__textarea mission-create-form__textarea--mono"
-                  rows={4}
-                  value={form.metadataJson}
-                  onChange={(e) => update("metadataJson")(e.target.value)}
-                  spellCheck={false}
-                />
-              </div>
-
-              <div className="mission-create-form__field mission-create-form__field--full">
-                <div className="mission-create-form__label-row">
-                  <span className="mission-create-form__label">
-                    Règlement (Markdown)
-                  </span>
-                  <div
-                    className="mission-create-form__tabs"
-                    role="tablist"
-                    aria-label="Règlement"
-                  >
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={form.rulesTab === "edit"}
-                      className={
-                        form.rulesTab === "edit"
-                          ? "mission-create-form__tab mission-create-form__tab--active"
-                          : "mission-create-form__tab"
-                      }
-                      onClick={() => update("rulesTab")("edit")}
-                    >
-                      Éditer
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={form.rulesTab === "preview"}
-                      className={
-                        form.rulesTab === "preview"
-                          ? "mission-create-form__tab mission-create-form__tab--active"
-                          : "mission-create-form__tab"
-                      }
-                      onClick={() => update("rulesTab")("preview")}
-                    >
-                      Aperçu
-                    </button>
-                  </div>
-                </div>
-                {form.rulesTab === "edit" ? (
-                  <textarea
-                    id="mission-create-rules"
-                    className="mission-create-form__textarea mission-create-form__textarea--rules"
-                    rows={14}
-                    value={form.rules_text}
-                    onChange={(e) => update("rules_text")(e.target.value)}
-                    required
-                    spellCheck={true}
-                  />
-                ) : (
-                  <div
-                    className="mission-create-markdown-preview"
-                    dangerouslySetInnerHTML={{ __html: previewHtml }}
-                  />
+              <hr style={{ margin: "24px 0" }} />
+              <MissionMetadataSection
+                missionType={form.mission_type}
+                surveyDraft={form.survey_draft}
+                onSurveyDraftChange={update("survey_draft")}
+                videoUrl={form.video_metadata_url}
+                videoTitle={form.video_metadata_title}
+                videoThumbnailUrl={form.video_metadata_thumbnail_url}
+                onVideoUrlChange={update("video_metadata_url")}
+                onVideoTitleChange={update("video_metadata_title")}
+                onVideoThumbnailUrlChange={update(
+                  "video_metadata_thumbnail_url",
                 )}
-              </div>
+                externalUrl={form.external_metadata_url}
+                externalPlatform={form.external_metadata_platform}
+                externalActionLabel={form.external_metadata_action_label}
+                externalMinSeconds={form.external_metadata_min_seconds}
+                onExternalUrlChange={update("external_metadata_url")}
+                onExternalPlatformChange={update("external_metadata_platform")}
+                onExternalActionLabelChange={update(
+                  "external_metadata_action_label",
+                )}
+                onExternalMinSecondsChange={update(
+                  "external_metadata_min_seconds",
+                )}
+              />
+
+              <hr style={{ margin: "24px 0" }} />
+              <MissionRulesMarkdownField
+                rulesText={form.rules_text}
+                rulesTab={form.rulesTab}
+                onRulesTextChange={update("rules_text")}
+                onRulesTabChange={update("rulesTab")}
+              />
             </div>
 
             <div className="mission-create-form__actions">
