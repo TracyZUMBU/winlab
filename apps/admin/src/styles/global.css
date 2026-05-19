@@ -964,8 +964,21 @@ body {
   white-space: nowrap;
 }
 
-.survey-builder__btn-primary:hover {
+.survey-builder__btn-primary:hover:not(:disabled) {
   background: #1d4ed8;
+}
+
+.survey-builder__btn-primary:focus-visible:not(:disabled) {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #1d4ed8;
+}
+
+.survey-builder__btn-primary:disabled,
+.survey-builder__btn-primary[disabled] {
+  background: #93c5fd;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .survey-builder__list {
@@ -1041,6 +1054,15 @@ body {
   background: #fef2f2;
 }
 
+.survey-builder__icon-btn:focus-visible:not(:disabled) {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.survey-builder__icon-btn--danger:focus-visible:not(:disabled) {
+  outline-color: #b91c1c;
+}
+
 .survey-builder__grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1075,6 +1097,11 @@ body {
 
 .survey-builder__link-btn:hover {
   color: #1d4ed8;
+}
+
+.survey-builder__link-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 .survey-builder__option-list {

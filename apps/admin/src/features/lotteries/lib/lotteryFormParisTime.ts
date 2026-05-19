@@ -106,7 +106,11 @@ export function parseDateTimeLocalParis(value: string): Date | null {
     return null;
   }
 
-  if (month < 1 || month > 12 || day < 1 || day > 31) {
+  if (month < 1 || month > 12 || day < 1) {
+    return null;
+  }
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  if (day > daysInMonth) {
     return null;
   }
   if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {

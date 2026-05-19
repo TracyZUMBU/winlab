@@ -1,9 +1,7 @@
 import type { SurveyQuestionType } from "../../../lib/parseSurveyDefinition";
 import { generateOptionId } from "./surveyDraftIds";
-import type { SurveyDraftQuestion } from "./surveyDraft.types";
+import type { SurveyDraftQuestion, SurveyNextTarget } from "./surveyDraft.types";
 import { SurveyNextSelect } from "./SurveyNextSelect";
-
-type SurveyNextTarget = { value: string; label: string };
 
 type SurveyQuestionCardProps = {
   index: number;

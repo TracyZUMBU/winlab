@@ -1,4 +1,4 @@
-type SurveyNextTarget = { value: string; label: string };
+import type { SurveyNextTarget } from "./surveyDraft.types";
 
 type SurveyNextSelectProps = {
   id: string;

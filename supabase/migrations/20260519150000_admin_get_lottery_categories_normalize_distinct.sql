@@ -1,4 +1,4 @@
--- Distinct lottery categories for admin create form (SECURITY DEFINER + is_admin guard).
+-- Deduplicate categories by normalized value (trim + lower), not raw l.category.
 
 CREATE OR REPLACE FUNCTION public.admin_get_lottery_categories()
 RETURNS TABLE (category text)
@@ -25,7 +25,3 @@ ALTER FUNCTION public.admin_get_lottery_categories() OWNER TO postgres;
 
 COMMENT ON FUNCTION public.admin_get_lottery_categories() IS
   'Backoffice: distinct non-empty lotteries.category values (trimmed, lowercased) for create-form select. Caller must be profiles.is_admin.';
-
-REVOKE ALL ON FUNCTION public.admin_get_lottery_categories() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.admin_get_lottery_categories() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.admin_get_lottery_categories() TO service_role;

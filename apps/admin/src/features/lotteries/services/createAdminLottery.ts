@@ -28,18 +28,31 @@ export async function createAdminLottery(
   input: CreateAdminLotteryInput,
 ): Promise<ServiceResult<CreatedAdminLottery>> {
   try {
-    const brand_id = String(input.brand_id).trim();
-    const title = String(input.title).trim();
-    const ends_at = String(input.ends_at).trim();
-    const draw_at = String(input.draw_at).trim();
-
-    if (!brand_id || !title || !ends_at || !draw_at) {
+    if (
+      input.brand_id == null ||
+      typeof input.brand_id !== "string" ||
+      input.brand_id.trim().length === 0 ||
+      input.title == null ||
+      typeof input.title !== "string" ||
+      input.title.trim().length === 0 ||
+      input.ends_at == null ||
+      typeof input.ends_at !== "string" ||
+      input.ends_at.trim().length === 0 ||
+      input.draw_at == null ||
+      typeof input.draw_at !== "string" ||
+      input.draw_at.trim().length === 0
+    ) {
       return { success: false, errorCode: "INVALID_PAYLOAD" };
     }
 
+    const brand_id = input.brand_id.trim();
+    const title = input.title.trim();
+    const ends_at = input.ends_at.trim();
+    const draw_at = input.draw_at.trim();
+
     if (
       typeof input.ticket_cost !== "number" ||
-      !Number.isFinite(input.ticket_cost) ||
+      !Number.isInteger(input.ticket_cost) ||
       input.ticket_cost <= 0
     ) {
       return { success: false, errorCode: "INVALID_TICKET_COST" };
@@ -47,7 +60,7 @@ export async function createAdminLottery(
 
     if (
       typeof input.number_of_winners !== "number" ||
-      !Number.isFinite(input.number_of_winners) ||
+      !Number.isInteger(input.number_of_winners) ||
       input.number_of_winners <= 0
     ) {
       return { success: false, errorCode: "INVALID_NUMBER_OF_WINNERS" };

@@ -1,31 +1,6 @@
--- Admin create lottery RPC (SECURITY DEFINER + is_admin guard).
--- Canonical definition; keep in sync with the migration that applies it.
+-- Conflict-safe slug allocation: retry INSERT on lotteries_slug_unique instead of SELECT-then-INSERT.
 
-CREATE OR REPLACE FUNCTION public.admin_lottery_slug_from_title(p_title text)
-RETURNS text
-LANGUAGE sql
-IMMUTABLE
-AS $$
-  SELECT NULLIF(
-    trim(
-      both '-'
-      FROM lower(
-        regexp_replace(
-          regexp_replace(trim(coalesce(p_title, '')), '[^a-zA-Z0-9\s-]', '', 'g'),
-          '\s+',
-          '-',
-          'g'
-        )
-      )
-    ),
-    ''
-  );
-$$;
-
-ALTER FUNCTION public.admin_lottery_slug_from_title(text) OWNER TO postgres;
-
-COMMENT ON FUNCTION public.admin_lottery_slug_from_title(text) IS
-  'Derives a URL slug from a lottery title (ASCII alphanumeric and hyphens).';
+DROP FUNCTION IF EXISTS public.admin_lottery_resolve_unique_slug(text);
 
 CREATE OR REPLACE FUNCTION public.admin_create_lottery(
   p_brand_id uuid,
@@ -206,53 +181,3 @@ COMMENT ON FUNCTION public.admin_create_lottery(
   boolean
 ) IS
   'Backoffice: create a lottery. Caller must be profiles.is_admin. Slug is derived from title; on slug collision, retries INSERT with -2, -3, … suffixes.';
-
-REVOKE ALL ON FUNCTION public.admin_lottery_slug_from_title(text) FROM PUBLIC;
-
-REVOKE ALL ON FUNCTION public.admin_create_lottery(
-  uuid,
-  text,
-  integer,
-  integer,
-  timestamptz,
-  timestamptz,
-  timestamptz,
-  public.lottery_status,
-  text,
-  text,
-  text,
-  text,
-  boolean
-) FROM PUBLIC;
-
-GRANT EXECUTE ON FUNCTION public.admin_create_lottery(
-  uuid,
-  text,
-  integer,
-  integer,
-  timestamptz,
-  timestamptz,
-  timestamptz,
-  public.lottery_status,
-  text,
-  text,
-  text,
-  text,
-  boolean
-) TO authenticated;
-
-GRANT EXECUTE ON FUNCTION public.admin_create_lottery(
-  uuid,
-  text,
-  integer,
-  integer,
-  timestamptz,
-  timestamptz,
-  timestamptz,
-  public.lottery_status,
-  text,
-  text,
-  text,
-  text,
-  boolean
-) TO service_role;

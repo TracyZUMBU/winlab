@@ -171,7 +171,9 @@ export function CreateLotteryPanel({
       if (prev.brand_id.trim() !== "") {
         return prev;
       }
-      return { ...prev, brand_id: defaultBrandId };
+      const next = { ...prev, brand_id: defaultBrandId };
+      baselineRef.current = serializeForDirty(next);
+      return next;
     });
   }, [open, brands]);
 

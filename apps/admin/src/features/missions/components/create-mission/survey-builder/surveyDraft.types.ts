@@ -1,5 +1,7 @@
 import type { SurveyQuestionType } from "../../../lib/parseSurveyDefinition";
 
+export type SurveyNextTarget = { value: string; label: string };
+
 export type SurveyDraftOption = {
   id: string;
   label: string;

@@ -5,22 +5,29 @@ function randomSuffix(): string {
   return Math.random().toString(36).slice(2, 12);
 }
 
-export function generateQuestionId(existing: ReadonlySet<string>): string {
-  let candidate = `q_${randomSuffix()}`;
+function generateUniqueDraftId(
+  prefix: string,
+  existing: ReadonlySet<string>,
+): string {
+  let candidate = `${prefix}${randomSuffix()}`;
   let guard = 0;
   while (existing.has(candidate) && guard < 50) {
-    candidate = `q_${randomSuffix()}`;
+    candidate = `${prefix}${randomSuffix()}`;
     guard += 1;
+  }
+  const base = candidate;
+  let counter = 1;
+  while (existing.has(candidate)) {
+    candidate = `${base}_${counter}`;
+    counter += 1;
   }
   return candidate;
 }
 
+export function generateQuestionId(existing: ReadonlySet<string>): string {
+  return generateUniqueDraftId("q_", existing);
+}
+
 export function generateOptionId(existing: ReadonlySet<string>): string {
-  let candidate = `opt_${randomSuffix()}`;
-  let guard = 0;
-  while (existing.has(candidate) && guard < 50) {
-    candidate = `opt_${randomSuffix()}`;
-    guard += 1;
-  }
-  return candidate;
+  return generateUniqueDraftId("opt_", existing);
 }

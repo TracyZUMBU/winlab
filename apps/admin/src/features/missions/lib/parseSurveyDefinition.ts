@@ -51,6 +51,7 @@ export const parseSurveyDefinition = (metadata: unknown): SurveyDefinition | nul
     const label = asNonEmptyString(rawQuestion.label);
     const type = rawQuestion.type;
     if (!id || !label) return null;
+    if (questionsById[id]) return null;
     if (type !== "text" && type !== "single_choice" && type !== "multi_choice") {
       return null;
     }
@@ -78,6 +79,17 @@ export const parseSurveyDefinition = (metadata: unknown): SurveyDefinition | nul
       options,
       nextQuestionId: asNonEmptyString(rawQuestion.nextQuestionId),
     };
+  }
+
+  for (const question of Object.values(questionsById)) {
+    if (question.nextQuestionId && !questionsById[question.nextQuestionId]) {
+      return null;
+    }
+    for (const option of question.options) {
+      if (option.nextQuestionId && !questionsById[option.nextQuestionId]) {
+        return null;
+      }
+    }
   }
 
   if (!questionsById[startQuestionId]) return null;
