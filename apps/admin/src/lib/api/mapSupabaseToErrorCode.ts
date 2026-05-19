@@ -46,6 +46,24 @@ export function mapSupabaseToErrorCode(error: unknown): string {
   if (msg.includes("WINLAB_INVALID_LOTTERY_ID")) {
     return "INVALID_LOTTERY_ID";
   }
+  if (msg.includes("WINLAB_INVALID_BRAND_ID")) {
+    return "INVALID_BRAND_ID";
+  }
+  if (msg.includes("WINLAB_INVALID_TITLE")) {
+    return "INVALID_TITLE";
+  }
+  if (msg.includes("WINLAB_INVALID_TICKET_COST")) {
+    return "INVALID_TICKET_COST";
+  }
+  if (msg.includes("WINLAB_INVALID_NUMBER_OF_WINNERS")) {
+    return "INVALID_NUMBER_OF_WINNERS";
+  }
+  if (msg.includes("WINLAB_INVALID_LOTTERY_DATES")) {
+    return "INVALID_LOTTERY_DATES";
+  }
+  if (msg.includes("WINLAB_INVALID_LOTTERY_STATUS")) {
+    return "INVALID_LOTTERY_STATUS";
+  }
   if (msg.includes("WINLAB_INVALID_MISSION_ID")) {
     return "INVALID_MISSION_ID";
   }

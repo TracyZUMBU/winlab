@@ -27,6 +27,20 @@ export function lotteryServiceErrorMessage(errorCode: string): string {
       return "Le serveur n’a pas pu exécuter le tirage. Réessayez ou vérifiez les journaux.";
     case "INVALID_LOTTERY_ID":
       return "Identifiant de loterie invalide.";
+    case "INVALID_PAYLOAD":
+      return "Données invalides : vérifiez les champs obligatoires.";
+    case "INVALID_BRAND_ID":
+      return "Marque invalide ou introuvable.";
+    case "INVALID_TITLE":
+      return "Le titre est obligatoire.";
+    case "INVALID_TICKET_COST":
+      return "Le prix d’un ticket doit être au moins 1 jeton.";
+    case "INVALID_NUMBER_OF_WINNERS":
+      return "Le nombre de gagnants doit être au moins 1.";
+    case "INVALID_LOTTERY_DATES":
+      return "Les dates ne sont pas cohérentes : l’ouverture doit précéder la fin, et la fin doit précéder ou coïncider avec le tirage.";
+    case "INVALID_LOTTERY_STATUS":
+      return "Ce statut n’est pas autorisé à la création.";
     case "NETWORK":
       return "Impossible de joindre le serveur. Vérifiez votre connexion.";
     case "RPC_ERROR":
