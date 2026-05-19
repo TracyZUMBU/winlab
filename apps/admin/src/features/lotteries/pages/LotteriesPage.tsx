@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
+import { CreateLotteryPanel } from "../components/CreateLotteryPanel";
 import { LotteriesDevTable } from "../components/LotteriesDevTable";
 import { LotteryDetailPanel } from "../components/LotteryDetailPanel";
 import { useLotteriesQuery } from "../hooks/useLotteriesQuery";
+import { isSupabaseConfigured } from "../../../lib/supabase";
 import { lotteryServiceErrorMessage } from "../lotteryErrorMessages";
 import { lotteryAdminKeys } from "../queries/lotteryAdmin.keys";
 import { resetLotteriesScheduleForDev } from "../services/resetLotteriesScheduleForDev";
@@ -89,6 +91,7 @@ export function LotteriesPage() {
     kind: "success" | "error";
     message: string;
   } | null>(null);
+  const [createPanelOpen, setCreatePanelOpen] = useState(false);
 
   const detailLotteryId = searchParams.get(DETAIL_QUERY_KEY)?.trim() ?? "";
 
@@ -97,6 +100,16 @@ export function LotteriesPage() {
     next.delete(DETAIL_QUERY_KEY);
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
+
+  const handleLotteryCreated = useCallback(
+    (lotteryId: string) => {
+      const next = new URLSearchParams(searchParams);
+      next.set(DETAIL_QUERY_KEY, lotteryId);
+      setSearchParams(next, { replace: true });
+      setCreatePanelOpen(false);
+    },
+    [searchParams, setSearchParams],
+  );
 
   const filteredLotteries = useMemo(() => {
     if (state.kind !== "ok") {
@@ -143,9 +156,28 @@ export function LotteriesPage() {
         <LotteryDetailPanel lotteryId={detailLotteryId} onClose={closeDetailPanel} />
       ) : null}
 
-      <h2 id="lotteries-heading" className="page-lotteries__heading">
-        Lotteries
-      </h2>
+      {createPanelOpen ? (
+        <CreateLotteryPanel
+          open
+          onClose={() => setCreatePanelOpen(false)}
+          onCreated={handleLotteryCreated}
+        />
+      ) : null}
+
+      <div className="page-lotteries__header-row">
+        <h2 id="lotteries-heading" className="page-lotteries__heading">
+          Lotteries
+        </h2>
+        {isSupabaseConfigured() ? (
+          <button
+            type="button"
+            className="lotteries-create-btn"
+            onClick={() => setCreatePanelOpen(true)}
+          >
+            Créer une loterie
+          </button>
+        ) : null}
+      </div>
 
       {state.kind === "loading" && (
         <p className="page-lotteries__muted" role="status">

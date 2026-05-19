@@ -32,3 +32,4 @@ Utiliser le **kebab-case** pour le nom de fichier.
 | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
 | [error-handling-stabilization-roadmap.md](./error-handling-stabilization-roadmap.md) | Stabilisation gestion d’erreurs (mobile, conventions, monitoring queries) |
 | [admin-hardening-roadmap.md](./admin-hardening-roadmap.md)                           | Durcissement technique admin (monitoring, query, logger)                  |
+| [admin-lottery-create-roadmap.md](./admin-lottery-create-roadmap.md)               | Création de loterie depuis l’admin (MVP + backlog)                        |

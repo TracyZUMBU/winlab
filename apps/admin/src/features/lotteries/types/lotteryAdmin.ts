@@ -11,7 +11,17 @@ export const LOTTERY_ADMIN_STATUSES = [
   "cancelled",
 ] as const;
 
+/** Statuts proposés à la création (sans `cancelled`). */
+export const LOTTERY_CREATE_STATUSES = [
+  "draft",
+  "active",
+  "closed",
+  "drawn",
+] as const;
+
 export type LotteryAdminKnownStatus = (typeof LOTTERY_ADMIN_STATUSES)[number];
+
+export type LotteryCreateStatus = (typeof LOTTERY_CREATE_STATUSES)[number];
 
 /** Valeur d’enum Postgres `lottery_status` ou valeur inattendue. */
 export type LotteryAdminStatus = LotteryAdminKnownStatus | "unknown";
@@ -62,4 +72,33 @@ export type AdminLotteryDetail = {
   tickets_count: number;
   winners_count: number;
   winners: AdminLotteryWinner[];
+};
+
+/** Option marque pour le formulaire de création. */
+export type LotteryFormBrandOption = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+/** Payload pour `admin_create_lottery`. */
+export type CreateAdminLotteryInput = {
+  brand_id: string;
+  title: string;
+  ticket_cost: number;
+  number_of_winners: number;
+  starts_at: string | null;
+  ends_at: string;
+  draw_at: string;
+  status: LotteryCreateStatus;
+  description?: string | null;
+  short_description?: string | null;
+  category?: string | null;
+  image_url?: string | null;
+  is_featured?: boolean;
+};
+
+export type CreatedAdminLottery = {
+  id: string;
+  slug: string;
 };

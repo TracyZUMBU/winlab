@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => {
     define: {
       __ADMIN_SUPABASE_URL__: JSON.stringify(env.VITE_SUPABASE_URL ?? ""),
       __ADMIN_SUPABASE_ANON_KEY__: JSON.stringify(env.VITE_SUPABASE_ANON_KEY ?? ""),
+      __ADMIN_DEFAULT_LOTTERY_BRAND_ID__: JSON.stringify(
+        env.VITE_ADMIN_DEFAULT_LOTTERY_BRAND_ID ?? "",
+      ),
     },
   };
 });
