@@ -47,7 +47,7 @@ La présente politique décrit comment ${e.legalName} (« nous », « l’édite
 
 Ce document est un modèle éditorial : il doit être adapté à vos traitements réels et relu par un conseil juridique avant diffusion définitive.
 
-L’Application est proposée aux utilisateurs situés en France ; toute extension à d’autres pays fera l’objet d’une mise à jour de la présente politique.
+L’Application est proposée aux utilisateurs résidant en France (métropole et départements d’outre-mer), en Suisse ou au Luxembourg. L’utilisation depuis un autre pays peut être restreinte ; toute extension du périmètre fera l’objet d’une mise à jour de la présente politique.
 
 2. Responsable du traitement
 Le responsable du traitement est : ${e.legalName}, dont le siège est situé au :
@@ -60,7 +60,7 @@ ${siretLineFr(e)}${dpoBlockFr(e)}
 3. Données collectées
 Selon votre utilisation de l’Application, nous pouvons traiter notamment :
 • Données d’authentification : adresse e-mail, identifiant de compte, jetons de session.
-• Données de profil : pseudonyme, photo de profil si vous en choisissez une, codes de parrainage le cas échéant.
+• Données de profil : pseudonyme, photo de profil si vous en choisissez une, pays d’habitation (France, Suisse ou Luxembourg), code de département d’habitation lorsque vous indiquez résider en France (métropole, Corse ou départements d’outre-mer), codes de parrainage le cas échéant.
 • Données d’usage et de fonctionnement : journaux techniques, identifiants d’appareil nécessaires aux notifications push, horodatages, interactions avec les contenus (missions, portefeuille, loteries, etc.).
 • Contenus que vous soumettez dans le cadre des missions (preuves, commentaires, métadonnées associées), dans la limite prévue par le service.
 • Données issues de tiers strictement nécessaires au service (ex. prestataires d’hébergement ou d’envoi de notifications), conformément à leurs politiques.
@@ -118,7 +118,7 @@ This policy describes how ${e.legalName} (“we”, “the publisher”) process
 
 This document is a draft template: it must be aligned with your actual processing activities and reviewed by legal counsel before final publication.
 
-The App is primarily offered to users located in France; expansion to other countries will be reflected in this policy.
+The App is offered to users residing in France (including overseas departments), Switzerland, or Luxembourg. Use from other countries may be restricted; any expansion of this scope will be reflected in this policy.
 
 2. Data controller
 The controller is: ${e.legalName}, with its registered office at:
@@ -131,7 +131,7 @@ ${siretLineEn(e)}${dpoBlockEn(e)}
 3. Data we may collect
 Depending on how you use the App, we may process:
 • Authentication data: email address, account identifier, session tokens.
-• Profile data: username, profile photo if you choose one, referral codes where applicable.
+• Profile data: username, profile photo if you choose one, country of residence (France, Switzerland, or Luxembourg), home department code when you indicate you live in France (metropolitan departments, Corsica, or overseas departments), referral codes where applicable.
 • Usage and operations data: technical logs, device identifiers needed for push notifications, timestamps, interactions with content (missions, wallet, lotteries, etc.).
 • Content you submit as part of missions (proofs, comments, related metadata), within the limits of the service.
 • Data from third parties strictly necessary to operate the service (e.g. hosting or notification providers), in line with their policies.

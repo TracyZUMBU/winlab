@@ -1,5 +1,6 @@
 import type { Database } from "@/src/lib/supabase.types";
 
+import { isResidenceCountryCode } from "../constants/residenceCountries";
 import { isProfileSex } from "./profileSex";
 import type { Profile } from "./profileTypes";
 
@@ -13,6 +14,7 @@ export type ProfileRowFields = Pick<
   | "birth_date"
   | "sex"
   | "department_code"
+  | "residence_country"
   | "created_at"
   | "updated_at"
   | "referral_code"
@@ -33,6 +35,10 @@ export function profileFromRow(row: ProfileRowFields): Profile {
     referral_code: row.referral_code,
     birth_date: row.birth_date,
     sex: row.sex !== null && isProfileSex(row.sex) ? row.sex : null,
+    residence_country:
+      row.residence_country !== null && isResidenceCountryCode(row.residence_country)
+        ? row.residence_country
+        : null,
     department_code: row.department_code,
   };
 }

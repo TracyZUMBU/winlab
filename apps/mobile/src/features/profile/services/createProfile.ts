@@ -5,6 +5,7 @@ import {
   insertProfileWithReferralRetry,
   isProfileUsernameUniqueViolation,
 } from "./insertProfileWithReferralRetry";
+import { normalizeProfileLocation } from "../utils/normalizeProfileLocation";
 import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 import { monitoring } from "@/src/lib/monitoring";
 
@@ -16,9 +17,14 @@ export const createProfile = async ({
   username,
   birth_date,
   sex,
+  residence_country,
   department_code,
 }: CreateProfilePayload): Promise<Profile> => {
   const supabase = getSupabaseClient();
+  const location = normalizeProfileLocation(
+    residence_country,
+    department_code,
+  );
 
   return insertProfileWithReferralRetry(async () => {
     const { data, error } = await supabase
@@ -29,7 +35,8 @@ export const createProfile = async ({
         username,
         birth_date,
         sex,
-        department_code,
+        residence_country: location.residence_country,
+        department_code: location.department_code,
       })
       .select(PROFILE_MVP_COLUMNS)
       .single();

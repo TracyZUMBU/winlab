@@ -4,8 +4,8 @@ export type FrenchDepartment = {
 };
 
 /**
- * Départements français (métropole + Corse), hors DOM-TOM.
- * Codes: 01..95 + 2A/2B (pas de 20).
+ * Départements français (métropole + Corse + DOM).
+ * Codes: 01..95 + 2A/2B (pas de 20) + 971..976 (DOM INSEE).
  */
 export const FRENCH_DEPARTMENTS: readonly FrenchDepartment[] = [
   { code: "01", name: "Ain" },
@@ -104,6 +104,11 @@ export const FRENCH_DEPARTMENTS: readonly FrenchDepartment[] = [
   { code: "93", name: "Seine-Saint-Denis" },
   { code: "94", name: "Val-de-Marne" },
   { code: "95", name: "Val-d'Oise" },
+  { code: "971", name: "Guadeloupe" },
+  { code: "972", name: "Martinique" },
+  { code: "973", name: "Guyane" },
+  { code: "974", name: "La Réunion" },
+  { code: "976", name: "Mayotte" },
 ] as const;
 
 export const FRENCH_DEPARTMENT_CODE_SET: ReadonlySet<string> = new Set(

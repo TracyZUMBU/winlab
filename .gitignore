@@ -13,3 +13,6 @@ dist/
 
 # Cursor local MCP config
 /.cursor/mcp.json
+
+# Graphify
+graphify-out/

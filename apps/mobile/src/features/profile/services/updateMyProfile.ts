@@ -6,6 +6,7 @@ import {
   type UpdateMyProfileInput,
 } from "../types/profileTypes";
 import { profileFromRow } from "../types/profileMapper";
+import { normalizeProfileLocation } from "../utils/normalizeProfileLocation";
 import { isProfileUsernameUniqueViolation } from "./insertProfileWithReferralRetry";
 import { PROFILE_MVP_COLUMNS } from "./profileMvpColumns";
 
@@ -29,13 +30,19 @@ export async function updateMyProfile(
     throw new Error("Not authenticated");
   }
 
+  const location = normalizeProfileLocation(
+    input.residence_country,
+    input.department_code,
+  );
+
   const { data, error } = await supabase
     .from(PROFILES_TABLE)
     .update({
       username: input.username,
       birth_date: input.birth_date,
       sex: input.sex,
-      department_code: input.department_code,
+      residence_country: location.residence_country,
+      department_code: location.department_code,
     })
     .eq("id", user.id)
     .select(PROFILE_MVP_COLUMNS)

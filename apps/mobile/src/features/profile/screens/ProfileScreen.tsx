@@ -41,11 +41,19 @@ import { showErrorToast, showSuccessToast } from "@/src/shared/toast";
 import { theme } from "@/src/theme";
 
 import { BirthDatePickerSheet } from "../components/BirthDatePickerSheet";
+import { CountryPickerSheet } from "../components/CountryPickerSheet";
 import { DepartmentPickerSheet } from "../components/DepartmentPickerSheet";
 import { ProfileLegalDocumentsMenuModal } from "../components/ProfileLegalDocumentsMenuModal";
 import { ProfileHeroHeader } from "../components/ProfileHeroHeader";
 import { ProfileMenuRow } from "../components/ProfileMenuRow";
 import { getFrenchDepartmentLabel } from "../constants/frenchDepartments";
+import {
+  getResidenceCountryLabel,
+  requiresFrenchDepartment,
+  RESIDENCE_COUNTRY_FR,
+  type ResidenceCountryCode,
+} from "../constants/residenceCountries";
+import { parseResidenceCountryFromForm } from "../utils/normalizeProfileLocation";
 import { useDeleteMyAccountMutation } from "../hooks/useDeleteMyAccountMutation";
 import { useMyProfileQuery } from "../hooks/useMyProfileQuery";
 import { useUpdateMyProfileMutation } from "../hooks/useUpdateMyProfileMutation";
@@ -119,6 +127,7 @@ export function ProfileScreen() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [birthSheetOpen, setBirthSheetOpen] = useState(false);
+  const [countrySheetOpen, setCountrySheetOpen] = useState(false);
   const [departmentSheetOpen, setDepartmentSheetOpen] = useState(false);
   const [legalMenuVisible, setLegalMenuVisible] = useState(false);
   const [legalDocument, setLegalDocument] = useState<LegalDocumentId | null>(
@@ -131,6 +140,7 @@ export function ProfileScreen() {
       username: "",
       birth_date: "",
       sex: undefined,
+      residence_country: "",
       department_code: "",
     },
   });
@@ -148,7 +158,14 @@ export function ProfileScreen() {
   const usernameValue = watch("username");
   const birthDateValue = watch("birth_date");
   const selectedSex = watch("sex");
+  const residenceCountryValue = watch("residence_country");
   const departmentCodeValue = watch("department_code");
+  const parsedEditResidenceCountry = parseResidenceCountryFromForm(
+    residenceCountryValue,
+  );
+  const showEditDepartmentField =
+    parsedEditResidenceCountry !== undefined &&
+    requiresFrenchDepartment(parsedEditResidenceCountry);
 
   const profile = profileQuery.data;
 
@@ -187,15 +204,19 @@ export function ProfileScreen() {
       username: profile.username?.trim() ?? "",
       birth_date: profile.birth_date ?? "",
       sex: profile.sex ?? undefined,
+      residence_country:
+        profile.residence_country ?? RESIDENCE_COUNTRY_FR,
       department_code: profile.department_code ?? "",
     });
     setBirthSheetOpen(false);
+    setCountrySheetOpen(false);
     setDepartmentSheetOpen(false);
     setIsEditingProfile(true);
   }, [profile, reset]);
 
   const cancelEditProfile = useCallback(() => {
     setBirthSheetOpen(false);
+    setCountrySheetOpen(false);
     setDepartmentSheetOpen(false);
     setIsEditingProfile(false);
   }, []);
@@ -205,14 +226,37 @@ export function ProfileScreen() {
     setBirthSheetOpen(true);
   }, []);
 
+  const openCountryPicker = useCallback(() => {
+    Keyboard.dismiss();
+    setCountrySheetOpen(true);
+  }, []);
+
   const openDepartmentPicker = useCallback(() => {
     Keyboard.dismiss();
     setDepartmentSheetOpen(true);
   }, []);
 
+  const handleCountryConfirm = useCallback(
+    (code: ResidenceCountryCode) => {
+      setValue("residence_country", code, { shouldValidate: true });
+      if (!requiresFrenchDepartment(code)) {
+        setValue("department_code", "", { shouldValidate: true });
+        setDepartmentSheetOpen(false);
+      }
+    },
+    [setValue],
+  );
+
   const onSubmitEditProfile = useCallback(
     async (values: EditProfileFormValues) => {
       if (!userId || values.sex === undefined) {
+        return;
+      }
+
+      const residenceCountry = parseResidenceCountryFromForm(
+        values.residence_country,
+      );
+      if (!residenceCountry) {
         return;
       }
 
@@ -221,10 +265,14 @@ export function ProfileScreen() {
           username: values.username,
           birth_date: values.birth_date,
           sex: values.sex,
-          department_code: values.department_code?.trim().toUpperCase() ?? "",
+          residence_country: residenceCountry,
+          department_code: requiresFrenchDepartment(residenceCountry)
+            ? values.department_code?.trim().toUpperCase() ?? null
+            : null,
         });
         setIsEditingProfile(false);
         setBirthSheetOpen(false);
+        setCountrySheetOpen(false);
         setDepartmentSheetOpen(false);
         showSuccessToast({ title: t("profile.screen.updateSuccess") });
       } catch (error: unknown) {
@@ -841,40 +889,83 @@ export function ProfileScreen() {
 
               <View style={styles.fieldBlock}>
                 <Text style={styles.fieldLabel}>
-                  {t("profile.createProfile.screen.departmentLabel")}
+                  {t("profile.createProfile.screen.residenceCountryLabel")}
                 </Text>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t(
-                    "profile.createProfile.screen.departmentPickerA11y",
+                    "profile.createProfile.screen.residenceCountryPickerA11y",
                   )}
-                  onPress={openDepartmentPicker}
+                  onPress={openCountryPicker}
                   style={({ pressed }) => [
                     styles.input,
                     styles.dateFieldButton,
-                    errors.department_code ? styles.inputError : undefined,
+                    errors.residence_country ? styles.inputError : undefined,
                     pressed && styles.dateFieldPressed,
                   ]}
                 >
                   <Text
                     style={
-                      departmentCodeValue?.trim()
+                      residenceCountryValue?.trim()
                         ? styles.dateFieldText
                         : styles.dateFieldPlaceholder
                     }
                     numberOfLines={1}
                   >
-                    {departmentCodeValue?.trim()
-                      ? getFrenchDepartmentLabel(departmentCodeValue)
-                      : t("profile.createProfile.screen.departmentPlaceholder")}
+                    {residenceCountryValue?.trim()
+                      ? getResidenceCountryLabel(residenceCountryValue, t)
+                      : t(
+                          "profile.createProfile.screen.residenceCountryPlaceholder",
+                        )}
                   </Text>
                 </Pressable>
-                {errors.department_code?.message ? (
+                {errors.residence_country?.message ? (
                   <Text style={styles.errorTextSmall}>
-                    {errors.department_code.message}
+                    {errors.residence_country.message}
                   </Text>
                 ) : null}
               </View>
+
+              {showEditDepartmentField ? (
+                <View style={styles.fieldBlock}>
+                  <Text style={styles.fieldLabel}>
+                    {t("profile.createProfile.screen.departmentLabel")}
+                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel={t(
+                      "profile.createProfile.screen.departmentPickerA11y",
+                    )}
+                    onPress={openDepartmentPicker}
+                    style={({ pressed }) => [
+                      styles.input,
+                      styles.dateFieldButton,
+                      errors.department_code ? styles.inputError : undefined,
+                      pressed && styles.dateFieldPressed,
+                    ]}
+                  >
+                    <Text
+                      style={
+                        departmentCodeValue?.trim()
+                          ? styles.dateFieldText
+                          : styles.dateFieldPlaceholder
+                      }
+                      numberOfLines={1}
+                    >
+                      {departmentCodeValue?.trim()
+                        ? getFrenchDepartmentLabel(departmentCodeValue)
+                        : t(
+                            "profile.createProfile.screen.departmentPlaceholder",
+                          )}
+                    </Text>
+                  </Pressable>
+                  {errors.department_code?.message ? (
+                    <Text style={styles.errorTextSmall}>
+                      {errors.department_code.message}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
 
               <Button
                 title={
@@ -899,6 +990,13 @@ export function ProfileScreen() {
             }}
             initialIso={birthDateValue || undefined}
             language={i18n.language}
+          />
+
+          <CountryPickerSheet
+            visible={countrySheetOpen}
+            onClose={() => setCountrySheetOpen(false)}
+            onConfirm={handleCountryConfirm}
+            initialCountryCode={residenceCountryValue || undefined}
           />
 
           <DepartmentPickerSheet

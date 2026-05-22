@@ -42,6 +42,8 @@ export const createTestUser = async (): Promise<CreatedTestUser> => {
     id: userId,
     email,
     username: usernameUniqueId,
+    residence_country: "FR",
+    department_code: "75",
   });
 
   if (profileError) throw profileError;

@@ -524,6 +524,7 @@ export type Database = {
           is_admin: boolean;
           push_token: string | null;
           referral_code: string | null;
+          residence_country: string;
           sex: string | null;
           updated_at: string | null;
           username: string;
@@ -538,6 +539,7 @@ export type Database = {
           is_admin?: boolean;
           push_token?: string | null;
           referral_code?: string | null;
+          residence_country: string;
           sex?: string | null;
           updated_at?: string | null;
           username: string;
@@ -552,6 +554,7 @@ export type Database = {
           is_admin?: boolean;
           push_token?: string | null;
           referral_code?: string | null;
+          residence_country?: string;
           sex?: string | null;
           updated_at?: string | null;
           username?: string;

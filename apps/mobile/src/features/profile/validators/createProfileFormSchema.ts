@@ -4,6 +4,11 @@ import { format, isValid, parse, startOfDay } from "date-fns";
 import { z } from "zod";
 
 import { isFrenchDepartmentCode } from "../constants/frenchDepartments";
+import {
+  RESIDENCE_COUNTRY_CODES,
+  requiresFrenchDepartment,
+} from "../constants/residenceCountries";
+import { parseResidenceCountryFromForm } from "../utils/normalizeProfileLocation";
 import { PROFILE_SEX, type ProfileSex } from "../types/profileSex";
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -17,7 +22,8 @@ const profileSexZodEnum = z.enum([
   PROFILE_SEX.prefer_not_to_say,
 ]);
 
-const createProfileFormBaseSchema = usernameSchema.extend({
+/** Champs profil partagés (création + édition), sans code parrain. */
+export const profileFormCoreSchema = usernameSchema.extend({
   birth_date: z
     .string()
     .trim()
@@ -42,11 +48,18 @@ const createProfileFormBaseSchema = usernameSchema.extend({
     }),
   /** Optionnel côté défaut RHF ; obligatoire après validation (voir `refine`). */
   sex: profileSexZodEnum.optional(),
-  /** Code département FR (hors DOM-TOM). Optionnel côté défaut RHF ; obligatoire après validation (voir `refine`). */
+  /** Optionnel côté défaut RHF ; obligatoire après validation si pays = FR. */
+  residence_country: z
+    .string()
+    .transform((s) => s.trim().toUpperCase())
+    .optional(),
   department_code: z
     .string()
     .transform((s) => s.trim().toUpperCase())
     .optional(),
+});
+
+const createProfileFormBaseSchema = profileFormCoreSchema.extend({
   referral_code: z
     .string()
     .transform((s) => s.trim().toUpperCase())
@@ -64,26 +77,80 @@ const createProfileFormBaseSchema = usernameSchema.extend({
     ),
 });
 
-export const createProfileFormSchema = createProfileFormBaseSchema
-  .refine((data) => data.sex !== undefined, {
-    path: ["sex"],
-    message: i18n.t("schema.createProfile.sex.required"),
-  })
-  .refine((data) => Boolean(data.department_code?.trim()), {
-    path: ["department_code"],
-    message: i18n.t("schema.createProfile.department.required"),
-  })
-  .refine(
-    (data) =>
-      !data.department_code?.trim() ||
-      isFrenchDepartmentCode(data.department_code),
-    {
-      path: ["department_code"],
-      message: i18n.t("schema.createProfile.department.invalid"),
-    },
-  );
+function refineProfileLocation(
+  data: z.infer<typeof profileFormCoreSchema>,
+  ctx: z.RefinementCtx,
+): void {
+  const country = parseResidenceCountryFromForm(data.residence_country);
+  if (!country) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["residence_country"],
+      message: i18n.t("schema.createProfile.residenceCountry.required"),
+    });
+    return;
+  }
 
-/** Valeurs du formulaire (avant / après validation). */
+  if (!RESIDENCE_COUNTRY_CODES.includes(country)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["residence_country"],
+      message: i18n.t("schema.createProfile.residenceCountry.invalid"),
+    });
+    return;
+  }
+
+  if (requiresFrenchDepartment(country)) {
+    if (!data.department_code?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["department_code"],
+        message: i18n.t("schema.createProfile.department.required"),
+      });
+      return;
+    }
+    if (!isFrenchDepartmentCode(data.department_code)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["department_code"],
+        message: i18n.t("schema.createProfile.department.invalid"),
+      });
+    }
+    return;
+  }
+
+  if (data.department_code?.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["department_code"],
+      message: i18n.t("schema.createProfile.department.notAllowed"),
+    });
+  }
+}
+
+function applyProfileFieldRefinements(
+  data: z.infer<typeof profileFormCoreSchema>,
+  ctx: z.RefinementCtx,
+): void {
+  if (data.sex === undefined) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["sex"],
+      message: i18n.t("schema.createProfile.sex.required"),
+    });
+  }
+  refineProfileLocation(data, ctx);
+}
+
+export const editProfileFormSchema =
+  profileFormCoreSchema.superRefine(applyProfileFieldRefinements);
+
+export type EditProfileFormValues = z.infer<typeof profileFormCoreSchema>;
+
+export const createProfileFormSchema =
+  createProfileFormBaseSchema.superRefine(applyProfileFieldRefinements);
+
+/** Valeurs du formulaire inscription (avant / après validation). */
 export type CreateProfileFormValues = z.infer<
   typeof createProfileFormBaseSchema
 >;

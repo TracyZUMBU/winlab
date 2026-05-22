@@ -193,7 +193,12 @@
       },
       "department": {
         "required": "Select your home department",
-        "invalid": "Invalid department"
+        "invalid": "Invalid department",
+        "notAllowed": "Department applies only when you live in France"
+      },
+      "residenceCountry": {
+        "required": "Select your country of residence",
+        "invalid": "Invalid country"
       },
       "sex": {
         "required": "Please select an option",
@@ -695,6 +700,9 @@
         "birthDateColumnYear": "Year",
         "birthDatePickerA11y": "Open date of birth picker",
         "sexLabel": "BIOLOGICAL SEX",
+        "residenceCountryLabel": "COUNTRY OF RESIDENCE",
+        "residenceCountryPlaceholder": "Tap to choose a country",
+        "residenceCountryPickerA11y": "Open country of residence picker",
         "departmentLabel": "HOME DEPARTMENT",
         "departmentPlaceholder": "Tap to choose a department",
         "departmentPickerA11y": "Open home department picker",
@@ -706,6 +714,15 @@
         },
         "submit": "Continue"
       }
+    },
+    "residenceCountry": {
+      "fr": "France",
+      "ch": "Switzerland",
+      "lu": "Luxembourg"
+    },
+    "countryPicker": {
+      "title": "Choose your country of residence",
+      "current": "Current: {{value}}"
     },
     "departmentPicker": {
       "title": "Choose your department",
