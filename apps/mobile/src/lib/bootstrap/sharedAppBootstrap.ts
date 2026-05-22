@@ -8,6 +8,8 @@ import { monitoring } from "@/src/lib/monitoring";
 import { readHasSeenOnboarding } from "@/src/lib/onboardingStorage";
 import { getCurrentSession } from "@/src/lib/supabase/session";
 
+import { reportBootstrapFatalError } from "./reportBootstrapFatalError";
+
 /** Snapshot returned by bootstrap (without React loading flag). */
 export type AppBootstrapPayload = {
   profile: Profile | null;
@@ -75,9 +77,11 @@ let bootstrapEpoch = 0;
 /** Serialize DB bootstrap work so two invalidates cannot run `triggerDailyLoginMission` in parallel. */
 let bootstrapSerializationTail: Promise<unknown> = Promise.resolve();
 
-function runBootstrapSerialized(): Promise<AppBootstrapPayload> {
+function runBootstrapSerialized(
+  hasSeenOnboarding: boolean,
+): Promise<AppBootstrapPayload> {
   const next = bootstrapSerializationTail.then(() =>
-    loadBootstrapOrFallback(),
+    loadBootstrap(hasSeenOnboarding),
   );
   bootstrapSerializationTail = next.then(
     () => undefined,
@@ -219,35 +223,21 @@ async function runBootstrapForSession(
   };
 }
 
-async function loadBootstrapOrFallback(): Promise<AppBootstrapPayload> {
+/**
+ * Single bootstrap entry: one `getCurrentSession` call per load.
+ * Fatal failures are reported then rethrown (blocking startup screen).
+ */
+async function loadBootstrap(
+  hasSeenOnboarding: boolean,
+): Promise<AppBootstrapPayload> {
   try {
-    const [sessionData, hasSeenOnboarding] = await Promise.all([
-      getCurrentSession(),
-      readHasSeenOnboarding(),
-    ]);
+    const sessionData = await getCurrentSession();
     const sessionUserId = sessionData.user?.id ?? null;
     return await runBootstrapForSession(sessionUserId, hasSeenOnboarding);
   } catch (error) {
-    logger.warn(
-      "[bootstrap] session or onboarding read failed; redirecting to onboarding",
-      {
-        error,
-      },
-    );
-    monitoring.captureException({
-      name: "app_bootstrap_failed",
-      severity: "error",
-      feature: "bootstrap",
-      message: "App bootstrap failed",
-      error,
-    });
-    return {
-      profile: null,
-      hasSeenOnboarding: false,
-      sessionUserId: null,
-      redirectTo: "/onboarding",
-      dailyLoginMissionResult: null,
-    };
+    logger.warn("[bootstrap] fatal bootstrap failure", { error });
+    reportBootstrapFatalError(error, { phase: "session_or_bootstrap" });
+    throw error;
   }
 }
 
@@ -257,15 +247,10 @@ async function loadBootstrapOrFallback(): Promise<AppBootstrapPayload> {
  * when root + nested layouts mount (which previously hid the daily reward modal).
  */
 export async function resolveSharedAppBootstrapPayload(): Promise<AppBootstrapPayload> {
-  const [sessionData, hasSeenOnboarding] = await Promise.all([
-    getCurrentSession(),
-    readHasSeenOnboarding(),
-  ]);
-  const sessionUserId = sessionData.user?.id ?? null;
+  const hasSeenOnboarding = await readHasSeenOnboarding();
 
   if (
     cachedBootstrap &&
-    cachedBootstrap.sessionUserId === sessionUserId &&
     cachedBootstrap.hasSeenOnboarding === hasSeenOnboarding
   ) {
     return applyPendingDailyLoginUiOverride(cachedBootstrap.payload);
@@ -273,7 +258,7 @@ export async function resolveSharedAppBootstrapPayload(): Promise<AppBootstrapPa
 
   if (!bootstrapInFlight) {
     const epochAtStart = bootstrapEpoch;
-    bootstrapInFlight = runBootstrapSerialized()
+    bootstrapInFlight = runBootstrapSerialized(hasSeenOnboarding)
       .then((payload) => {
         const merged = applyPendingDailyLoginUiOverride(payload);
         if (epochAtStart === bootstrapEpoch) {

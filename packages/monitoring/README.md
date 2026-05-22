@@ -21,7 +21,11 @@ Le champ **`service`** sur chaque événement distingue les clients (pas de cham
 
 ## Slack (Edge Function)
 
-Le provider Slack appelle `supabase.functions.invoke(<nom>, { body: { event } })`.  
+Le provider Slack envoie `{ event }` à l’Edge Function `monitoring-slack` via :
+
+- **`functions.invoke`** (admin, ou client Supabase déjà initialisé), ou
+- **`fetch`** vers `{functionsBaseUrl}/{edgeFunctionName}` avec `Authorization` + `apikey` (mobile : ne dépend pas de `createClient`).
+
 L’Edge Function `supabase/functions/monitoring-slack` attend ce contrat ; le secret `SLACK_WEBHOOK_URL` reste côté Supabase.
 
 ### Sévérités envoyées vers Slack

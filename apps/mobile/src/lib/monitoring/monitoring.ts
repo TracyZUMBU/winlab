@@ -7,7 +7,6 @@ import {
 
 import { logger } from "@/src/lib/logger";
 import { isDevelopmentEnvironment } from "@/src/lib/logger/environment";
-import { getSupabaseClient } from "@/src/lib/supabase/client";
 import { supabaseEnv } from "@/src/lib/supabase/env";
 
 /**
@@ -26,6 +25,13 @@ function getSlackEdgeFunctionName(): string {
   return typeof name === "string" && name.trim().length > 0
     ? name.trim()
     : "monitoring-slack";
+}
+
+function getMonitoringFunctionsBaseUrl(): string | null {
+  if (!supabaseEnv.url) {
+    return null;
+  }
+  return `${supabaseEnv.url.replace(/\/$/, "")}/functions/v1`;
 }
 
 const environment = isDevelopmentEnvironment() ? "development" : "production";
@@ -47,11 +53,15 @@ function buildProviders(): MonitoringProvider[] {
     );
   }
 
-  if (!isDev && supabaseEnv.isConfigured) {
+  const functionsBaseUrl = getMonitoringFunctionsBaseUrl();
+  const anonKey = supabaseEnv.anonKey;
+
+  if (!isDev && functionsBaseUrl && anonKey) {
     // TODO(debug): après stabilité auth — réduire le bruit Slack (ne plus envoyer `info`/`debug`, voir SlackMonitoringProvider).
     list.push(
       new SlackMonitoringProvider({
-        supabaseClient: getSupabaseClient(),
+        functionsBaseUrl,
+        anonKey,
         edgeFunctionName: getSlackEdgeFunctionName(),
       }),
     );

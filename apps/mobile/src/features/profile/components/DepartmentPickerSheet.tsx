@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     color: "#0F172A",
   },
   list: {
+    minHeight: 280,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: "#E2E8F0",
