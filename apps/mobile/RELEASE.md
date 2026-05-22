@@ -21,7 +21,7 @@ Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’a
 | `npm run build:apk` | `eas build --platform android --profile preview` |
 | `npm run build:ios-preview` | `eas build --platform ios --profile preview` (IPA interne / testeurs) |
 | `npm run build:ios-production` | `eas build --platform ios --profile production` (piste App Store / TestFlight) |
-| `npm run submit:ios` | `eas submit --platform ios --profile production` |
+| `npm run submit:ios` | `APP_ENV=production eas submit --platform ios --profile production` |
 | `npm run update:preview` | `eas update --channel preview` (OTA Android **et** iOS pour les binaires branchés sur `preview`) |
 
 ## Comportement de `runtimeVersion` (appVersion)
@@ -45,9 +45,9 @@ En résumé : **natif ou nouvelle semver produit** → bump + build natif. **JS 
 
 Si des builds ont déjà été distribués **sans** ces champs dans le dépôt, positionnez `versionCode` / `buildNumber` **plus haut** que tout build déjà envoyé à Apple ou installé côté Android.
 
-### Profil `production` et `autoIncrement`
+### iOS `buildNumber` (sans `autoIncrement` EAS)
 
-Le profil **`production`** dans `apps/mobile/eas.json` a **`autoIncrement: true`** : EAS peut encore ajuster les numéros de build côté serveur. Avec **`appVersionSource: "local"`**, la base reste `app.config.js`. En cas de doute avant une soumission iOS, vérifiez **`ios.buildNumber`** après le build dans les logs / sur App Store Connect.
+Le projet utilise **`app.config.js`** (pas `app.json`) : **`autoIncrement` dans `eas.json` n’est pas supporté**. Incrémentez **`ios.buildNumber`** via `npm run bump:release` ou à la main dans `app.config.js` avant chaque nouvel upload TestFlight / App Store si Apple signale un numéro déjà utilisé.
 
 ## Quand rebuild natif vs OTA
 

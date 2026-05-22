@@ -43,7 +43,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: getBundleIdentifier(),
-      buildNumber: "6",
+      buildNumber: "7",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryUsageDescription:
@@ -123,11 +123,6 @@ module.exports = {
     },
     updates: {
       url: "https://u.expo.dev/fc84219c-0345-48ad-97d9-404735942120",
-    },
-    build: {
-      production: {
-        autoIncrement: "versionCode",
-      },
     },
   },
 };
