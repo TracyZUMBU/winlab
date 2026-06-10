@@ -34,7 +34,7 @@ module.exports = {
   expo: {
     name: getAppName(),
     slug: "mobile",
-    version: "1.1.1",
+    version: "1.1.2",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "mobile",
@@ -43,7 +43,7 @@ module.exports = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: getBundleIdentifier(),
-      buildNumber: "7",
+      buildNumber: "8",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryUsageDescription:
@@ -52,7 +52,7 @@ module.exports = {
       googleServicesFile: getGoogleServicesPlist(),
     },
     android: {
-      versionCode: 5,
+      versionCode: 6,
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
