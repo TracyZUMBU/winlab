@@ -5,7 +5,7 @@ export const SplashLogo = () => {
     <View style={styles.container}>
       {/* Placeholder logo – replace with real asset later */}
       <Image
-        source={require("../../../../assets/icon.png")}
+        source={require("../../../../assets/images/icon.png")}
         style={styles.logo}
         resizeMode="contain"
       />

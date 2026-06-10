@@ -1,8 +1,7 @@
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, Image, StyleSheet, Text, View } from "react-native";
 
 import { Screen } from "@/src/components/ui/Screen";
 import { theme } from "@/src/theme";
@@ -23,53 +22,51 @@ export function SplashScreen() {
   }, [progress]);
 
   return (
-    <Screen>
-      <LinearGradient
-        colors={["#FFFFFF", "rgba(59, 130, 246, 0.04)"]}
-        style={styles.gradient}
-      >
-        <View style={styles.content}>
-          <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              {/* TODO:Placeholder icon using a simple shape; replace with real logo when ready */}
-              <View style={styles.logoGlyph} />
-            </View>
-            <Text style={styles.appName}>{t("app.name")}</Text>
-            <Text style={styles.baseline}>{t("splash.baseline")}</Text>
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.statusLabel}>
-              {t("splash.status_initializing")}
-            </Text>
-            <View style={styles.progressTrack}>
-              <Animated.View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ["0%", "100%"],
-                    }),
-                  },
-                ]}
-              />
-            </View>
-            <Text style={styles.metaText}>
-              {t("splash.version", { version: appVersion })}
-            </Text>
-          </View>
+    <Screen style={styles.screen}>
+      <View style={styles.content}>
+        <View style={styles.logoContainer}>
+          <Image
+            source={require("../../../../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
+          <Text style={styles.appName}>{t("app.name")}</Text>
+          <Text style={styles.baseline}>{t("splash.baseline")}</Text>
         </View>
-      </LinearGradient>
+
+        <View style={styles.footer}>
+          <Text style={styles.statusLabel}>
+            {t("splash.status_initializing")}
+          </Text>
+          <View style={styles.progressTrack}>
+            <Animated.View
+              style={[
+                styles.progressFill,
+                {
+                  width: progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["0%", "100%"],
+                  }),
+                },
+              ]}
+            />
+          </View>
+          <Text style={styles.metaText}>
+            {t("splash.version", { version: appVersion })}
+          </Text>
+        </View>
+      </View>
     </Screen>
   );
 }
 
 const PROGRESS_HEIGHT = 4;
+const LOGO_SIZE = 96;
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
+  screen: {
+    backgroundColor: theme.colors.background,
   },
   content: {
     flex: 1,
@@ -82,25 +79,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  logoCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: theme.colors.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.06,
-    shadowRadius: 24,
-    elevation: 6,
+  logo: {
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
+    borderRadius: theme.radius.lg,
     marginBottom: theme.spacing.lg,
-  },
-  logoGlyph: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.accentSolid,
   },
   appName: {
     fontSize: 28,

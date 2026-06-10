@@ -2,6 +2,7 @@ import "@/src/i18n";
 import { AppCenteredModal } from "@/src/components/ui/AppCenteredModal";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
+import * as ExpoSplashScreen from "expo-splash-screen";
 import {
   clearPendingDailyLoginUiOverride,
   invalidateAppBootstrapCache,
@@ -20,6 +21,10 @@ import {
   SafeAreaProvider,
   SafeAreaView,
 } from "react-native-safe-area-context";
+
+void ExpoSplashScreen.preventAutoHideAsync().catch(() => {
+  // Splash may already be hidden (e.g. fast refresh).
+});
 
 export default function RootLayout() {
   const router = useRouter();
@@ -57,6 +62,14 @@ export default function RootLayout() {
     !dailyLoginMissionResult.alreadyCompleted
       ? dailyLoginMissionResult.tokensEarned
       : null;
+
+  useEffect(() => {
+    if (status !== "ready" && status !== "error") return;
+
+    void ExpoSplashScreen.hideAsync().catch(() => {
+      // No-op if splash was already hidden.
+    });
+  }, [status]);
 
   useEffect(() => {
     if (status !== "ready") return;
