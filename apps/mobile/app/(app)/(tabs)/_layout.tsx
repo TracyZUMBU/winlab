@@ -1,8 +1,59 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Tabs } from "expo-router";
+import type { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import type { ParamListBase } from "@react-navigation/native";
+import { Tabs, router } from "expo-router";
 
 import { theme } from "@/src/theme";
 import { useTranslation } from "react-i18next";
+
+const TAB_ROOT_PATHS = {
+  missions: "/missions",
+  lotteries: "/lotteries",
+} as const;
+
+type TabWithStack = keyof typeof TAB_ROOT_PATHS;
+
+function isTabStackAtRoot(nestedState: unknown): boolean {
+  if (
+    !nestedState ||
+    typeof nestedState !== "object" ||
+    !("routes" in nestedState) ||
+    !Array.isArray(nestedState.routes) ||
+    nestedState.routes.length === 0
+  ) {
+    return true;
+  }
+
+  const currentIndex =
+    "index" in nestedState && typeof nestedState.index === "number"
+      ? nestedState.index
+      : 0;
+  const currentRoute = nestedState.routes[currentIndex] as
+    | { name?: string }
+    | undefined;
+
+  return currentIndex === 0 && currentRoute?.name === "index";
+}
+
+function getTabStackResetListeners(tabName: TabWithStack) {
+  const rootPath = TAB_ROOT_PATHS[tabName];
+
+  return ({
+    navigation,
+  }: {
+    navigation: BottomTabNavigationProp<ParamListBase>;
+  }) => ({
+    tabPress: () => {
+      const state = navigation.getState();
+      const tabRoute = state.routes.find((route) => route.name === tabName);
+      const nestedState = tabRoute?.state;
+
+      if (!isTabStackAtRoot(nestedState)) {
+        router.navigate(rootPath);
+      }
+    },
+  });
+}
 
 export default function TabsLayout() {
   const { t } = useTranslation();
@@ -28,8 +79,10 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="missions"
+        listeners={getTabStackResetListeners("missions")}
         options={{
           title: t("tabs.missions"),
+          popToTopOnBlur: true,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="flag" color={color} size={size} />
           ),
@@ -37,6 +90,7 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="lotteries"
+        listeners={getTabStackResetListeners("lotteries")}
         options={{
           title: t("tabs.lotteries"),
           popToTopOnBlur: true,

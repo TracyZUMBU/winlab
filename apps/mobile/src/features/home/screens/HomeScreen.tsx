@@ -91,7 +91,7 @@ export function HomeScreen() {
   };
 
   const onOpenLottery = (lotteryId: string) => {
-    router.push(`/lotteries/${lotteryId}`);
+    router.push(`/lotteries/${lotteryId}`, { withAnchor: true });
   };
 
   const onOpenMission = (missionId: string) => {
