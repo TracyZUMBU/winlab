@@ -1,5 +1,6 @@
--- Temporary admin actions used only during development.
--- TODO(dev-reset-lotteries): remove before production.
+-- Ensure admin_dev_reset_lotteries_schedule always satisfies lotteries_dates_are_valid.
+-- Preserving starts_at from recently created lotteries could leave starts_at >= new_ends_at
+-- when the "past" branch assigns ends_at = now() - 2 days.
 
 CREATE OR REPLACE FUNCTION public.admin_dev_reset_lotteries_schedule()
 RETURNS integer
@@ -68,11 +69,5 @@ BEGIN
 END;
 $$;
 
-ALTER FUNCTION public.admin_dev_reset_lotteries_schedule() OWNER TO postgres;
-
 COMMENT ON FUNCTION public.admin_dev_reset_lotteries_schedule() IS
   'Temporary dev-only admin action: randomize starts_at/ends_at/draw_at and align status (active if ends_at > now(), else closed) for lotteries except drawn/cancelled.';
-
-REVOKE ALL ON FUNCTION public.admin_dev_reset_lotteries_schedule() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.admin_dev_reset_lotteries_schedule() TO authenticated;
-GRANT EXECUTE ON FUNCTION public.admin_dev_reset_lotteries_schedule() TO service_role;
