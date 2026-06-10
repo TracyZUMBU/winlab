@@ -1,6 +1,6 @@
 # Mémo — Feature Profil (mobile)
 
-**Dernière revue du mémo :** 2026-05-22
+**Dernière revue du mémo :** 2026-06-10
 
 ## Objectif
 
@@ -33,7 +33,7 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 | **Pays / département** | `constants/residenceCountries.ts`, `constants/frenchDepartments.ts`, `utils/normalizeProfileLocation.ts`, `components/CountryPickerSheet.tsx`, `components/DepartmentPickerSheet.tsx` |
 | **Création profil + parrain** | `screens/CreateProfileScreen.tsx`, `services/createProfile.ts`, schéma `validators/createProfileFormSchema.ts` |
 | **Hub UI** | `screens/ReferralHubScreen.tsx` (partage natif `Share.share`) |
-| **Profil « classique »** | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, `services/updateMyProfile.ts`, mutations update / avatar / delete |
+| **Profil « classique »** | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, `services/updateMyProfile.ts`, mutations update / avatar / delete. Avatar : affichage seul dans le hero ; changement via le formulaire « Modifier le profil » (champ photo en tête de formulaire). |
 | **Support & documents légaux** | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` ; politique de confidentialité mise à jour (`@/src/legal/privacyBodies.ts`) pour FR/CH/LU et département FR. |
 
 **Règle d’archi :** pas d’appel Supabase depuis les écrans ; services → hooks → UI.

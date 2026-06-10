@@ -2,6 +2,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parse } from "date-fns";
 import Constants from "expo-constants";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -96,6 +97,16 @@ function sexTranslationKey(value: ProfileSex): string {
 }
 
 /** Affichage localisé : FR = JJ-MM-AAAA, sinon JJ/MM/AAAA. La valeur formulaire reste `YYYY-MM-DD`. */
+function initialsFromDisplayName(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "?";
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0]![0]! + parts[1]![0]!).toUpperCase();
+  }
+  return trimmed.slice(0, 2).toUpperCase();
+}
+
 function formatBirthDateForDisplay(
   isoYyyyMmDd: string | undefined,
   language: string,
@@ -599,6 +610,10 @@ export function ProfileScreen() {
   const usernameRaw = profile.username?.trim() ?? "";
   const displayName = usernameRaw || t("profile.hero.defaultDisplayName");
   const emailLabel = profile.email ?? "";
+  const avatarUri = resolveAvatarDisplayUri(
+    profile.avatar_url,
+    profile.updated_at,
+  );
 
   return (
     <Screen edges={["top"]} style={styles.screenBg}>
@@ -625,12 +640,7 @@ export function ProfileScreen() {
           balanceLine={balanceLine}
           onPressEdit={startEditProfile}
           editA11yLabel={t("profile.hero.a11yEdit")}
-          onPressChangeAvatar={handleChangeAvatar}
-          changeAvatarA11yLabel={t("profile.hero.changeAvatarA11y")}
-          avatarUri={resolveAvatarDisplayUri(
-            profile.avatar_url,
-            profile.updated_at,
-          )}
+          avatarUri={avatarUri}
         />
 
         <ScreenSectionOverline label={t("profile.section.activityRewards")} />
@@ -783,6 +793,67 @@ export function ProfileScreen() {
               keyboardShouldPersistTaps="always"
               showsVerticalScrollIndicator={false}
             >
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("profile.screen.avatarLabel")}
+                </Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t("profile.screen.changeAvatarA11y")}
+                  onPress={() => void handleChangeAvatar()}
+                  disabled={uploadAvatarMutation.isPending}
+                  style={({ pressed }) => [
+                    styles.input,
+                    styles.avatarFieldButton,
+                    pressed && styles.dateFieldPressed,
+                    uploadAvatarMutation.isPending &&
+                      styles.avatarFieldDisabled,
+                  ]}
+                >
+                  <View style={styles.avatarFieldPreview}>
+                    {avatarUri ? (
+                      <Image
+                        key={avatarUri}
+                        cachePolicy="none"
+                        source={{ uri: avatarUri }}
+                        style={styles.avatarFieldImage}
+                      />
+                    ) : (
+                      <Text style={styles.avatarFieldInitials}>
+                        {initialsFromDisplayName(
+                          usernameValue.trim() || displayName,
+                        )}
+                      </Text>
+                    )}
+                  </View>
+                  <Text
+                    style={[
+                      styles.avatarFieldAction,
+                      uploadAvatarMutation.isPending &&
+                        styles.avatarFieldActionMuted,
+                    ]}
+                  >
+                    {uploadAvatarMutation.isPending
+                      ? t("profile.screen.uploadingAvatar")
+                      : profile.avatar_url
+                        ? t("profile.screen.changeAvatarButton")
+                        : t("profile.screen.chooseAvatarButton")}
+                  </Text>
+                  {uploadAvatarMutation.isPending ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.colors.accentSolid}
+                    />
+                  ) : (
+                    <MaterialIcons
+                      name="photo-library"
+                      size={22}
+                      color={theme.colors.textMutedAccent}
+                    />
+                  )}
+                </Pressable>
+              </View>
+
               <View style={styles.fieldBlock}>
                 <Text style={styles.fieldLabel}>
                   {t("profile.createProfile.screen.label")}
@@ -1201,5 +1272,43 @@ const styles = StyleSheet.create({
   errorTextSmall: {
     fontSize: 13,
     color: theme.colors.dangerSolid,
+  },
+  avatarFieldButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  avatarFieldDisabled: {
+    opacity: 0.72,
+  },
+  avatarFieldPreview: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: theme.colors.surfaceSoft,
+    borderWidth: 1,
+    borderColor: theme.colors.accentBorderMuted,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  avatarFieldImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  avatarFieldInitials: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: theme.colors.textMutedAccent,
+  },
+  avatarFieldAction: {
+    flex: 1,
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  avatarFieldActionMuted: {
+    color: theme.colors.textMuted,
   },
 });

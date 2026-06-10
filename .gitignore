@@ -10,6 +10,7 @@ dist/
 # Local secrets at repo root (if any)
 .env
 .env.*.local
+.envrc
 
 # Cursor local MCP config
 /.cursor/mcp.json
