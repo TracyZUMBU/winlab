@@ -1,6 +1,6 @@
 # Release mobile (Android, iOS) et OTA (preview)
 
-Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Winlab, avec **`runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.config.js`).
+Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Winlab, avec `**runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.config.js`).
 
 ## Prérequis
 
@@ -8,46 +8,50 @@ Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’a
 - **Android** : compte développeur Google si Play Store plus tard.
 - **iOS** : compte **Apple Developer**, `bundleIdentifier` (`com.winlab.app`), credentials configurés avec EAS (`eas credentials` au besoin).
 - CLI : `eas-cli` en `devDependency` ; depuis `apps/mobile`, `eas` est disponible via `npm run`.
-- **`expo-dev-client`** est aussi en **`devDependency`** (réservé aux builds *development* / client de dev). Les installs **EAS Build** et un `npm install` local classique incluent toujours les devDependencies — ne pas utiliser `npm install --omit=dev` pour builder le client de dev.
+- `**expo-dev-client`** est aussi en `**devDependency**` (réservé aux builds *development* / client de dev). Les installs **EAS Build** et un `npm install` local clarssique incluent toujours les devDependencies — ne pas utiliser `npm install --omit=dev` pour builder le client de dev.
 - Répertoire de travail : `cd apps/mobile`.
 
 ## Fichiers et commandes
 
-| Élément | Rôle |
-|--------|------|
-| `app.config.js` | `expo.version`, `expo.android.versionCode`, `expo.ios.buildNumber`, `runtimeVersion.policy: "appVersion"` |
-| `apps/mobile/eas.json` | Profils `preview` / `production` ; `appVersionSource: "local"` ; `APP_ENV` par profil |
-| `npm run bump:release -- <patch\|minor\|major>` | Incrémente `expo.version`, `android.versionCode`, **`ios.buildNumber`**, aligne `package.json` |
-| `npm run build:apk` | `eas build --platform android --profile preview` |
-| `npm run build:ios-preview` | `eas build --platform ios --profile preview` (IPA interne / testeurs) |
-| `npm run build:ios-production` | `eas build --platform ios --profile production` (piste App Store / TestFlight) |
-| `npm run submit:ios` | `APP_ENV=production eas submit --platform ios --profile production` |
-| `npm run update:preview` | `eas update --channel preview` (OTA Android **et** iOS pour les binaires branchés sur `preview`) |
+
+| Élément                                       | Rôle                                                                                                      |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `app.config.js`                               | `expo.version`, `expo.android.versionCode`, `expo.ios.buildNumber`, `runtimeVersion.policy: "appVersion"` |
+| `apps/mobile/eas.json`                        | Profils `preview` / `production` ; `appVersionSource: "local"` ; `APP_ENV` par profil                     |
+| `npm run bump:release -- <patch|minor|major>` | Incrémente `expo.version`, `android.versionCode`, `**ios.buildNumber*`*, aligne `package.json`            |
+| `npm run build:apk`                           | `eas build --platform android --profile preview`                                                          |
+| `npm run build:ios-preview`                   | `eas build --platform ios --profile preview` (IPA interne / testeurs)                                     |
+| `npm run build:ios-production`                | `eas build --platform ios --profile production` (piste App Store / TestFlight)                            |
+| `npm run submit:ios`                          | `APP_ENV=production eas submit --platform ios --profile production`                                       |
+| `npm run update:preview`                      | `eas update --channel preview` (OTA Android **et** iOS pour les binaires branchés sur `preview`)          |
+
 
 ## Comportement de `runtimeVersion` (appVersion)
 
-La runtime suit **`expo.version`** au moment du `eas build` ou du `eas update`.
+La runtime suit `**expo.version`** au moment du `eas build` ou du `eas update`.
 
-- **OTA** : une install (APK ou IPA **preview**) ne reçoit une update que si **`expo.version` du bundle publié** = **celle embarquée dans le binaire**.  
-  **Ne pas** lancer `bump:release` avant une release **uniquement OTA** : gardez la même `expo.version` que le dernier binaire **preview** distribué, puis `npm run update:preview`.
+- **OTA** : une install (APK ou IPA **preview**) ne reçoit une update que si `**expo.version` du bundle publié** = **celle embarquée dans le binaire**.  
+**Ne pas** lancer `bump:release` avant une release **uniquement OTA** : gardez la même `expo.version` que le dernier binaire **preview** distribué, puis `npm run update:preview`.
 - **Nouveau binaire** : après un bump, la runtime change ; les appareils restés sur l’ancienne version **ne** reçoivent **pas** le bundle publié pour la nouvelle version tant qu’ils n’ont pas installé le nouvel APK / IPA.
 
 En résumé : **natif ou nouvelle semver produit** → bump + build natif. **JS / assets bundle uniquement** → pas de bump, `update:preview`.
 
 ## Versions
 
-| Champ | Plateforme | Rôle |
-|-------|------------|------|
-| **`expo.version`** (+ `package.json`) | Les deux | Version **semver** affichée (CFBundleShortVersionString / versionName). Incrémentée par `bump:release` quand vous préparez un **nouveau binaire**. |
-| **`android.versionCode`** | Android | Entier **strictement croissant** pour les mises à jour par-dessus un APK. Géré par le script de bump. |
-| **`ios.buildNumber`** | iOS | **CFBundleVersion** : doit **augmenter** à chaque upload App Store / TestFlight. Chaîne numérique (`"1"`, `"2"`, …), incrémentée par le même script. |
-| **`runtimeVersion`** | Les deux | Dérivée de **`expo.version`** (policy `appVersion`), pas de valeur manuelle. |
+
+| Champ                                 | Plateforme | Rôle                                                                                                                                                 |
+| ------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `**expo.version`** (+ `package.json`) | Les deux   | Version **semver** affichée (CFBundleShortVersionString / versionName). Incrémentée par `bump:release` quand vous préparez un **nouveau binaire**.   |
+| `**android.versionCode`**             | Android    | Entier **strictement croissant** pour les mises à jour par-dessus un APK. Géré par le script de bump.                                                |
+| `**ios.buildNumber`**                 | iOS        | **CFBundleVersion** : doit **augmenter** à chaque upload App Store / TestFlight. Chaîne numérique (`"1"`, `"2"`, …), incrémentée par le même script. |
+| `**runtimeVersion`**                  | Les deux   | Dérivée de `**expo.version**` (policy `appVersion`), pas de valeur manuelle.                                                                         |
+
 
 Si des builds ont déjà été distribués **sans** ces champs dans le dépôt, positionnez `versionCode` / `buildNumber` **plus haut** que tout build déjà envoyé à Apple ou installé côté Android.
 
 ### iOS `buildNumber` (sans `autoIncrement` EAS)
 
-Le projet utilise **`app.config.js`** (pas `app.json`) : **`autoIncrement` dans `eas.json` n’est pas supporté**. Incrémentez **`ios.buildNumber`** via `npm run bump:release` ou à la main dans `app.config.js` avant chaque nouvel upload TestFlight / App Store si Apple signale un numéro déjà utilisé.
+Le projet utilise `**app.config.js`** (pas `app.json`) : `**autoIncrement` dans `eas.json` n’est pas supporté**. Incrémentez `**ios.buildNumber`** via `npm run bump:release` ou à la main dans `app.config.js` avant chaque nouvel upload TestFlight / App Store si Apple signale un numéro déjà utilisé.
 
 ## Quand rebuild natif vs OTA
 
@@ -67,27 +71,31 @@ npx eas update --channel preview --message "correctif écran login"
 
 ## iOS : aperçu des flux
 
-| Objectif | Commande |
-|----------|----------|
-| IPA **preview** (interne, même channel OTA `preview` que l’APK) | `npm run build:ios-preview` |
-| Build **production** (TestFlight / App Store) | `npm run build:ios-production` |
-| Envoi à Apple après un build production | `npm run submit:ios` |
+
+| Objectif                                                        | Commande                       |
+| --------------------------------------------------------------- | ------------------------------ |
+| IPA **preview** (interne, même channel OTA `preview` que l’APK) | `npm run build:ios-preview`    |
+| Build **production** (TestFlight / App Store)                   | `npm run build:ios-production` |
+| Envoi à Apple après un build production                         | `npm run submit:ios`           |
+
 
 Les testeurs **preview** doivent avoir l’IPA **preview** installé pour recevoir les OTA du channel `preview`.
 
 ## Patch, minor, major
 
-| Niveau | Exemple | Usage typique |
-|--------|---------|----------------|
-| **patch** | `1.2.3` → `1.2.4` | correctifs |
+
+| Niveau    | Exemple           | Usage typique             |
+| --------- | ----------------- | ------------------------- |
+| **patch** | `1.2.3` → `1.2.4` | correctifs                |
 | **minor** | `1.2.3` → `1.3.0` | nouvelles fonctionnalités |
-| **major** | `1.2.3` → `2.0.0` | rupture majeure |
+| **major** | `1.2.3` → `2.0.0` | rupture majeure           |
+
 
 ## Checklist : release **native** (nouveau binaire)
 
 1. Natif prêt (SDK, plugins, permissions, etc.).
 2. `npm run bump:release -- patch` (ou `minor` / `major`).
-3. Vérifier `app.config.js` : `expo.version`, `android.versionCode`, **`ios.buildNumber`**.
+3. Vérifier `app.config.js` : `expo.version`, `android.versionCode`, `**ios.buildNumber`**.
 4. (Recommandé) Commit des fichiers de version.
 5. Secrets / env sur [expo.dev](https://expo.dev).
 6. Build : `npm run build:apk` et/ou `npm run build:ios-preview` ou `build:ios-production`.
@@ -96,7 +104,7 @@ Les testeurs **preview** doivent avoir l’IPA **preview** installé pour recevo
 
 ## Checklist : **OTA** uniquement (`preview`)
 
-1. Pas de changement natif ; **`expo.version` inchangée** (pas de `bump:release`).
+1. Pas de changement natif ; `**expo.version` inchangée** (pas de `bump:release`).
 2. `npm run update:preview`.
 3. Ouvrir l’app sur un build **preview** (Android ou iOS) ; vérifier la récupération de l’update.
 
@@ -104,3 +112,4 @@ Les testeurs **preview** doivent avoir l’IPA **preview** installé pour recevo
 
 - **Natif ou nouvelle semver ?** → `bump:release` + build(s) natif(s).
 - **JS uniquement, même semver que le binaire en circulation ?** → `update:preview`.
+

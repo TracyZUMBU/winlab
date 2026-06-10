@@ -1,7 +1,7 @@
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image } from "expo-image";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useNow } from "@/src/lib/date/useNow";
 import { theme } from "@/src/theme";
@@ -50,17 +50,13 @@ export function LotteryEndingSoonCard({
         ) : (
           <View style={styles.mediaPlaceholder} />
         )}
-        <View
-          style={[styles.timerBadge, isEnded && styles.timerBadgeEnded]}
-        >
+        <View style={[styles.timerBadge, isEnded && styles.timerBadgeEnded]}>
           <MaterialIcons
             name="timer"
             size={12}
             color={isEnded ? theme.colors.surface : theme.colors.onAccent}
           />
-          <Text
-            style={[styles.timerText, isEnded && styles.timerTextEnded]}
-          >
+          <Text style={[styles.timerText, isEnded && styles.timerTextEnded]}>
             {timeLabel}
           </Text>
         </View>

@@ -18,7 +18,8 @@ function toUpdatedCount(raw: unknown): number {
 }
 
 /**
- * Action temporaire de développement : redistribue les dates des loteries non tirées.
+ * Action temporaire de développement : redistribue les dates et aligne les statuts
+ * (active si ends_at > now(), sinon closed) pour les loteries hors drawn/cancelled.
  * TODO(dev-reset-lotteries): supprimer avant mise en production.
  */
 export async function resetLotteriesScheduleForDev(): Promise<

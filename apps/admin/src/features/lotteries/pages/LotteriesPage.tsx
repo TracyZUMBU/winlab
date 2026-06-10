@@ -125,7 +125,11 @@ export function LotteriesPage() {
 
   const runDevResetLotteries = useCallback(async () => {
     // TODO(dev-reset-lotteries): supprimer ce bouton/action avant mise en production.
-    if (!window.confirm("Réinitialiser les dates des loteries (action temporaire de dev) ?")) {
+    if (
+      !window.confirm(
+        "Réinitialiser les dates et statuts des loteries (action temporaire de dev) ?",
+      )
+    ) {
       return;
     }
 
@@ -145,7 +149,7 @@ export function LotteriesPage() {
     await queryClient.invalidateQueries({ queryKey: lotteryAdminKeys.list() });
     setResetFeedback({
       kind: "success",
-      message: `${result.data.updatedCount} loterie(s) non tirée(s) réinitialisée(s).`,
+      message: `${result.data.updatedCount} loterie(s) réinitialisée(s) (dates + statuts).`,
     });
     setIsResettingLotteries(false);
   }, [queryClient]);
