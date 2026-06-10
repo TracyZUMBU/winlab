@@ -6,6 +6,7 @@ import { theme } from "@/src/theme";
 
 import type { HomeDashboardMissionPreview } from "../types/homeDashboard";
 import { missionTypeToMaterialIconName } from "../utils/missionTypeIcon";
+import { missionTypeVisual } from "../utils/missionTypeVisual";
 
 export type HomeMissionTeaserRowProps = {
   mission: HomeDashboardMissionPreview;
@@ -21,15 +22,21 @@ export function HomeMissionTeaserRow({
   onPress,
 }: HomeMissionTeaserRowProps) {
   const iconName = missionTypeToMaterialIconName(mission.mission_type);
+  const visual = missionTypeVisual(mission.mission_type);
 
   return (
     <Pressable onPress={() => onPress(mission.id)} accessibilityRole="button">
       <Card variant="outlined" style={styles.card}>
-        <View style={styles.iconWrap}>
+        <View
+          style={[
+            styles.iconWrap,
+            { backgroundColor: visual.iconBackground },
+          ]}
+        >
           <MaterialIcons
             name={iconName}
             size={26}
-            color={theme.colors.accentSolid}
+            color={visual.iconColor}
           />
         </View>
         <View style={styles.body}>
@@ -53,12 +60,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: theme.spacing.md,
+    borderColor: theme.colors.borderCard,
   },
   iconWrap: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    backgroundColor: theme.colors.accentWash,
+    borderRadius: theme.radius.sm,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -81,12 +88,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.accentMuted,
+    backgroundColor: "rgba(255, 206, 58, 0.28)",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255, 206, 58, 0.55)",
     flexShrink: 0,
   },
   rewardText: {
     fontSize: 13,
     fontWeight: "800",
-    color: theme.colors.text,
+    color: "#92400E",
   },
 });

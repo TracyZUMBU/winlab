@@ -7,33 +7,28 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useMyProfileQuery } from "@/src/features/profile/hooks/useMyProfileQuery";
 import { resolveAvatarDisplayUri } from "@/src/features/profile/services/avatarStorage";
-import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { trackEvent } from "@/src/lib/analytics/trackEvent";
 import { initialsFromUsername } from "@/src/lib/display/initialsFromUsername";
 import { theme } from "@/src/theme";
 
 import { AppHeader } from "./AppHeader";
+import { TokenBalancePill } from "./TokenBalancePill";
 
 export type AppUserHeaderBarProps = {
   /** @default false */
   showNotifications?: boolean;
+  /** Token icon in the balance pill; defaults to brand blue. */
+  tokenIconColor?: string;
 };
 
 export function AppUserHeaderBar({
   showNotifications = false,
+  tokenIconColor = theme.colors.accentSolid,
 }: AppUserHeaderBarProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
-  const locale = i18n.language.startsWith("fr") ? "fr-FR" : "en-US";
 
   const { data: profile, isLoading: profileLoading } = useMyProfileQuery();
-  const { data: wallet, isLoading: walletLoading } = useWalletBalanceQuery();
-
-  const balanceLabel = useMemo(() => {
-    if (walletLoading && wallet == null) return t("common.loading_ellipsis");
-    if (wallet == null) return new Intl.NumberFormat(locale).format(0);
-    return new Intl.NumberFormat(locale).format(wallet.balance);
-  }, [locale, t, wallet, walletLoading]);
 
   const avatarUri = useMemo(
     () =>
@@ -41,8 +36,6 @@ export function AppUserHeaderBar({
     [profile?.avatar_url, profile?.updated_at],
   );
   const displayInitials = initialsFromUsername(profile?.username ?? null);
-  const a11yBalanceAmount =
-    walletLoading && wallet == null ? t("common.loading") : balanceLabel;
 
   const onOpenProfile = () => {
     trackEvent("header_open_profile");
@@ -86,20 +79,7 @@ export function AppUserHeaderBar({
         }
         rightSlot={
           <View style={styles.right}>
-            <View
-              style={styles.balancePill}
-              accessibilityRole="text"
-              accessibilityLabel={t("common.a11y.tokenBalance", {
-                amount: a11yBalanceAmount,
-              })}
-            >
-              <MaterialIcons
-                name="token"
-                size={16}
-                color={theme.colors.accentSolid}
-              />
-              <Text style={styles.balanceText}>{balanceLabel}</Text>
-            </View>
+            <TokenBalancePill tokenIconColor={tokenIconColor} />
             {showNotifications ? (
               <Pressable
                 onPress={onOpenNotifications}
@@ -153,22 +133,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: theme.spacing.sm,
     flexShrink: 0,
-  },
-  balancePill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.radius.pill,
-    backgroundColor: theme.colors.surface,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: theme.colors.borderSubtle,
-  },
-  balanceText: {
-    fontSize: 13,
-    fontWeight: "800",
-    color: theme.colors.text,
   },
   iconButton: {
     width: theme.layout.minTouchTarget,

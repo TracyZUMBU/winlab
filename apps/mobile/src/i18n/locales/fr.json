@@ -53,7 +53,8 @@
     "loading": "Chargement de l’accueil…",
     "error": "Impossible de charger l’accueil. Réessayez.",
     "greeting": {
-      "title": "Salut {{name}} 👋",
+      "titleBeforeName": "Salut",
+      "titleAfterName": "👋",
       "subtitle": "Prêt à décrocher le gros lot aujourd’hui ?",
       "anonymousName": "toi"
     },

@@ -135,7 +135,7 @@ export function HomeScreen() {
   return (
     <Screen edges={["top"]}>
       <View style={styles.mainColumn}>
-        <AppUserHeaderBar />
+        <AppUserHeaderBar tokenIconColor={theme.colors.home.tokenIcon} />
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
@@ -144,7 +144,9 @@ export function HomeScreen() {
           <View style={styles.pad}>
             <View style={styles.greetingBlock}>
               <Text style={styles.greetingTitle}>
-                {t("home.greeting.title", { name: displayName })}
+                {t("home.greeting.titleBeforeName")}{" "}
+                <Text style={styles.greetingName}>{displayName}</Text>{" "}
+                {t("home.greeting.titleAfterName")}
               </Text>
               <Text style={styles.greetingSubtitle}>
                 {t("home.greeting.subtitle")}
@@ -289,6 +291,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: -0.5,
     color: theme.colors.text,
+  },
+  greetingName: {
+    color: theme.colors.accentSolid,
   },
   greetingSubtitle: {
     fontSize: 14,

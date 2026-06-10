@@ -5,7 +5,14 @@ import { StyleSheet, Text, View } from "react-native";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { theme } from "@/src/theme";
 
-export function TokenBalancePill() {
+export type TokenBalancePillProps = {
+  /** Defaults to brand blue. */
+  tokenIconColor?: string;
+};
+
+export function TokenBalancePill({
+  tokenIconColor = theme.colors.accentSolid,
+}: TokenBalancePillProps = {}) {
   const { t, i18n } = useTranslation();
   const { data, isLoading } = useWalletBalanceQuery();
 
@@ -24,7 +31,7 @@ export function TokenBalancePill() {
       accessibilityRole="text"
       accessibilityLabel={t("common.a11y.tokenBalance", { amount: a11yAmount })}
     >
-      <MaterialIcons name="token" size={16} color={theme.colors.accent} />
+      <MaterialIcons name="token" size={16} color={tokenIconColor} />
       <Text style={styles.text}>{amount}</Text>
     </View>
   );

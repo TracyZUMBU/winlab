@@ -26,7 +26,7 @@ export function HomeCurrentBalanceCard({
         <MaterialCommunityIcons
           name="wallet"
           size={18}
-          color={theme.colors.textGrayLight}
+          color={theme.colors.onAccent}
         />
         <Text style={styles.label}>{t("home.balance.label")}</Text>
       </View>
@@ -38,8 +38,14 @@ export function HomeCurrentBalanceCard({
         title={t("home.balance.useTokens")}
         onPress={onPressUseTokens}
         fullWidth
+        style={styles.useTokensButton}
+        textStyle={styles.useTokensButtonText}
         leftIcon={
-          <MaterialIcons name="stars" size={20} color={theme.colors.onAccent} />
+          <MaterialIcons
+            name="stars"
+            size={20}
+            color={theme.colors.accentSolid}
+          />
         }
       />
     </Card>
@@ -50,6 +56,8 @@ const styles = StyleSheet.create({
   card: {
     gap: theme.spacing.md,
     alignItems: "center",
+    backgroundColor: theme.colors.accentSolid,
+    borderColor: theme.colors.accentSolid,
   },
   labelRow: {
     flexDirection: "row",
@@ -61,7 +69,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 1.2,
     textTransform: "uppercase",
-    color: theme.colors.textGrayLight,
+    color: "rgba(255, 255, 255, 0.85)",
   },
   amountRow: {
     flexDirection: "row",
@@ -74,11 +82,19 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "800",
     letterSpacing: -0.5,
-    color: theme.colors.text,
+    color: theme.colors.onAccent,
   },
   tokensWord: {
     fontSize: 18,
     fontWeight: "800",
+    color: "rgba(255, 255, 255, 0.9)",
+  },
+  useTokensButton: {
+    backgroundColor: theme.colors.onAccent,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  useTokensButtonText: {
     color: theme.colors.accentSolid,
   },
 });

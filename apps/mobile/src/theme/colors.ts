@@ -75,4 +75,12 @@ export const colors = {
 
   /** Scrim on media thumbnails (e.g. video play overlay). */
   overlayScrim: "rgba(0, 0, 0, 0.2)",
+
+  /**
+   * Home screen accents — breaks up all-blue surfaces (experiment on accueil only).
+   */
+  home: {
+    tokenIcon: "#FFCE3A",
+    lotteryParticipate: "#FA6CB8",
+  },
 } as const;

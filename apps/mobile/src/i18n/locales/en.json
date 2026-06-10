@@ -53,7 +53,8 @@
     "loading": "Loading home…",
     "error": "Could not load home. Please try again.",
     "greeting": {
-      "title": "Hey {{name}} 👋",
+      "titleBeforeName": "Hey",
+      "titleAfterName": "👋",
       "subtitle": "Ready to hit the jackpot today?",
       "anonymousName": "there"
     },
