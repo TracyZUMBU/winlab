@@ -1,9 +1,10 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import { useAdminAuthUser } from "../features/auth";
 import { getSupabaseClient } from "../lib/supabase";
+import { AdminSidebar } from "./AdminSidebar";
 
-/** En-tête, navigation minimale, déconnexion, zone de contenu (`<Outlet />`). */
+/** Sidebar, zone de contenu (`<Outlet />`). */
 export function AdminLayout() {
   const adminUser = useAdminAuthUser();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -21,42 +22,16 @@ export function AdminLayout() {
 
   return (
     <div className="admin-layout">
-      <header className="admin-layout__header">
-        <div className="admin-layout__header-row">
-          <h1 className="admin-layout__title">
-            <Link to="/" className="admin-layout__brand-link">
-              Wintix Admin
-            </Link>
-          </h1>
-          <nav className="admin-layout__nav" aria-label="Navigation principale">
-            <Link to="/lotteries" className="admin-layout__nav-link">
-              Lotteries
-            </Link>
-            <Link to="/missions" className="admin-layout__nav-link">
-              Missions
-            </Link>
-            <Link to="/push-mvp" className="admin-layout__nav-link">
-              Push (MVP)
-            </Link>
-            {sessionEmail && (
-              <span className="admin-layout__session" title={sessionEmail}>
-                {sessionEmail}
-              </span>
-            )}
-            <button
-              type="button"
-              className="admin-layout__logout"
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-            >
-              {isSigningOut ? "Déconnexion…" : "Se déconnecter"}
-            </button>
-          </nav>
-        </div>
-      </header>
-      <main className="admin-layout__main">
-        <Outlet />
-      </main>
+      <AdminSidebar
+        sessionEmail={sessionEmail}
+        isSigningOut={isSigningOut}
+        onSignOut={handleSignOut}
+      />
+      <div className="admin-layout__content">
+        <main className="admin-layout__main">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

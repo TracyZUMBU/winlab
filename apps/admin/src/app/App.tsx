@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminAuthGate } from "../features/auth";
+import { defaultAdminDocSlug, DocMemoPage } from "../features/docs";
 import { LotteriesPage, LotteryDetailFromRouteRedirect } from "../features/lotteries";
 import { MissionDetailFromRouteRedirect, MissionsPage } from "../features/missions";
 import { PushAdminMvpPage } from "../features/push-admin-mvp";
@@ -23,6 +24,11 @@ export function App() {
             element={<MissionDetailFromRouteRedirect />}
           />
           <Route path="push-mvp" element={<PushAdminMvpPage />} />
+          <Route
+            path="docs"
+            element={<Navigate to={`/docs/${defaultAdminDocSlug}`} replace />}
+          />
+          <Route path="docs/:docSlug" element={<DocMemoPage />} />
         </Route>
       </Routes>
     </AdminAuthGate>
