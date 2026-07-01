@@ -20,4 +20,4 @@ cp apps/mobile/.env.test.local apps/admin/.env.test.local
 test "$(wc -l < apps/mobile/.env.test.local | tr -d ' ')" -eq 3
 grep -Eq '^SUPABASE_ANON_KEY=.+' apps/mobile/.env.test.local
 grep -Eq '^SUPABASE_SERVICE_ROLE_KEY=.+' apps/mobile/.env.test.local
-grep -Eq '^SUPABASE_URL=http://(127\.0\.0\.1|localhost):54321$' apps/mobile/.env.test.local
+grep -Eq '^SUPABASE_URL=http://(127\.0\.0\.1|localhost):[0-9]+$' apps/mobile/.env.test.local

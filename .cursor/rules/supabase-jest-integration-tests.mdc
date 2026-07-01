@@ -12,7 +12,7 @@ These rules apply when creating or editing test files under `apps/**/tests/**`.
 
 ## Hard requirements (must always hold)
 
-- **Local-only target**: tests MUST hit Supabase **local** only. `process.env.SUPABASE_URL` must resolve to `http://127.0.0.1:54321` (or equivalent local host/port). NEVER use staging/prod/cloud URLs.
+- **Local-only target**: tests MUST hit Supabase **local** only. `process.env.SUPABASE_URL` must resolve to `http://127.0.0.1:54421` (winlab local stack; or equivalent local host/port). NEVER use staging/prod/cloud URLs.
 - **Env source**: tests MUST rely on `.env.test.local` (loaded by Jest setup). Always use `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. NEVER use `EXPO_PUBLIC_*` variables in tests/helpers.
 - **No mocks**: NEVER mock `@supabase/supabase-js` or the Supabase client in integration tests. Use the real local instance.
 - **No direct DB inserts in tests**: any `.insert(...)` into Supabase tables inside integration tests must be done through a factory/helper under `apps/**/tests/factories/`. If a factory doesn't exist yet, create it and use `overrides` (do not write `.from("...").insert(...)` inline in tests).

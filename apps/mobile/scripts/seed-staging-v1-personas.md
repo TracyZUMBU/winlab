@@ -21,7 +21,7 @@ Les volumes indiqués sont la **cible persona** (scénarios de test). Si le scri
 
 En build **développement** (`__DEV__`), l’écran email affiche un bloc **Mode développement** : saisir le même email que dans le tableau et le mot de passe `SeedUser123!` pour appeler `signInWithPassword` (sans OTP). Les builds release n’affichent pas ce bloc.
 
-Pour le flux OTP classique en local, les mails Auth sont visibles dans **Inbucket** (souvent `http://127.0.0.1:54324` après `supabase start`).
+Pour le flux OTP classique en local, les mails Auth sont visibles dans **Inbucket** (`http://127.0.0.1:54424` après `supabase start`).
 
 ## Matrice par persona
 
