@@ -71,3 +71,17 @@ $$;
 
 COMMENT ON FUNCTION public.admin_dev_reset_lotteries_schedule() IS
   'Temporary dev-only admin action: randomize starts_at/ends_at/draw_at and align status (active if ends_at > now(), else closed) for lotteries except drawn/cancelled.';
+
+-- One-time fix: rows left inconsistent when the old function updated dates only.
+UPDATE public.lotteries
+SET
+  status = CASE
+    WHEN ends_at > now() THEN 'active'::public.lottery_status
+    ELSE 'closed'::public.lottery_status
+  END,
+  updated_at = now()
+WHERE status NOT IN ('drawn'::public.lottery_status, 'cancelled'::public.lottery_status)
+  AND (
+    (ends_at > now() AND status <> 'active'::public.lottery_status)
+    OR (ends_at <= now() AND status = 'active'::public.lottery_status)
+  );
