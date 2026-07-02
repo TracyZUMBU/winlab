@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import type { KeyboardEvent } from "react";
 
 import { formatDateTimeForDev } from "../../../lib/formatDateTimeForDev";
 import type { AdminMissionListItem } from "../types/missionAdmin";
 
 type MissionsListTableProps = {
   rows: AdminMissionListItem[];
+  onRowClick: (missionId: string) => void;
 };
 
 /** Fenêtre « bientôt » : 48 h (même référence que la liste loteries). */
@@ -43,7 +44,18 @@ function formatCount(value: number): string {
   }).format(Math.trunc(value));
 }
 
-export function MissionsListTable({ rows }: MissionsListTableProps) {
+function handleRowKeyDown(
+  event: KeyboardEvent<HTMLTableRowElement>,
+  missionId: string,
+  onRowClick: (missionId: string) => void,
+) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    onRowClick(missionId);
+  }
+}
+
+export function MissionsListTable({ rows, onRowClick }: MissionsListTableProps) {
   return (
     <div className="lotteries-dev-table-wrap">
       <table className="lotteries-dev-table">
@@ -58,7 +70,6 @@ export function MissionsListTable({ rows }: MissionsListTableProps) {
             <th scope="col">Début</th>
             <th scope="col">Fin</th>
             <th scope="col">Complétions</th>
-            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -74,7 +85,14 @@ export function MissionsListTable({ rows }: MissionsListTableProps) {
             return (
               <tr
                 key={row.mission_id}
-                className={rowMod ? rowMod : undefined}
+                className={["lotteries-dev-table__row--clickable", rowMod]
+                  .filter(Boolean)
+                  .join(" ")}
+                tabIndex={0}
+                role="link"
+                aria-label={`Ouvrir le détail : ${row.title}`}
+                onClick={() => onRowClick(row.mission_id)}
+                onKeyDown={(event) => handleRowKeyDown(event, row.mission_id, onRowClick)}
               >
                 <td className="lotteries-dev-table__title">{row.title}</td>
                 <td>{row.brand_name ?? "—"}</td>
@@ -133,17 +151,6 @@ export function MissionsListTable({ rows }: MissionsListTableProps) {
                   </div>
                 </td>
                 <td className="lotteries-dev-table__num">{formatCount(row.total_completions)}</td>
-                <td className="lotteries-dev-table__actions">
-                  <Link
-                    to={{
-                      pathname: "/missions",
-                      search: `?detail=${encodeURIComponent(row.mission_id)}`,
-                    }}
-                    className="lotteries-dev-table__detail-link"
-                  >
-                    Voir le détail
-                  </Link>
-                </td>
               </tr>
             );
           })}

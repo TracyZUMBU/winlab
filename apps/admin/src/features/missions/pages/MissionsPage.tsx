@@ -107,6 +107,15 @@ export function MissionsPage() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
+  const openDetailPanel = useCallback(
+    (missionId: string) => {
+      const next = new URLSearchParams(searchParams);
+      next.set(DETAIL_QUERY_KEY, missionId);
+      setSearchParams(next);
+    },
+    [searchParams, setSearchParams],
+  );
+
   const total = listState.kind === "ok" ? listState.data.total : 0;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -292,7 +301,7 @@ export function MissionsPage() {
 
           {total === 0 ? null : (
             <>
-              <MissionsListTable rows={missions} />
+              <MissionsListTable rows={missions} onRowClick={openDetailPanel} />
               <div className="missions-pagination" role="navigation" aria-label="Pagination">
                 <button
                   type="button"

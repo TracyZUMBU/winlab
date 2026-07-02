@@ -254,10 +254,14 @@ body {
 
 .admin-layout__main {
   flex: 1;
+  min-width: 0;
   padding: 1.25rem 1.5rem;
-  max-width: 56rem;
   width: 100%;
   box-sizing: border-box;
+}
+
+.admin-doc-page {
+  max-width: 56rem;
 }
 
 .admin-doc-page__header {
@@ -353,6 +357,12 @@ body {
 
 .admin-markdown-doc strong {
   font-weight: 600;
+}
+
+.page-missions,
+.page-lotteries {
+  width: 100%;
+  min-width: 0;
 }
 
 .page-lotteries__header-row {
@@ -526,6 +536,27 @@ body {
   border-bottom: none;
 }
 
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--clickable {
+  cursor: pointer;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--clickable:hover td {
+  background: #f8fafc;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--clickable:hover.lotteries-dev-table__row--ended td {
+  background: #f1f5f9;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--clickable:hover.lotteries-dev-table__row--ending-soon td {
+  background: #fef3c7;
+}
+
+.lotteries-dev-table tbody tr.lotteries-dev-table__row--clickable:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
+}
+
 .lotteries-dev-table tbody tr.lotteries-dev-table__row--ended td {
   background: #f8fafc;
 }
@@ -586,7 +617,7 @@ body {
 
 .lotteries-dev-table__title {
   font-weight: 500;
-  max-width: 14rem;
+  min-width: 10rem;
 }
 
 .lotteries-dev-table__mono {

@@ -29,11 +29,16 @@ export function VideoMissionMetadataFields({
           className="mission-create-form__control"
           type="url"
           inputMode="url"
-          placeholder="https://…"
+          placeholder="https://cdn.example.com/mission.mp4"
           value={videoUrl}
           onChange={(e) => onVideoUrlChange(e.target.value)}
           required
         />
+        <p className="mission-create-form__hint">
+          URL directe vers un fichier vidéo (MP4 ou flux HLS .m3u8), hébergé sur un
+          CDN ou un stockage public. Les liens YouTube, Vimeo ou autres pages web
+          ne sont pas lus par l’app mobile.
+        </p>
       </div>
       <div className="mission-create-form__field mission-create-form__field--full">
         <label
