@@ -108,18 +108,60 @@ export const EmailScreen: React.FC = () => {
       return;
     }
 
-    monitoring.captureMessage({
-      name: "auth_email_continue_submit_failed",
-      severity: result.kind === "business" ? "warning" : "error",
-      feature: "auth",
-      requestId,
-      message: "EmailScreen submit failed",
-      extra: {
-        platform: Platform.OS,
-        failureKind: result.kind,
-        ...(result.kind === "business" ? { errorCode: result.errorCode } : {}),
-      },
-    });
+    const failureExtra: Record<string, string> = {
+      platform: Platform.OS,
+      failureKind: result.kind,
+      branch: result.diagnostic.branch,
+      connectivityProbe: result.diagnostic.connectivityProbe,
+      supabaseConfigured: result.diagnostic.supabaseConfigured,
+      errorIsInstanceOfError: result.diagnostic.errorIsInstanceOfError,
+      ...(result.diagnostic.supabaseUrlHost
+        ? { supabaseUrlHost: result.diagnostic.supabaseUrlHost }
+        : {}),
+      ...(result.diagnostic.connectivityHttpStatus
+        ? { connectivityHttpStatus: result.diagnostic.connectivityHttpStatus }
+        : {}),
+      ...(result.diagnostic.connectivityErrorMessage
+        ? {
+            connectivityErrorMessage:
+              result.diagnostic.connectivityErrorMessage,
+          }
+        : {}),
+      ...(result.diagnostic.supabaseErrorCode
+        ? { supabaseErrorCode: result.diagnostic.supabaseErrorCode }
+        : {}),
+      ...(result.diagnostic.errorName
+        ? { errorName: result.diagnostic.errorName }
+        : {}),
+      ...(result.diagnostic.errorMessage
+        ? { errorMessage: result.diagnostic.errorMessage }
+        : {}),
+      ...(result.kind === "business" ? { errorCode: result.errorCode } : {}),
+    };
+
+    if (result.kind === "business") {
+      monitoring.captureMessage({
+        name: "auth_email_continue_submit_failed",
+        severity: "warning",
+        feature: "auth",
+        requestId,
+        message: "EmailScreen submit failed",
+        extra: failureExtra,
+      });
+    } else {
+      monitoring.captureException({
+        name: "auth_email_continue_submit_failed",
+        severity: "error",
+        feature: "auth",
+        requestId,
+        message: "EmailScreen submit failed",
+        error: new Error(
+          result.diagnostic.errorMessage ??
+            `sendEmailOtp_${result.kind}_${result.diagnostic.branch}`,
+        ),
+        extra: failureExtra,
+      });
+    }
 
     setServerError(
       result.kind === "business"

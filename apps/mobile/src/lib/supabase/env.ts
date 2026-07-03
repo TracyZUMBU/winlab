@@ -16,6 +16,21 @@ if (__DEV__) {
       "[supabase/env] EXPO_PUBLIC_SUPABASE_ANON_KEY is not defined. Check your .env or app config.",
     );
   }
+  if (SUPABASE_URL) {
+    try {
+      const host = new URL(SUPABASE_URL).hostname;
+      if (host === "127.0.0.1" || host === "localhost") {
+        logger.warn(
+          "[supabase/env] EXPO_PUBLIC_SUPABASE_URL points to local Supabase. Start it with `supabase start`, or remove the override in `.env.local` to use cloud.",
+          { supabaseUrlHost: host },
+        );
+      }
+    } catch {
+      logger.warn(
+        "[supabase/env] EXPO_PUBLIC_SUPABASE_URL is not a valid URL.",
+      );
+    }
+  }
 }
 
 export const supabaseEnv = {

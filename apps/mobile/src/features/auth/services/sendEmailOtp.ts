@@ -1,7 +1,9 @@
 import { monitoring } from "@/src/lib/monitoring";
 import { getSupabaseClient } from "@/src/lib/supabase/client";
+import { supabaseEnv } from "@/src/lib/supabase/env";
 import type {
   EmailOtpPayload,
+  SendEmailOtpDiagnostic,
   SendEmailOtpErrorCode,
   SendEmailOtpResult,
 } from "../types";
@@ -11,6 +13,16 @@ function getSupabaseErrorCode(error: unknown): string | undefined {
   const maybe = error as Record<string, unknown>;
   const code = maybe.code;
   return typeof code === "string" && code.length > 0 ? code : undefined;
+}
+
+function isNetworkFetchFailure(error: unknown): boolean {
+  if (error instanceof Error) {
+    if (error.name === "AuthRetryableFetchError") return true;
+    if (error.message.toLowerCase().includes("network request failed")) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function mapSupabaseErrorCodeToAppErrorCode(
@@ -52,11 +64,122 @@ function getMonitoringSeverity(
   }
 }
 
+function getSupabaseUrlHost(): string | undefined {
+  try {
+    return new URL(supabaseEnv.url).host;
+  } catch {
+    return undefined;
+  }
+}
+
+function buildErrorDiagnosticFields(error: unknown): Pick<
+  SendEmailOtpDiagnostic,
+  "errorName" | "errorMessage" | "errorIsInstanceOfError" | "supabaseErrorCode"
+> {
+  const supabaseErrorCode = getSupabaseErrorCode(error);
+  const errorName =
+    error instanceof Error
+      ? error.name
+      : typeof error === "object" &&
+          error !== null &&
+          "name" in error &&
+          typeof (error as { name?: unknown }).name === "string"
+        ? (error as { name: string }).name
+        : undefined;
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === "object" &&
+          error !== null &&
+          "message" in error &&
+          typeof (error as { message?: unknown }).message === "string"
+        ? (error as { message: string }).message
+        : undefined;
+
+  return {
+    supabaseErrorCode,
+    errorName,
+    errorMessage: errorMessage?.slice(0, 200),
+    errorIsInstanceOfError: String(error instanceof Error),
+  };
+}
+
+function monitoringExtraFromDiagnostic(
+  diagnostic: SendEmailOtpDiagnostic,
+  errorCode?: SendEmailOtpErrorCode,
+): Record<string, string> {
+  return {
+    ...(errorCode ? { errorCode } : {}),
+    branch: diagnostic.branch,
+    connectivityProbe: diagnostic.connectivityProbe,
+    supabaseConfigured: diagnostic.supabaseConfigured,
+    errorIsInstanceOfError: diagnostic.errorIsInstanceOfError,
+    ...(diagnostic.supabaseErrorCode
+      ? { supabaseErrorCode: diagnostic.supabaseErrorCode }
+      : {}),
+    ...(diagnostic.errorName ? { errorName: diagnostic.errorName } : {}),
+    ...(diagnostic.errorMessage
+      ? { errorMessage: diagnostic.errorMessage }
+      : {}),
+    ...(diagnostic.connectivityHttpStatus
+      ? { connectivityHttpStatus: diagnostic.connectivityHttpStatus }
+      : {}),
+    ...(diagnostic.connectivityErrorMessage
+      ? { connectivityErrorMessage: diagnostic.connectivityErrorMessage }
+      : {}),
+    ...(diagnostic.supabaseUrlHost
+      ? { supabaseUrlHost: diagnostic.supabaseUrlHost }
+      : {}),
+  };
+}
+
+async function probeSupabaseConnectivity(): Promise<
+  Pick<
+    SendEmailOtpDiagnostic,
+    "connectivityProbe" | "connectivityHttpStatus" | "connectivityErrorMessage"
+  >
+> {
+  if (!supabaseEnv.url) {
+    return {
+      connectivityProbe: "failed",
+      connectivityErrorMessage: "missing_supabase_url",
+    };
+  }
+
+  try {
+    const healthUrl = `${supabaseEnv.url.replace(/\/$/, "")}/auth/v1/health`;
+    const response = await fetch(healthUrl, { method: "GET" });
+    const reachable = response.ok || response.status === 401;
+    return {
+      connectivityProbe: reachable ? "ok" : "failed",
+      connectivityHttpStatus: String(response.status),
+      ...(reachable
+        ? {}
+        : { connectivityErrorMessage: `unexpected_http_status_${response.status}` }),
+    };
+  } catch (probeError) {
+    return {
+      connectivityProbe: "failed",
+      connectivityErrorMessage:
+        probeError instanceof Error ? probeError.message : "probe_fetch_failed",
+    };
+  }
+}
+
 export const sendEmailOtp = async ({
   email,
   requestId,
 }: EmailOtpPayload): Promise<SendEmailOtpResult> => {
   const supabase = getSupabaseClient();
+  const connectivity = await probeSupabaseConnectivity();
+  const baseDiagnostic: Omit<
+    SendEmailOtpDiagnostic,
+    "branch" | "errorName" | "errorMessage" | "errorIsInstanceOfError" | "supabaseErrorCode"
+  > = {
+    ...connectivity,
+    supabaseUrlHost: getSupabaseUrlHost(),
+    supabaseConfigured: String(supabaseEnv.isConfigured),
+  };
 
   try {
     const { error } = await supabase.auth.signInWithOtp({
@@ -71,6 +194,12 @@ export const sendEmailOtp = async ({
     const supabaseErrorCode = getSupabaseErrorCode(error);
     const errorCode = mapSupabaseErrorCodeToAppErrorCode(supabaseErrorCode);
     const severity = getMonitoringSeverity(errorCode);
+    const diagnostic: SendEmailOtpDiagnostic = {
+      ...baseDiagnostic,
+      branch: "supabase_error",
+      ...buildErrorDiagnosticFields(error),
+    };
+    const monitoringExtra = monitoringExtraFromDiagnostic(diagnostic, errorCode);
 
     if (severity === "warning") {
       monitoring.captureMessage({
@@ -79,10 +208,7 @@ export const sendEmailOtp = async ({
         feature: "auth",
         requestId,
         message: "sendEmailOtp returned a known user error",
-        extra: {
-          errorCode,
-          supabaseErrorCode: supabaseErrorCode ?? "unknown",
-        },
+        extra: monitoringExtra,
       });
     } else {
       monitoring.captureException({
@@ -92,23 +218,33 @@ export const sendEmailOtp = async ({
         requestId,
         message: "sendEmailOtp failed (known incident/config or unknown)",
         error,
-        extra: {
-          errorCode,
-          supabaseErrorCode: supabaseErrorCode ?? "unknown",
-        },
+        extra: monitoringExtra,
       });
     }
 
     if (errorCode === "UNKNOWN_ERROR") {
-      return { success: false, kind: "unexpected" };
+      if (isNetworkFetchFailure(error)) {
+        return { success: false, kind: "technical", diagnostic };
+      }
+      return { success: false, kind: "unexpected", diagnostic };
     }
     return {
       success: false,
       kind: "business",
       errorCode,
+      diagnostic,
     };
   } catch (error) {
-    // Unexpected technical failure (network, SDK, etc.)
+    const diagnostic: SendEmailOtpDiagnostic = {
+      ...baseDiagnostic,
+      branch: "caught_exception",
+      ...buildErrorDiagnosticFields(error),
+    };
+    const monitoringExtra = monitoringExtraFromDiagnostic(
+      diagnostic,
+      "UNKNOWN_ERROR",
+    );
+
     monitoring.captureException({
       name: "auth_send_email_otp_unexpected_exception",
       severity: "error",
@@ -116,11 +252,9 @@ export const sendEmailOtp = async ({
       requestId,
       message: "Unexpected exception while sending email OTP",
       error,
-      extra: {
-        errorCode: "UNKNOWN_ERROR",
-      },
+      extra: monitoringExtra,
     });
 
-    return { success: false, kind: "technical" };
+    return { success: false, kind: "technical", diagnostic };
   }
 };
