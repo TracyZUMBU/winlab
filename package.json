@@ -26,7 +26,8 @@
     "lottery:notify-cron": "bash scripts/trigger-lottery-results-notify-cron.sh"
   },
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "jose": "5.9.6"
   },
   "overrides": {
     "react": "19.1.0",

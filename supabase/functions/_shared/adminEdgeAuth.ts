@@ -2,8 +2,8 @@
  * Vérification commune des Edge Functions appelées depuis l’admin Wintix :
  * JWT utilisateur final valide + `profiles.is_admin` (lecture via service_role uniquement ici).
  */
-import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
-import * as jose from "https://esm.sh/jose@5.9.6";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import * as jose from "jose";
 
 export function bearerTokenFromAuthorization(header: string): string | null {
   const m = /^Bearer\s+(\S+)$/i.exec(header.trim());
