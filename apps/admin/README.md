@@ -1,6 +1,6 @@
-# Winlab Admin
+# Wintix Admin
 
-Application web interne (backoffice) du monorepo Winlab, en **React + TypeScript + Vite**.
+Application web interne (backoffice) du monorepo Wintix, en **React + TypeScript + Vite**.
 
 ## Structure `src/`
 

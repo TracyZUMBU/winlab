@@ -1,5 +1,5 @@
 RÈGLEMENT TYPE — OPÉRATIONS PROMOTIONNELLES / TIRAGES AU SORT
-Application Winlab
+Application Wintix
 
 Éditeur / organisateur : Tracy ZUMBU-GARCIA, auto-entrepreneur (France)
 Siège : 1 allée du Furet
@@ -13,7 +13,7 @@ Dernière mise à jour du modèle : 4 mai 2026
 — — —
 
 PRÉAMBULE
-Le présent document fixe les règles communes applicables aux opérations promotionnelles de type tirage au sort ou jeu sans achat obligatoire accessible depuis l’application Winlab, dans le respect du droit français applicable aux jeux-concours et opérations équivalentes. Chaque opération peut faire l’objet d’un avenant ou d’un règlement particulier (dates, lots, nombre de tickets, etc.) publié sur [URL ou emplacement à compléter].
+Le présent document fixe les règles communes applicables aux opérations promotionnelles de type tirage au sort ou jeu sans achat obligatoire accessible depuis l’application Wintix, dans le respect du droit français applicable aux jeux-concours et opérations équivalentes. Chaque opération peut faire l’objet d’un avenant ou d’un règlement particulier (dates, lots, nombre de tickets, etc.) publié sur [URL ou emplacement à compléter].
 
 ARTICLE 1 — Objet
 Permettre aux utilisateurs remplissant les conditions d’éligibilité de participer à des opérations promotionnelles décrites dans l’Application, selon les modalités ci-dessous et celles de l’opération concernée.
@@ -26,7 +26,7 @@ ARTICLE 2 — Conditions de participation
 2.5. Exclusions : sont exclus les salariés ou prestataires de l’éditeur ayant conçu ou géré l’opération, ainsi que les membres de leur foyer, si une telle exclusion est prévue pour l’opération ; toute autre exclusion légale ou contractuelle sera indiquée dans l’Application.
 
 ARTICLE 3 — Jetons virtuels et tickets
-3.1. Les jetons sont des unités internes au service Winlab, sans valeur monétaire en dehors du cadre décrit dans les CGU, sauf stipulation légale contraire.
+3.1. Les jetons sont des unités internes au service Wintix, sans valeur monétaire en dehors du cadre décrit dans les CGU, sauf stipulation légale contraire.
 3.2. Le coût en jetons pour obtenir un ticket ou une chance de participer est affiché dans l’Application avant validation.
 3.3. Les tickets ou participations sont enregistrés de manière traçable sur les systèmes de l’éditeur (hébergement Supabase).
 
@@ -53,10 +53,9 @@ ARTICLE 9 — Litiges
 Le droit français s’applique. À défaut de résolution amiable, les tribunaux compétents du ressort de la juridiction applicable aux consommateurs sont seuls compétents, sous réserve des règles impératives.
 
 ARTICLE 10 — Acceptation
-La participation à une opération vaut acceptation du présent règlement et des CGU de Winlab.
+La participation à une opération vaut acceptation du présent règlement et des CGU de Wintix.
 
 — — —
 Fiches d’information (références générales, non exhaustives) :
 • CNIL — jeux-concours et données : https://www.cnil.fr/
 • DGCCRF — jeux-concours : https://www.economie.gouv.fr/dgccrf
-

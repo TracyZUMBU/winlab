@@ -11,7 +11,7 @@
   "notifications": {
     "referral_reward": {
       "title": "🎉 Referral confirmed!",
-      "body": "Your friend joined Winlab. Your tokens have been credited!"
+      "body": "Your friend joined Wintix. Your tokens have been credited!"
     }
   },
   "otaUpdate": {
@@ -28,7 +28,7 @@
     "version": "Version {{version}}"
   },
   "onboarding": {
-    "brand": "Winlab",
+    "brand": "Wintix",
     "skip": "Skip",
     "next": "Next",
     "go": "Go!",
@@ -129,7 +129,7 @@
     }
   },
   "appPlaceholder": {
-    "title": "Welcome to Winlab",
+    "title": "Welcome to Wintix",
     "subtitle": "This screen is a placeholder for the signed-in app.",
     "caption": "This screen is a placeholder for the signed-in app.",
     "logout": "Sign out",
@@ -142,7 +142,7 @@
     "continue": "Continue",
     "emailPlaceholder": "name@example.com",
     "terms": {
-      "lead": "By continuing, you agree to Winlab's ",
+      "lead": "By continuing, you agree to Wintix's ",
       "middle": " and ",
       "trail": "."
     },
@@ -167,7 +167,7 @@
   "schema": {
     "username": {
       "title": "Choose your username",
-      "subtitle": "This name will be visible in the Winlab app.",
+      "subtitle": "This name will be visible in the Wintix app.",
       "label": "USERNAME",
       "error": {
         "required": "Username is required",
@@ -655,8 +655,8 @@
     "createProfile": {
       "successToast": "Profile created.",
       "welcomeModal": {
-        "title": "Welcome to Winlab",
-        "body": "Winlab helps you discover brands, complete simple missions, and earn tokens you can use for perks and games.\n\nYou’ve received {{points}} welcome tokens to get started.",
+        "title": "Welcome to Wintix",
+        "body": "Wintix helps you discover brands, complete simple missions, and earn tokens you can use for perks and games.\n\nYou’ve received {{points}} welcome tokens to get started.",
         "cta": "Let’s go"
       },
       "signupBonusError": {
@@ -746,7 +746,7 @@
       "loadingInvitees": "Loading your referrals…",
       "error": "Could not load your referral list.",
       "emptyTitle": "No referrals yet",
-      "emptyBody": "Share your code: when a friend joins Winlab and completes a qualifying mission, you earn rewards.",
+      "emptyBody": "Share your code: when a friend joins Wintix and completes a qualifying mission, you earn rewards.",
       "status": {
         "pending": "Pending",
         "qualified": "Qualified",
@@ -759,9 +759,9 @@
         "qualifiedOn": "Validated on {{date}}"
       },
       "share": {
-        "title": "Join me on Winlab",
-        "body": "Join Winlab with my referral code: {{code}}",
-        "bodyFallback": "Join me on Winlab.",
+        "title": "Join me on Wintix",
+        "body": "Join Wintix with my referral code: {{code}}",
+        "bodyFallback": "Join me on Wintix.",
         "native": "Share",
         "nativeA11y": "Open the share sheet",
         "errorTitle": "Share",
@@ -780,10 +780,10 @@
       "referralSubtitle": "Invite friends and earn tokens",
       "referralA11y": "Open referrals and your code",
       "referralAlertTitle": "Your referral code",
-      "referralAlertHint": "Share this code so friends can join Winlab and unlock rewards together.",
+      "referralAlertHint": "Share this code so friends can join Wintix and unlock rewards together.",
       "support": "Support",
       "supportA11y": "Contact support by email",
-      "supportMailSubject": "Winlab support",
+      "supportMailSubject": "Wintix support",
       "supportMailBody": "Hello,\n\n— Account —\nEmail: {{email}}\nUsername: {{username}}\nUser ID: {{userId}}\n\n— Your message —\n",
       "supportOpenErrorTitle": "Could not open email",
       "supportOpenErrorMessage": "No mail app could be opened. Please email {{contact}} from a browser.",
@@ -793,7 +793,7 @@
       "deleteAccountA11y": "Permanently delete my account"
     },
     "hero": {
-      "defaultDisplayName": "Winlab member",
+      "defaultDisplayName": "Wintix member",
       "handlePlaceholder": "@username",
       "a11yEdit": "Edit profile",
       "changeAvatarA11y": "Change profile photo",

@@ -1,11 +1,4 @@
--- Réexécution manuelle dans le SQL Editor Supabase (aligné sur le Vault).
--- Prérequis : secrets `supabase_url` et `supabase_service_role_key` dans Vault.
-
-GRANT SELECT ON vault.decrypted_secrets TO postgres;
-
-DROP TRIGGER IF EXISTS on_referral_qualified ON public.referrals;
-
-DROP FUNCTION IF EXISTS public.notify_referral_reward();
+-- Push referral reward: update notification body branding Winlab → Wintix.
 
 CREATE OR REPLACE FUNCTION public.notify_referral_reward()
 RETURNS trigger
@@ -59,15 +52,3 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
-ALTER FUNCTION public.notify_referral_reward() OWNER TO postgres;
-
-REVOKE ALL ON FUNCTION public.notify_referral_reward() FROM PUBLIC;
-
-CREATE TRIGGER on_referral_qualified
-  AFTER UPDATE ON public.referrals
-  FOR EACH ROW
-  EXECUTE FUNCTION public.notify_referral_reward();
-
--- Pattern futurs : nouvelle fonction + trigger, mêmes secrets Vault,
--- même Edge Function `send-push-notification`, title/body/data adaptés.

@@ -1,5 +1,5 @@
 /**
- * MVP : envoi push manuel depuis l’admin Winlab.
+ * MVP : envoi push manuel depuis l’admin Wintix.
  * Vérifie le JWT de session + `profiles.is_admin` (via `requireAdminServiceClient`) ;
  * Postgres / Expo passent par la service role **uniquement** ici (jamais exposée au navigateur).
  */

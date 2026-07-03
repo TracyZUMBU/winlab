@@ -12,6 +12,6 @@ export type {
   ShowToastForBusinessErrorCodeParams,
   ShowToastInput,
   ToastVariant,
-  WinlabToastType,
+  WintixToastType,
 } from "./toast.types";
-export { WINLAB_TOAST_TYPES } from "./toast.types";
+export { WINTIX_TOAST_TYPES } from "./toast.types";

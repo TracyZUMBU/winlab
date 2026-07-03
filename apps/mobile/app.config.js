@@ -13,9 +13,9 @@ const getBundleIdentifier = () => {
 };
 
 const getAppName = () => {
-  if (ENV === "production") return "Winlab";
-  if (ENV === "preview") return "Winlab (Preview)";
-  return "Winlab (Dev)";
+  if (ENV === "production") return "Wintix";
+  if (ENV === "preview") return "Wintix (Preview)";
+  return "Wintix (Dev)";
 };
 
 const getGoogleServicesFile = () => {
@@ -47,7 +47,7 @@ module.exports = {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryUsageDescription:
-          "Winlab accède à vos photos pour définir votre photo de profil.",
+          "Wintix accède à vos photos pour définir votre photo de profil.",
       },
       googleServicesFile: getGoogleServicesPlist(),
     },
@@ -76,7 +76,7 @@ module.exports = {
         "expo-image-picker",
         {
           photosPermission:
-            "Winlab accède à vos photos pour définir votre photo de profil.",
+            "Wintix accède à vos photos pour définir votre photo de profil.",
         },
       ],
       "./plugins/withAsyncStorageLocalRepo",

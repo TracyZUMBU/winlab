@@ -7,8 +7,8 @@ import type { MonitoringProvider } from "@winlab/monitoring";
 
 import { getSupabaseClient, isSupabaseConfigured } from "../supabase";
 
-/** Convention: stable `service` id for Slack — must match mobile pattern (`winlab-*`). */
-const SERVICE_NAME = "winlab-admin";
+/** Convention: stable `service` id for Slack — must match mobile pattern (`wintix-*`). */
+const SERVICE_NAME = "wintix-admin";
 
 function isDevelopmentEnvironment(): boolean {
   return import.meta.env.DEV;

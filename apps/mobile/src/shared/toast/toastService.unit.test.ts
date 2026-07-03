@@ -1,6 +1,6 @@
 import Toast from "react-native-toast-message";
 
-import { WINLAB_TOAST_TYPES } from "./toast.types";
+import { WINTIX_TOAST_TYPES } from "./toast.types";
 import {
   hideToast,
   showErrorToast,
@@ -21,7 +21,7 @@ describe("toastService", () => {
     jest.clearAllMocks();
   });
 
-  it("maps variants to internal winlab toast types for Toast.show", () => {
+  it("maps variants to internal wintix toast types for Toast.show", () => {
     showToast({
       type: "success",
       title: "OK",
@@ -30,7 +30,7 @@ describe("toastService", () => {
 
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: WINLAB_TOAST_TYPES.success,
+        type: WINTIX_TOAST_TYPES.success,
         text1: "OK",
         text2: "Done",
         position: "top",
@@ -43,7 +43,7 @@ describe("toastService", () => {
     showSuccessToast({ title: "Saved" });
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: WINLAB_TOAST_TYPES.success,
+        type: WINTIX_TOAST_TYPES.success,
         text1: "Saved",
         autoHide: true,
       }),
@@ -63,7 +63,7 @@ describe("toastService", () => {
     showErrorToast({ title: "Failed" });
     expect(Toast.show).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: WINLAB_TOAST_TYPES.error,
+        type: WINTIX_TOAST_TYPES.error,
         text1: "Failed",
       }),
     );

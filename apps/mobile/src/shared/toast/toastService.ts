@@ -2,7 +2,7 @@ import Toast from "react-native-toast-message";
 
 import { DEFAULT_TOAST_DURATION_MS } from "./toast.durations";
 import {
-  WINLAB_TOAST_TYPES,
+  WINTIX_TOAST_TYPES,
   type ShowToastInput,
   type ToastVariant,
 } from "./toast.types";
@@ -44,7 +44,7 @@ export function showToast(input: ShowToastInput): void {
     // analytics.track(input.trackingEventName, { type: input.type });
   }
 
-  const libType = WINLAB_TOAST_TYPES[input.type];
+  const libType = WINTIX_TOAST_TYPES[input.type];
   const visibilityTime =
     input.durationMs ?? DEFAULT_TOAST_DURATION_MS[input.type];
 

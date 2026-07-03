@@ -1,6 +1,6 @@
 # Release mobile (Android, iOS) et OTA (preview)
 
-Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Winlab, avec `**runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.config.js`).
+Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’app Wintix, avec `**runtimeVersion` dérivée de `expo.version`** (`policy: "appVersion"` dans `app.config.js`).
 
 ## Prérequis
 

@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { theme } from "@/src/theme";
 
-import { WINLAB_TOAST_TYPES } from "./toast.types";
+import { WINTIX_TOAST_TYPES } from "./toast.types";
 
 type ShellProps = ToastConfigParams<unknown> & {
   iconName: ComponentProps<typeof MaterialIcons>["name"];
@@ -16,7 +16,7 @@ type ShellProps = ToastConfigParams<unknown> & {
   messageColor: string;
 };
 
-function WinlabToastShell({
+function WintixToastShell({
   text1,
   text2,
   onPress,
@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export const winlabToastConfig: ToastConfig = {
-  [WINLAB_TOAST_TYPES.success]: (props) => (
-    <WinlabToastShell
+export const wintixToastConfig: ToastConfig = {
+  [WINTIX_TOAST_TYPES.success]: (props) => (
+    <WintixToastShell
       {...props}
       iconName="check-circle"
       accentStripeColor={theme.colors.success}
@@ -110,8 +110,8 @@ export const winlabToastConfig: ToastConfig = {
       messageColor={theme.colors.text}
     />
   ),
-  [WINLAB_TOAST_TYPES.error]: (props) => (
-    <WinlabToastShell
+  [WINTIX_TOAST_TYPES.error]: (props) => (
+    <WintixToastShell
       {...props}
       iconName="error-outline"
       accentStripeColor={theme.colors.dangerSolid}
@@ -120,8 +120,8 @@ export const winlabToastConfig: ToastConfig = {
       messageColor={theme.colors.text}
     />
   ),
-  [WINLAB_TOAST_TYPES.info]: (props) => (
-    <WinlabToastShell
+  [WINTIX_TOAST_TYPES.info]: (props) => (
+    <WintixToastShell
       {...props}
       iconName="info-outline"
       accentStripeColor={theme.colors.accentSolid}
@@ -130,8 +130,8 @@ export const winlabToastConfig: ToastConfig = {
       messageColor={theme.colors.textMuted}
     />
   ),
-  [WINLAB_TOAST_TYPES.warning]: (props) => (
-    <WinlabToastShell
+  [WINTIX_TOAST_TYPES.warning]: (props) => (
+    <WintixToastShell
       {...props}
       iconName="warning-amber"
       accentStripeColor="#D97706"

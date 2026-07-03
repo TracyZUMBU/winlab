@@ -1,5 +1,5 @@
 /**
- * Exécute `public.run_lottery(p_lottery_id)` pour un administrateur Winlab.
+ * Exécute `public.run_lottery(p_lottery_id)` pour un administrateur Wintix.
  * JWT session + `profiles.is_admin` via `requireAdminServiceClient` ; la RPC reste réservée au service_role.
  */
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";

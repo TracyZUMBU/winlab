@@ -1,6 +1,6 @@
 # Changelog
 
-Toutes les modifications notables de l’app mobile **Winlab** sont documentées ici.
+Toutes les modifications notables de l’app mobile **Wintix** sont documentées ici.
 
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et le projet suit une version [Semantic Versioning](https://semver.org/lang/fr/) pour `expo.version` / stores.
 

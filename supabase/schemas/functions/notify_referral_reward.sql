@@ -47,7 +47,7 @@ BEGIN
     body := jsonb_build_object(
       'user_id', NEW.referrer_user_id,
       'title', '🎉 Parrainage validé !',
-      'body', 'Ton ami a rejoint Winlab. Tes tokens ont été crédités !',
+      'body', 'Ton ami a rejoint Wintix. Tes jetons ont été crédités !',
       'data', jsonb_build_object(
         'type', 'referral_reward',
         'referral_id', NEW.id

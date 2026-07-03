@@ -11,7 +11,7 @@
   "notifications": {
     "referral_reward": {
       "title": "🎉 Parrainage validé !",
-      "body": "Ton ami a rejoint Winlab. Tes tokens ont été crédités !"
+      "body": "Ton ami a rejoint Wintix. Tes tokens ont été crédités !"
     }
   },
   "otaUpdate": {
@@ -28,7 +28,7 @@
     "version": "Version {{version}}"
   },
   "onboarding": {
-    "brand": "Winlab",
+    "brand": "Wintix",
     "skip": "Passer",
     "next": "Suivant",
     "go": "C'est parti !",
@@ -104,7 +104,7 @@
     "terms": {
       "lead": "En continuant, vous acceptez les ",
       "middle": " et la ",
-      "trail": " de Winlab."
+      "trail": " de Wintix."
     },
     "dev": {
       "title": "Mode développement",
@@ -162,7 +162,7 @@
     }
   },
   "appPlaceholder": {
-    "title": "Bienvenue sur Winlab",
+    "title": "Bienvenue sur Wintix",
     "subtitle": "Cet écran est un placeholder pour l’app connectée.",
     "caption": "Cet écran est un placeholder pour l’app connectée.",
     "logout": "Se déconnecter",
@@ -171,7 +171,7 @@
   "schema": {
     "username": {
       "title": "Choisissez votre pseudo",
-      "subtitle": "Ce pseudo sera visible dans l’app Winlab.",
+      "subtitle": "Ce pseudo sera visible dans l’app Wintix.",
       "label": "PSEUDO",
       "error": {
         "required": "Le pseudo est requis",
@@ -659,8 +659,8 @@
     "createProfile": {
       "successToast": "Profil créé.",
       "welcomeModal": {
-        "title": "Bienvenue sur Winlab",
-        "body": "Winlab te permet de découvrir des marques, de réaliser des missions simples et de cumuler des jetons utilisables pour des avantages et des jeux.\n\nTu as reçu {{points}} jetons de bienvenue pour commencer.",
+        "title": "Bienvenue sur Wintix",
+        "body": "Wintix te permet de découvrir des marques, de réaliser des missions simples et de cumuler des jetons utilisables pour des avantages et des jeux.\n\nTu as reçu {{points}} jetons de bienvenue pour commencer.",
         "cta": "C’est parti"
       },
       "signupBonusError": {
@@ -750,7 +750,7 @@
       "loadingInvitees": "Chargement de vos parrainages…",
       "error": "Impossible de charger la liste des parrainages.",
       "emptyTitle": "Aucun parrainage pour l'instant",
-      "emptyBody": "Partagez votre code : lorsqu’un proche rejoint Winlab et termine une mission éligible, vous cumulez des récompenses.",
+      "emptyBody": "Partagez votre code : lorsqu’un proche rejoint Wintix et termine une mission éligible, vous cumulez des récompenses.",
       "status": {
         "pending": "En attente",
         "qualified": "Qualifié",
@@ -763,9 +763,9 @@
         "qualifiedOn": "Validé le {{date}}"
       },
       "share": {
-        "title": "Rejoins-moi sur Winlab",
-        "body": "Rejoins Winlab avec mon code de parrainage : {{code}}",
-        "bodyFallback": "Rejoins-moi sur Winlab.",
+        "title": "Rejoins-moi sur Wintix",
+        "body": "Rejoins Wintix avec mon code de parrainage : {{code}}",
+        "bodyFallback": "Rejoins-moi sur Wintix.",
         "native": "Partager",
         "nativeA11y": "Ouvrir le menu de partage",
         "errorTitle": "Partage",
@@ -784,10 +784,10 @@
       "referralSubtitle": "Invitez des amis et gagnez des jetons",
       "referralA11y": "Ouvrir le parrainage et mon code",
       "referralAlertTitle": "Votre code de parrainage",
-      "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Winlab.",
+      "referralAlertHint": "Partagez ce code avec vos proches pour cumuler des récompenses lorsqu’ils rejoignent Wintix.",
       "support": "Support",
       "supportA11y": "Contacter le support par email",
-      "supportMailSubject": "Support Winlab",
+      "supportMailSubject": "Support Wintix",
       "supportMailBody": "Bonjour,\n\n— Compte —\nEmail : {{email}}\nPseudo : {{username}}\nIdentifiant : {{userId}}\n\n— Votre message —\n",
       "supportOpenErrorTitle": "Email impossible",
       "supportOpenErrorMessage": "Aucune application mail n’a pu être ouverte. Écrivez-nous à {{contact}} depuis un navigateur.",
@@ -797,7 +797,7 @@
       "deleteAccountA11y": "Supprimer définitivement mon compte"
     },
     "hero": {
-      "defaultDisplayName": "Membre Winlab",
+      "defaultDisplayName": "Membre Wintix",
       "handlePlaceholder": "@pseudo",
       "a11yEdit": "Modifier le profil",
       "changeAvatarA11y": "Changer la photo de profil",

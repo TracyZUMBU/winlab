@@ -1,5 +1,5 @@
 /**
- * Vérification commune des Edge Functions appelées depuis l’admin Winlab :
+ * Vérification commune des Edge Functions appelées depuis l’admin Wintix :
  * JWT utilisateur final valide + `profiles.is_admin` (lecture via service_role uniquement ici).
  */
 import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";

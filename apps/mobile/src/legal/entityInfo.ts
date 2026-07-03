@@ -15,7 +15,7 @@ export type LegalEntityInfo = {
 };
 
 export const legalEntityInfo: LegalEntityInfo = {
-  tradeName: "Winlab",
+  tradeName: "Wintix",
   /** La forme juridique pourra évoluer (ex. vers une SAS) : mettre à jour ce champ et les documents. */
   legalName: "Tracy ZUMBU-GARCIA, auto-entrepreneur (France)",
   registeredAddress: "1 allée du Furet\n77186 Noisiel\nFrance",

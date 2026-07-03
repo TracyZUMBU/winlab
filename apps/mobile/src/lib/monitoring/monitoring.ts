@@ -11,13 +11,13 @@ import { supabaseEnv } from "@/src/lib/supabase/env";
 
 /**
  * Human-readable service id for Slack / dashboards.
- * Convention: `winlab-mobile` (override via EXPO_PUBLIC_SERVICE_NAME).
+ * Convention: `wintix-mobile` (override via EXPO_PUBLIC_SERVICE_NAME).
  */
 function getServiceName(): string {
   const serviceName = process.env.EXPO_PUBLIC_SERVICE_NAME;
   return typeof serviceName === "string" && serviceName.trim().length > 0
     ? serviceName.trim()
-    : "winlab-mobile";
+    : "wintix-mobile";
 }
 
 function getSlackEdgeFunctionName(): string {

@@ -75,7 +75,7 @@ describe("admin lottery create services (integration)", () => {
   it("resolves default brand by slug winlab when env id is unset", async () => {
     const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     const winlab = await createBrand({
-      name: `Winlab ${uniqueId}`,
+      name: `Wintix ${uniqueId}`,
       slug: "winlab",
     });
     const other = await createBrand({

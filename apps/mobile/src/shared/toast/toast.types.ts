@@ -7,15 +7,15 @@ import type { TFunction, i18n as I18nInstance } from "i18next";
 export type ToastVariant = "success" | "error" | "info" | "warning";
 
 /** Internal keys used only by the toast layer (not for i18n). */
-export const WINLAB_TOAST_TYPES = {
-  success: "winlab_success",
-  error: "winlab_error",
-  info: "winlab_info",
-  warning: "winlab_warning",
+export const WINTIX_TOAST_TYPES = {
+  success: "wintix_success",
+  error: "wintix_error",
+  info: "wintix_info",
+  warning: "wintix_warning",
 } as const satisfies Record<ToastVariant, string>;
 
-export type WinlabToastType =
-  (typeof WINLAB_TOAST_TYPES)[ToastVariant];
+export type WintixToastType =
+  (typeof WINTIX_TOAST_TYPES)[ToastVariant];
 
 export type ShowToastInput = {
   type: ToastVariant;
