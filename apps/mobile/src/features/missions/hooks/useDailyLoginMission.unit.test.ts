@@ -1,5 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { logger } from "@/src/lib/logger";
+import { monitoring } from "@/src/lib/monitoring";
+
 import { hasDailyLoginCompletionForCurrentUtcDay } from "../services/hasDailyLoginCompletionForCurrentUtcDay";
 import { submitMissionCompletion } from "../services/missionService";
 import { triggerDailyLoginMission } from "./useDailyLoginMission";
@@ -54,6 +57,10 @@ const mockHasDailyLoginCompletion =
   hasDailyLoginCompletionForCurrentUtcDay as jest.MockedFunction<
     typeof hasDailyLoginCompletionForCurrentUtcDay
   >;
+const mockLoggerWarn = logger.warn as jest.MockedFunction<typeof logger.warn>;
+const mockCaptureException = monitoring.captureException as jest.MockedFunction<
+  typeof monitoring.captureException
+>;
 
 describe("triggerDailyLoginMission", () => {
   /** Profile must be from a prior UTC day so daily_login submit is allowed under prod rules. */
@@ -130,6 +137,34 @@ describe("triggerDailyLoginMission", () => {
     expect(mockRemoveItem).toHaveBeenCalledWith(ASYNC_KEY);
     expect(mockSetItem).not.toHaveBeenCalled();
     expect(result).toEqual({ alreadyCompleted: true });
+    expect(mockLoggerWarn).not.toHaveBeenCalled();
+    expect(mockCaptureException).not.toHaveBeenCalled();
+  });
+
+  it("logs monitoring when submit returns unexpected business error", async () => {
+    mockHasDailyLoginCompletion.mockResolvedValue({
+      ok: true,
+      hasCompletion: false,
+    });
+    mockSubmitMissionCompletion.mockResolvedValue({
+      success: false,
+      kind: "business",
+      errorCode: "MISSION_NOT_FOUND",
+    });
+
+    const result = await triggerDailyLoginMission(eligibleProfileCreatedAt);
+
+    expect(result).toEqual({ alreadyCompleted: true });
+    expect(mockLoggerWarn).toHaveBeenCalledWith(
+      "[missions] daily_login submit rejected",
+      { errorCode: "MISSION_NOT_FOUND" },
+    );
+    expect(mockCaptureException).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "daily_login_submit_business_error",
+        extra: { errorCode: "MISSION_NOT_FOUND" },
+      }),
+    );
   });
 
   it("does not persist UTC day when submit returns technical error", async () => {
@@ -147,6 +182,8 @@ describe("triggerDailyLoginMission", () => {
     expect(mockRemoveItem).toHaveBeenCalledWith(ASYNC_KEY);
     expect(mockSetItem).not.toHaveBeenCalled();
     expect(result).toEqual({ alreadyCompleted: true });
+    expect(mockLoggerWarn).not.toHaveBeenCalled();
+    expect(mockCaptureException).not.toHaveBeenCalled();
   });
 
   it("still submits when server lookup fails", async () => {

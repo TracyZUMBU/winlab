@@ -13,10 +13,41 @@ import { clearDailyLoginLocalCache } from "../services/clearDailyLoginLocalCache
 import { hasDailyLoginCompletionForCurrentUtcDay } from "../services/hasDailyLoginCompletionForCurrentUtcDay";
 import {
   submitMissionCompletion,
+  type MissionSubmissionBusinessErrorCode,
   type SubmitMissionCompletionParams,
   type SubmitMissionCompletionResult,
 } from "../services/missionService";
 import { isDailyLoginIneligibleFirstUtcDay } from "../utils/dailyLoginFirstUtcDay";
+
+/** Expected daily_login outcomes — no monitoring noise. */
+const SILENT_DAILY_LOGIN_BUSINESS_ERRORS = new Set<
+  MissionSubmissionBusinessErrorCode
+>(["MISSION_USER_LIMIT_REACHED", "DAILY_LOGIN_INELIGIBLE_FIRST_UTC_DAY"]);
+
+function reportUnexpectedDailyLoginSubmitFailure(
+  result: Extract<SubmitMissionCompletionResult, { success: false }>,
+): void {
+  // technical / unexpected failures are already logged in submitMissionCompletion.
+  if (result.kind !== "business") {
+    return;
+  }
+  if (SILENT_DAILY_LOGIN_BUSINESS_ERRORS.has(result.errorCode)) {
+    return;
+  }
+
+  logger.warn("[missions] daily_login submit rejected", {
+    errorCode: result.errorCode,
+  });
+  const error = new Error(`daily_login submit rejected: ${result.errorCode}`);
+  monitoring.captureException({
+    name: "daily_login_submit_business_error",
+    severity: "warning",
+    feature: "missions",
+    message: error.message,
+    error,
+    extra: { errorCode: result.errorCode },
+  });
+}
 
 export type DailyLoginMissionResult =
   | {
@@ -78,6 +109,7 @@ export async function triggerDailyLoginMission(
       };
     }
 
+    reportUnexpectedDailyLoginSubmitFailure(result);
     return { alreadyCompleted: true };
   } catch (error) {
     logger.warn("[missions] daily_login mission trigger failed", { error });
