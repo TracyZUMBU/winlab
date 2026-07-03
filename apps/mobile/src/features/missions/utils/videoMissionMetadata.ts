@@ -21,7 +21,6 @@ export function parseVideoMissionMetadata(
   }
 
   const rawTitle = typeof record.title === "string" ? record.title.trim() : "";
-  const title = rawTitle.length > 0 ? rawTitle : video_url;
 
   const thumbnail_url =
     typeof record.thumbnail_url === "string" && record.thumbnail_url.trim().length > 0
@@ -30,7 +29,7 @@ export function parseVideoMissionMetadata(
 
   return {
     video_url,
-    title,
+    title: rawTitle,
     thumbnail_url,
   };
 }

@@ -329,7 +329,9 @@
         "configError": "Invalid video configuration. Please try again later.",
         "nativeModuleUnavailable": "Video playback isn’t available in this build (expo-video native module missing). Use a dev build (`npx expo run:ios` / `run:android`) or an EAS build that includes native modules.",
         "playerAccessibilityPlay": "Play video",
-        "playerAccessibilityPause": "Pause video"
+        "playerAccessibilityPause": "Pause video",
+        "unsupportedCodecIos": "This video uses a format (H.265) that isn't supported on iPhone. Use an H.264 video for this mission.",
+        "playbackStalled": "Playback couldn't start. Check your connection or try again."
       },
       "outcome": {
         "approved": {

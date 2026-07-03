@@ -70,7 +70,8 @@ export function useMissionDetailVideo(
     if (!videoMetaParsed) return null;
     return {
       videoUrl: videoMetaParsed.video_url,
-      displayTitle: videoMetaParsed.title || mission.title,
+      displayTitle:
+        videoMetaParsed.title.length > 0 ? videoMetaParsed.title : null,
       thumbnailUrl: videoMetaParsed.thumbnail_url ?? null,
       onVideoComplete: handleVideoComplete,
       isCompleted: isVideoMissionCompleted,

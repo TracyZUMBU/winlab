@@ -49,22 +49,40 @@ export type SendEmailOtpBusinessErrorCode = Exclude<
   "UNKNOWN_ERROR"
 >;
 
+/** Non-PII diagnostic fields for auth OTP send failures (monitoring / debug). */
+export type SendEmailOtpDiagnostic = {
+  branch: "supabase_error" | "caught_exception";
+  supabaseErrorCode?: string;
+  errorName?: string;
+  errorMessage?: string;
+  errorIsInstanceOfError: string;
+  connectivityProbe: "ok" | "failed";
+  connectivityHttpStatus?: string;
+  connectivityErrorMessage?: string;
+  supabaseUrlHost?: string;
+  supabaseConfigured: string;
+};
+
+export type SendEmailOtpFailureResult = {
+  success: false;
+  diagnostic: SendEmailOtpDiagnostic;
+} & (
+  | {
+      kind: "business";
+      errorCode: SendEmailOtpBusinessErrorCode;
+    }
+  | {
+      kind: "technical";
+    }
+  | {
+      kind: "unexpected";
+    }
+);
+
 export type SendEmailOtpResult =
   | {
       success: true;
       data: undefined;
     }
-  | {
-      success: false;
-      kind: "business";
-      errorCode: SendEmailOtpBusinessErrorCode;
-    }
-  | {
-      success: false;
-      kind: "technical";
-    }
-  | {
-      success: false;
-      kind: "unexpected";
-    };
+  | SendEmailOtpFailureResult;
 

@@ -1,4 +1,5 @@
 import type { CreateAdminMissionMissionType } from "../../types/missionAdmin";
+import { getHevcVideoUrlError } from "../../lib/videoCodecSupport";
 import type { SurveyDraft } from "./survey-builder/surveyDraft.types";
 import { serializeSurveyDraftToMetadata } from "./survey-builder/surveyDraftSerialization";
 
@@ -22,6 +23,10 @@ function buildVideoMetadata(input: MissionMetadataFormInput): BuildMissionMetada
   const video_url = input.videoUrl.trim();
   if (!video_url) {
     return { ok: false, message: "URL de la vidéo obligatoire." };
+  }
+  const hevcError = getHevcVideoUrlError(video_url);
+  if (hevcError) {
+    return { ok: false, message: hevcError };
   }
   const metadata: Record<string, unknown> = { video_url };
   const title = input.videoTitle.trim();

@@ -16,7 +16,7 @@ export type SurveyDetailRendererProps = {
 /** Données player + callbacks pour une mission `video` (écran détail). */
 export type MissionVideoDetailSlotProps = {
   videoUrl: string;
-  displayTitle: string;
+  displayTitle: string | null;
   thumbnailUrl?: string | null;
   onVideoComplete: () => void;
   isCompleted: boolean;

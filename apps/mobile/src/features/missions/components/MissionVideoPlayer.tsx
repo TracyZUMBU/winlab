@@ -9,6 +9,7 @@ import {
   type AppStateStatus,
   Pressable,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 
@@ -16,9 +17,12 @@ import { logger } from "@/src/lib/logger";
 import { theme } from "@/src/theme";
 
 import { resolveVideoSource } from "../video/resolveVideoSource";
+import { isVideoBlockedOnPlatform } from "../video/videoCodecSupport";
 
 /** Au-delà de ce décalage en une mise à jour, on considère un saut manuel (scrub) et on revient au max légitime. */
 const SEEK_JUMP_TOLERANCE_SECONDS = 2.5;
+/** Délai avant de considérer que la lecture est bloquée (métadonnées OK mais pas d'images). */
+const PLAYBACK_STALL_TIMEOUT_MS = 4_000;
 
 export type MissionVideoPlayerProps = {
   videoUrl: string;
@@ -36,13 +40,25 @@ function MissionVideoPlayerInner({
   const onCompleteRef = useRef(onComplete);
   const onProgressRef = useRef(onProgress);
   const maxLegitimateTimeRef = useRef(0);
+  const playRequestedAtRef = useRef<number | null>(null);
 
   onCompleteRef.current = onComplete;
   onProgressRef.current = onProgress;
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackError, setPlaybackError] = useState<
+    "unsupported_codec" | "playback_stalled" | null
+  >(null);
 
-  const player = useVideoPlayer(expoSource, (p) => {
+  const blockedOnPlatform = isVideoBlockedOnPlatform(videoUrl);
+
+  useEffect(() => {
+    if (blockedOnPlatform) {
+      setPlaybackError("unsupported_codec");
+    }
+  }, [blockedOnPlatform]);
+
+  const player = useVideoPlayer(blockedOnPlatform ? null : expoSource, (p) => {
     p.loop = false;
     p.timeUpdateEventInterval = 1;
     p.playbackRate = 1;
@@ -50,7 +66,11 @@ function MissionVideoPlayerInner({
 
   useEffect(() => {
     maxLegitimateTimeRef.current = 0;
-  }, [videoUrl]);
+    playRequestedAtRef.current = null;
+    if (!blockedOnPlatform) {
+      setPlaybackError(null);
+    }
+  }, [videoUrl, blockedOnPlatform]);
 
   useEventListener(player, "playToEnd", () => {
     onCompleteRef.current();
@@ -71,6 +91,10 @@ function MissionVideoPlayerInner({
   });
 
   useEventListener(player, "timeUpdate", ({ currentTime }) => {
+    if (currentTime > 0.25) {
+      playRequestedAtRef.current = null;
+    }
+
     const maxT = maxLegitimateTimeRef.current;
     if (currentTime > maxT + SEEK_JUMP_TOLERANCE_SECONDS) {
       try {
@@ -94,9 +118,33 @@ function MissionVideoPlayerInner({
       } catch {
         /* noop — évite tout crash si le player est déjà libéré */
       }
+      setPlaybackError("playback_stalled");
       logger.warn("MissionVideoPlayer playback error", { videoUrl });
     }
   });
+
+  useEffect(() => {
+    if (blockedOnPlatform || !isPlaying) return;
+
+    const interval = setInterval(() => {
+      const startedAt = playRequestedAtRef.current;
+      if (startedAt == null) return;
+      if (Date.now() - startedAt < PLAYBACK_STALL_TIMEOUT_MS) return;
+      if (maxLegitimateTimeRef.current > 0.25) {
+        playRequestedAtRef.current = null;
+        return;
+      }
+
+      try {
+        player.pause();
+      } catch {
+        /* noop */
+      }
+      setPlaybackError("playback_stalled");
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [blockedOnPlatform, isPlaying, player]);
 
   useEffect(() => {
     const onAppState = (state: AppStateStatus) => {
@@ -126,16 +174,41 @@ function MissionVideoPlayerInner({
   );
 
   const togglePlayPause = useCallback(() => {
+    if (playbackError === "unsupported_codec") return;
+
     try {
       if (player.playing) {
         player.pause();
+        playRequestedAtRef.current = null;
       } else {
+        setPlaybackError(null);
+        playRequestedAtRef.current = Date.now();
         player.play();
       }
     } catch {
-      /* noop */
+      setPlaybackError("playback_stalled");
     }
-  }, [player]);
+  }, [player, playbackError]);
+
+  if (playbackError != null) {
+    const messageKey =
+      playbackError === "unsupported_codec"
+        ? "missions.detail.video.unsupportedCodecIos"
+        : "missions.detail.video.playbackStalled";
+
+    return (
+      <View style={styles.shell}>
+        <View style={styles.errorBox}>
+          <MaterialIcons
+            name="error-outline"
+            size={40}
+            color={theme.colors.dangerSolid}
+          />
+          <Text style={styles.errorText}>{t(messageKey)}</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.shell}>
@@ -207,5 +280,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingLeft: 6,
+  },
+  errorBox: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: theme.spacing.md,
+    gap: theme.spacing.sm,
+  },
+  errorText: {
+    ...theme.typography.body,
+    color: theme.colors.dangerSolid,
+    textAlign: "center",
   },
 });

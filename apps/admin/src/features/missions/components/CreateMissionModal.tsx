@@ -22,6 +22,7 @@ import {
 } from "../types/missionAdmin";
 import { buildMissionMetadata } from "./create-mission/buildMissionMetadata";
 import type { RulesTab } from "./create-mission/createMissionFormTypes";
+import { getHevcVideoUrlError } from "../lib/videoCodecSupport";
 import { MissionMetadataSection } from "./create-mission/MissionMetadataSection";
 import { MissionRulesMarkdownField } from "./create-mission/missionRulesMarkdownField";
 import { createDefaultSurveyDraft } from "./create-mission/survey-builder/defaultSurveyDraft";
@@ -120,6 +121,10 @@ export function CreateMissionModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const createMutation = useCreateAdminMissionMutation();
+
+  const videoHevcBlocked =
+    form.mission_type === "video" &&
+    getHevcVideoUrlError(form.video_metadata_url) != null;
 
   useEffect(() => {
     if (!open) {
@@ -713,7 +718,7 @@ export function CreateMissionModal({
               <button
                 type="submit"
                 className="mission-create-form__btn mission-create-form__btn--primary"
-                disabled={createMutation.isPending || brands.length === 0}
+                disabled={createMutation.isPending || brands.length === 0 || videoHevcBlocked}
               >
                 {createMutation.isPending
                   ? "Enregistrement…"

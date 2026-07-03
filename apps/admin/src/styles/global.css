@@ -1025,6 +1025,15 @@ body {
   border: 1px solid #fde68a;
 }
 
+.mission-create-form__field-error {
+  color: #b91c1c;
+  padding: 0.5rem 0.65rem;
+  border-radius: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  font-weight: 500;
+}
+
 .mission-create-form__label--checkbox {
   display: flex;
   align-items: center;

@@ -46,7 +46,9 @@ function VideoMissionDetail({
         </View>
       ) : (
         <View style={styles.videoSection}>
-          <Text style={styles.videoTitle}>{video.displayTitle}</Text>
+          {video.displayTitle ? (
+            <Text style={styles.videoTitle}>{video.displayTitle}</Text>
+          ) : null}
           {/* {video.thumbnailUrl ? (
             <Image
               source={{ uri: video.thumbnailUrl }}
