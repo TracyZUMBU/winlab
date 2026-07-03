@@ -315,14 +315,6 @@ export function LotteryDetailScreenMaquette() {
               color={theme.colors.backgroundDark}
             />
           </Pressable>
-
-          <Text style={styles.footerNote}>
-            {t("lottery.detail.footer.noteBeforeTerms")}{" "}
-            <Text style={styles.footerNoteLink}>
-              {t("lottery.detail.footer.noteTermsLabel")}
-            </Text>{" "}
-            {t("lottery.detail.footer.noteAfterTerms")}
-          </Text>
         </View>
       </View>
     </Screen>
