@@ -26,7 +26,9 @@
     "build:android-production": "eas build --platform android --profile production",
     "submit:ios": "APP_ENV=production eas submit --platform ios --profile production",
     "submit:android": "APP_ENV=production eas submit --platform android --profile production",
-    "update:preview": "eas update --channel preview"
+    "update:preview": "eas update --channel preview",
+    "update:production": "eas update --channel production",
+    "update:all": "npm run update:preview && npm run update:production"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
