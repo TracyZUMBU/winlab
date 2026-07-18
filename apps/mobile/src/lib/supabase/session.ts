@@ -1,5 +1,9 @@
 import type { Session, User } from "@supabase/supabase-js";
 
+import { logger } from "@/src/lib/logger";
+
+import { isInvalidRefreshTokenError } from "./authErrors";
+import { clearLocalSupabaseSession } from "./clearLocalSession";
 import { getSupabaseClient } from "./client";
 import { supabaseEnv } from "./env";
 
@@ -13,6 +17,17 @@ export const getCurrentSession = async (): Promise<AuthSession> => {
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
+    if (isInvalidRefreshTokenError(error)) {
+      logger.warn(
+        "[auth] invalid refresh token on getSession; clearing local session",
+        { error },
+      );
+      await clearLocalSupabaseSession();
+      return {
+        session: null,
+        user: null,
+      };
+    }
     throw error;
   }
 
@@ -42,4 +57,3 @@ export const subscribeToAuthChanges = (
     subscription.unsubscribe();
   };
 };
-

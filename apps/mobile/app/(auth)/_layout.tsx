@@ -1,16 +1,28 @@
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
-import { Stack, usePathname, useRouter } from "expo-router";
+import {
+  Stack,
+  useLocalSearchParams,
+  usePathname,
+  useRouter,
+} from "expo-router";
 import React, { useEffect } from "react";
-import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
+import {
+  AUTH_ROUTES,
+  isAuthPathname,
+} from "@/src/features/auth/constants/authConstants";
 
 export default function AuthLayout() {
   const router = useRouter();
   const pathname = usePathname();
+  const params = useLocalSearchParams<{ email?: string }>();
+  const emailFromParams =
+    typeof params.email === "string" ? params.email.trim() : "";
 
   // Guard côté auth:
-  // - ne jamais casser le flow OTP: si pas de session, on laisse email/otp tranquilles
-  // - en revanche, si une session existe, on force l'utilisateur vers home/create-profile
-  // - si pas de session et qu'on tente d'accéder à create-profile => redirection email/onboarding
+  // - OTP avec email en params: flux login en cours → laisser tranquille
+  // - OTP sans email (restauration après logout / reload) → email/onboarding
+  // - session existante → home/create-profile
+  // - pas de session sur create-profile → email/onboarding
   const {
     status,
     sessionUserId,
@@ -21,6 +33,10 @@ export default function AuthLayout() {
   useEffect(() => {
     if (status !== "ready") return;
 
+    const signedOutEntry = hasSeenOnboarding
+      ? AUTH_ROUTES.email
+      : "/onboarding";
+
     // Si l'utilisateur est authentifié, on impose la route correcte.
     if (sessionUserId) {
       if (profile) {
@@ -28,19 +44,30 @@ export default function AuthLayout() {
         return;
       }
 
-      if (pathname !== AUTH_ROUTES.createProfile) {
+      if (!isAuthPathname(pathname, "createProfile")) {
         router.replace(AUTH_ROUTES.createProfile);
       }
       return;
     }
 
-    // Pas de session: on protège uniquement create-profile.
-    if (pathname === AUTH_ROUTES.createProfile) {
-      router.replace(
-        hasSeenOnboarding ? AUTH_ROUTES.email : "/onboarding",
-      );
+    // Pas de session: OTP n'est valide que pendant un flux avec email.
+    if (isAuthPathname(pathname, "otp") && !emailFromParams) {
+      router.replace(signedOutEntry);
+      return;
     }
-  }, [pathname, sessionUserId, profile, hasSeenOnboarding, router, status]);
+
+    if (isAuthPathname(pathname, "createProfile")) {
+      router.replace(signedOutEntry);
+    }
+  }, [
+    pathname,
+    emailFromParams,
+    sessionUserId,
+    profile,
+    hasSeenOnboarding,
+    router,
+    status,
+  ]);
 
   if (status !== "ready") return null;
 

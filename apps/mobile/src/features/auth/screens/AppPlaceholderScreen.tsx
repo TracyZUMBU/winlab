@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { showErrorToast } from "@/src/shared/toast";
 import { colors } from "@/src/theme/colors";
-import { AUTH_ROUTES } from "../constants/authConstants";
 import { useAuthSession } from "../hooks/useAuthSession";
 import { useSignOutMutation } from "../hooks/useSignOutMutation";
+import { redirectAfterSignOut } from "../utils/redirectAfterSignOut";
 
 export const AppPlaceholderScreen: React.FC = () => {
   const router = useRouter();
@@ -24,10 +24,12 @@ export const AppPlaceholderScreen: React.FC = () => {
   const handleLogout = () => {
     signOutMutation.mutate(undefined, {
       onSuccess: () => {
-        router.replace(AUTH_ROUTES.email);
+        redirectAfterSignOut(router);
       },
       onError: () => {
+        // Local session is still cleared in `signOut`; leave auth shell.
         showErrorToast({ title: t("appPlaceholder.logoutError") });
+        redirectAfterSignOut(router);
       },
     });
   };

@@ -30,9 +30,9 @@ import { ListGroup } from "@/src/components/ui/ListGroup";
 import { Screen } from "@/src/components/ui/Screen";
 import { ScreenSectionOverline } from "@/src/components/ui/ScreenSectionOverline";
 import { LegalScrollModal } from "@/src/features/auth/components/LegalScrollModal";
-import { AUTH_ROUTES } from "@/src/features/auth/constants/authConstants";
 import { useAuthSession } from "@/src/features/auth/hooks/useAuthSession";
 import { useSignOutMutation } from "@/src/features/auth/hooks/useSignOutMutation";
+import { redirectAfterSignOut } from "@/src/features/auth/utils/redirectAfterSignOut";
 import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBalanceQuery";
 import { legalEntityInfo, type LegalDocumentId } from "@/src/legal/index";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
@@ -311,10 +311,13 @@ export function ProfileScreen() {
   const handleLogout = useCallback(() => {
     signOutMutation.mutate(undefined, {
       onSuccess: () => {
-        router.replace(AUTH_ROUTES.email);
+        redirectAfterSignOut(router);
       },
       onError: (error) => {
+        // Global revoke may fail when the refresh token is already dead; local
+        // storage is still cleared in `signOut`, so leave the app shell anyway.
         logger.error("Logout failed", error);
+        redirectAfterSignOut(router);
       },
     });
   }, [router, signOutMutation]);
@@ -354,11 +357,11 @@ export function ProfileScreen() {
 
               signOutMutation.mutate(undefined, {
                 onSuccess: () => {
-                  router.replace(AUTH_ROUTES.email);
+                  redirectAfterSignOut(router);
                 },
                 onError: (error) => {
                   logger.error("Logout after delete failed", error);
-                  router.replace(AUTH_ROUTES.email);
+                  redirectAfterSignOut(router);
                 },
               });
             })();
