@@ -54,7 +54,7 @@ Objectif : même **contrat mental** partout sur les **mutations métier** : code
 | Statut | Tâche                                                                                                                                                                |
 | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [x]    | **OTP** : `verifyEmailOtp` — **codes stables** + écran avec `getI18nMessageForCode` / `t(..., { length })` ; plus de `error?.message` côté résultat                  |
-| [x]    | Repasser les écrans **auth** pour texte utilisateur : `OTPScreen`, `EmailScreen`, `DevPasswordLoginPanel` ; `AppPlaceholderScreen` / `AuthScreenLayout` déjà propres |
+| [x]    | Repasser les écrans **auth** pour texte utilisateur : `OTPScreen`, `EmailScreen` (password whitelist) ; `AppPlaceholderScreen` / `AuthScreenLayout` déjà propres |
 
 ---
 

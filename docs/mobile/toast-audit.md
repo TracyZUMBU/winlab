@@ -17,7 +17,7 @@ Légende des catégories : **success** | **error** | **info** | **warning** | **
 | `OTPScreen.tsx`             | Erreur redirect / générique | Inline                                              | **no-toast**             | Déjà couvert inline.                                                                                                           |
 | `CreateProfileScreen.tsx`   | Erreurs session / submit    | Inline `serverError`                                | **no-toast**             | Inline suffisant.                                                                                                              |
 | `CreateProfileScreen.tsx`   | Succès création profil (submit) | Navigation `replace` vers `/home` ; pas de message succès | **no-toast**        | La transition d’écran suffit ; un toast risquerait d’être court-circuité ou redondant (même principe que navigation post-action ailleurs en auth). |
-| `DevPasswordLoginPanel.tsx` | Login dev                   | Inline `setError`                                   | **no-toast**             | Erreurs inline.                                                                                                                |
+| `EmailScreen.tsx` (password whitelist) | Login password (emails `EXPO_PUBLIC_AUTH_PASSWORD_LOGIN_EMAILS`) | Inline `setServerError` / `passwordError` | **no-toast** | Erreurs inline. Voir `features/auth/MEMO.md`. |
 | `AppPlaceholderScreen.tsx`  | Déconnexion                 | Pas de feedback erreur (`onError` vide)             | **error**                | Échec d’action utilisateur sans message (implémenté toast erreur).                                                             |
 
 ---

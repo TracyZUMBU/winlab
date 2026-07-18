@@ -17,11 +17,11 @@ Les volumes indiqués sont la **cible persona** (scénarios de test). Si le scri
 | `referrer_user` | `seed.referrer.user@booknglow.app` | `SeedUser123!` |
 | `referred_user` | `seed.referred.user@booknglow.app` | `SeedUser123!` |
 
-### Connexion dans l’app (dev)
+### Connexion dans l’app (password whitelist)
 
-En build **développement** (`__DEV__`), l’écran email affiche un bloc **Mode développement** : saisir le même email que dans le tableau et le mot de passe `SeedUser123!` pour appeler `signInWithPassword` (sans OTP). Les builds release n’affichent pas ce bloc.
+Les emails seed doivent être listés dans `EXPO_PUBLIC_AUTH_PASSWORD_LOGIN_EMAILS` (voir `.env.example` et `src/features/auth/MEMO.md`). Sur l’écran email, saisir l’email du tableau : le champ **mot de passe** apparaît, puis se connecter avec `SeedUser123!` (sans OTP).
 
-Pour le flux OTP classique en local, les mails Auth sont visibles dans **Inbucket** (`http://127.0.0.1:54424` après `supabase start`).
+Sans whitelist (ou email hors liste) : flux OTP classique. En local, les mails Auth sont visibles dans **Inbucket** (`http://127.0.0.1:54424` après `supabase start`).
 
 ## Matrice par persona
 

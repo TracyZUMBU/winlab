@@ -7,7 +7,7 @@ describe("isInvalidRefreshTokenError", () => {
     expect(
       isInvalidRefreshTokenError({
         code: "refresh_token_not_found",
-        message: "Invalid Refresh Token: Refresh Token Not Found",
+        message: "Request failed",
       }),
     ).toBe(true);
   });

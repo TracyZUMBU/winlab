@@ -8,6 +8,7 @@ import { useForm, type FieldErrors } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
@@ -17,13 +18,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { DevPasswordLoginPanel } from "../components/DevPasswordLoginPanel";
 import { LegalScrollModal } from "../components/LegalScrollModal";
 import { AUTH_ROUTES } from "../constants/authConstants";
-import { sendEmailOtp } from "../services";
+import { sendEmailOtp, signInWithEmailPassword } from "../services";
 import type { LegalDocumentId } from "@/src/legal/index";
 import { colors } from "@/src/theme/colors";
-import { emailSchema, type EmailFormValues } from "../validators";
+import { isPasswordLoginEmail } from "../utils/passwordLoginEmails";
+import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
+import {
+  emailSchema,
+  passwordLoginSchema,
+  type EmailFormValues,
+} from "../validators";
 
 function createAuthRequestId(): string {
   return `auth-email-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -34,6 +40,9 @@ export const EmailScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [serverError, setServerError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [legalDocument, setLegalDocument] = useState<LegalDocumentId | null>(
     null,
   );
@@ -53,8 +62,10 @@ export const EmailScreen: React.FC = () => {
 
   const emailField = register("email");
   const emailValue = watch("email");
+  const usePasswordLogin = isPasswordLoginEmail(emailValue ?? "");
+  const isBusy = isSubmitting || passwordSubmitting;
 
-  const onSubmit = async (values: EmailFormValues) => {
+  const onSubmitOtp = async (values: EmailFormValues) => {
     setServerError(null);
     setInfoMessage(null);
     const requestId = createAuthRequestId();
@@ -176,8 +187,8 @@ export const EmailScreen: React.FC = () => {
     );
   };
 
-  const onInvalidSubmit = (errors: FieldErrors<EmailFormValues>) => {
-    const hasEmailError = Boolean(errors.email);
+  const onInvalidSubmit = (formErrors: FieldErrors<EmailFormValues>) => {
+    const hasEmailError = Boolean(formErrors.email);
     monitoring.captureMessage({
       name: "auth_email_continue_validation_failed",
       severity: "warning",
@@ -190,7 +201,73 @@ export const EmailScreen: React.FC = () => {
     });
   };
 
-  const onPressContinue = () => {
+  const onPressPasswordSignIn = async () => {
+    setServerError(null);
+    setInfoMessage(null);
+    setPasswordError(null);
+
+    const emailParsed = emailSchema.safeParse({ email: emailValue });
+    if (!emailParsed.success) {
+      const msg = emailParsed.error.flatten().fieldErrors.email?.[0];
+      setServerError(msg ?? t("emailScreen.error.email"));
+      return;
+    }
+
+    if (!isPasswordLoginEmail(emailParsed.data.email)) {
+      return;
+    }
+
+    const pwdParsed = passwordLoginSchema.safeParse({ password });
+    if (!pwdParsed.success) {
+      const msg = pwdParsed.error.flatten().fieldErrors.password?.[0];
+      setPasswordError(
+        msg ?? t("emailScreen.passwordLogin.error.passwordRequired"),
+      );
+      return;
+    }
+
+    setPasswordSubmitting(true);
+    monitoring.captureMessage({
+      name: "auth_password_login_submit_started",
+      severity: "info",
+      feature: "auth",
+      message: "EmailScreen password login started",
+      extra: { platform: Platform.OS },
+    });
+
+    try {
+      const user = await signInWithEmailPassword({
+        email: emailParsed.data.email,
+        password: pwdParsed.data.password,
+      });
+      monitoring.captureMessage({
+        name: "auth_password_login_submit_success",
+        severity: "info",
+        feature: "auth",
+        message: "EmailScreen password login succeeded",
+        extra: { platform: Platform.OS },
+      });
+      await redirectAfterAuthSession(router, user.id);
+    } catch {
+      monitoring.captureMessage({
+        name: "auth_password_login_submit_failed",
+        severity: "warning",
+        feature: "auth",
+        message: "EmailScreen password login failed",
+        extra: { platform: Platform.OS },
+      });
+      setServerError(t("auth.genericError"));
+    } finally {
+      setPasswordSubmitting(false);
+    }
+  };
+
+  const onPressPrimary = () => {
+    if (usePasswordLogin) {
+      void onPressPasswordSignIn();
+      return;
+    }
+
     monitoring.captureMessage({
       name: "auth_email_continue_button_pressed",
       severity: "info",
@@ -202,137 +279,187 @@ export const EmailScreen: React.FC = () => {
       },
     });
 
-    void handleSubmit(onSubmit, onInvalidSubmit)();
+    void handleSubmit(onSubmitOtp, onInvalidSubmit)();
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.root}>
-        <View style={styles.card}>
-          {/* Top App Bar */}
-          <View style={styles.topBar}>
-            <View style={styles.tokenWrapper}>
-              <View style={styles.tokenBackground}>
-                <MaterialIcons name="token" size={22} color={colors.accentSolid} />
-              </View>
-            </View>
-          </View>
-
-          <ScrollView
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.title}>{t("emailScreen.title")}</Text>
-              <Text style={styles.subtitle}>{t("emailScreen.subtitle")}</Text>
-            </View>
-            {/* Form */}
-            <View style={styles.form}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>{t("emailScreen.label")}</Text>
-                <View style={styles.inputWrapper}>
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.root}>
+          <View style={styles.card}>
+            <View style={styles.topBar}>
+              <View style={styles.tokenWrapper}>
+                <View style={styles.tokenBackground}>
                   <MaterialIcons
-                    name="mail"
-                    size={20}
-                    color={colors.textMutedAccent}
-                    style={styles.inputIcon}
-                  />
-
-                  <TextInput
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
-                    placeholder={t("emailScreen.emailPlaceholder")}
-                    placeholderTextColor={colors.textMutedAccent}
-                    style={[
-                      styles.input,
-                      errors.email ? styles.inputError : undefined,
-                    ]}
-                    value={emailValue}
-                    onChangeText={(text) => {
-                      setValue("email", text, { shouldValidate: true });
-                    }}
-                    onBlur={emailField.onBlur}
+                    name="token"
+                    size={22}
+                    color={colors.accentSolid}
                   />
                 </View>
+              </View>
+            </View>
 
-                {errors.email?.message ? (
-                  <Text style={styles.errorText}>{errors.email.message}</Text>
-                ) : null}
+            <ScrollView
+              contentContainerStyle={styles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+              automaticallyAdjustKeyboardInsets
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.header}>
+                <Text style={styles.title}>{t("emailScreen.title")}</Text>
+                <Text style={styles.subtitle}>{t("emailScreen.subtitle")}</Text>
               </View>
 
-              {serverError ? (
-                <Text style={styles.serverError}>{serverError}</Text>
-              ) : null}
-              {infoMessage ? (
-                <Text style={styles.info}>{infoMessage}</Text>
-              ) : null}
+              <View style={styles.form}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>{t("emailScreen.label")}</Text>
+                  <View style={styles.inputWrapper}>
+                    <MaterialIcons
+                      name="mail"
+                      size={20}
+                      color={colors.textMutedAccent}
+                      style={styles.inputIcon}
+                    />
 
-              {/* Primary Action */}
-              <View style={styles.primaryAction}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.primaryButton,
-                    pressed && styles.primaryButtonPressed,
-                    isSubmitting && styles.primaryButtonDisabled,
-                  ]}
-                  onPress={onPressContinue}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <ActivityIndicator color="#111813" />
-                  ) : (
-                    <Text style={styles.primaryButtonText}>
-                      {t("emailScreen.continue")}
+                    <TextInput
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      textContentType="emailAddress"
+                      autoComplete="email"
+                      placeholder={t("emailScreen.emailPlaceholder")}
+                      placeholderTextColor={colors.textMutedAccent}
+                      style={[
+                        styles.input,
+                        errors.email ? styles.inputError : undefined,
+                      ]}
+                      value={emailValue}
+                      onChangeText={(text) => {
+                        setValue("email", text, { shouldValidate: true });
+                        setPasswordError(null);
+                        setServerError(null);
+                        setInfoMessage(null);
+                      }}
+                      onBlur={emailField.onBlur}
+                    />
+                  </View>
+
+                  {errors.email?.message ? (
+                    <Text style={styles.errorText}>{errors.email.message}</Text>
+                  ) : null}
+                </View>
+
+                {usePasswordLogin ? (
+                  <View style={styles.fieldContainer}>
+                    <Text style={styles.label}>
+                      {t("emailScreen.passwordLogin.passwordLabel")}
                     </Text>
-                  )}
-                </Pressable>
+                    <View style={styles.inputWrapper}>
+                      <MaterialIcons
+                        name="lock"
+                        size={20}
+                        color={colors.textMutedAccent}
+                        style={styles.inputIcon}
+                      />
+                      <TextInput
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        placeholder={t(
+                          "emailScreen.passwordLogin.passwordPlaceholder",
+                        )}
+                        placeholderTextColor={colors.textMutedAccent}
+                        secureTextEntry
+                        textContentType="password"
+                        autoComplete="password"
+                        style={[
+                          styles.input,
+                          passwordError ? styles.inputError : undefined,
+                        ]}
+                        value={password}
+                        onChangeText={(text) => {
+                          setPassword(text);
+                          setPasswordError(null);
+                          setServerError(null);
+                        }}
+                      />
+                    </View>
+                    {passwordError ? (
+                      <Text style={styles.errorText}>{passwordError}</Text>
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {serverError ? (
+                  <Text style={styles.serverError}>{serverError}</Text>
+                ) : null}
+                {infoMessage ? (
+                  <Text style={styles.info}>{infoMessage}</Text>
+                ) : null}
+
+                <View style={styles.primaryAction}>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.primaryButton,
+                      pressed && styles.primaryButtonPressed,
+                      isBusy && styles.primaryButtonDisabled,
+                    ]}
+                    onPress={onPressPrimary}
+                    disabled={isBusy}
+                  >
+                    {isBusy ? (
+                      <ActivityIndicator color="#111813" />
+                    ) : (
+                      <Text style={styles.primaryButtonText}>
+                        {usePasswordLogin
+                          ? t("emailScreen.signIn")
+                          : t("emailScreen.continue")}
+                      </Text>
+                    )}
+                  </Pressable>
+                </View>
               </View>
 
-              {__DEV__ ? <DevPasswordLoginPanel email={emailValue} /> : null}
-            </View>
-            {/* Footer */}
-            <View style={styles.footer}>
-              <View style={styles.securityRow}>
-                <MaterialIcons
-                  name="lock"
-                  size={14}
-                  color={colors.textMutedAccent}
-                  style={styles.lockIcon}
-                />
-                <Text style={styles.securityText}>
-                  {t("emailScreen.secureAndEncryptedAuthentication")}
+              <View style={styles.footer}>
+                <View style={styles.securityRow}>
+                  <MaterialIcons
+                    name="lock"
+                    size={14}
+                    color={colors.textMutedAccent}
+                    style={styles.lockIcon}
+                  />
+                  <Text style={styles.securityText}>
+                    {t("emailScreen.secureAndEncryptedAuthentication")}
+                  </Text>
+                </View>
+
+                <Text style={styles.termsText}>
+                  <Text>{t("emailScreen.terms.lead")}</Text>
+                  <Text
+                    accessibilityRole="link"
+                    onPress={() => setLegalDocument("terms")}
+                    style={styles.termsLink}
+                  >
+                    {t("emailScreen.termsOfService")}
+                  </Text>
+                  <Text>{t("emailScreen.terms.middle")}</Text>
+                  <Text
+                    accessibilityRole="link"
+                    onPress={() => setLegalDocument("privacy")}
+                    style={styles.termsLink}
+                  >
+                    {t("emailScreen.privacyPolicy")}
+                  </Text>
+                  <Text>{t("emailScreen.terms.trail")}</Text>
                 </Text>
               </View>
+            </ScrollView>
 
-              <Text style={styles.termsText}>
-                <Text>{t("emailScreen.terms.lead")}</Text>
-                <Text
-                  accessibilityRole="link"
-                  onPress={() => setLegalDocument("terms")}
-                  style={styles.termsLink}
-                >
-                  {t("emailScreen.termsOfService")}
-                </Text>
-                <Text>{t("emailScreen.terms.middle")}</Text>
-                <Text
-                  accessibilityRole="link"
-                  onPress={() => setLegalDocument("privacy")}
-                  style={styles.termsLink}
-                >
-                  {t("emailScreen.privacyPolicy")}
-                </Text>
-                <Text>{t("emailScreen.terms.trail")}</Text>
-              </Text>
-            </View>
-          </ScrollView>
-
-          {/* Decorative background bubble */}
-          <View style={styles.decorativeBubble} />
+            <View style={styles.decorativeBubble} />
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
 
       {legalDocument != null ? (
         <LegalScrollModal
@@ -348,6 +475,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#E9F0EB",
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   root: {
     flex: 1,
@@ -373,12 +503,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 4,
-  },
-  backButton: {
-    width: 48,
-    height: 48,
-    alignItems: "flex-start",
-    justifyContent: "center",
   },
   tokenWrapper: {
     flex: 1,

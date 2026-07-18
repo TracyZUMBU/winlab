@@ -100,21 +100,19 @@
     "subtitle": "Nous vous enverrons un code pour vous connecter ou créer un compte. Les jetons et loteries vous attendent ensuite.",
     "label": "ADRESSE EMAIL",
     "continue": "Continuer",
+    "signIn": "Se connecter",
     "emailPlaceholder": "nom@exemple.com",
     "terms": {
       "lead": "En continuant, vous acceptez les ",
       "middle": " et la ",
       "trail": " de Wintix."
     },
-    "dev": {
-      "title": "Mode développement",
-      "subtitle": "Connexion par mot de passe avec l’email saisi ci-dessus (ex. comptes seed). Absent des builds release.",
+    "passwordLogin": {
       "passwordLabel": "MOT DE PASSE",
-      "submit": "Connexion dev",
+      "passwordPlaceholder": "••••••••",
       "error": {
         "passwordRequired": "Le mot de passe est requis"
-      },
-      "passwordPlaceholder": "••••••••"
+      }
     },
     "secureAndEncryptedAuthentication": "Authentification sécurisée et chiffrée",
     "termsOfService": "Conditions d'utilisation",

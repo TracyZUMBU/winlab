@@ -140,6 +140,7 @@
     "subtitle": "We'll send you a code to sign in or create an account. Tokens and lotteries come next.",
     "label": "EMAIL ADDRESS",
     "continue": "Continue",
+    "signIn": "Sign in",
     "emailPlaceholder": "name@example.com",
     "terms": {
       "lead": "By continuing, you agree to Wintix's ",
@@ -149,15 +150,12 @@
     "secureAndEncryptedAuthentication": "Secure, encrypted sign-in",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
-    "dev": {
-      "title": "Development mode",
-      "subtitle": "Password sign-in using the email above (e.g. seed accounts). Omitted from release builds.",
+    "passwordLogin": {
       "passwordLabel": "PASSWORD",
-      "submit": "Dev sign-in",
+      "passwordPlaceholder": "••••••••",
       "error": {
         "passwordRequired": "Password is required"
-      },
-      "passwordPlaceholder": "••••••••"
+      }
     },
     "error": {
       "required": "Email is required",

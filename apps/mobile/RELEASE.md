@@ -24,6 +24,7 @@ Ce document décrit **EAS Build** (APK / IPA) et **EAS Update** (OTA) pour l’a
 | `npm run build:ios-production`                | `eas build --platform ios --profile production` (piste App Store / TestFlight)                            |
 | `npm run submit:ios`                          | `APP_ENV=production eas submit --platform ios --profile production`                                       |
 | `npm run update:preview`                      | `eas update --channel preview` (OTA Android **et** iOS pour les binaires branchés sur `preview`)          |
+| `npm run update:production`                   | `eas update --channel production` (OTA pour binaires App Store / production)                              |
 
 
 ## Comportement de `runtimeVersion` (appVersion)
@@ -59,15 +60,19 @@ Le projet utilise `**app.config.js`** (pas `app.json`) : `**autoIncrement` dans 
 
 À privilégier si le **natif** change : SDK Expo, modules natifs, plugins `app.config.js`, permissions, icônes / splash, ou vous publiez une **nouvelle** `expo.version`.
 
-### OTA (`npm run update:preview`)
+### OTA (`npm run update:preview` / `update:production`)
 
-JS/TS et assets du bundle **uniquement**, **sans** changer `expo.version` par rapport au dernier binaire **preview** en circulation.
+JS/TS et assets du bundle **uniquement**, **sans** changer `expo.version` par rapport au dernier binaire du channel concerné.
 
 Message optionnel :
 
 ```bash
 npx eas update --channel preview --message "correctif écran login"
+# App Store / production (même expo.version que le binaire soumis) :
+npm run update:production -- --message "auth: password login whitelist"
 ```
+
+Connexion password (emails whitelist `EXPO_PUBLIC_AUTH_PASSWORD_LOGIN_EMAILS`) : voir `src/features/auth/MEMO.md`. La variable doit être définie dans EAS **au moment** de l’`eas update`.
 
 ## iOS : aperçu des flux
 
@@ -102,14 +107,14 @@ Les testeurs **preview** doivent avoir l’IPA **preview** installé pour recevo
 7. iOS production : `npm run submit:ios` si besoin.
 8. Tester sur appareil, diffuser.
 
-## Checklist : **OTA** uniquement (`preview`)
+## Checklist : **OTA** uniquement (`preview` / `production`)
 
-1. Pas de changement natif ; `**expo.version` inchangée** (pas de `bump:release`).
-2. `npm run update:preview`.
-3. Ouvrir l’app sur un build **preview** (Android ou iOS) ; vérifier la récupération de l’update.
+1. Pas de changement natif ; `**expo.version` inchangée** (pas de `bump:release`) — même valeur que le dernier binaire du **channel** ciblé.
+2. Publier : `npm run update:preview` **ou** `npm run update:production` (selon le channel des binaires à mettre à jour).
+3. Ouvrir l’app sur un build du **même channel** (preview interne, ou App Store / production) ; vérifier la récupération de l’update.
 
 ## Raccourci
 
 - **Natif ou nouvelle semver ?** → `bump:release` + build(s) natif(s).
-- **JS uniquement, même semver que le binaire en circulation ?** → `update:preview`.
+- **JS uniquement, même semver que le binaire en circulation ?** → `update:preview` ou `update:production` (channel du binaire).
 

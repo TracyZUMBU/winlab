@@ -7,7 +7,7 @@ export type SignInWithEmailPasswordInput = {
 
 /**
  * Email + password sign-in (Supabase Auth).
- * Used by the dev-only path on EmailScreen; production flow remains OTP.
+ * Used on EmailScreen when the email is in EXPO_PUBLIC_AUTH_PASSWORD_LOGIN_EMAILS.
  */
 export const signInWithEmailPassword = async (
   input: SignInWithEmailPasswordInput,
