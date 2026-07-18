@@ -150,7 +150,7 @@
       "label": "ADRESSE EMAIL",
       "errors": {
         "generic": "Une erreur est survenue. Merci de réessayer.",
-        "EMAIL_SEND_RATE_LIMITED": "Trop de demandes. Réessayez dans quelques minutes.",
+        "EMAIL_SEND_RATE_LIMITED": "Un code a déjà été envoyé. Réessayez dans une minute.",
         "CAPTCHA_FAILED": "Impossible d'envoyer le code. Réessayez (ou attendez quelques minutes).",
         "EMAIL_INVALID": "Entrez une adresse email valide.",
         "SIGNUP_DISABLED": "L’inscription est temporairement désactivée. Réessayez plus tard.",

@@ -1,6 +1,6 @@
 # Mémo — Feature Auth (mobile)
 
-**Dernière revue du mémo :** 2026-07-18
+**Dernière revue du mémo :** 2026-07-18 (rate limit OTP client)
 
 ## Objectif
 
@@ -70,12 +70,20 @@ Parcours :
 | OTP send / verify | `services/sendEmailOtp.ts`, `verifyEmailOtp.ts` |
 | Password login | `services/signInWithEmailPassword.ts` |
 | Whitelist | `utils/passwordLoginEmails.ts` |
+| OTP client cooldown | `utils/emailOtpClientRateLimit.ts` |
 | Redirect | `utils/redirectAfterAuthSession.ts` |
 | UI email | `screens/EmailScreen.tsx` |
 
+## Rate limit OTP (client)
+
+- Cooldown **60 s** par email après un envoi réussi (`utils/emailOtpClientRateLimit.ts`), appliqué dans `sendEmailOtp` (Continuer + Renvoyer).
+- Pendant le cooldown / requête en cours : `EMAIL_SEND_RATE_LIMITED` (pas d’appel Supabase).
+- Complète le rate limit serveur Supabase ; ne le remplace pas.
+
 ## Vérifs manuelles
 
-1. Email non whitelist → Continuer → OTP.
+1. Email non whitelist → Continuer → OTP (rester sur l’écran code).
 2. Email whitelist → password → login → home (si profil existe).
 3. Mauvais password → erreur générique.
 4. Variable d’env absente → aucun password UI (OTP only).
+5. Double Continuer / Renvoyer dans les 60 s → message rate limit, un seul mail.

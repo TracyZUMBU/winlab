@@ -51,12 +51,12 @@ export type SendEmailOtpBusinessErrorCode = Exclude<
 
 /** Non-PII diagnostic fields for auth OTP send failures (monitoring / debug). */
 export type SendEmailOtpDiagnostic = {
-  branch: "supabase_error" | "caught_exception";
+  branch: "supabase_error" | "caught_exception" | "client_rate_limited";
   supabaseErrorCode?: string;
   errorName?: string;
   errorMessage?: string;
   errorIsInstanceOfError: string;
-  connectivityProbe: "ok" | "failed";
+  connectivityProbe: "ok" | "failed" | "skipped";
   connectivityHttpStatus?: string;
   connectivityErrorMessage?: string;
   supabaseUrlHost?: string;

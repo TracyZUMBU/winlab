@@ -1,7 +1,7 @@
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 import {
   Stack,
-  useLocalSearchParams,
+  useGlobalSearchParams,
   usePathname,
   useRouter,
 } from "expo-router";
@@ -11,12 +11,21 @@ import {
   isAuthPathname,
 } from "@/src/features/auth/constants/authConstants";
 
+function firstSearchParam(value: string | string[] | undefined): string {
+  if (typeof value === "string") return value.trim();
+  if (Array.isArray(value) && typeof value[0] === "string") {
+    return value[0].trim();
+  }
+  return "";
+}
+
 export default function AuthLayout() {
   const router = useRouter();
   const pathname = usePathname();
-  const params = useLocalSearchParams<{ email?: string }>();
-  const emailFromParams =
-    typeof params.email === "string" ? params.email.trim() : "";
+  // Layouts do not see child route search params via useLocalSearchParams.
+  // useGlobalSearchParams is required so OTP ?email=… is visible to this guard.
+  const params = useGlobalSearchParams<{ email?: string | string[] }>();
+  const emailFromParams = firstSearchParam(params.email);
 
   // Guard côté auth:
   // - OTP avec email en params: flux login en cours → laisser tranquille

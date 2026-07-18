@@ -7,6 +7,11 @@ import type {
   SendEmailOtpErrorCode,
   SendEmailOtpResult,
 } from "../types";
+import {
+  markEmailOtpSendSucceeded,
+  releaseEmailOtpSendAttempt,
+  tryAcquireEmailOtpSend,
+} from "../utils/emailOtpClientRateLimit";
 
 function getSupabaseErrorCode(error: unknown): string | undefined {
   if (!error || typeof error !== "object") return undefined;
@@ -170,18 +175,52 @@ export const sendEmailOtp = async ({
   email,
   requestId,
 }: EmailOtpPayload): Promise<SendEmailOtpResult> => {
-  const supabase = getSupabaseClient();
-  const connectivity = await probeSupabaseConnectivity();
-  const baseDiagnostic: Omit<
+  if (!tryAcquireEmailOtpSend(email)) {
+    const diagnostic: SendEmailOtpDiagnostic = {
+      branch: "client_rate_limited",
+      connectivityProbe: "skipped",
+      supabaseUrlHost: getSupabaseUrlHost(),
+      supabaseConfigured: String(supabaseEnv.isConfigured),
+      errorIsInstanceOfError: "false",
+      errorName: "ClientRateLimited",
+      errorMessage: "email_otp_client_cooldown",
+    };
+
+    monitoring.captureMessage({
+      name: "auth_send_email_otp_user_error",
+      severity: "warning",
+      feature: "auth",
+      requestId,
+      message: "sendEmailOtp blocked by client cooldown",
+      extra: monitoringExtraFromDiagnostic(diagnostic, "EMAIL_SEND_RATE_LIMITED"),
+    });
+
+    return {
+      success: false,
+      kind: "business",
+      errorCode: "EMAIL_SEND_RATE_LIMITED",
+      diagnostic,
+    };
+  }
+
+  let baseDiagnostic: Omit<
     SendEmailOtpDiagnostic,
     "branch" | "errorName" | "errorMessage" | "errorIsInstanceOfError" | "supabaseErrorCode"
   > = {
-    ...connectivity,
+    connectivityProbe: "skipped",
     supabaseUrlHost: getSupabaseUrlHost(),
     supabaseConfigured: String(supabaseEnv.isConfigured),
   };
 
   try {
+    const supabase = getSupabaseClient();
+    const connectivity = await probeSupabaseConnectivity();
+    baseDiagnostic = {
+      ...connectivity,
+      supabaseUrlHost: getSupabaseUrlHost(),
+      supabaseConfigured: String(supabaseEnv.isConfigured),
+    };
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -189,7 +228,10 @@ export const sendEmailOtp = async ({
       },
     });
 
-    if (!error) return { success: true, data: undefined };
+    if (!error) {
+      markEmailOtpSendSucceeded(email);
+      return { success: true, data: undefined };
+    }
 
     const supabaseErrorCode = getSupabaseErrorCode(error);
     const errorCode = mapSupabaseErrorCodeToAppErrorCode(supabaseErrorCode);
@@ -256,5 +298,7 @@ export const sendEmailOtp = async ({
     });
 
     return { success: false, kind: "technical", diagnostic };
+  } finally {
+    releaseEmailOtpSendAttempt(email);
   }
 };

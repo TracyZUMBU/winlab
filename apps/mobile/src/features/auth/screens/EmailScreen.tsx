@@ -1,5 +1,7 @@
+import type { LegalDocumentId } from "@/src/legal/index";
 import { getI18nMessageForCode } from "@/src/lib/i18n/errorCodeMessage";
 import { monitoring } from "@/src/lib/monitoring";
+import { colors } from "@/src/theme/colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
@@ -21,8 +23,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LegalScrollModal } from "../components/LegalScrollModal";
 import { AUTH_ROUTES } from "../constants/authConstants";
 import { sendEmailOtp, signInWithEmailPassword } from "../services";
-import type { LegalDocumentId } from "@/src/legal/index";
-import { colors } from "@/src/theme/colors";
 import { isPasswordLoginEmail } from "../utils/passwordLoginEmails";
 import { redirectAfterAuthSession } from "../utils/redirectAfterAuthSession";
 import {
@@ -247,7 +247,19 @@ export const EmailScreen: React.FC = () => {
         message: "EmailScreen password login succeeded",
         extra: { platform: Platform.OS },
       });
-      await redirectAfterAuthSession(router, user.id);
+      try {
+        await redirectAfterAuthSession(router, user.id);
+      } catch (error) {
+        monitoring.captureException({
+          name: "auth_password_login_redirect_after_auth_failed",
+          severity: "error",
+          feature: "auth",
+          message: "EmailScreen failed to redirect after password login",
+          error,
+          extra: { platform: Platform.OS },
+        });
+        setServerError(t("auth.genericError"));
+      }
     } catch {
       monitoring.captureMessage({
         name: "auth_password_login_submit_failed",
@@ -305,6 +317,7 @@ export const EmailScreen: React.FC = () => {
             <ScrollView
               contentContainerStyle={styles.scrollContent}
               keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
               automaticallyAdjustKeyboardInsets
               showsVerticalScrollIndicator={false}
             >
@@ -338,6 +351,7 @@ export const EmailScreen: React.FC = () => {
                       value={emailValue}
                       onChangeText={(text) => {
                         setValue("email", text, { shouldValidate: true });
+                        setPassword("");
                         setPasswordError(null);
                         setServerError(null);
                         setInfoMessage(null);

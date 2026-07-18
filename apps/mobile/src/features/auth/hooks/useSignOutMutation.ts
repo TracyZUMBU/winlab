@@ -25,6 +25,7 @@ export function useSignOutMutation() {
     },
     onError: async () => {
       await clearAppAuthCaches();
+      queryClient.clear();
     },
   });
 }

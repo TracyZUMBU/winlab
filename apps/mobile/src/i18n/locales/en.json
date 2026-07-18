@@ -119,7 +119,7 @@
     "email": {
       "errors": {
         "generic": "Something went wrong. Please try again.",
-        "EMAIL_SEND_RATE_LIMITED": "Too many requests. Please try again in a few minutes.",
+        "EMAIL_SEND_RATE_LIMITED": "A code was already sent. Please try again in a minute.",
         "CAPTCHA_FAILED": "We couldn't send the code. Please try again (or wait a few minutes).",
         "EMAIL_INVALID": "Please enter a valid email address.",
         "SIGNUP_DISABLED": "Sign-in is temporarily disabled. Please try again later.",
