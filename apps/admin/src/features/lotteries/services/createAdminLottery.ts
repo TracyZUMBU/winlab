@@ -1,3 +1,4 @@
+import { isLotteryCategoryId } from "../lib/lotteryCategories";
 import { mapSupabaseToErrorCode } from "../../../lib/api/mapSupabaseToErrorCode";
 import type { ServiceResult } from "../../../lib/api/serviceResult";
 import { getSupabaseClient } from "../../../lib/supabase";
@@ -71,6 +72,12 @@ export async function createAdminLottery(
       return { success: false, errorCode: "INVALID_LOTTERY_STATUS" };
     }
 
+    const category =
+      input.category == null ? "" : String(input.category).trim();
+    if (category.length === 0 || !isLotteryCategoryId(category)) {
+      return { success: false, errorCode: "INVALID_PAYLOAD" };
+    }
+
     const starts_at =
       input.starts_at === null || input.starts_at === undefined
         ? null
@@ -88,7 +95,7 @@ export async function createAdminLottery(
       p_status: status,
       p_description: input.description ?? null,
       p_short_description: input.short_description ?? null,
-      p_category: input.category ?? null,
+      p_category: category,
       p_image_url: input.image_url ?? null,
       p_is_featured: input.is_featured ?? false,
     });

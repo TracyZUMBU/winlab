@@ -399,6 +399,19 @@
     }
   },
   "lotteries": {
+    "categories": {
+      "entertainment": "Divertissement",
+      "animal": "Animal",
+      "mode": "Mode",
+      "tech": "Tech",
+      "restaurant": "Restaurant",
+      "food": "Alimentation",
+      "sports": "Sports",
+      "wellness": "Bien-être",
+      "beauty": "Beauté",
+      "travel": "Voyage",
+      "kid": "Enfants"
+    },
     "layout": {
       "title": "Loteries",
       "detail": "Détail loterie",

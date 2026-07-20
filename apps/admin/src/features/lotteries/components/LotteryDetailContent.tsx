@@ -1,5 +1,7 @@
 import { formatDateTimeForDev } from "../../../lib/formatDateTimeForDev";
+import { getAppLocale } from "../../../lib/appLocale";
 import type { DetailState } from "../hooks/useLotteryAdminDetail";
+import { formatLotteryCategoryLabel } from "../lib/lotteryCategories";
 import { AdminRunLotterySection } from "./AdminRunLotterySection";
 
 function formatIntFr(n: number): string {
@@ -91,7 +93,9 @@ export function LotteryDetailContent({
               </div>
               <div className="admin-detail-dl__row">
                 <dt>Catégorie</dt>
-                <dd>{state.detail.category ?? "—"}</dd>
+                <dd>
+                  {formatLotteryCategoryLabel(state.detail.category, getAppLocale())}
+                </dd>
               </div>
               <div className="admin-detail-dl__row">
                 <dt>Slug</dt>

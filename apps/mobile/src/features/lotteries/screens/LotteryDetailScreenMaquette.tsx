@@ -15,6 +15,7 @@ import {
 import { LotteryCountdownTimer } from "../components/LotteryCountdownTimer";
 import { useBuyTicketMutation } from "../hooks/useBuyTicketMutation";
 import { useLotteryDetailQuery } from "../hooks/useLotteryDetailQuery";
+import { resolveLotteryCategoryLabel } from "../utils/lotteryCategoryLabel";
 
 import { AppHeader } from "@/src/components/ui/AppHeader";
 import { Screen } from "@/src/components/ui/Screen";
@@ -106,6 +107,8 @@ export function LotteryDetailScreenMaquette() {
     );
   }
 
+  const categoryLabel = resolveLotteryCategoryLabel(t, data.category);
+
   return (
     <Screen edges={["top"]} style={styles.screen}>
       <View style={styles.root}>
@@ -153,10 +156,10 @@ export function LotteryDetailScreenMaquette() {
 
           <View style={styles.titleBlock}>
             <View style={styles.titleBlockTop}>
-              {(data.category ?? "").trim() ? (
+              {categoryLabel ? (
                 <View style={styles.categoryPill}>
                   <Text style={styles.categoryPillText}>
-                    {(data.category ?? "").trim().toUpperCase()}
+                    {categoryLabel.toUpperCase()}
                   </Text>
                 </View>
               ) : null}

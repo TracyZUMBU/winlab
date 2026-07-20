@@ -1,23 +1,24 @@
 /// <reference types="jest" />
 
 import {
+  createAuthenticatedTestUser,
+  createBrand,
+  getSupabaseAdminClient,
+  setProfileIsAdmin,
+} from "@winlab/supabase-test-utils";
+import {
   createAdminLottery,
   getActiveBrandsForLotteryForm,
   getLotteryCategoryOptions,
   resolveDefaultLotteryBrandId,
 } from "../../src/features/lotteries";
 import { getSupabaseClient } from "../../src/lib/supabase";
-import {
-  createAuthenticatedTestUser,
-  createBrand,
-  createLottery,
-  getSupabaseAdminClient,
-  setProfileIsAdmin,
-} from "@winlab/supabase-test-utils";
 
 type AuthedTestUser = Awaited<ReturnType<typeof createAuthenticatedTestUser>>;
 
-async function syncAppClientSession(authenticatedClient: AuthedTestUser["client"]) {
+async function syncAppClientSession(
+  authenticatedClient: AuthedTestUser["client"],
+) {
   const {
     data: { session },
   } = await authenticatedClient.auth.getSession();
@@ -42,15 +43,11 @@ function futureLotteryDates() {
 }
 
 describe("admin lottery create services (integration)", () => {
-  it("loads active brands and distinct categories for an admin user", async () => {
+  it("loads active brands and predefined categories for an admin user", async () => {
     const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     const brand = await createBrand({
       name: `Brand categories ${uniqueId}`,
       slug: `brand-cat-${uniqueId}`,
-    });
-    await createLottery({
-      brand_id: brand.id,
-      category: `category-${uniqueId}`,
     });
 
     const adminUser = await createAuthenticatedTestUser();
@@ -67,8 +64,23 @@ describe("admin lottery create services (integration)", () => {
 
     const categoriesResult = await getLotteryCategoryOptions();
     expect(categoriesResult.success).toBe(true);
-    expect(categoriesResult.success ? categoriesResult.data : []).toContain(
-      `category-${uniqueId}`,
+    expect(categoriesResult.success ? categoriesResult.data : []).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "entertainment",
+          label: "Divertissement",
+        }),
+        expect.objectContaining({ id: "animal", label: "Animal" }),
+        expect.objectContaining({ id: "mode", label: "Mode" }),
+        expect.objectContaining({ id: "tech", label: "Tech" }),
+        expect.objectContaining({ id: "restaurant", label: "Restaurant" }),
+        expect.objectContaining({ id: "food", label: "Food" }),
+        expect.objectContaining({ id: "sports", label: "Sports" }),
+        expect.objectContaining({ id: "wellness", label: "Wellness" }),
+        expect.objectContaining({ id: "beauty", label: "Beauty" }),
+        expect.objectContaining({ id: "travel", label: "Travel" }),
+        expect.objectContaining({ id: "kid", label: "Kid" }),
+      ]),
     );
   });
 
@@ -104,6 +116,7 @@ describe("admin lottery create services (integration)", () => {
     const createResult = await createAdminLottery({
       brand_id: brand.id,
       title,
+      category: "tech",
       ticket_cost: 50,
       number_of_winners: 1,
       status: "draft",
@@ -143,6 +156,7 @@ describe("admin lottery create services (integration)", () => {
     const createResult = await createAdminLottery({
       brand_id: brand.id,
       title: "Loterie interdite",
+      category: "mode",
       ticket_cost: 50,
       number_of_winners: 1,
       status: "draft",
