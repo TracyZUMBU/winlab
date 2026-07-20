@@ -659,6 +659,24 @@
       "winnerPosition": "Place {{position}}"
     }
   },
+  "participations": {
+    "layout": {
+      "listTitle": "Mes participations"
+    },
+    "screen": {
+      "loading": "Chargement de vos participations...",
+      "error": "Une erreur est survenue.",
+      "empty": "Vous n’avez encore participé à aucune loterie."
+    },
+    "list": {
+      "drawOn": "Tirage le {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "loadMore": "Charger plus de participations",
+      "rowA11y_one": "{{title}}, {{count}} ticket",
+      "rowA11y_other": "{{title}}, {{count}} tickets"
+    }
+  },
   "profile": {
     "avatar": {
       "success": "Photo de profil mise à jour.",
@@ -793,6 +811,8 @@
     "menu": {
       "participations": "Mes participations",
       "participationsA11y": "Ouvrir mes participations",
+      "results": "Mes résultats",
+      "resultsA11y": "Ouvrir mes résultats",
       "referral": "Parrainage",
       "referralSubtitle": "Invitez des amis et gagnez des jetons",
       "referralA11y": "Ouvrir le parrainage et mon code",

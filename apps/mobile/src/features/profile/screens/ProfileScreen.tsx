@@ -372,6 +372,10 @@ export function ProfileScreen() {
   }, [deleteMyAccountMutation, i18n, router, signOutMutation, t]);
 
   const openParticipations = useCallback(() => {
+    router.push("/participations");
+  }, [router]);
+
+  const openResults = useCallback(() => {
     router.push("/results");
   }, [router]);
 
@@ -655,6 +659,14 @@ export function ProfileScreen() {
             onPress={openParticipations}
             showDivider
             accessibilityLabel={t("profile.menu.participationsA11y")}
+          />
+          <ProfileMenuRow
+            icon="emoji-events"
+            iconVariant="accent"
+            title={t("profile.menu.results")}
+            onPress={openResults}
+            showDivider
+            accessibilityLabel={t("profile.menu.resultsA11y")}
           />
           <ProfileMenuRow
             icon="group-add"

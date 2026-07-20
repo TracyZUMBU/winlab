@@ -655,6 +655,24 @@
       "winnerPosition": "Rank {{position}}"
     }
   },
+  "participations": {
+    "layout": {
+      "listTitle": "My participations"
+    },
+    "screen": {
+      "loading": "Loading your participations...",
+      "error": "Something went wrong.",
+      "empty": "You have not entered any lottery yet."
+    },
+    "list": {
+      "drawOn": "Draw on {{date}}",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets",
+      "loadMore": "Load more participations",
+      "rowA11y_one": "{{title}}, {{count}} ticket",
+      "rowA11y_other": "{{title}}, {{count}} tickets"
+    }
+  },
   "profile": {
     "avatar": {
       "success": "Profile photo updated.",
@@ -789,6 +807,8 @@
     "menu": {
       "participations": "My participations",
       "participationsA11y": "Open my participations",
+      "results": "My results",
+      "resultsA11y": "Open my results",
       "referral": "Referral",
       "referralSubtitle": "Invite friends and earn tokens",
       "referralA11y": "Open referrals and your code",
