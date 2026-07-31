@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
@@ -61,25 +61,12 @@ export function OnboardingScreen() {
 
       <View style={styles.content}>
         <Card style={styles.card}>
-          <View style={styles.illustrationPlaceholder}>
-            <View style={styles.illustrationBadge}>
-              <View style={styles.illustrationCheck} />
-            </View>
-            <View style={styles.illustrationLines}>
-              <View
-                style={[
-                  styles.illustrationLine,
-                  styles.illustrationLinePrimary,
-                ]}
-              />
-              <View
-                style={[styles.illustrationLine, styles.illustrationLineMuted]}
-              />
-              <View
-                style={[styles.illustrationLine, styles.illustrationLineMuted]}
-              />
-            </View>
-          </View>
+          <Image
+            source={currentSlide.image}
+            style={styles.illustration}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
         </Card>
 
         <View style={styles.textBlock}>
@@ -151,45 +138,13 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: theme.spacing.xl,
+    overflow: "hidden",
   },
-  illustrationPlaceholder: {
-    height: 220,
+  illustration: {
+    width: "100%",
+    height: 280,
     borderRadius: theme.radius.lg,
     backgroundColor: theme.colors.surfaceSoft,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: theme.spacing.lg,
-  },
-  illustrationBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: "#ECFEFF",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: theme.spacing.lg,
-  },
-  illustrationCheck: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: theme.colors.accentSolid,
-  },
-  illustrationLines: {
-    width: "100%",
-    gap: theme.spacing.sm,
-  },
-  illustrationLine: {
-    height: 10,
-    borderRadius: 999,
-  },
-  illustrationLinePrimary: {
-    width: "80%",
-    backgroundColor: "rgba(15, 23, 42, 0.12)",
-  },
-  illustrationLineMuted: {
-    width: "60%",
-    backgroundColor: "rgba(15, 23, 42, 0.06)",
   },
   textBlock: {
     gap: theme.spacing.sm,
