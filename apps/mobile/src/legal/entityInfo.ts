@@ -26,6 +26,6 @@ export const legalEntityInfo: LegalEntityInfo = {
     "Notifications push : Expo et services associés (https://expo.dev). " +
     "Supervision d’exploitation (alertes techniques, sans profilage marketing à partir de ces seuls messages) : Slack (https://slack.com), via une fonction Edge hébergée chez Supabase. " +
     "Les sous-traitants publient leurs propres politiques et engagements contractuels types.",
-  lastUpdatedFr: "22 mai 2026",
-  lastUpdatedEn: "May 22, 2026",
+  lastUpdatedFr: "5 septembre 2026",
+  lastUpdatedEn: "September 5, 2026",
 };

@@ -1,6 +1,6 @@
 # Mémo — Feature Profil (mobile)
 
-**Dernière revue du mémo :** 2026-06-10
+**Dernière revue du mémo :** 2026-09-05
 
 ## Objectif
 
@@ -9,7 +9,7 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 ## Périmètre
 
 - **Inclus :** `getMyProfile` / édition, upload avatar, création de profil (auth), champ optionnel code parrain + `register_referral_with_code`, écran hub parrainage (`/referral`), liste des filleuls via `get_my_referral_invitees`.
-- **Lieu d’habitation :** `profiles.residence_country` (`FR`, `CH`, `LU`) obligatoire ; `profiles.department_code` obligatoire **uniquement** si `FR` (métropole + Corse + DOM `971`–`976`), `NULL` pour CH/LU. UI : `CountryPickerSheet`, `DepartmentPickerSheet` (création + édition profil).
+- **Lieu d’habitation :** `profiles.residence_country` (`FR`, `CH`, `LU`) reste valide en base. **Lancement UI : France uniquement** (`SELECTABLE_RESIDENCE_COUNTRY_CODES`). Le sélecteur pays est masqué si le profil est déjà FR (création préremplie FR). Un profil CH/LU existant voit encore son pays et peut passer sur FR. `department_code` obligatoire **uniquement** si `FR` (métropole + Corse + DOM `971`–`976`), `NULL` pour CH/LU. UI : `CountryPickerSheet` (si affiché), `DepartmentPickerSheet` (création + édition profil).
 - **Côté serveur (référence, pas code ici) :** qualification / bonus parrain après première mission **éligible** (`handle_referral_after_first_mission`, exclusions de `mission_type` dans `mission_type_counts_for_referral_qualification`) — déclenché depuis `approve_mission_completion` (soumission mission automatique ou autre chemin serveur).
 - **Hors scope (itération actuelle) :** ville d’habitation, Allemagne, backoffice, tests Jest dédiés pays/département.
 
@@ -34,7 +34,7 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 | **Création profil + parrain** | `screens/CreateProfileScreen.tsx`, `services/createProfile.ts`, schéma `validators/createProfileFormSchema.ts` |
 | **Hub UI** | `screens/ReferralHubScreen.tsx` (partage natif `Share.share`) |
 | **Profil « classique »** | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, `services/updateMyProfile.ts`, mutations update / avatar / delete. Avatar : affichage seul dans le hero ; changement via le formulaire « Modifier le profil » (champ photo en tête de formulaire). |
-| **Support & documents légaux** | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` ; politique de confidentialité mise à jour (`@/src/legal/privacyBodies.ts`) pour FR/CH/LU et département FR. |
+| **Support & documents légaux** | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` ; politique de confidentialité (`@/src/legal/privacyBodies.ts`) : périmètre France (métropole + DOM). |
 
 **Règle d’archi :** pas d’appel Supabase depuis les écrans ; services → hooks → UI.
 
@@ -65,7 +65,8 @@ Comptes existants : backfill `residence_country = 'FR'` ; `department_code` inch
 - `apps/mobile/tests/integration/register-referral-with-code.integration.test.ts`
 - `apps/mobile/tests/integration/get-my-referral-invitees.integration.test.ts`
 - `apps/mobile/tests/integration/handle-referral-after-first-mission.integration.test.ts`
-- Pas de test Jest dédié pays/département (recette manuelle).
+- `apps/mobile/src/features/profile/constants/residenceCountries.unit.test.ts`
+- Pas de test Jest dédié au flux écran pays/département (recette manuelle).
 
 ## i18n
 
@@ -73,10 +74,10 @@ Préfixes : `profile.createProfile.*`, `profile.residenceCountry.*`, `profile.co
 
 ## Vérification manuelle (lieu d’habitation)
 
-1. Création profil CH → pas de champ département ; en base `department_code` null.
+1. Création profil : pas de champ pays ; département obligatoire ; en base `residence_country = FR`.
 2. Création profil FR + DOM (ex. `971`) → OK.
-3. Édition FR → CH → `department_code` effacé en base.
-4. Politique de confidentialité FR/EN : mention FR/CH/LU et département si France.
+3. Édition d’un profil FR : pas de sélecteur pays ; le département reste éditable.
+4. Politique de confidentialité FR/EN : périmètre France (métropole + DOM), sans Suisse/Luxembourg.
 
 ---
 

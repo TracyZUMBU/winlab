@@ -52,6 +52,7 @@ import {
   getResidenceCountryLabel,
   requiresFrenchDepartment,
   RESIDENCE_COUNTRY_FR,
+  shouldShowResidenceCountryField,
   type ResidenceCountryCode,
 } from "../constants/residenceCountries";
 import { parseResidenceCountryFromForm } from "../utils/normalizeProfileLocation";
@@ -174,6 +175,8 @@ export function ProfileScreen() {
   const parsedEditResidenceCountry = parseResidenceCountryFromForm(
     residenceCountryValue,
   );
+  const showEditCountryField =
+    shouldShowResidenceCountryField(residenceCountryValue);
   const showEditDepartmentField =
     parsedEditResidenceCountry !== undefined &&
     requiresFrenchDepartment(parsedEditResidenceCountry);
@@ -961,6 +964,7 @@ export function ProfileScreen() {
                 ) : null}
               </View>
 
+              {showEditCountryField ? (
               <View style={styles.fieldBlock}>
                 <Text style={styles.fieldLabel}>
                   {t("profile.createProfile.screen.residenceCountryLabel")}
@@ -999,6 +1003,7 @@ export function ProfileScreen() {
                   </Text>
                 ) : null}
               </View>
+              ) : null}
 
               {showEditDepartmentField ? (
                 <View style={styles.fieldBlock}>
@@ -1066,12 +1071,14 @@ export function ProfileScreen() {
             language={i18n.language}
           />
 
+          {showEditCountryField ? (
           <CountryPickerSheet
             visible={countrySheetOpen}
             onClose={() => setCountrySheetOpen(false)}
             onConfirm={handleCountryConfirm}
             initialCountryCode={residenceCountryValue || undefined}
           />
+          ) : null}
 
           <DepartmentPickerSheet
             visible={departmentSheetOpen}
