@@ -74,12 +74,13 @@ describe("admin lottery create services (integration)", () => {
         expect.objectContaining({ id: "mode", label: "Mode" }),
         expect.objectContaining({ id: "tech", label: "Tech" }),
         expect.objectContaining({ id: "restaurant", label: "Restaurant" }),
-        expect.objectContaining({ id: "food", label: "Food" }),
+        expect.objectContaining({ id: "food", label: "Alimentation" }),
         expect.objectContaining({ id: "sports", label: "Sports" }),
-        expect.objectContaining({ id: "wellness", label: "Wellness" }),
-        expect.objectContaining({ id: "beauty", label: "Beauty" }),
-        expect.objectContaining({ id: "travel", label: "Travel" }),
-        expect.objectContaining({ id: "kid", label: "Kid" }),
+        expect.objectContaining({ id: "wellness", label: "Bien-être" }),
+        expect.objectContaining({ id: "beauty", label: "Beauté" }),
+        expect.objectContaining({ id: "travel", label: "Voyage" }),
+        expect.objectContaining({ id: "kid", label: "Enfants" }),
+        expect.objectContaining({ id: "unknown", label: "Inconnu" }),
       ]),
     );
   });
