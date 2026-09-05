@@ -26,6 +26,7 @@ import { LotteryEndingSoonCard } from "../components/LotteryEndingSoonCard";
 import { LotteryFeaturedCard } from "../components/LotteryFeaturedCard";
 import { LotteryGiftCardTile } from "../components/LotteryGiftCardTile";
 import { useAvailableLotteriesQuery } from "../hooks/useAvailableLotteriesQuery";
+import { resolveLotteryCategoryLabel } from "../utils/lotteryCategoryLabel";
 
 type CategoryId = "all" | string;
 
@@ -401,7 +402,9 @@ function Header({
           {categories.map((id) => {
             const selected = category.toLowerCase() === id.toLowerCase();
             const label =
-              id === "all" ? t("lotteries.list.categories.all") : id;
+              id === "all"
+                ? t("lotteries.list.categories.all")
+                : (resolveLotteryCategoryLabel(t, id) ?? id);
 
             return (
               <Pressable

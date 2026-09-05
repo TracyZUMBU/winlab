@@ -1104,6 +1104,18 @@ export type Database = {
         }[];
       };
       get_user_home_dashboard: { Args: never; Returns: Json };
+      get_user_participations: {
+        Args: { p_limit: number; p_offset: number };
+        Returns: {
+          draw_at: string;
+          image_url: string | null;
+          last_participated_at: string;
+          lottery_id: string;
+          status: Database["public"]["Enums"]["lottery_status"];
+          title: string;
+          user_tickets_count: number;
+        }[];
+      };
       get_wallet_transactions_enriched: {
         Args: never;
         Returns: {

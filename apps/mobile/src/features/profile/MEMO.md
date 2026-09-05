@@ -1,6 +1,6 @@
 # Mémo — Feature Profil (mobile)
 
-**Dernière revue du mémo :** 2026-06-10
+**Dernière revue du mémo :** 2026-07-20
 
 ## Objectif
 
@@ -19,9 +19,11 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 |--------|---------|
 | Onglet profil | `apps/mobile/app/(app)/profile.tsx` → `ProfileScreen` |
 | Hub parrainage (tab masquée) | `apps/mobile/app/(app)/referral.tsx` → `ReferralHubScreen` |
+| Mes participations | `apps/mobile/app/(app)/participations/` → feature `participations` |
+| Mes résultats | `apps/mobile/app/(app)/results/` → feature `results` |
 | Création profil (auth) | `apps/mobile/app/(auth)/create-profile.tsx` → `CreateProfileScreen` |
 
-`referral` est enregistré dans `app/(app)/_layout.tsx` avec `href: null` (comme `results`).
+`referral`, `participations` et `results` sont enregistrés dans `app/(app)/_layout.tsx`.
 
 ## Cartographie code (`src/features/profile`)
 

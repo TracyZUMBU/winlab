@@ -3,6 +3,7 @@ import {
   type CreateAdminLotteryInput,
   type LotteryCreateStatus,
 } from "../types/lotteryAdmin";
+import { isLotteryCategoryId } from "./lotteryCategories";
 import { parisLocalDateTimeToIso } from "./lotteryFormParisTime";
 
 const CREATE_STATUS_SET = new Set<string>(LOTTERY_CREATE_STATUSES);
@@ -18,7 +19,7 @@ export type CreateLotteryFormValidationInput = {
   status: string;
   description?: string;
   short_description?: string;
-  category?: string;
+  category: string;
   image_url?: string;
   is_featured?: boolean;
 };
@@ -57,6 +58,14 @@ export function validateCreateLotteryForm(
   const title = input.title.trim();
   if (title.length === 0) {
     return { ok: false, message: "Le titre est obligatoire." };
+  }
+
+  const category = input.category.trim();
+  if (category.length === 0) {
+    return { ok: false, message: "Choisissez une catégorie." };
+  }
+  if (!isLotteryCategoryId(category)) {
+    return { ok: false, message: "Cette catégorie n’est pas autorisée." };
   }
 
   const ticketCost = parsePositiveInt(
@@ -134,7 +143,7 @@ export function validateCreateLotteryForm(
       status,
       description: trimOptional(input.description),
       short_description: trimOptional(input.short_description),
-      category: trimOptional(input.category),
+      category,
       image_url: trimOptional(input.image_url),
       is_featured: Boolean(input.is_featured),
     },

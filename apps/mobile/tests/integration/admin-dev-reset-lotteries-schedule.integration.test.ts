@@ -99,8 +99,12 @@ describe("admin_dev_reset_lotteries_schedule RPC (integration)", () => {
 
     expect(drawnAfterError).toBeNull();
     expect(drawnAfter!.status).toBe("drawn");
-    expect(drawnAfter!.ends_at).toBe(pastEndsAt);
-    expect(drawnAfter!.draw_at).toBe(pastDrawAt);
+    expect(new Date(drawnAfter!.ends_at!).getTime()).toBe(
+      new Date(pastEndsAt).getTime(),
+    );
+    expect(new Date(drawnAfter!.draw_at).getTime()).toBe(
+      new Date(pastDrawAt).getTime(),
+    );
 
     const { data: cancelledAfter, error: cancelledAfterError } = await admin
       .from("lotteries")
@@ -110,7 +114,11 @@ describe("admin_dev_reset_lotteries_schedule RPC (integration)", () => {
 
     expect(cancelledAfterError).toBeNull();
     expect(cancelledAfter!.status).toBe("cancelled");
-    expect(cancelledAfter!.ends_at).toBe(pastEndsAt);
-    expect(cancelledAfter!.draw_at).toBe(pastDrawAt);
+    expect(new Date(cancelledAfter!.ends_at!).getTime()).toBe(
+      new Date(pastEndsAt).getTime(),
+    );
+    expect(new Date(cancelledAfter!.draw_at).getTime()).toBe(
+      new Date(pastDrawAt).getTime(),
+    );
   });
 });

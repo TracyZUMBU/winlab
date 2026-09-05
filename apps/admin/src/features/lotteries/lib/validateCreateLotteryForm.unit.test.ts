@@ -9,6 +9,7 @@ describe("validateCreateLotteryForm", () => {
   const validBase = {
     brand_id: "00000000-0000-4000-8000-000000000001",
     title: "Ma loterie",
+    category: "entertainment",
     ticket_cost: "50",
     number_of_winners: "1",
     starts_at_local: schedule.startsAtLocal,
@@ -44,5 +45,27 @@ describe("validateCreateLotteryForm", () => {
       status: "cancelled",
     });
     expect(result.ok).toBe(false);
+  });
+
+  it("rejects missing category", () => {
+    const result = validateCreateLotteryForm({
+      ...validBase,
+      category: "",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.message).toMatch(/catégorie/i);
+    }
+  });
+
+  it("rejects unknown category", () => {
+    const result = validateCreateLotteryForm({
+      ...validBase,
+      category: "beauty",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.message).toMatch(/pas autorisée/i);
+    }
   });
 });
