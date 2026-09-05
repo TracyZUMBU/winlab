@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useNow } from "@/src/lib/date/useNow";
 import { theme } from "@/src/theme";
 
+import { resolveLotteryCategoryLabel } from "../utils/lotteryCategoryLabel";
 import type { AvailableLotteryUi } from "../hooks/useAvailableLotteriesQuery";
 import type { LotteryCardLayout } from "../utils/lotteryCatalogMasonryLayout";
 import {
@@ -32,10 +33,8 @@ export function LotteryMarketplaceCard({
   const countdownShort = formatEndingSoonTime(t, remaining);
   const { imageAspectRatio, topOffset } = layout;
 
-  const categoryLabel = (lottery.category ?? "")
-    .replace(/-/g, " ")
-    .trim()
-    .toUpperCase();
+  const resolvedCategoryLabel = resolveLotteryCategoryLabel(t, lottery.category);
+  const categoryLabel = resolvedCategoryLabel?.toUpperCase() ?? "";
 
   const badgeText =
     lottery.is_featured && lottery.category !== "gift-card"

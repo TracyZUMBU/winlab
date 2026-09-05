@@ -18,6 +18,20 @@ export {
   LOTTERY_ADMIN_STATUSES,
   LOTTERY_CREATE_STATUSES,
 } from "./types/lotteryAdmin";
+export {
+  LOTTERY_CATEGORY_LABELS,
+  LOTTERY_CATEGORY_IDS,
+  getLotteryCategoryLabel,
+  getLotteryCategoryOptionsList,
+  formatLotteryCategoryLabel,
+  lotteryCategoryTranslationKey,
+  isLotteryCategoryId,
+} from "./lib/lotteryCategories";
+export type {
+  LotteryCategoryId,
+  LotteryCategoryLocale,
+  LotteryCategoryOption,
+} from "./lib/lotteryCategories";
 export { getAdminLotteries } from "./services/getAdminLotteries";
 export { getAdminLotteryDetail } from "./services/getAdminLotteryDetail";
 export { createAdminLottery } from "./services/createAdminLottery";

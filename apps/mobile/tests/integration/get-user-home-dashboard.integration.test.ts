@@ -10,12 +10,22 @@ import {
 } from "@winlab/supabase-test-utils";
 
 const RPC = "get_user_home_dashboard";
+const TODO_RPC = "get_todo_missions_page";
 
 function getActiveMissionWindow() {
   return {
     starts_at: new Date(Date.now() - 60_000).toISOString(),
     ends_at: new Date(Date.now() + 30 * 60_000).toISOString(),
   };
+}
+
+function findMissionById(
+  missions: unknown[],
+  missionId: string,
+): Record<string, unknown> | undefined {
+  return missions.find(
+    (row) => (row as { id?: string }).id === missionId,
+  ) as Record<string, unknown> | undefined;
 }
 
 describe("get_user_home_dashboard RPC (integration)", () => {
@@ -121,9 +131,21 @@ describe("get_user_home_dashboard RPC (integration)", () => {
 
     const missions = payload.mission_previews as unknown[];
     expect(Array.isArray(missions)).toBe(true);
-    expect(missions.some((m) => (m as { id?: string }).id === mission.id)).toBe(
-      true,
-    );
+    // Home previews are capped (LIMIT 5, global). Assert eligibility on the
+    // paginated todo RPC so this fixture is not racing leftover missions.
+    const todoPage = await user.client.rpc(TODO_RPC, {
+      p_limit: 100,
+      p_offset: 0,
+    });
+    expect(todoPage.error).toBeNull();
+    expect(Array.isArray(todoPage.data)).toBe(true);
+    expect(findMissionById(todoPage.data ?? [], mission.id)).toBeTruthy();
+
+    const previewMatch = findMissionById(missions, mission.id);
+    if (previewMatch) {
+      expect(previewMatch.user_completions_used).toBe(1);
+      expect(previewMatch.max_completions_per_user).toBe(2);
+    }
 
     // Once (pending + approved) count >= max_completions_per_user,
     // the mission must be excluded from the "todo/preview" list.
@@ -139,9 +161,14 @@ describe("get_user_home_dashboard RPC (integration)", () => {
     const payloadAfterMax = dataAfterMax as Record<string, unknown>;
     const missionsAfterMax = payloadAfterMax.mission_previews as unknown[];
     expect(Array.isArray(missionsAfterMax)).toBe(true);
-    expect(
-      missionsAfterMax.some((m) => (m as { id?: string }).id === mission.id),
-    ).toBe(false);
+    expect(findMissionById(missionsAfterMax, mission.id)).toBeUndefined();
+
+    const todoAfterMax = await user.client.rpc(TODO_RPC, {
+      p_limit: 100,
+      p_offset: 0,
+    });
+    expect(todoAfterMax.error).toBeNull();
+    expect(findMissionById(todoAfterMax.data ?? [], mission.id)).toBeUndefined();
 
     const anon = getSupabaseAnonClient();
     const { data: anonData, error: anonError } = await anon.rpc(RPC);

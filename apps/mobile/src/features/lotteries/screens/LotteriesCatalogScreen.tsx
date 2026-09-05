@@ -32,6 +32,7 @@ import {
   filterLotteriesBySearchQuery,
   parseLotteryCatalogScope,
 } from "../utils/lotteryCatalog";
+import { resolveLotteryCategoryLabel } from "../utils/lotteryCategoryLabel";
 import { splitLotteriesIntoMasonryColumns } from "../utils/lotteryCatalogMasonryLayout";
 
 type CategoryId = "all" | string;
@@ -145,7 +146,10 @@ export function LotteriesCatalogScreen() {
     () =>
       categories.map((id) => ({
         id,
-        label: id === "all" ? t("lotteries.list.categories.all") : id,
+        label:
+          id === "all"
+            ? t("lotteries.list.categories.all")
+            : (resolveLotteryCategoryLabel(t, id) ?? id),
       })),
     [categories, t],
   );

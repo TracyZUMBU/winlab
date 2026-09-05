@@ -15,26 +15,28 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 
 ## Navigation (Expo Router)
 
-| Route | Fichier |
-|--------|---------|
-| Onglet profil | `apps/mobile/app/(app)/profile.tsx` → `ProfileScreen` |
-| Hub parrainage (tab masquée) | `apps/mobile/app/(app)/referral.tsx` → `ReferralHubScreen` |
-| Création profil (auth) | `apps/mobile/app/(auth)/create-profile.tsx` → `CreateProfileScreen` |
+| Route                        | Fichier                                                             |
+| ---------------------------- | ------------------------------------------------------------------- |
+| Onglet profil                | `apps/mobile/app/(app)/profile.tsx` → `ProfileScreen`               |
+| Hub parrainage (tab masquée) | `apps/mobile/app/(app)/referral.tsx` → `ReferralHubScreen`          |
+| Mes participations           | `apps/mobile/app/(app)/participations/` → feature `participations`  |
+| Mes résultats                | `apps/mobile/app/(app)/results/` → feature `results`                |
+| Création profil (auth)       | `apps/mobile/app/(auth)/create-profile.tsx` → `CreateProfileScreen` |
 
-`referral` est enregistré dans `app/(app)/_layout.tsx` avec `href: null` (comme `results`).
+`referral`, `participations` et `results` sont enregistrés dans `app/(app)/_layout.tsx`.
 
 ## Cartographie code (`src/features/profile`)
 
-| Rôle | Fichiers principaux |
-|------|---------------------|
-| **Clés TanStack Query (parrainage)** | `keys/referralKeys.ts` — `all`, `invitees(userId)` |
-| **Liste filleuls (RPC)** | `hooks/useMyReferralInviteesQuery.ts`, `services/getMyReferralInvitees.ts` → RPC `get_my_referral_invitees` |
-| **Enregistrement code (RPC)** | `services/registerReferralWithCode.ts` → RPC `register_referral_with_code` |
-| **Pays / département** | `constants/residenceCountries.ts`, `constants/frenchDepartments.ts`, `utils/normalizeProfileLocation.ts`, `components/CountryPickerSheet.tsx`, `components/DepartmentPickerSheet.tsx` |
-| **Création profil + parrain** | `screens/CreateProfileScreen.tsx`, `services/createProfile.ts`, schéma `validators/createProfileFormSchema.ts` |
-| **Hub UI** | `screens/ReferralHubScreen.tsx` (partage natif `Share.share`) |
-| **Profil « classique »** | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, `services/updateMyProfile.ts`, mutations update / avatar / delete. Avatar : affichage seul dans le hero ; changement via le formulaire « Modifier le profil » (champ photo en tête de formulaire). |
-| **Support & documents légaux** | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` ; politique de confidentialité (`@/src/legal/privacyBodies.ts`) : périmètre France (métropole + DOM). |
+| Rôle                                 | Fichiers principaux                                                                                                                                                                                                                                                                       |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Clés TanStack Query (parrainage)** | `keys/referralKeys.ts` — `all`, `invitees(userId)`                                                                                                                                                                                                                                        |
+| **Liste filleuls (RPC)**             | `hooks/useMyReferralInviteesQuery.ts`, `services/getMyReferralInvitees.ts` → RPC `get_my_referral_invitees`                                                                                                                                                                               |
+| **Enregistrement code (RPC)**        | `services/registerReferralWithCode.ts` → RPC `register_referral_with_code`                                                                                                                                                                                                                |
+| **Pays / département**               | `constants/residenceCountries.ts`, `constants/frenchDepartments.ts`, `utils/normalizeProfileLocation.ts`, `components/CountryPickerSheet.tsx`, `components/DepartmentPickerSheet.tsx`                                                                                                     |
+| **Création profil + parrain**        | `screens/CreateProfileScreen.tsx`, `services/createProfile.ts`, schéma `validators/createProfileFormSchema.ts`                                                                                                                                                                            |
+| **Hub UI**                           | `screens/ReferralHubScreen.tsx` (partage natif `Share.share`)                                                                                                                                                                                                                             |
+| **Profil « classique »**             | `screens/ProfileScreen.tsx`, `hooks/useMyProfileQuery.ts`, `services/getMyProfile.ts`, `services/updateMyProfile.ts`, mutations update / avatar / delete. Avatar : affichage seul dans le hero ; changement via le formulaire « Modifier le profil » (champ photo en tête de formulaire). |
+| **Support & documents légaux**       | `ProfileScreen` : `mailto:` vers `legalEntityInfo.contactEmail` ; politique de confidentialité (`@/src/legal/privacyBodies.ts`) : périmètre France (métropole + DOM).                                                                                                                     |
 
 **Règle d’archi :** pas d’appel Supabase depuis les écrans ; services → hooks → UI.
 
@@ -48,10 +50,10 @@ Gérer le **profil** (lecture / édition, avatar), le **compte** (déconnexion, 
 
 ### Règles métier (DB)
 
-| `residence_country` | `department_code` |
-|---------------------|-------------------|
-| `FR` | Obligatoire, code INSEE autorisé (01–95, 2A/2B, 971–976) |
-| `CH`, `LU` | `NULL` |
+| `residence_country` | `department_code`                                        |
+| ------------------- | -------------------------------------------------------- |
+| `FR`                | Obligatoire, code INSEE autorisé (01–95, 2A/2B, 971–976) |
+| `CH`, `LU`          | `NULL`                                                   |
 
 Comptes existants : backfill `residence_country = 'FR'` ; `department_code` inchangé.
 

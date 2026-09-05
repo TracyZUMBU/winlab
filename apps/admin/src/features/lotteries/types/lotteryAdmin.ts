@@ -93,7 +93,7 @@ export type CreateAdminLotteryInput = {
   status: LotteryCreateStatus;
   description?: string | null;
   short_description?: string | null;
-  category?: string | null;
+  category: string;
   image_url?: string | null;
   is_featured?: boolean;
 };

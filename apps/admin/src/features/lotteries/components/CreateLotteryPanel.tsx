@@ -12,7 +12,9 @@ import {
 import { createPortal } from "react-dom";
 
 import { ServiceFailureError } from "../../../lib/api/serviceFailureError";
+import { getAppLocale } from "../../../lib/appLocale";
 import { isSupabaseConfigured } from "../../../lib/supabase";
+import { getLotteryCategoryOptionsList } from "../lib/lotteryCategories";
 import {
   LOTTERY_CREATE_FORM_DEFAULTS,
   getDefaultLotteryCreateDateFields,
@@ -28,7 +30,6 @@ import { LOTTERY_CREATE_STATUSES } from "../types/lotteryAdmin";
 import { adminLotteriesListOptions } from "../queries/admin-lotteries-list.query";
 import {
   adminLotteryFormBrandsQuery,
-  adminLotteryFormCategoriesQuery,
 } from "../queries/lottery-create-form-support.query";
 import type { LotteryCreateStatus, LotteryFormBrandOption } from "../types/lotteryAdmin";
 import {
@@ -111,10 +112,6 @@ export function CreateLotteryPanel({
     ...adminLotteryFormBrandsQuery(),
     enabled: open && isSupabaseConfigured(),
   });
-  const categoriesQuery = useQuery({
-    ...adminLotteryFormCategoriesQuery(),
-    enabled: open && isSupabaseConfigured(),
-  });
   const lotteriesListQuery = useQuery({
     ...adminLotteriesListOptions(),
     enabled: open && isSupabaseConfigured(),
@@ -123,7 +120,10 @@ export function CreateLotteryPanel({
   const brands: LotteryFormBrandOption[] = brandsQuery.isSuccess
     ? brandsQuery.data
     : [];
-  const categories = categoriesQuery.isSuccess ? categoriesQuery.data : [];
+  const categories = useMemo(
+    () => getLotteryCategoryOptionsList(getAppLocale()),
+    [open],
+  );
 
   const [form, setForm] = useState<FormState>(() => buildInitialFormState(""));
   const baselineRef = useRef(serializeForDirty(buildInitialFormState("")));
@@ -322,7 +322,6 @@ export function CreateLotteryPanel({
   }
 
   const brandsLoading = brandsQuery.isPending;
-  const categoriesLoading = categoriesQuery.isPending;
   const supportQueryError = brandsQuery.isError
     ? lotteryServiceErrorMessage(
         brandsQuery.error instanceof ServiceFailureError
@@ -330,11 +329,6 @@ export function CreateLotteryPanel({
           : "UNKNOWN",
       )
     : null;
-
-  const categoriesLoadWarning =
-    categoriesQuery.isError && !brandsQuery.isError
-      ? "Impossible de charger les catégories existantes. Vous pouvez continuer sans catégorie, ou appliquer les migrations Supabase sur le projet connecté (voir apps/admin : migrate:remote)."
-      : null;
 
   return createPortal(
     <div className="lottery-detail-panel">
@@ -376,15 +370,6 @@ export function CreateLotteryPanel({
                 {fieldError ?? submitError ?? supportQueryError}
               </div>
             )}
-
-            {categoriesLoadWarning ? (
-              <p
-                className="mission-create-form__hint mission-create-form__hint--warning"
-                role="status"
-              >
-                {categoriesLoadWarning}
-              </p>
-            ) : null}
 
             {slugCollisionWarning ? (
               <p
@@ -465,12 +450,12 @@ export function CreateLotteryPanel({
                   className="mission-create-form__control"
                   value={form.category}
                   onChange={(e) => update("category")(e.target.value)}
-                  disabled={categoriesLoading}
+                  required
                 >
-                  <option value="">— Aucune —</option>
+                  <option value="">— Sélectionner —</option>
                   {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                    <option key={c.id} value={c.id}>
+                      {c.label}
                     </option>
                   ))}
                 </select>
