@@ -14,8 +14,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "@/src/theme/colors";
 import {
+  getResidenceCountriesForPicker,
   getResidenceCountryLabel,
-  RESIDENCE_COUNTRIES,
   type ResidenceCountryCode,
   type ResidenceCountryOption,
 } from "../constants/residenceCountries";
@@ -45,6 +45,7 @@ export function CountryPickerSheet({
   );
 
   const initialLabel = getResidenceCountryLabel(initialCountryCode, t);
+  const pickerCountries = getResidenceCountriesForPicker(initialCountryCode);
 
   return (
     <Modal
@@ -98,8 +99,8 @@ export function CountryPickerSheet({
               </View>
 
               <View style={styles.list}>
-                {RESIDENCE_COUNTRIES.map((item, index) => {
-                  const isLast = index === RESIDENCE_COUNTRIES.length - 1;
+                {pickerCountries.map((item, index) => {
+                  const isLast = index === pickerCountries.length - 1;
                   return (
                     <Pressable
                       key={item.code}

@@ -19,6 +19,14 @@ describe("lotteryCategories", () => {
       { id: "animal", label: "Animal" },
       { id: "mode", label: "Fashion" },
       { id: "tech", label: "Tech" },
+      { id: "restaurant", label: "Restaurant" },
+      { id: "food", label: "Food" },
+      { id: "sports", label: "Sports" },
+      { id: "wellness", label: "Wellness" },
+      { id: "beauty", label: "Beauty" },
+      { id: "travel", label: "Travel" },
+      { id: "kid", label: "Kids" },
+      { id: "unknown", label: "Unknown" },
     ]);
   });
 
@@ -30,6 +38,7 @@ describe("lotteryCategories", () => {
 
   it("validates category ids", () => {
     expect(isLotteryCategoryId("tech")).toBe(true);
-    expect(isLotteryCategoryId("beauty")).toBe(false);
+    expect(isLotteryCategoryId("beauty")).toBe(true);
+    expect(isLotteryCategoryId("gift-card")).toBe(false);
   });
 });

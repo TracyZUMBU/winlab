@@ -25,7 +25,7 @@ export function HomeOngoingLotteryCard({
   const countdown = formatHomeLotteryCountdown(t, lottery.ends_at, nowMs);
   const showEndingSoonBadge = lottery.is_ending_soon;
   const countdownColor = showEndingSoonBadge
-    ? theme.colors.dangerSolid
+    ? theme.colors.home.lotteryParticipate
     : theme.colors.text;
 
   return (
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 6,
     borderRadius: theme.radius.xs,
-    backgroundColor: theme.colors.dangerSolid,
+    backgroundColor: theme.colors.home.lotteryParticipate,
   },
   endingBadgeText: {
     color: theme.colors.onAccent,

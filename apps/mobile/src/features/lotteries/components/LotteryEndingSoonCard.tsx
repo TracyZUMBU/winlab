@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: 6,
     borderRadius: theme.radius.xs,
-    backgroundColor: theme.colors.dangerSolid,
+    backgroundColor: theme.colors.home.lotteryParticipate,
     shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,

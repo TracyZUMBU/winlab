@@ -61,7 +61,7 @@ describe("validateCreateLotteryForm", () => {
   it("rejects unknown category", () => {
     const result = validateCreateLotteryForm({
       ...validBase,
-      category: "beauty",
+      category: "gift-card",
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {

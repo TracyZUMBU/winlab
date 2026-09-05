@@ -1,12 +1,22 @@
 import Constants from "expo-constants";
+import * as ExpoSplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Animated, Image, StyleSheet, Text, View } from "react-native";
 
 import { Screen } from "@/src/components/ui/Screen";
+import { SPLASH_MIN_VISIBLE_MS } from "@/src/features/splash/constants";
 import { theme } from "@/src/theme";
 
-const SPLASH_DELAY_MS = 1800;
+let hasHiddenNativeSplash = false;
+
+function hideNativeSplash() {
+  if (hasHiddenNativeSplash) return;
+  hasHiddenNativeSplash = true;
+  void ExpoSplashScreen.hideAsync().catch(() => {
+    // Already hidden (fast refresh, tests).
+  });
+}
 
 export function SplashScreen() {
   const { t } = useTranslation();
@@ -16,14 +26,14 @@ export function SplashScreen() {
   useEffect(() => {
     Animated.timing(progress, {
       toValue: 1,
-      duration: SPLASH_DELAY_MS,
+      duration: SPLASH_MIN_VISIBLE_MS,
       useNativeDriver: false,
     }).start();
   }, [progress]);
 
   return (
     <Screen style={styles.screen}>
-      <View style={styles.content}>
+      <View style={styles.content} onLayout={hideNativeSplash}>
         <View style={styles.logoContainer}>
           <Image
             source={require("../../../../assets/images/icon.png")}

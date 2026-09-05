@@ -42,13 +42,13 @@ export function WalletTransactionRow({
   const isCredit = transaction.direction === "credit";
   const usePositiveTint = iconCredit && isCredit;
   const iconBg = usePositiveTint
-    ? theme.colors.semantic.successMuted
+    ? theme.colors.accentWash
     : theme.colors.dangerMuted;
   const iconColor = usePositiveTint
-    ? theme.colors.success
+    ? theme.colors.accentSolid
     : theme.colors.dangerSolid;
   const amountColor = isCredit
-    ? theme.colors.success
+    ? theme.colors.accentSolid
     : theme.colors.dangerSolid;
 
   return (

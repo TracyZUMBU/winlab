@@ -1,6 +1,8 @@
 import "@/src/i18n";
 import { AppCenteredModal } from "@/src/components/ui/AppCenteredModal";
 import { userFacingQueryLoadHint } from "@/src/lib/i18n/userFacingErrorHint";
+import { SPLASH_MIN_VISIBLE_MS } from "@/src/features/splash/constants";
+import { shouldLeaveSplashRoute } from "@/src/features/splash/utils/shouldLeaveSplashRoute";
 import { useAppBootstrap } from "@/src/lib/bootstrap/useAppBootstrap";
 import * as ExpoSplashScreen from "expo-splash-screen";
 import {
@@ -41,6 +43,9 @@ export default function RootLayout() {
     dismissLater: dismissOtaLater,
   } = useOtaUpdatePrompt();
 
+  const [reactSplashMinTimeElapsed, setReactSplashMinTimeElapsed] =
+    useState(false);
+
   const [dailyRewardModal, setDailyRewardModal] = useState<{
     visible: boolean;
     tokensEarned: number;
@@ -64,7 +69,17 @@ export default function RootLayout() {
       : null;
 
   useEffect(() => {
-    if (status !== "ready" && status !== "error") return;
+    const timeoutId = setTimeout(() => {
+      setReactSplashMinTimeElapsed(true);
+    }, SPLASH_MIN_VISIBLE_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (status !== "error") return;
 
     void ExpoSplashScreen.hideAsync().catch(() => {
       // No-op if splash was already hidden.
@@ -72,18 +87,26 @@ export default function RootLayout() {
   }, [status]);
 
   useEffect(() => {
-    if (status !== "ready") return;
-    if (pathname !== "/") return;
-    if (!redirectTo) return;
-
-    // avoid a redirect loop if we are already on the right route.
-    if (redirectTo !== pathname) {
-      router.replace(redirectTo as any);
+    if (
+      !shouldLeaveSplashRoute({
+        bootstrapStatus: status,
+        reactSplashMinTimeElapsed,
+        pathname,
+        redirectTo,
+      })
+    ) {
+      return;
     }
-  }, [pathname, redirectTo, router, status]);
+
+    if (!redirectTo) return;
+    router.replace(redirectTo as any);
+  }, [pathname, reactSplashMinTimeElapsed, redirectTo, router, status]);
 
   useEffect(() => {
     if (pendingDailyRewardTokens == null) {
+      return;
+    }
+    if (!reactSplashMinTimeElapsed) {
       return;
     }
 
@@ -107,7 +130,7 @@ export default function RootLayout() {
       cancelled = true;
       clearTimeout(timeoutId);
     };
-  }, [pendingDailyRewardTokens, sessionUserId, status]);
+  }, [pendingDailyRewardTokens, reactSplashMinTimeElapsed, sessionUserId, status]);
 
   const dismissDailyRewardModal = () => {
     clearPendingDailyLoginUiOverride();

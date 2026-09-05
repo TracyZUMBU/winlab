@@ -17,13 +17,13 @@ import { TokenBalancePill } from "./TokenBalancePill";
 export type AppUserHeaderBarProps = {
   /** @default false */
   showNotifications?: boolean;
-  /** Token icon in the balance pill; defaults to brand blue. */
+  /** Token icon in the balance pill; defaults to brand yellow. */
   tokenIconColor?: string;
 };
 
 export function AppUserHeaderBar({
   showNotifications = false,
-  tokenIconColor = theme.colors.accentSolid,
+  tokenIconColor = theme.colors.home.tokenIcon,
 }: AppUserHeaderBarProps) {
   const { t } = useTranslation();
   const router = useRouter();

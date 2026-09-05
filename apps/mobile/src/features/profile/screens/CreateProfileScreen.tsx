@@ -34,8 +34,10 @@ import { CountryPickerSheet } from "../components/CountryPickerSheet";
 import { DepartmentPickerSheet } from "../components/DepartmentPickerSheet";
 import { getFrenchDepartmentLabel } from "../constants/frenchDepartments";
 import {
+  getDefaultSelectableResidenceCountry,
   getResidenceCountryLabel,
   requiresFrenchDepartment,
+  shouldShowResidenceCountryField,
   type ResidenceCountryCode,
 } from "../constants/residenceCountries";
 import { parseResidenceCountryFromForm } from "../utils/normalizeProfileLocation";
@@ -107,7 +109,7 @@ export const CreateProfileScreen: React.FC = () => {
       username: "",
       birth_date: "",
       sex: undefined,
-      residence_country: "",
+      residence_country: getDefaultSelectableResidenceCountry(),
       department_code: "",
       referral_code: "",
     },
@@ -124,6 +126,8 @@ export const CreateProfileScreen: React.FC = () => {
   const parsedResidenceCountry = parseResidenceCountryFromForm(
     residenceCountryValue,
   );
+  const showCountryField =
+    shouldShowResidenceCountryField(residenceCountryValue);
   const showDepartmentField =
     parsedResidenceCountry !== undefined &&
     requiresFrenchDepartment(parsedResidenceCountry);
@@ -433,6 +437,7 @@ export const CreateProfileScreen: React.FC = () => {
               ) : null}
             </View>
 
+            {showCountryField ? (
             <View style={styles.fieldContainer}>
               <Text style={styles.label}>
                 {t("profile.createProfile.screen.residenceCountryLabel")}
@@ -471,6 +476,7 @@ export const CreateProfileScreen: React.FC = () => {
                 </Text>
               ) : null}
             </View>
+            ) : null}
 
             {showDepartmentField ? (
               <View style={styles.fieldContainer}>
@@ -586,12 +592,14 @@ export const CreateProfileScreen: React.FC = () => {
           language={i18n.language}
         />
 
+        {showCountryField ? (
         <CountryPickerSheet
           visible={countrySheetOpen}
           onClose={() => setCountrySheetOpen(false)}
           onConfirm={handleCountryConfirm}
           initialCountryCode={residenceCountryValue || undefined}
         />
+        ) : null}
 
         <DepartmentPickerSheet
           visible={departmentSheetOpen}
