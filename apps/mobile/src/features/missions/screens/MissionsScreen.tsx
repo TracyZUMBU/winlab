@@ -366,8 +366,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   chipActive: {
-    backgroundColor: theme.colors.text,
-    borderColor: theme.colors.text,
+    backgroundColor: theme.colors.home.lotteryParticipate,
+    borderColor: theme.colors.home.lotteryParticipate,
   },
   chipIdle: {
     backgroundColor: theme.colors.surface,
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   chipLabelActive: {
-    color: theme.colors.surface,
+    color: theme.colors.onAccent,
     fontWeight: "600",
   },
   chipLabelIdle: {

@@ -6,12 +6,12 @@ import { useWalletBalanceQuery } from "@/src/features/wallet/hooks/useWalletBala
 import { theme } from "@/src/theme";
 
 export type TokenBalancePillProps = {
-  /** Defaults to brand blue. */
+  /** Defaults to brand yellow token mark. */
   tokenIconColor?: string;
 };
 
 export function TokenBalancePill({
-  tokenIconColor = theme.colors.accentSolid,
+  tokenIconColor = theme.colors.home.tokenIcon,
 }: TokenBalancePillProps = {}) {
   const { t, i18n } = useTranslation();
   const { data, isLoading } = useWalletBalanceQuery();

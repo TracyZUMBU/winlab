@@ -508,8 +508,8 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   chipActive: {
-    backgroundColor: theme.colors.accentSolid,
-    borderColor: theme.colors.accentSolid,
+    backgroundColor: theme.colors.home.lotteryParticipate,
+    borderColor: theme.colors.home.lotteryParticipate,
   },
   chipIdle: {
     backgroundColor: theme.colors.surface,

@@ -1,6 +1,6 @@
 # Mémo — Feature Auth (mobile)
 
-**Dernière revue du mémo :** 2026-07-18 (rate limit OTP client)
+**Dernière revue du mémo :** 2026-09-05 (expéditeur OTP SMTP)
 
 ## Objectif
 
@@ -79,6 +79,15 @@ Parcours :
 - Cooldown **60 s** par email après un envoi réussi (`utils/emailOtpClientRateLimit.ts`), appliqué dans `sendEmailOtp` (Continuer + Renvoyer).
 - Pendant le cooldown / requête en cours : `EMAIL_SEND_RATE_LIMITED` (pas d’appel Supabase).
 - Complète le rate limit serveur Supabase ; ne le remplace pas.
+
+## Expéditeur des mails OTP
+
+L’app n’envoie pas le mail : `sendEmailOtp` appelle `signInWithOtp`. L’adresse et le nom affichés se règlent dans **Supabase Dashboard → Authentication → Emails / SMTP** :
+
+- **Sender email** : `noreply@wintix.fr` (domaine vérifié chez le prestataire SMTP).
+- **Sender name** : `Wintix`.
+
+Ne pas confondre avec `legalEntityInfo.contactEmail` (contact légal dans l’app).
 
 ## Vérifs manuelles
 

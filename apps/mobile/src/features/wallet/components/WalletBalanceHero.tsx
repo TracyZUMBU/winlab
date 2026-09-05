@@ -148,5 +148,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     paddingVertical: theme.spacing.sm,
     paddingHorizontal: theme.spacing.md + 2,
+    backgroundColor: theme.colors.home.lotteryParticipate,
   },
 });
